@@ -40,7 +40,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v15-app-js-clean-pruefung-offene-fragen-stabil";
+const APP_VERSION = "v17-pruefungsanalyse-nach-themen-stabil";
 
 const EXAM_QUESTION_LIMIT = 10;
 // Später für echte Simulation auf 82 ändern.
@@ -1624,7 +1624,6 @@ function finishExamMode() {
 
   examQuestions.forEach((question, index) => {
     const selected = examAnswers[index] || [];
-    const correct = question.correct;
 
     if (selected.length === 0) {
       unansweredCount++;
@@ -1635,10 +1634,7 @@ function finishExamMode() {
 
     markQuestionAsAnswered(question);
 
-    const selectedSorted = [...selected].sort((a, b) => a - b).join(",");
-    const correctSorted = [...correct].sort((a, b) => a - b).join(",");
-
-    const isCorrect = selectedSorted === correctSorted;
+    const isCorrect = isExamAnswerCorrect(question, selected);
 
     saveTopicResult(question.category, isCorrect);
 
@@ -1656,6 +1652,8 @@ function finishExamMode() {
   const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
   const passed = percent >= 50;
 
+  const topicBreakdown = buildExamTopicBreakdown();
+
   saveExamResult({
     total,
     correct: correctCount,
@@ -1663,6 +1661,7 @@ function finishExamMode() {
     unanswered: unansweredCount,
     percent,
     passed,
+    topicBreakdown,
     date: new Date().toLocaleString("de-DE")
   });
 
@@ -1693,7 +1692,7 @@ function finishExamMode() {
           ${
             passed
               ? "Die Prüfungssimulation wurde erfolgreich bestanden."
-              : "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Fehler."
+              : "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Schwächen."
           }
         </p>
 
@@ -1723,6 +1722,10 @@ function finishExamMode() {
 
       </div>
 
+      ${buildExamFocusRecommendationHtml(topicBreakdown)}
+
+      ${buildExamTopicBreakdownHtml(topicBreakdown)}
+
       <div class="result-actions">
 
         <button class="next-btn" onclick="showExamReview()">
@@ -1745,7 +1748,227 @@ function finishExamMode() {
 
     </section>
   `;
+} 
+
+function isExamAnswerCorrect(question, selectedAnswersForQuestion) {
+  if (!question || !Array.isArray(selectedAnswersForQuestion)) {
+    return false;
+  }
+
+  const selectedSorted = [...selectedAnswersForQuestion]
+    .sort((a, b) => a - b)
+    .join(",");
+
+  const correctSorted = [...question.correct]
+    .sort((a, b) => a - b)
+    .join(",");
+
+  return selectedSorted === correctSorted;
 }
+
+function buildExamTopicBreakdown() {
+  const breakdown = {};
+
+  categories.forEach(categoryName => {
+    breakdown[categoryName] = {
+      total: 0,
+      correct: 0,
+      wrong: 0,
+      unanswered: 0,
+      percent: 0
+    };
+  });
+
+  examQuestions.forEach((question, index) => {
+    const categoryName = normalizeCategoryName(question.category || "Ohne Kategorie");
+
+    if (!breakdown[categoryName]) {
+      breakdown[categoryName] = {
+        total: 0,
+        correct: 0,
+        wrong: 0,
+        unanswered: 0,
+        percent: 0
+      };
+    }
+
+    const selected = examAnswers[index] || [];
+
+    breakdown[categoryName].total++;
+
+    if (selected.length === 0) {
+      breakdown[categoryName].unanswered++;
+      return;
+    }
+
+    if (isExamAnswerCorrect(question, selected)) {
+      breakdown[categoryName].correct++;
+    } else {
+      breakdown[categoryName].wrong++;
+    }
+  });
+
+  Object.keys(breakdown).forEach(categoryName => {
+    const stats = breakdown[categoryName];
+
+    stats.percent =
+      stats.total === 0
+        ? 0
+        : Math.round((stats.correct / stats.total) * 100);
+  });
+
+  return breakdown;
+}
+
+function buildExamFocusRecommendationHtml(topicBreakdown) {
+  let focusCategory = null;
+  let highestProblemCount = 0;
+  let lowestPercent = 101;
+
+  Object.keys(topicBreakdown).forEach(categoryName => {
+    const stats = topicBreakdown[categoryName];
+
+    if (!stats || stats.total === 0) {
+      return;
+    }
+
+    const problemCount = stats.wrong + stats.unanswered;
+
+    if (
+      problemCount > highestProblemCount ||
+      (problemCount === highestProblemCount && stats.percent < lowestPercent)
+    ) {
+      highestProblemCount = problemCount;
+      lowestPercent = stats.percent;
+      focusCategory = categoryName;
+    }
+  });
+
+  if (!focusCategory || highestProblemCount === 0) {
+    return `
+      <div class="last-exam-box">
+        <span>Empfehlung</span>
+        <strong>Sehr stark</strong>
+        <p>
+          In dieser Prüfung wurden keine fachlichen Schwächen erkannt.
+          Wiederholen Sie trotzdem regelmäßig alle Themenbereiche.
+        </p>
+      </div>
+    `;
+  }
+
+  const focusStats = topicBreakdown[focusCategory];
+
+  return `
+    <div class="last-exam-box">
+      <span>Empfehlung</span>
+      <strong>${escapeHtml(focusCategory)}</strong>
+      <p>
+        Dieses Thema hatte in dieser Prüfung die meisten Probleme:
+        ${focusStats.wrong} falsch · ${focusStats.unanswered} unbeantwortet · ${focusStats.percent}% Quote.
+      </p>
+
+      <button class="next-btn danger-training-btn" onclick='openCategory(${JSON.stringify(focusCategory)})'>
+        Thema gezielt trainieren
+      </button>
+    </div>
+  `;
+}
+
+function buildExamTopicBreakdownHtml(topicBreakdown) {
+  const rows = categories
+    .filter(categoryName => {
+      return topicBreakdown[categoryName] && topicBreakdown[categoryName].total > 0;
+    })
+    .map(categoryName => {
+      const stats = topicBreakdown[categoryName];
+      const problemCount = stats.wrong + stats.unanswered;
+
+      let statusClass = "topic-neutral";
+      let statusText = "Nicht geprüft";
+
+      if (problemCount === 0 && stats.total > 0) {
+        statusClass = "topic-strong";
+        statusText = "Sicher";
+      } else if (stats.percent >= 70) {
+        statusClass = "topic-medium";
+        statusText = "Fast sicher";
+      } else if (stats.percent >= 50) {
+        statusClass = "topic-medium";
+        statusText = "Nacharbeiten";
+      } else {
+        statusClass = "topic-weak";
+        statusText = "Schwach";
+      }
+
+      return `
+        <div class="topic-stat-row">
+
+          <div class="topic-name">
+            <span>Thema</span>
+            <strong>${categoryIcons[categoryName] || "📘"} ${escapeHtml(categoryName)}</strong>
+          </div>
+
+          <div>
+            <span>Fragen</span>
+            <strong>${stats.total}</strong>
+          </div>
+
+          <div>
+            <span>Richtig</span>
+            <strong>${stats.correct}</strong>
+          </div>
+
+          <div>
+            <span>Falsch</span>
+            <strong>${stats.wrong}</strong>
+          </div>
+
+          <div>
+            <span>Offen</span>
+            <strong>${stats.unanswered}</strong>
+          </div>
+
+          <div>
+            <span>Quote</span>
+            <strong>${stats.percent}%</strong>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <strong class="${statusClass}">${statusText}</strong>
+          </div>
+
+          <div>
+            ${
+              problemCount > 0
+                ? `<button class="next-btn secondary-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Trainieren</button>`
+                : `<button class="next-btn secondary-btn" disabled>Sicher</button>`
+            }
+          </div>
+
+        </div>
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="topic-stats-section">
+
+      <div class="section-head">
+        <h2>Prüfungsanalyse nach Themen</h2>
+        <p>
+          Hier sehen Sie, welche Themen in dieser Prüfung stark waren und welche gezielt wiederholt werden sollten.
+        </p>
+      </div>
+
+      <div class="topic-stats-list">
+        ${rows}
+      </div>
+
+    </div>
+  `;
+} 
 
 function showExamReview() {
   const mainContent = document.querySelector(".main-content");
