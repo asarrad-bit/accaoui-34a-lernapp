@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accaoui §34a Prüfungssystem</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <div class="logo-area">
+      <h2>ACCAOUI</h2>
+      <span>§34a SYSTEM</span>
+    </div>
+
+    <nav class="menu">
+
+      <div class="menu-item active">
+        <span>🏠</span>
+        Dashboard
+      </div>
+
+<div class="menu-item" id="statsMenu">
+  <span>📊</span>
+  Statistik
+</div> 
+      <div class="menu-item">
+        <span>📚</span>
+        Alle Fragen
+      </div>
+
+      <div class="menu-item">
+        <span>📝</span>
+        Prüfung
+      </div>
+
+      <div class="menu-item">
+        <span>⚠️</span>
+        Fehlertraining
+      </div>
+
+      <div class="menu-item">
+        <span>🎤</span>
+        Mündliche Prüfung
+      </div>
+
+    </nav>
+
+  </aside>
+
+  <main class="main-content">
+
+    <header class="topbar">
+
+      <div>
+        <p class="eyebrow">Accaoui Bildung GmbH</p>
+        <h1>§34a Prüfungssystem</h1>
+      </div>
+
+      <div class="score-box">
+        <span>Bereitschaft</span>
+        <strong>72%</strong>
+      </div>
+
+    </header>
+
+    <section class="hero-grid">
+
+  <div class="hero-card blue" id="allQuestionsCard">
+    <div class="card-icon">📚</div>
+    <h2>Alle Fragen</h2>
+    <p>786 Fragen verfügbar</p>
+  </div>
+
+  <div class="hero-card white" id="openQuestionsCard">
+    <div class="card-icon">📝</div>
+    <h2>Offene Fragen</h2>
+    <p>321 unbeantwortet</p>
+  </div>
+
+  <div class="hero-card gold" id="examCard">
+    <div class="card-icon">⏱️</div>
+    <h2>Prüfung starten</h2>
+    <p>120 Minuten Simulation</p>
+  </div>
+
+  <div class="hero-card red" id="mistakeTrainingCard">
+    <div class="card-icon">⚠️</div>
+    <h2>Fehlertraining</h2>
+    <p>16 Fragen wiederholen</p>
+  </div>
+
+</section>
+
+      <div class="hero-card red">
+        <div class="card-icon">⚠️</div>
+        <h2>Fehlertraining</h2>
+        <p>16 Fragen wiederholen</p>
+      </div>
+
+    </section>
+
+    <section class="section-head">
+      <h2>§34a Themenbereiche</h2>
+      <p>Nach offizieller IHK-Struktur</p>
+    </section>
+
+    <section class="categories" id="categories"></section>
+
+  </main>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

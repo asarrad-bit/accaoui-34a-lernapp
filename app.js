@@ -1,0 +1,2424 @@
+console.log("Accaoui §34a System gestartet");
+
+/* =====================================================
+   ACCAOUI §34a LERN-APP
+   v15 MASTER app.js CLEAN
+   Ziel:
+   - saubere Lernlogik
+   - offene Fragen stabil
+   - Fehlertraining stabil
+   - Prüfungsabgabe ohne automatisches Springen
+   - vorbereitet für Online-Version / Login / PWA / App Store
+===================================================== */
+
+
+/* =========================
+   GRUNDVARIABLEN
+========================= */
+
+let allQuestions = [];
+
+let currentQuestions = [];
+let currentQuestionIndex = 0;
+let selectedAnswers = [];
+
+let correctAnswersCount = 0;
+let wrongAnswersCount = 0;
+
+let examQuestions = [];
+let examQuestionIndex = 0;
+let examAnswers = {};
+let examTimer = null;
+let examSecondsLeft = 120 * 60;
+
+let lastExamMistakes = [];
+let examHistory = [];
+let topicStats = {};
+let topicMistakes = {};
+let answeredQuestions = {};
+
+let currentMode = "dashboard";
+let currentTrainingTitle = "";
+
+const APP_VERSION = "v15-app-js-clean-pruefung-offene-fragen-stabil";
+
+const EXAM_QUESTION_LIMIT = 10;
+// Später für echte Simulation auf 82 ändern.
+const EXAM_DURATION_SECONDS = 120 * 60;
+
+const STORAGE_KEYS = {
+  examHistory: "accaoui_exam_history",
+  topicStats: "accaoui_topic_stats",
+  topicMistakes: "accaoui_topic_mistakes",
+  answeredQuestions: "accaoui_answered_questions"
+};
+
+const categories = [
+  "Recht der öffentlichen Sicherheit und Ordnung",
+  "Gewerberecht",
+  "Datenschutzrecht",
+  "Bürgerliches Recht",
+  "Straf- und Strafverfahrensrecht",
+  "Umgang mit Menschen",
+  "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+  "Grundzüge der Sicherheitstechnik",
+  "Grundzüge des Waffenrechts"
+];
+
+const categoryIcons = {
+  "Recht der öffentlichen Sicherheit und Ordnung": "⚖️",
+  "Gewerberecht": "🏢",
+  "Datenschutzrecht": "🔐",
+  "Bürgerliches Recht": "📄",
+  "Straf- und Strafverfahrensrecht": "🚨",
+  "Umgang mit Menschen": "🗣️",
+  "Unfallverhütungsvorschrift Wach- und Sicherungsdienste": "🦺",
+  "Grundzüge der Sicherheitstechnik": "📹",
+  "Grundzüge des Waffenrechts": "🛡️"
+};
+
+const categoryAccentColor = "#2344c6";
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("App-Version:", APP_VERSION);
+
+  loadAllLocalData();
+  activateDashboardButtons();
+  loadQuestions();
+});
+
+async function loadQuestions() {
+  try {
+    const response = await fetch("questions.json?v=" + Date.now());
+
+    if (!response.ok) {
+      throw new Error("questions.json konnte nicht geladen werden.");
+    }
+
+    const data = await response.json();
+
+    const rawQuestions = Array.isArray(data)
+      ? data
+      : Array.isArray(data.questions)
+        ? data.questions
+        : [];
+
+    if (!Array.isArray(rawQuestions) || rawQuestions.length === 0) {
+      throw new Error("questions.json enthält keine gültige Fragenliste.");
+    }
+
+    allQuestions = rawQuestions.map((question, index) => {
+      return normalizeQuestion(question, index);
+    });
+
+    console.log("Fragen geladen:", allQuestions.length);
+
+    buildCategoryCards();
+    updateDashboardNumbers();
+
+  } catch (error) {
+    console.error("Fehler beim Laden der Fragen:", error);
+    showSmallNotice("Fehler beim Laden der Fragenbank.");
+  }
+}
+
+
+/* =========================
+   LOKALE SPEICHERUNG
+========================= */
+
+function loadAllLocalData() {
+  loadExamHistory();
+  loadTopicStats();
+  loadTopicMistakes();
+  loadAnsweredQuestions();
+}
+
+function readStorage(key, fallbackValue) {
+  const saved = localStorage.getItem(key);
+
+  if (!saved) {
+    return fallbackValue;
+  }
+
+  try {
+    return JSON.parse(saved);
+  } catch (error) {
+    console.error("Fehler beim Lesen aus localStorage:", key, error);
+    return fallbackValue;
+  }
+}
+
+function writeStorage(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+
+/* =========================
+   FRAGEN NORMALISIEREN
+========================= */
+
+function normalizeQuestion(question, index) {
+  const category = normalizeCategoryName(
+    question.category ||
+    question.topic ||
+    question.thema ||
+    "Ohne Kategorie"
+  );
+
+  const questionText =
+    question.question ||
+    question.text ||
+    question.frage ||
+    "";
+
+  const answers = normalizeAnswers(question);
+  const correct = normalizeCorrectIndexes(question, answers);
+
+  const explanation =
+    question.explanation ||
+    question.erklaerung ||
+    question.erklärung ||
+    "";
+
+  const id =
+    question.id !== undefined && question.id !== null
+      ? String(question.id)
+      : createGeneratedQuestionId(category, questionText, index);
+
+  return {
+    ...question,
+    id,
+    category,
+    question: String(questionText),
+    answers,
+    correct,
+    explanation: String(explanation)
+  };
+}
+
+function normalizeCategoryName(categoryName) {
+  const value = String(categoryName || "").trim();
+
+  if (value === "Bürgerliches Gesetzbuch") {
+    return "Bürgerliches Recht";
+  }
+
+  return value;
+}
+
+function normalizeAnswers(question) {
+  const rawAnswers =
+    question.answers ||
+    question.options ||
+    question.antworten ||
+    [];
+
+  if (!Array.isArray(rawAnswers)) {
+    return [];
+  }
+
+  return rawAnswers.map(answer => {
+    if (typeof answer === "object" && answer !== null) {
+      return String(
+        answer.text ||
+        answer.answer ||
+        answer.label ||
+        answer.value ||
+        ""
+      );
+    }
+
+    return String(answer);
+  });
+}
+
+function normalizeCorrectIndexes(question, answers) {
+  let rawCorrect = [];
+
+  if (Array.isArray(question.correct)) {
+    rawCorrect = question.correct;
+  } else if (Array.isArray(question.correctAnswers)) {
+    rawCorrect = question.correctAnswers;
+  } else if (Array.isArray(question.correctAnswer)) {
+    rawCorrect = question.correctAnswer;
+  } else if (Array.isArray(question.correctIndexes)) {
+    rawCorrect = question.correctIndexes;
+  } else if (question.correct !== undefined && question.correct !== null) {
+    rawCorrect = [question.correct];
+  } else if (question.correctAnswer !== undefined && question.correctAnswer !== null) {
+    rawCorrect = [question.correctAnswer];
+  } else {
+    const rawAnswers =
+      question.answers ||
+      question.options ||
+      question.antworten ||
+      [];
+
+    rawAnswers.forEach((answer, index) => {
+      if (
+        typeof answer === "object" &&
+        answer !== null &&
+        answer.correct === true
+      ) {
+        rawCorrect.push(index);
+      }
+    });
+  }
+
+  const indexes = rawCorrect
+    .map(value => {
+      if (typeof value === "number") {
+        return value;
+      }
+
+      const textValue = String(value).trim();
+
+      if (/^\d+$/.test(textValue)) {
+        return Number(textValue);
+      }
+
+      return answers.findIndex(answer => answer.trim() === textValue);
+    })
+    .filter(index => Number.isInteger(index) && index >= 0);
+
+  return [...new Set(indexes)].sort((a, b) => a - b);
+}
+
+function createGeneratedQuestionId(category, questionText, index) {
+  const base = category + "|" + questionText + "|" + index;
+  return "q_" + simpleHash(base);
+}
+
+function simpleHash(text) {
+  let hash = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    hash = ((hash << 5) - hash) + text.charCodeAt(i);
+    hash |= 0;
+  }
+
+  return Math.abs(hash).toString(36);
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function activateDashboardButtons() {
+  activateSidebarButtons();
+  activateHeroCards();
+}
+
+function activateSidebarButtons() {
+  const menuItems = document.querySelectorAll(".menu-item");
+
+  menuItems.forEach(item => {
+    const text = item.innerText.trim();
+
+    item.style.cursor = "pointer";
+
+    if (text.includes("Dashboard")) {
+      item.onclick = () => location.reload();
+    }
+
+    if (text.includes("Statistik")) {
+      item.onclick = () => showStatsPage();
+    }
+
+    if (text.includes("Alle Fragen")) {
+      item.onclick = () => showAllQuestions();
+    }
+
+    if (text.includes("Prüfung") && !text.includes("Mündliche")) {
+      item.onclick = () => startExamMode();
+    }
+
+    if (text.includes("Fehlertraining")) {
+      item.onclick = () => showMistakeOverview();
+    }
+
+    if (text.includes("Mündliche Prüfung")) {
+      item.onclick = () => showOralExamPage();
+    }
+  });
+}
+
+function activateHeroCards() {
+  const allQuestionsCard = document.getElementById("allQuestionsCard");
+  const openQuestionsCard = document.getElementById("openQuestionsCard");
+  const examCard = document.getElementById("examCard");
+  const mistakeTrainingCard = document.getElementById("mistakeTrainingCard");
+
+  if (allQuestionsCard) {
+    allQuestionsCard.style.cursor = "pointer";
+    allQuestionsCard.onclick = () => {
+      console.log("Alle Fragen geklickt");
+      showAllQuestions();
+    };
+  }
+
+  if (openQuestionsCard) {
+    openQuestionsCard.style.cursor = "pointer";
+    openQuestionsCard.onclick = () => {
+      console.log("Offene Fragen geklickt");
+      startOpenQuestionsTraining();
+    };
+  }
+
+  if (examCard) {
+    examCard.style.cursor = "pointer";
+    examCard.onclick = () => {
+      console.log("Prüfung geklickt");
+      startExamMode();
+    };
+  }
+
+  if (mistakeTrainingCard) {
+    mistakeTrainingCard.style.cursor = "pointer";
+    mistakeTrainingCard.onclick = () => {
+      console.log("Fehlertraining geklickt");
+      showMistakeOverview();
+    };
+  }
+
+  // Fallback, falls IDs in index.html fehlen
+  const heroCards = document.querySelectorAll(".hero-card");
+
+  heroCards.forEach(card => {
+    const text = card.innerText || "";
+
+    if (!openQuestionsCard && text.includes("Offene Fragen")) {
+      card.style.cursor = "pointer";
+      card.onclick = () => startOpenQuestionsTraining();
+    }
+  });
+}
+
+function updateDashboardNumbers() {
+  const heroCards = document.querySelectorAll(".hero-card");
+
+  const allQuestionsCard = document.getElementById("allQuestionsCard") || heroCards[0];
+  const openQuestionsCard = document.getElementById("openQuestionsCard") || heroCards[1];
+  const mistakeTrainingCard = document.getElementById("mistakeTrainingCard") || heroCards[3];
+
+  if (allQuestionsCard) {
+    const p = allQuestionsCard.querySelector("p");
+    if (p) p.innerText = allQuestions.length + " Fragen verfügbar";
+  }
+
+  if (openQuestionsCard) {
+    const p = openQuestionsCard.querySelector("p");
+    if (p) p.innerText = getOpenQuestionsCount() + " unbeantwortet";
+  }
+
+  if (mistakeTrainingCard) {
+    const p = mistakeTrainingCard.querySelector("p");
+    if (p) p.innerText = getTotalTopicMistakeCount() + " Fragen wiederholen";
+  }
+}
+
+function buildCategoryCards() {
+  const categoryContainer = document.getElementById("categories");
+
+  if (!categoryContainer) {
+    console.warn("Container #categories wurde nicht gefunden.");
+    return;
+  }
+
+  categoryContainer.innerHTML = "";
+
+  categories.forEach(categoryName => {
+    const questionCount = getCategoryQuestions(categoryName).length;
+    const mistakeCount = getTopicMistakeCount(categoryName);
+    const openCount = getCategoryOpenQuestions(categoryName).length;
+
+    const card = document.createElement("div");
+    card.className = "category-card clickable-card";
+    card.style.cursor = "pointer";
+
+    card.innerHTML = `
+      <div class="category-icon" style="color:${categoryAccentColor};">
+        ${categoryIcons[categoryName] || "📘"}
+      </div>
+
+      <h3>${escapeHtml(categoryName)}</h3>
+
+      <span>${questionCount} Fragen</span>
+
+      <small style="
+        display:block;
+        margin-top:6px;
+        color:#64748b;
+        font-weight:500;
+      ">
+        ${openCount} offen
+      </small>
+
+      <small style="
+        display:block;
+        margin-top:4px;
+        color:${mistakeCount > 0 ? "#991b1b" : "#64748b"};
+        font-weight:${mistakeCount > 0 ? "700" : "500"};
+      ">
+        ${mistakeCount} Fehler gespeichert
+      </small>
+    `;
+
+    card.onclick = () => openCategory(categoryName);
+
+    categoryContainer.appendChild(card);
+  });
+}
+
+function showAllQuestions() {
+  currentMode = "all-questions";
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="review-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Alle Fragen</p>
+        <h1>Fragen nach Themenbereichen</h1>
+        <p>Wählen Sie ein Thema aus, um den Lernmodus zu starten.</p>
+      </div>
+
+      <div class="category-grid">
+        ${categories.map(categoryName => {
+          const questionCount = getCategoryQuestions(categoryName).length;
+          const mistakeCount = getTopicMistakeCount(categoryName);
+          const openCount = getCategoryOpenQuestions(categoryName).length;
+
+          return `
+            <div class="category-card clickable-card" onclick='openCategory(${JSON.stringify(categoryName)})'>
+
+              <div class="category-icon" style="color:${categoryAccentColor};">
+                ${categoryIcons[categoryName] || "📘"}
+              </div>
+
+              <h3>${escapeHtml(categoryName)}</h3>
+
+              <span>${questionCount} Fragen</span>
+
+              <small style="
+                display:block;
+                margin-top:6px;
+                color:#64748b;
+                font-weight:500;
+              ">
+                ${openCount} offen
+              </small>
+
+              <small style="
+                display:block;
+                margin-top:4px;
+                color:${mistakeCount > 0 ? "#991b1b" : "#64748b"};
+                font-weight:${mistakeCount > 0 ? "700" : "500"};
+              ">
+                ${mistakeCount} Fehler gespeichert
+              </small>
+
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+    </section>
+  `;
+}
+
+function showOpenQuestions() {
+  startOpenQuestionsTraining();
+}
+
+function showOralExamPage() {
+  currentMode = "oral-exam";
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="result-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Mündliche Prüfung</p>
+        <h1>Mündliche Prüfung wird vorbereitet</h1>
+        <p>
+          Hier entsteht später der mündliche Prüfungsmodus mit typischen Fragen,
+          Musterantworten, Prüfermodus und Bewertungslogik.
+        </p>
+      </div>
+
+    </section>
+  `;
+}
+
+
+/* =========================
+   LERNMODUS
+========================= */
+
+function openCategory(categoryName) {
+  const questions = getCategoryQuestions(categoryName);
+
+  if (questions.length === 0) {
+    alert("Für diese Kategorie sind noch keine Fragen vorhanden.");
+    return;
+  }
+
+  startLearningSession(questions, categoryName, "category");
+}
+
+function startLearningSession(questions, title, mode) {
+  clearExamTimer();
+
+  currentMode = mode || "learning";
+  currentTrainingTitle = title || "Lernmodus";
+
+  currentQuestions = [...questions];
+  currentQuestionIndex = 0;
+  selectedAnswers = [];
+
+  correctAnswersCount = 0;
+  wrongAnswersCount = 0;
+
+  showLearningView(currentTrainingTitle);
+}
+
+function showLearningView(title) {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <div class="learning-header">
+      <div>
+        <p class="eyebrow">Lernmodus</p>
+        <h1>${escapeHtml(title)}</h1>
+      </div>
+
+      <div class="score-box">
+        <span>Frage</span>
+        <strong id="questionCounter">1/${currentQuestions.length}</strong>
+      </div>
+    </div>
+
+    <div class="progress-wrapper">
+      <div class="progress-info">
+        <span id="progressText">0%</span>
+        <span id="resultStats">0 richtig · 0 falsch</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <section class="question-card" id="questionArea"></section>
+  `;
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  selectedAnswers = [];
+
+  const question = currentQuestions[currentQuestionIndex];
+  const questionArea = document.getElementById("questionArea");
+
+  if (!question || !questionArea) {
+    return;
+  }
+
+  const correctCount = question.correct.length;
+
+  questionArea.innerHTML = `
+    ${formatQuestionText(question.question)}
+
+    <div class="exam-hint-box">
+      <strong>
+        ${
+          correctCount === 1
+            ? "Es ist 1 Antwort richtig."
+            : "Es sind " + correctCount + " Antworten richtig."
+        }
+      </strong>
+    </div>
+
+    <div class="answers">
+      ${question.answers.map((answer, index) => `
+        <button class="answer-btn" data-index="${index}">
+          ${escapeHtml(answer)}
+        </button>
+      `).join("")}
+    </div>
+
+    <div class="explanation" id="explanationBox" style="display:none;"></div>
+
+    <button class="next-btn" id="nextBtn" style="display:none;">
+      Nächste Frage
+    </button>
+  `;
+
+  document.querySelectorAll(".answer-btn").forEach(button => {
+    button.onclick = () => selectAnswer(button);
+  });
+
+  const nextBtn = document.getElementById("nextBtn");
+
+  if (nextBtn) {
+    nextBtn.onclick = nextQuestion;
+  }
+}
+
+function selectAnswer(button) {
+  const question = currentQuestions[currentQuestionIndex];
+
+  if (!question) return;
+
+  const maxAnswers = question.correct.length;
+  const index = Number(button.dataset.index);
+
+  if (selectedAnswers.includes(index)) {
+    selectedAnswers = selectedAnswers.filter(i => i !== index);
+    button.classList.remove("selected");
+  } else {
+    if (selectedAnswers.length >= maxAnswers) {
+      showSmallNotice(
+        maxAnswers === 1
+          ? "Bei dieser Frage ist nur 1 Antwort möglich."
+          : "Bei dieser Frage sind maximal " + maxAnswers + " Antworten möglich."
+      );
+      return;
+    }
+
+    selectedAnswers.push(index);
+    button.classList.add("selected");
+  }
+
+  checkAnswerWhenComplete();
+}
+
+function checkAnswerWhenComplete() {
+  const question = currentQuestions[currentQuestionIndex];
+
+  if (!question) return;
+
+  if (selectedAnswers.length !== question.correct.length) {
+    return;
+  }
+
+  checkLearningAnswer();
+}
+
+function checkLearningAnswer() {
+  const question = currentQuestions[currentQuestionIndex];
+
+  if (!question) return;
+
+  const correct = question.correct;
+
+  const selectedSorted = [...selectedAnswers].sort((a, b) => a - b).join(",");
+  const correctSorted = [...correct].sort((a, b) => a - b).join(",");
+
+  const isCorrect = selectedSorted === correctSorted;
+
+  if (isCorrect) {
+    correctAnswersCount++;
+  } else {
+    wrongAnswersCount++;
+  }
+
+  saveTopicResult(question.category, isCorrect);
+  markQuestionAsAnswered(question);
+
+  if (isCorrect) {
+    removeTopicMistake(question);
+  } else {
+    saveTopicMistake(question);
+  }
+
+  updateProgress();
+  updateDashboardNumbers();
+
+  document.querySelectorAll(".answer-btn").forEach(button => {
+    const index = Number(button.dataset.index);
+
+    button.disabled = true;
+
+    if (correct.includes(index)) {
+      button.classList.add("correct");
+    }
+
+    if (selectedAnswers.includes(index) && !correct.includes(index)) {
+      button.classList.add("wrong");
+    }
+  });
+
+  const explanationBox = document.getElementById("explanationBox");
+
+  if (explanationBox) {
+    explanationBox.style.display = "block";
+    explanationBox.innerHTML = `
+      <h3>${isCorrect ? "Richtig" : "Falsch"}</h3>
+      <p>${escapeHtml(question.explanation || "")}</p>
+    `;
+  }
+
+  const nextBtn = document.getElementById("nextBtn");
+
+  if (nextBtn) {
+    nextBtn.style.display = "inline-block";
+  }
+}
+
+function nextQuestion() {
+  currentQuestionIndex++;
+
+  if (currentQuestionIndex >= currentQuestions.length) {
+    showFinishScreen();
+    return;
+  }
+
+  const questionCounter = document.getElementById("questionCounter");
+
+  if (questionCounter) {
+    questionCounter.innerText =
+      `${currentQuestionIndex + 1}/${currentQuestions.length}`;
+  }
+
+  renderQuestion();
+}
+
+function updateProgress() {
+  const total = currentQuestions.length;
+  const answered = correctAnswersCount + wrongAnswersCount;
+  const percent = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+  const progressFill = document.getElementById("progressFill");
+  const progressText = document.getElementById("progressText");
+  const resultStats = document.getElementById("resultStats");
+
+  if (progressFill) progressFill.style.width = percent + "%";
+  if (progressText) progressText.innerText = percent + "%";
+
+  if (resultStats) {
+    resultStats.innerText =
+      correctAnswersCount + " richtig · " + wrongAnswersCount + " falsch";
+  }
+}
+
+function showFinishScreen() {
+  const total = currentQuestions.length;
+  const percent = total > 0
+    ? Math.round((correctAnswersCount / total) * 100)
+    : 0;
+
+  const passed = percent >= 50;
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <div class="finish-card">
+      <h1>${passed ? "Lerneinheit bestanden" : "Lerneinheit nicht bestanden"}</h1>
+
+      <p>Ergebnis: ${percent}%</p>
+
+      <p>${correctAnswersCount} richtig · ${wrongAnswersCount} falsch</p>
+
+      <div class="result-actions">
+        <button class="next-btn" onclick="showMistakeOverview()">
+          Fehlertraining
+        </button>
+
+        <button class="next-btn" onclick="showAllQuestions()">
+          Themenübersicht
+        </button>
+
+        <button class="next-btn secondary-btn" onclick="location.reload()">
+          Zurück zum Dashboard
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+
+/* =========================
+   OFFENE FRAGEN / LERNFORTSCHRITT
+========================= */
+
+function loadAnsweredQuestions() {
+  answeredQuestions = readStorage(STORAGE_KEYS.answeredQuestions, {});
+}
+
+function saveAnsweredQuestions() {
+  writeStorage(STORAGE_KEYS.answeredQuestions, answeredQuestions);
+}
+
+function markQuestionAsAnswered(question) {
+  if (!question) return;
+
+  const questionKey = getQuestionKey(question);
+
+  answeredQuestions[questionKey] = {
+    id: question.id || questionKey,
+    category: question.category || "Ohne Kategorie",
+    answeredAt: new Date().toISOString()
+  };
+
+  saveAnsweredQuestions();
+}
+
+function isQuestionAnswered(question) {
+  if (!question) return false;
+
+  const questionKey = getQuestionKey(question);
+
+  return Boolean(answeredQuestions[questionKey]);
+}
+
+function getAnsweredQuestionsCount() {
+  return Object.keys(answeredQuestions).length;
+}
+
+function getOpenQuestions() {
+  return allQuestions.filter(question => !isQuestionAnswered(question));
+}
+
+function getOpenQuestionsCount() {
+  return getOpenQuestions().length;
+}
+
+function getCategoryOpenQuestions(categoryName) {
+  return getCategoryQuestions(categoryName).filter(question => {
+    return !isQuestionAnswered(question);
+  });
+}
+
+function startOpenQuestionsTraining() {
+  loadAnsweredQuestions();
+
+  console.log("startOpenQuestionsTraining wurde gestartet");
+
+  if (!allQuestions || allQuestions.length === 0) {
+    showSmallNotice("Fragenbank wurde noch nicht geladen.");
+    return;
+  }
+
+  const openQuestions = getOpenQuestions();
+
+  console.log("Offene Fragen gefunden:", openQuestions.length);
+
+  if (openQuestions.length === 0) {
+    showSmallNotice("Sehr gut. Es gibt aktuell keine offenen Fragen.");
+    return;
+  }
+
+  startLearningSession(
+    openQuestions,
+    "Offene Fragen beantworten",
+    "open-questions"
+  );
+}
+
+
+/* =========================
+   FEHLERTRAINING NACH THEMEN
+========================= */
+
+function loadTopicMistakes() {
+  const saved = readStorage(STORAGE_KEYS.topicMistakes, {});
+
+  topicMistakes = {};
+
+  Object.keys(saved).forEach(categoryName => {
+    const normalizedCategory = normalizeCategoryName(categoryName);
+    const list = Array.isArray(saved[categoryName]) ? saved[categoryName] : [];
+
+    topicMistakes[normalizedCategory] = list.map((question, index) => {
+      return normalizeQuestion(question, index);
+    });
+  });
+}
+
+function saveTopicMistakes() {
+  writeStorage(STORAGE_KEYS.topicMistakes, topicMistakes);
+}
+
+function saveTopicMistake(question) {
+  if (!question || !question.category) {
+    return;
+  }
+
+  const categoryName = question.category;
+  const questionKey = getQuestionKey(question);
+
+  if (!topicMistakes[categoryName]) {
+    topicMistakes[categoryName] = [];
+  }
+
+  const alreadySaved = topicMistakes[categoryName].some(savedQuestion => {
+    return getQuestionKey(savedQuestion) === questionKey;
+  });
+
+  if (!alreadySaved) {
+    topicMistakes[categoryName].push(question);
+  }
+
+  saveTopicMistakes();
+}
+
+function removeTopicMistake(question) {
+  if (!question || !question.category) {
+    return;
+  }
+
+  const categoryName = question.category;
+  const questionKey = getQuestionKey(question);
+
+  if (!topicMistakes[categoryName]) {
+    return;
+  }
+
+  topicMistakes[categoryName] = topicMistakes[categoryName].filter(savedQuestion => {
+    return getQuestionKey(savedQuestion) !== questionKey;
+  });
+
+  if (topicMistakes[categoryName].length === 0) {
+    delete topicMistakes[categoryName];
+  }
+
+  saveTopicMistakes();
+}
+
+function getTopicMistakeCount(categoryName) {
+  if (!topicMistakes[categoryName]) {
+    return 0;
+  }
+
+  return topicMistakes[categoryName].length;
+}
+
+function getTotalTopicMistakeCount() {
+  let total = 0;
+
+  Object.values(topicMistakes).forEach(list => {
+    if (Array.isArray(list)) {
+      total += list.length;
+    }
+  });
+
+  return total;
+}
+
+function startTopicMistakeTraining(categoryName) {
+  const mistakes = topicMistakes[categoryName] || [];
+
+  if (mistakes.length === 0) {
+    showSmallNotice("Keine Fehler in diesem Thema vorhanden.");
+    return;
+  }
+
+  startLearningSession(
+    mistakes,
+    "Fehlertraining: " + categoryName,
+    "topic-mistakes"
+  );
+}
+
+function startAllTopicMistakeTraining() {
+  let allMistakes = [];
+
+  Object.values(topicMistakes).forEach(list => {
+    if (Array.isArray(list)) {
+      allMistakes = allMistakes.concat(list);
+    }
+  });
+
+  if (allMistakes.length === 0) {
+    showSmallNotice("Keine gespeicherten Fehler vorhanden.");
+    return;
+  }
+
+  startLearningSession(
+    allMistakes,
+    "Fehlertraining alle Themen",
+    "all-mistakes"
+  );
+}
+
+function showMistakeOverview() {
+  currentMode = "mistake-overview";
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  const totalMistakes = getTotalTopicMistakeCount();
+
+  let strongestMistakeCategory = null;
+  let highestMistakeCount = 0;
+
+  categories.forEach(categoryName => {
+    const count = getTopicMistakeCount(categoryName);
+
+    if (count > highestMistakeCount) {
+      highestMistakeCount = count;
+      strongestMistakeCategory = categoryName;
+    }
+  });
+
+  const topicsWithMistakes = categories.filter(categoryName => {
+    return getTopicMistakeCount(categoryName) > 0;
+  }).length;
+
+  const topicRows = categories.map(categoryName => {
+    const mistakeCount = getTopicMistakeCount(categoryName);
+    const icon = categoryIcons[categoryName] || "📘";
+
+    let statusText = "Keine Fehler";
+    let statusClass = "topic-neutral";
+
+    if (mistakeCount >= 5) {
+      statusText = "Kritisch";
+      statusClass = "topic-weak";
+    } else if (mistakeCount >= 3) {
+      statusText = "Wiederholen";
+      statusClass = "topic-medium";
+    } else if (mistakeCount >= 1) {
+      statusText = "Nacharbeiten";
+      statusClass = "topic-medium";
+    }
+
+    return `
+      <div class="topic-stat-row">
+
+        <div class="topic-name">
+          <span>Thema</span>
+          <strong>${icon} ${escapeHtml(categoryName)}</strong>
+        </div>
+
+        <div>
+          <span>Fehler</span>
+          <strong>${mistakeCount}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong class="${statusClass}">${statusText}</strong>
+        </div>
+
+        <div>
+          ${
+            mistakeCount > 0
+              ? `<button class="next-btn danger-training-btn" onclick='startTopicMistakeTraining(${JSON.stringify(categoryName)})'>Trainieren</button>`
+              : `<button class="next-btn secondary-btn" disabled>Keine Fehler</button>`
+          }
+        </div>
+
+      </div>
+    `;
+  }).join("");
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="result-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Fehlertraining</p>
+        <h1>Fehler nach Themenbereichen</h1>
+        <p>
+          Trainieren Sie gezielt die Themen, in denen falsche Antworten gespeichert wurden.
+        </p>
+      </div>
+
+      <div class="stats-grid">
+
+        <div class="stats-card danger">
+          <span>Gespeicherte Fehler</span>
+          <strong>${totalMistakes}</strong>
+        </div>
+
+        <div class="stats-card">
+          <span>Themen mit Fehlern</span>
+          <strong>${topicsWithMistakes}</strong>
+        </div>
+
+        <div class="stats-card gold-stat">
+          <span>Schwerpunkt</span>
+          <strong>
+            ${
+              strongestMistakeCategory
+                ? highestMistakeCount + " Fehler"
+                : "Keine"
+            }
+          </strong>
+        </div>
+
+      </div>
+
+      ${
+        strongestMistakeCategory
+          ? `
+            <div class="last-exam-box">
+              <span>Empfehlung</span>
+              <strong>${escapeHtml(strongestMistakeCategory)}</strong>
+              <p>
+                Dieses Thema hat aktuell die meisten gespeicherten Fehler.
+                Beginnen Sie hier mit dem Training.
+              </p>
+
+              <button class="next-btn danger-training-btn" onclick='startTopicMistakeTraining(${JSON.stringify(strongestMistakeCategory)})'>
+                Schwerpunkt trainieren
+              </button>
+            </div>
+          `
+          : `
+            <div class="last-exam-box">
+              <span>Sehr gut</span>
+              <strong>Keine gespeicherten Fehler</strong>
+              <p>
+                Aktuell sind keine Fehler gespeichert. Starten Sie eine Prüfung oder trainieren Sie ein Thema.
+              </p>
+            </div>
+          `
+      }
+
+      <div class="topic-stats-section">
+
+        <div class="section-head">
+          <h2>Fehlerübersicht nach Themen</h2>
+          <p>Jedes Thema kann separat trainiert werden.</p>
+        </div>
+
+        <div class="topic-stats-list">
+          ${topicRows}
+        </div>
+
+      </div>
+
+      <div class="result-actions">
+
+        ${
+          totalMistakes > 0
+            ? `<button class="next-btn danger-training-btn" onclick="startAllTopicMistakeTraining()">Alle Fehler trainieren</button>`
+            : ""
+        }
+
+        <button class="next-btn" onclick="showAllQuestions()">
+          Themen trainieren
+        </button>
+
+        <button class="next-btn secondary-btn" onclick="location.reload()">
+          Zurück zum Dashboard
+        </button>
+
+      </div>
+
+    </section>
+  `;
+}
+
+
+/* =========================
+   PRÜFUNGSMODUS
+========================= */
+
+function startExamMode() {
+  if (allQuestions.length === 0) {
+    alert("Noch keine Fragen geladen.");
+    return;
+  }
+
+  currentMode = "exam";
+
+  examQuestions = shuffleArray([...allQuestions]).slice(
+    0,
+    Math.min(EXAM_QUESTION_LIMIT, allQuestions.length)
+  );
+
+  examQuestionIndex = 0;
+  examAnswers = {};
+  examSecondsLeft = EXAM_DURATION_SECONDS;
+  lastExamMistakes = [];
+
+  showExamView();
+  startExamTimer();
+  renderExamQuestion();
+}
+
+function showExamView() {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Prüfung verlassen
+    </button>
+
+    <div class="learning-header">
+      <div>
+        <p class="eyebrow">Prüfungsmodus</p>
+        <h1>§34a Prüfungssimulation</h1>
+      </div>
+
+      <div class="score-box exam-timer-box">
+        <span>Restzeit</span>
+        <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
+      </div>
+    </div>
+
+    <div class="progress-wrapper">
+      <div class="progress-info">
+        <span id="examProgressText">Frage 1/${examQuestions.length}</span>
+        <span>Auswertung erst am Ende</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="examProgressFill"></div>
+      </div>
+    </div>
+
+    <section class="question-card" id="examQuestionArea"></section>
+
+    <div class="exam-nav" id="examNav"></div>
+  `;
+}
+
+function renderExamQuestion() {
+  const question = examQuestions[examQuestionIndex];
+  const examQuestionArea = document.getElementById("examQuestionArea");
+
+  if (!question || !examQuestionArea) return;
+
+  const savedAnswers = examAnswers[examQuestionIndex] || [];
+  const correctCount = question.correct.length;
+
+  examQuestionArea.innerHTML = `
+    ${formatQuestionText(question.question)}
+
+    <div class="exam-hint-box">
+      <p>Prüfungsmodus: Antworten werden erst am Ende ausgewertet.</p>
+      <strong>
+        ${
+          correctCount === 1
+            ? "Es ist 1 Antwort richtig."
+            : "Es sind " + correctCount + " Antworten richtig."
+        }
+      </strong>
+    </div>
+
+    <div class="answers">
+      ${question.answers.map((answer, index) => `
+        <button
+          class="answer-btn ${savedAnswers.includes(index) ? "selected" : ""}"
+          data-index="${index}"
+        >
+          ${escapeHtml(answer)}
+        </button>
+      `).join("")}
+    </div>
+
+    <div class="exam-actions">
+      <button class="next-btn secondary-btn" id="prevExamBtn">
+        Zurück
+      </button>
+
+      <button class="next-btn" id="nextExamBtn">
+        ${examQuestionIndex === examQuestions.length - 1 ? "Prüfung abgeben" : "Nächste Frage"}
+      </button>
+    </div>
+  `;
+
+  document.querySelectorAll(".answer-btn").forEach(button => {
+    button.onclick = () => toggleExamAnswer(button);
+  });
+
+  const prevBtn = document.getElementById("prevExamBtn");
+  const nextBtn = document.getElementById("nextExamBtn");
+
+  if (prevBtn) {
+    prevBtn.onclick = previousExamQuestion;
+
+    if (examQuestionIndex === 0) {
+      prevBtn.disabled = true;
+    }
+  }
+
+  if (nextBtn) {
+    nextBtn.onclick = nextExamQuestion;
+  }
+
+  updateExamProgress();
+  renderExamNavigation();
+}
+
+function toggleExamAnswer(button) {
+  const question = examQuestions[examQuestionIndex];
+
+  if (!question) return;
+
+  const maxAnswers = question.correct.length;
+  const index = Number(button.dataset.index);
+
+  if (!examAnswers[examQuestionIndex]) {
+    examAnswers[examQuestionIndex] = [];
+  }
+
+  if (examAnswers[examQuestionIndex].includes(index)) {
+    examAnswers[examQuestionIndex] =
+      examAnswers[examQuestionIndex].filter(i => i !== index);
+
+    button.classList.remove("selected");
+  } else {
+    if (examAnswers[examQuestionIndex].length >= maxAnswers) {
+      showSmallNotice(
+        maxAnswers === 1
+          ? "Bei dieser Frage ist nur 1 Antwort möglich."
+          : "Bei dieser Frage sind maximal " + maxAnswers + " Antworten möglich."
+      );
+      return;
+    }
+
+    examAnswers[examQuestionIndex].push(index);
+    button.classList.add("selected");
+  }
+
+  renderExamNavigation();
+}
+
+function previousExamQuestion() {
+  if (examQuestionIndex > 0) {
+    examQuestionIndex--;
+    renderExamQuestion();
+  }
+}
+
+function nextExamQuestion() {
+  if (examQuestionIndex >= examQuestions.length - 1) {
+    handleExamSubmitRequest();
+    return;
+  }
+
+  examQuestionIndex++;
+  renderExamQuestion();
+}
+
+function handleExamSubmitRequest() {
+  const firstUnansweredIndex = getFirstUnansweredQuestionIndex();
+
+  if (firstUnansweredIndex !== -1) {
+    const unansweredCount = getUnansweredQuestionsCount();
+    showExamSubmitWarning(firstUnansweredIndex, unansweredCount);
+    return;
+  }
+
+  finishExamMode();
+}
+
+function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
+  const examQuestionArea = document.getElementById("examQuestionArea");
+
+  if (!examQuestionArea) return;
+
+  let warning = document.getElementById("examWarningBox");
+
+  if (!warning) {
+    warning = document.createElement("div");
+    warning.id = "examWarningBox";
+    warning.className = "exam-warning-box";
+    examQuestionArea.prepend(warning);
+  }
+
+  warning.innerHTML = `
+    <strong>Achtung</strong>
+
+    <p>
+      Es gibt noch ${unansweredCount} unbeantwortete Prüfungsfrage(n).
+      Sie können zur ersten offenen Prüfungsfrage springen oder die Prüfung trotzdem abgeben.
+    </p>
+
+    <p class="warning-small">
+      Unbeantwortete Prüfungsfragen werden bei der Auswertung als unbeantwortet gezählt.
+    </p>
+
+    <div class="warning-actions">
+      <button class="warning-btn primary-warning-btn" onclick="goToExamQuestion(${firstUnansweredIndex})">
+        Zur ersten offenen Prüfungsfrage
+      </button>
+
+      <button class="warning-btn danger-warning-btn" onclick="finishExamMode()">
+        Trotzdem abgeben
+      </button>
+    </div>
+  `;
+
+  warning.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function goToExamQuestion(index) {
+  if (index < 0 || index >= examQuestions.length) {
+    return;
+  }
+
+  examQuestionIndex = index;
+  renderExamQuestion();
+}
+
+function updateExamProgress() {
+  const percent = Math.round(
+    ((examQuestionIndex + 1) / examQuestions.length) * 100
+  );
+
+  const examProgressText = document.getElementById("examProgressText");
+  const examProgressFill = document.getElementById("examProgressFill");
+
+  if (examProgressText) {
+    examProgressText.innerText =
+      `Frage ${examQuestionIndex + 1}/${examQuestions.length}`;
+  }
+
+  if (examProgressFill) {
+    examProgressFill.style.width = percent + "%";
+  }
+}
+
+function renderExamNavigation() {
+  const examNav = document.getElementById("examNav");
+
+  if (!examNav) return;
+
+  examNav.innerHTML = "";
+
+  examQuestions.forEach((question, index) => {
+    const button = document.createElement("button");
+
+    button.innerText = index + 1;
+    button.className = "exam-nav-btn";
+
+    if (index === examQuestionIndex) {
+      button.classList.add("active");
+    }
+
+    if (examAnswers[index] && examAnswers[index].length > 0) {
+      button.classList.add("answered");
+    }
+
+    button.onclick = () => {
+      examQuestionIndex = index;
+      renderExamQuestion();
+    };
+
+    examNav.appendChild(button);
+  });
+}
+
+function getUnansweredQuestionsCount() {
+  let count = 0;
+
+  for (let i = 0; i < examQuestions.length; i++) {
+    if (!examAnswers[i] || examAnswers[i].length === 0) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+function getFirstUnansweredQuestionIndex() {
+  for (let i = 0; i < examQuestions.length; i++) {
+    if (!examAnswers[i] || examAnswers[i].length === 0) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+function scrollToAnswers() {
+  const answers = document.querySelector(".answers");
+
+  if (answers) {
+    answers.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}
+
+function startExamTimer() {
+  clearExamTimer();
+
+  examTimer = setInterval(() => {
+    examSecondsLeft--;
+
+    updateExamTimerDisplay();
+
+    if (examSecondsLeft <= 0) {
+      clearExamTimer();
+      finishExamMode();
+    }
+  }, 1000);
+}
+
+function clearExamTimer() {
+  if (examTimer) {
+    clearInterval(examTimer);
+    examTimer = null;
+  }
+}
+
+function updateExamTimerDisplay() {
+  const timerElement = document.getElementById("examTimer");
+
+  if (!timerElement) return;
+
+  timerElement.innerText = formatSeconds(examSecondsLeft);
+}
+
+function finishExamMode() {
+  clearExamTimer();
+
+  let correctCount = 0;
+  let wrongCount = 0;
+  let unansweredCount = 0;
+
+  lastExamMistakes = [];
+
+  examQuestions.forEach((question, index) => {
+    const selected = examAnswers[index] || [];
+    const correct = question.correct;
+
+    if (selected.length === 0) {
+      unansweredCount++;
+      lastExamMistakes.push(question);
+      saveTopicMistake(question);
+      return;
+    }
+
+    markQuestionAsAnswered(question);
+
+    const selectedSorted = [...selected].sort((a, b) => a - b).join(",");
+    const correctSorted = [...correct].sort((a, b) => a - b).join(",");
+
+    const isCorrect = selectedSorted === correctSorted;
+
+    saveTopicResult(question.category, isCorrect);
+
+    if (isCorrect) {
+      correctCount++;
+      removeTopicMistake(question);
+    } else {
+      wrongCount++;
+      lastExamMistakes.push(question);
+      saveTopicMistake(question);
+    }
+  });
+
+  const total = examQuestions.length;
+  const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+  const passed = percent >= 50;
+
+  saveExamResult({
+    total,
+    correct: correctCount,
+    wrong: wrongCount,
+    unanswered: unansweredCount,
+    percent,
+    passed,
+    date: new Date().toLocaleString("de-DE")
+  });
+
+  updateDashboardNumbers();
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="result-wrapper">
+
+      <div class="result-hero ${passed ? "passed" : "failed"}">
+
+        <p class="eyebrow">Prüfungsergebnis</p>
+
+        <h1>${passed ? "Bestanden" : "Nicht bestanden"}</h1>
+
+        <div class="result-percent">
+          ${percent}%
+        </div>
+
+        <p class="result-message">
+          ${
+            passed
+              ? "Die Prüfungssimulation wurde erfolgreich bestanden."
+              : "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Fehler."
+          }
+        </p>
+
+      </div>
+
+      <div class="result-stats-grid">
+
+        <div class="result-stat-card">
+          <span>Gesamtfragen</span>
+          <strong>${total}</strong>
+        </div>
+
+        <div class="result-stat-card success">
+          <span>Richtig</span>
+          <strong>${correctCount}</strong>
+        </div>
+
+        <div class="result-stat-card danger">
+          <span>Falsch</span>
+          <strong>${wrongCount}</strong>
+        </div>
+
+        <div class="result-stat-card warning">
+          <span>Unbeantwortet</span>
+          <strong>${unansweredCount}</strong>
+        </div>
+
+      </div>
+
+      <div class="result-actions">
+
+        <button class="next-btn" onclick="showExamReview()">
+          Fehler ansehen
+        </button>
+
+        <button class="next-btn danger-training-btn" onclick="startMistakeTraining()">
+          Fehlertraining starten
+        </button>
+
+        <button class="next-btn" onclick="startExamMode()">
+          Prüfung wiederholen
+        </button>
+
+        <button class="next-btn secondary-btn" onclick="location.reload()">
+          Zurück zum Dashboard
+        </button>
+
+      </div>
+
+    </section>
+  `;
+}
+
+function showExamReview() {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  let reviewItems = "";
+
+  examQuestions.forEach((question, index) => {
+    const selected = examAnswers[index] || [];
+    const correct = question.correct;
+
+    const selectedSorted = [...selected].sort((a, b) => a - b).join(",");
+    const correctSorted = [...correct].sort((a, b) => a - b).join(",");
+
+    const isUnanswered = selected.length === 0;
+    const isCorrect = selectedSorted === correctSorted;
+
+    if (isCorrect) return;
+
+    const selectedText = isUnanswered
+      ? "Keine Antwort ausgewählt"
+      : selected.map(i => question.answers[i]).join(", ");
+
+    const correctText = correct
+      .map(i => question.answers[i])
+      .join(", ");
+
+    reviewItems += `
+      <div class="review-card ${isUnanswered ? "unanswered" : "wrong"}">
+
+        <div class="review-topline">
+          <span>Frage ${index + 1}</span>
+          <strong>${isUnanswered ? "Unbeantwortet" : "Falsch beantwortet"}</strong>
+        </div>
+
+        ${formatQuestionText(question.question)}
+
+        <div class="review-answer-box wrong-answer">
+          <span>Ihre Antwort:</span>
+          <p>${escapeHtml(selectedText)}</p>
+        </div>
+
+        <div class="review-answer-box correct-answer">
+          <span>Richtige Antwort:</span>
+          <p>${escapeHtml(correctText)}</p>
+        </div>
+
+        <div class="review-explanation">
+          <span>Erklärung:</span>
+          <p>${escapeHtml(question.explanation || "")}</p>
+        </div>
+
+      </div>
+    `;
+  });
+
+  if (reviewItems === "") {
+    reviewItems = `
+      <div class="review-card">
+        <h2>Sehr gut</h2>
+        <p>Alle Fragen wurden richtig beantwortet. Es gibt keine Fehler zur Nacharbeit.</p>
+      </div>
+    `;
+  }
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="review-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Fehleranalyse</p>
+        <h1>Prüfung nacharbeiten</h1>
+        <p>
+          Hier sehen Sie alle falschen und unbeantworteten Fragen mit richtiger Lösung und Erklärung.
+        </p>
+      </div>
+
+      <div class="review-list">
+        ${reviewItems}
+      </div>
+
+      <div class="result-actions">
+        <button class="next-btn danger-training-btn" onclick="showMistakeOverview()">
+          Fehlertraining
+        </button>
+
+        <button class="next-btn" onclick="startExamMode()">
+          Prüfung wiederholen
+        </button>
+
+        <button class="next-btn secondary-btn" onclick="location.reload()">
+          Zurück zum Dashboard
+        </button>
+      </div>
+
+    </section>
+  `;
+}
+
+function startMistakeTraining() {
+  if (!lastExamMistakes || lastExamMistakes.length === 0) {
+    showSmallNotice("Keine Fehler aus der letzten Prüfung vorhanden.");
+    return;
+  }
+
+  startLearningSession(
+    lastExamMistakes,
+    "Fehlertraining aus der Prüfung",
+    "last-exam-mistakes"
+  );
+}
+
+
+/* =========================
+   STATISTIK
+========================= */
+
+function loadTopicStats() {
+  topicStats = readStorage(STORAGE_KEYS.topicStats, {});
+}
+
+function saveTopicStats() {
+  writeStorage(STORAGE_KEYS.topicStats, topicStats);
+}
+
+function saveTopicResult(categoryName, isCorrect) {
+  const category = normalizeCategoryName(categoryName);
+
+  if (!topicStats[category]) {
+    topicStats[category] = {
+      answered: 0,
+      correct: 0,
+      wrong: 0
+    };
+  }
+
+  topicStats[category].answered++;
+
+  if (isCorrect) {
+    topicStats[category].correct++;
+  } else {
+    topicStats[category].wrong++;
+  }
+
+  saveTopicStats();
+}
+
+function loadExamHistory() {
+  examHistory = readStorage(STORAGE_KEYS.examHistory, []);
+}
+
+function saveExamResult(result) {
+  examHistory.push(result);
+  writeStorage(STORAGE_KEYS.examHistory, examHistory);
+}
+
+function showStatsPage() {
+  currentMode = "statistics";
+
+  loadAllLocalData();
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  const totalExams = examHistory.length;
+  const passedExams = examHistory.filter(exam => exam.passed).length;
+  const failedExams = totalExams - passedExams;
+
+  const averagePercent =
+    totalExams === 0
+      ? 0
+      : Math.round(
+          examHistory.reduce((sum, exam) => sum + exam.percent, 0) / totalExams
+        );
+
+  const bestPercent =
+    totalExams === 0
+      ? 0
+      : Math.max(...examHistory.map(exam => exam.percent));
+
+  const lastExam =
+    totalExams === 0
+      ? null
+      : examHistory[examHistory.length - 1];
+
+  const historyRows =
+    totalExams === 0
+      ? `<div class="empty-history">Noch keine Prüfungen gespeichert.</div>`
+      : examHistory
+          .slice()
+          .reverse()
+          .map((exam, index) => `
+            <div class="history-row">
+
+              <div>
+                <span>Prüfung ${totalExams - index}</span>
+                <strong>${escapeHtml(exam.date)}</strong>
+              </div>
+
+              <div>
+                <span>Ergebnis</span>
+                <strong>${exam.percent}%</strong>
+              </div>
+
+              <div>
+                <span>Status</span>
+                <strong class="${exam.passed ? "status-passed" : "status-failed"}">
+                  ${exam.passed ? "Bestanden" : "Nicht bestanden"}
+                </strong>
+              </div>
+
+              <div>
+                <span>Details</span>
+                <strong>
+                  ${exam.correct} richtig · ${exam.wrong} falsch · ${exam.unanswered} offen
+                </strong>
+              </div>
+
+            </div>
+          `)
+          .join("");
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="result-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Gesamtstatistik</p>
+        <h1>Ihre Prüfungsentwicklung</h1>
+        <p>
+          Hier sehen Sie Prüfungssimulationen, Fehler, offene Fragen und Fortschritt.
+        </p>
+      </div>
+
+      <div class="stats-grid">
+
+        <div class="stats-card">
+          <span>Prüfungen gesamt</span>
+          <strong>${totalExams}</strong>
+        </div>
+
+        <div class="stats-card success">
+          <span>Bestanden</span>
+          <strong>${passedExams}</strong>
+        </div>
+
+        <div class="stats-card danger">
+          <span>Nicht bestanden</span>
+          <strong>${failedExams}</strong>
+        </div>
+
+        <div class="stats-card">
+          <span>Durchschnitt</span>
+          <strong>${averagePercent}%</strong>
+        </div>
+
+        <div class="stats-card gold-stat">
+          <span>Bestes Ergebnis</span>
+          <strong>${bestPercent}%</strong>
+        </div>
+
+        <div class="stats-card">
+          <span>Offene Fragen</span>
+          <strong>${getOpenQuestionsCount()}</strong>
+        </div>
+
+        <div class="stats-card danger">
+          <span>Gespeicherte Fehler</span>
+          <strong>${getTotalTopicMistakeCount()}</strong>
+        </div>
+
+      </div>
+
+      <div class="last-exam-box">
+
+        <span>Letzte Prüfung</span>
+
+        <strong>
+          ${
+            lastExam
+              ? lastExam.percent + "% · " + (lastExam.passed ? "bestanden" : "nicht bestanden")
+              : "Noch keine Prüfung vorhanden"
+          }
+        </strong>
+
+        <p>
+          ${
+            lastExam
+              ? escapeHtml(lastExam.date) + " · " +
+                lastExam.correct + " richtig · " +
+                lastExam.wrong + " falsch · " +
+                lastExam.unanswered + " unbeantwortet"
+              : "Starten Sie eine Prüfung, damit hier Daten erscheinen."
+          }
+        </p>
+
+      </div>
+
+      ${buildTopicStatsHtml()}
+
+      <div class="reset-stats-box">
+
+        <div>
+          <h2>Statistik zurücksetzen</h2>
+          <p>
+            Alle lokal gespeicherten Prüfungsergebnisse, Themenstatistiken,
+            offenen Fragen und Fehlerlisten werden gelöscht.
+          </p>
+        </div>
+
+        <button class="reset-stats-btn" onclick="resetExamHistory()">
+          Statistik zurücksetzen
+        </button>
+
+      </div>
+
+      <div class="history-section">
+
+        <div class="section-head">
+          <h2>Prüfungsverlauf</h2>
+          <p>Alle bisher gespeicherten Prüfungssimulationen</p>
+        </div>
+
+        <div class="history-list">
+          ${historyRows}
+        </div>
+
+      </div>
+
+    </section>
+  `;
+}
+
+function buildTopicStatsHtml() {
+  const rows = categories.map(categoryName => {
+    const stats = topicStats[categoryName] || {
+      answered: 0,
+      correct: 0,
+      wrong: 0
+    };
+
+    const percent =
+      stats.answered === 0
+        ? 0
+        : Math.round((stats.correct / stats.answered) * 100);
+
+    const mistakeCount = getTopicMistakeCount(categoryName);
+    const openCount = getCategoryOpenQuestions(categoryName).length;
+    const totalCategoryQuestions = getCategoryQuestions(categoryName).length;
+
+    let statusClass = "topic-neutral";
+    let statusText = "Noch nicht bearbeitet";
+
+    if (stats.answered > 0 && percent >= 80 && mistakeCount === 0) {
+      statusClass = "topic-strong";
+      statusText = "Stark";
+    } else if (stats.answered > 0 && percent >= 50) {
+      statusClass = "topic-medium";
+      statusText = "Ausbaufähig";
+    } else if (stats.answered > 0) {
+      statusClass = "topic-weak";
+      statusText = "Schwach";
+    }
+
+    return `
+      <div class="topic-stat-row">
+
+        <div class="topic-name">
+          <span>Thema</span>
+          <strong>${categoryIcons[categoryName] || "📘"} ${escapeHtml(categoryName)}</strong>
+        </div>
+
+        <div>
+          <span>Fragen</span>
+          <strong>${totalCategoryQuestions}</strong>
+        </div>
+
+        <div>
+          <span>Offen</span>
+          <strong>${openCount}</strong>
+        </div>
+
+        <div>
+          <span>Bearbeitet</span>
+          <strong>${stats.answered}</strong>
+        </div>
+
+        <div>
+          <span>Richtig</span>
+          <strong>${stats.correct}</strong>
+        </div>
+
+        <div>
+          <span>Falsch</span>
+          <strong>${stats.wrong}</strong>
+        </div>
+
+        <div>
+          <span>Quote</span>
+          <strong>${percent}%</strong>
+        </div>
+
+        <div>
+          <span>Fehler</span>
+          <strong>${mistakeCount}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong class="${statusClass}">${statusText}</strong>
+        </div>
+
+        <div>
+          ${
+            mistakeCount > 0
+              ? `<button class="next-btn danger-training-btn" onclick='startTopicMistakeTraining(${JSON.stringify(categoryName)})'>Fehler trainieren</button>`
+              : `<button class="next-btn secondary-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Trainieren</button>`
+          }
+        </div>
+
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="topic-stats-section">
+
+      <div class="section-head">
+        <h2>Themenstatistik</h2>
+        <p>Auswertung der Lernleistung nach einzelnen Themenbereichen</p>
+      </div>
+
+      <div class="topic-stats-list">
+        ${rows}
+      </div>
+
+    </div>
+  `;
+}
+
+function resetExamHistory() {
+  showConfirmModal(
+    "Statistik zurücksetzen?",
+    "Alle lokal gespeicherten Prüfungsergebnisse, Themenstatistiken, offenen Fragen und Fehlerlisten werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    () => {
+      localStorage.removeItem(STORAGE_KEYS.examHistory);
+      localStorage.removeItem(STORAGE_KEYS.topicStats);
+      localStorage.removeItem(STORAGE_KEYS.topicMistakes);
+      localStorage.removeItem(STORAGE_KEYS.answeredQuestions);
+
+      examHistory = [];
+      topicStats = {};
+      topicMistakes = {};
+      answeredQuestions = {};
+      lastExamMistakes = [];
+
+      closeConfirmModal();
+      showSmallNotice("Statistik wurde zurückgesetzt.");
+      showStatsPage();
+    }
+  );
+}
+
+
+/* =========================
+   HELFERFUNKTIONEN
+========================= */
+
+function getCategoryQuestions(categoryName) {
+  return allQuestions.filter(question => {
+    return question.category === categoryName;
+  });
+}
+
+function getQuestionKey(question) {
+  if (!question) return "";
+
+  return String(
+    question.id ||
+    question.question ||
+    JSON.stringify(question)
+  );
+}
+
+function formatQuestionText(text) {
+  if (!text) {
+    return "";
+  }
+
+  const rawText = String(text).trim();
+
+  const hasCombinationNumbers =
+    rawText.includes("1.") &&
+    rawText.includes("2.") &&
+    rawText.includes("3.") &&
+    rawText.includes("4.");
+
+  if (!hasCombinationNumbers) {
+    return `<h2 class="question-title">${escapeHtml(rawText)}</h2>`;
+  }
+
+  const firstNumberIndex = rawText.indexOf("1.");
+
+  const title = rawText
+    .slice(0, firstNumberIndex)
+    .trim();
+
+  const statementsRaw = rawText
+    .slice(firstNumberIndex)
+    .replace(/\r/g, "")
+    .replace(/\n/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const statementMatches = statementsRaw.match(/\d\.\s.*?(?=\s\d\.|$)/g);
+
+  if (!statementMatches || statementMatches.length < 4) {
+    return `<h2 class="question-title">${escapeHtml(rawText)}</h2>`;
+  }
+
+  return `
+    <div class="combo-question">
+
+      <h2 class="question-title">
+        ${escapeHtml(title)}
+      </h2>
+
+      <div class="statement-box">
+        ${statementMatches.map(statement => `
+          <div class="statement-line">
+            ${escapeHtml(statement.trim())}
+          </div>
+        `).join("")}
+      </div>
+
+    </div>
+  `;
+}
+
+function shuffleArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
+function formatSeconds(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return (
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0")
+  );
+}
+
+function escapeHtml(value) {
+  if (value === undefined || value === null) return "";
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+/* =========================
+   MODAL / HINWEISE
+========================= */
+
+function showConfirmModal(title, message, onConfirm) {
+  let modal = document.getElementById("confirmModal");
+
+  if (modal) {
+    modal.remove();
+  }
+
+  modal = document.createElement("div");
+  modal.id = "confirmModal";
+  modal.className = "confirm-modal-backdrop";
+
+  modal.innerHTML = `
+    <div class="confirm-modal">
+
+      <h2>${escapeHtml(title)}</h2>
+      <p>${escapeHtml(message)}</p>
+
+      <div class="confirm-modal-actions">
+
+        <button class="modal-cancel-btn" id="cancelConfirmBtn">
+          Abbrechen
+        </button>
+
+        <button class="modal-danger-btn" id="confirmActionBtn">
+          Ja, zurücksetzen
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const cancelBtn = document.getElementById("cancelConfirmBtn");
+  const confirmBtn = document.getElementById("confirmActionBtn");
+
+  if (cancelBtn) {
+    cancelBtn.onclick = closeConfirmModal;
+  }
+
+  if (confirmBtn) {
+    confirmBtn.onclick = onConfirm;
+  }
+}
+
+function closeConfirmModal() {
+  const modal = document.getElementById("confirmModal");
+
+  if (modal) {
+    modal.remove();
+  }
+}
+
+function showSmallNotice(message) {
+  let notice = document.getElementById("smallNotice");
+
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.id = "smallNotice";
+    notice.className = "small-notice";
+    document.body.appendChild(notice);
+  }
+
+  notice.innerText = message;
+  notice.classList.add("show");
+
+  setTimeout(() => {
+    notice.classList.remove("show");
+  }, 2200);
+}
+
+
+/* =========================
+   GLOBALE FUNKTIONEN
+========================= */
+
+window.showAllQuestions = showAllQuestions;
+window.showOpenQuestions = showOpenQuestions;
+window.startOpenQuestionsTraining = startOpenQuestionsTraining;
+
+window.showOralExamPage = showOralExamPage;
+window.openCategory = openCategory;
+
+window.startExamMode = startExamMode;
+window.showExamReview = showExamReview;
+window.scrollToAnswers = scrollToAnswers;
+window.finishExamMode = finishExamMode;
+window.goToExamQuestion = goToExamQuestion;
+window.showExamSubmitWarning = showExamSubmitWarning;
+
+window.startMistakeTraining = startMistakeTraining;
+window.showMistakeOverview = showMistakeOverview;
+window.startTopicMistakeTraining = startTopicMistakeTraining;
+window.startAllTopicMistakeTraining = startAllTopicMistakeTraining;
+
+window.showStatsPage = showStatsPage;
+window.resetExamHistory = resetExamHistory;

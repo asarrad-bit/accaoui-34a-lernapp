@@ -1,0 +1,632 @@
+[
+  {
+    "id": "roso_001",
+    "category": "Recht der öffentlichen Sicherheit und Ordnung",
+    "type": "multiple",
+    "question": "Was ist die Polizei im staatsrechtlichen Sinn?",
+    "answers": [
+      "Exekutive",
+      "Judikative",
+      "Legislative",
+      "ausführende Gewalt"
+    ],
+    "correct": [0, 3],
+    "explanation": "Die Polizei gehört zur Exekutive. Exekutive bedeutet ausführende Gewalt. Sie setzt Gesetze um und handelt im Rahmen der Gefahrenabwehr."
+  },
+  {
+    "id": "roso_002",
+    "category": "Recht der öffentlichen Sicherheit und Ordnung",
+    "type": "multiple",
+    "question": "Welche Aussage beschreibt private Sicherheitsmitarbeiter rechtlich richtig?",
+    "answers": [
+      "Sie haben grundsätzlich keine polizeilichen Hoheitsrechte.",
+      "Sie handeln regelmäßig auf Grundlage von Jedermannsrechten, Hausrecht oder privatrechtlichen Befugnissen.",
+      "Sie dürfen immer Platzverweise im öffentlichen Straßenraum erteilen.",
+      "Sie ersetzen die Polizei bei Straftaten vollständig."
+    ],
+    "correct": [0, 1],
+    "explanation": "Private Sicherheitsmitarbeiter haben grundsätzlich keine Hoheitsrechte. Sie handeln vor allem auf Grundlage von Jedermannsrechten, Hausrecht und zivilrechtlichen Befugnissen."
+  },
+  {
+    "id": "roso_003",
+    "category": "Recht der öffentlichen Sicherheit und Ordnung",
+    "type": "multiple",
+    "question": "Was bedeutet Gefahrenabwehr grundsätzlich?",
+    "answers": [
+      "Maßnahmen zur Verhinderung oder Beseitigung von Gefahren",
+      "Bestrafung eines Täters nach einer Straftat",
+      "Vorbeugendes Handeln gegen drohende Schäden",
+      "Gerichtliche Verurteilung durch Sicherheitsmitarbeiter"
+    ],
+    "correct": [0, 2],
+    "explanation": "Gefahrenabwehr bedeutet, Gefahren zu verhindern oder zu beseitigen. Bestrafung ist Aufgabe der Strafverfolgungsbehörden und Gerichte."
+  },
+  {
+    "id": "roso_004",
+    "category": "Recht der öffentlichen Sicherheit und Ordnung",
+    "type": "multiple",
+    "question": "Welche Aussage zur öffentlichen Sicherheit ist richtig?",
+    "answers": [
+      "Sie schützt unter anderem die Rechtsordnung.",
+      "Sie schützt auch Individualrechtsgüter wie Leben, Gesundheit und Eigentum.",
+      "Sie betrifft ausschließlich das Verhalten von Behörden.",
+      "Sie gibt privaten Sicherheitsdiensten automatisch Polizeibefugnisse."
+    ],
+    "correct": [0, 1],
+    "explanation": "Die öffentliche Sicherheit umfasst den Schutz der Rechtsordnung, des Staates und der Individualrechtsgüter. Daraus entstehen aber keine automatischen Polizeibefugnisse für private Sicherheitsdienste."
+  },
+  {
+    "id": "roso_005",
+    "category": "Recht der öffentlichen Sicherheit und Ordnung",
+    "type": "multiple",
+    "question": "Was ist bei einer Straftat im Objekt für den Sicherheitsmitarbeiter besonders wichtig?",
+    "answers": [
+      "Eigene Befugnisse realistisch einschätzen",
+      "Polizei informieren, wenn dies erforderlich ist",
+      "Den Täter selbst bestrafen",
+      "Eine Strafe direkt vor Ort festsetzen"
+    ],
+    "correct": [0, 1],
+    "explanation": "Sicherheitsmitarbeiter müssen ihre Befugnisse kennen und bei Straftaten richtig reagieren. Bestrafung ist keine Aufgabe des Sicherheitsdienstes."
+  },
+  {
+    "id": "gewo_001",
+    "category": "Gewerberecht",
+    "type": "single",
+    "question": "Welche Vorschrift ist für das Bewachungsgewerbe besonders wichtig?",
+    "answers": [
+      "§34a GewO",
+      "§242 StGB",
+      "§823 BGB",
+      "Art. 1 GG"
+    ],
+    "correct": [0],
+    "explanation": "§34a GewO ist die zentrale gewerberechtliche Vorschrift für das Bewachungsgewerbe."
+  },
+  {
+    "id": "gewo_002",
+    "category": "Gewerberecht",
+    "type": "multiple",
+    "question": "Was ist für das gewerbsmäßige Bewachen von Leben oder Eigentum fremder Personen grundsätzlich erforderlich?",
+    "answers": [
+      "Eine Erlaubnis der zuständigen Behörde",
+      "Nur ein Arbeitsvertrag",
+      "Eine Erlaubnis nach §34a GewO",
+      "Nur ein Dienstausweis"
+    ],
+    "correct": [0, 2],
+    "explanation": "Wer gewerbsmäßig Leben oder Eigentum fremder Personen bewacht, benötigt grundsätzlich eine behördliche Erlaubnis nach §34a GewO."
+  },
+  {
+    "id": "gewo_003",
+    "category": "Gewerberecht",
+    "type": "multiple",
+    "question": "Welche Voraussetzung ist für die Tätigkeit im Bewachungsgewerbe besonders relevant?",
+    "answers": [
+      "Zuverlässigkeit",
+      "Passender Nachweis je nach Tätigkeit, zum Beispiel Unterrichtung oder Sachkundeprüfung",
+      "Beliebige Selbsternennung zum Sicherheitsmitarbeiter",
+      "Keine Unterrichtung oder Prüfung in irgendeinem Fall"
+    ],
+    "correct": [0, 1],
+    "explanation": "Im Bewachungsgewerbe sind Zuverlässigkeit und der passende Nachweis wichtig. Je nach Tätigkeit kann eine Unterrichtung oder Sachkundeprüfung erforderlich sein."
+  },
+  {
+    "id": "gewo_004",
+    "category": "Gewerberecht",
+    "type": "multiple",
+    "question": "Welche Tätigkeit erfordert typischerweise eine Sachkundeprüfung nach §34a GewO?",
+    "answers": [
+      "Schutz vor Ladendieben",
+      "Tätigkeit im Einlassbereich von gastgewerblichen Diskotheken",
+      "Reine interne Bürotätigkeit ohne Bewachungsaufgabe",
+      "Private Nachhilfe ohne Sicherheitsbezug"
+    ],
+    "correct": [0, 1],
+    "explanation": "Bestimmte Tätigkeiten im Bewachungsgewerbe erfordern die Sachkundeprüfung, zum Beispiel der Schutz vor Ladendieben oder die Tätigkeit im Einlassbereich von Diskotheken."
+  },
+  {
+    "id": "gewo_005",
+    "category": "Gewerberecht",
+    "type": "multiple",
+    "question": "Was kann die Behörde bei fehlender Zuverlässigkeit im Bewachungsgewerbe tun?",
+    "answers": [
+      "Die Erlaubnis versagen",
+      "Die Tätigkeit untersagen",
+      "Die Person automatisch zum Polizeibeamten ernennen",
+      "Die Sachkundeprüfung ohne Prüfungsergebnis ersetzen"
+    ],
+    "correct": [0, 1],
+    "explanation": "Bei fehlender Zuverlässigkeit kann die Behörde eine Erlaubnis versagen oder eine Tätigkeit untersagen. Eine automatische Ernennung zum Polizeibeamten gibt es nicht."
+  },
+  {
+    "id": "ds_001",
+    "category": "Datenschutzrecht",
+    "type": "multiple",
+    "question": "Welcher Grundsatz gehört zum Datenschutz?",
+    "answers": [
+      "Datenminimierung",
+      "Zweckbindung",
+      "Beliebige Weitergabe an Kollegen",
+      "Speicherung ohne Anlass auf Vorrat"
+    ],
+    "correct": [0, 1],
+    "explanation": "Wichtige Datenschutzgrundsätze sind Datenminimierung und Zweckbindung. Personenbezogene Daten dürfen nicht beliebig verarbeitet oder weitergegeben werden."
+  },
+  {
+    "id": "ds_002",
+    "category": "Datenschutzrecht",
+    "type": "multiple",
+    "question": "Was sind personenbezogene Daten?",
+    "answers": [
+      "Informationen, die sich auf eine identifizierte oder identifizierbare Person beziehen",
+      "Name, Adresse oder Telefonnummer einer Person",
+      "Nur geheime Informationen über Behörden",
+      "Ausschließlich technische Gerätedaten ohne Personenbezug"
+    ],
+    "correct": [0, 1],
+    "explanation": "Personenbezogene Daten sind Informationen, die sich auf eine bestimmte oder bestimmbare natürliche Person beziehen. Beispiele sind Name, Adresse oder Telefonnummer."
+  },
+  {
+    "id": "ds_003",
+    "category": "Datenschutzrecht",
+    "type": "multiple",
+    "question": "Was ist bei Videoüberwachung im Sicherheitsdienst besonders wichtig?",
+    "answers": [
+      "Sie braucht eine rechtliche Grundlage oder ein berechtigtes Interesse.",
+      "Betroffene müssen grundsätzlich erkennbar informiert werden.",
+      "Aufzeichnungen dürfen immer privat kopiert werden.",
+      "Die Aufnahmen dürfen unbegrenzt ohne Zweck gespeichert werden."
+    ],
+    "correct": [0, 1],
+    "explanation": "Videoüberwachung benötigt eine rechtliche Grundlage und muss transparent erfolgen. Private Kopien oder unbegrenzte Speicherung sind datenschutzrechtlich problematisch."
+  },
+  {
+    "id": "ds_004",
+    "category": "Datenschutzrecht",
+    "type": "multiple",
+    "question": "Ein Besucher fragt, welche Daten über ihn gespeichert wurden. Was ist grundsätzlich richtig?",
+    "answers": [
+      "Betroffene Personen können Auskunftsrechte haben.",
+      "Die Anfrage sollte an die zuständige Stelle oder den Datenschutzverantwortlichen weitergeleitet werden.",
+      "Der Sicherheitsmitarbeiter darf die Anfrage grundsätzlich einfach ignorieren.",
+      "Der Sicherheitsmitarbeiter soll beliebige Daten sofort an jeden herausgeben."
+    ],
+    "correct": [0, 1],
+    "explanation": "Betroffene können Auskunftsrechte haben. Sicherheitsmitarbeiter sollten solche Anfragen korrekt weiterleiten und keine unbefugten Auskünfte geben."
+  },
+  {
+    "id": "ds_005",
+    "category": "Datenschutzrecht",
+    "type": "multiple",
+    "question": "Welche Handlung ist im Umgang mit personenbezogenen Daten problematisch?",
+    "answers": [
+      "Besucherdaten offen herumliegen lassen",
+      "Personenbezogene Daten zweckgebunden verwenden",
+      "Fotos von Ausweisen ohne Erlaubnis privat speichern",
+      "Daten nur an berechtigte Stellen weitergeben"
+    ],
+    "correct": [0, 2],
+    "explanation": "Offen herumliegende Besucherdaten und private Speicherung von Ausweisdaten sind problematisch. Zweckbindung und berechtigte Weitergabe sind dagegen wichtige Datenschutzgrundsätze."
+  },
+  {
+    "id": "bgb_001",
+    "category": "Bürgerliches Recht",
+    "type": "single",
+    "question": "Was regelt das Bürgerliche Gesetzbuch hauptsächlich?",
+    "answers": [
+      "Rechtsbeziehungen zwischen Privatpersonen",
+      "Strafen für Straftaten",
+      "Aufgaben der Polizei",
+      "Wahlen zum Bundestag"
+    ],
+    "correct": [0],
+    "explanation": "Das Bürgerliche Gesetzbuch regelt vor allem privatrechtliche Rechtsbeziehungen, zum Beispiel Verträge, Eigentum, Besitz und Schadensersatz."
+  },
+  {
+    "id": "bgb_002",
+    "category": "Bürgerliches Recht",
+    "type": "multiple",
+    "question": "Welche Rechte können für Sicherheitsmitarbeiter im Objekt besonders wichtig sein?",
+    "answers": [
+      "Hausrecht",
+      "Notwehrrecht",
+      "Recht zur Gesetzgebung",
+      "Recht zur richterlichen Verurteilung"
+    ],
+    "correct": [0, 1],
+    "explanation": "Hausrecht und Notwehrrecht sind in der Praxis wichtig. Sicherheitsmitarbeiter dürfen aber keine Gesetze erlassen und keine Personen verurteilen."
+  },
+  {
+    "id": "bgb_003",
+    "category": "Bürgerliches Recht",
+    "type": "praxisfall",
+    "question": "Ein Besucher weigert sich trotz Aufforderung, ein Privatgelände zu verlassen. Was ist grundsätzlich richtig?",
+    "answers": [
+      "Der Hausrechtsinhaber oder sein Beauftragter kann zum Verlassen auffordern.",
+      "Ein Hausverbot kann unter bestimmten Voraussetzungen ausgesprochen werden.",
+      "Der Sicherheitsmitarbeiter darf den Besucher sofort bestrafen.",
+      "Das Hausrecht erlaubt jede Form körperlicher Gewalt."
+    ],
+    "correct": [0, 1],
+    "explanation": "Auf Privatgelände kann der Berechtigte oder Beauftragte vom Hausrecht Gebrauch machen. Körperliche Gewalt ist nur in engen gesetzlichen Grenzen zulässig, Bestrafung ist keine Aufgabe des Sicherheitsdienstes."
+  },
+  {
+    "id": "bgb_004",
+    "category": "Bürgerliches Recht",
+    "type": "combination",
+    "question": "Welche Aussagen zum Hausrecht sind richtig?\n\n1. Der Hausrechtsinhaber kann bestimmen, wer seine Räume betreten darf.\n2. Ein Sicherheitsmitarbeiter kann vom Hausrechtsinhaber beauftragt werden.\n3. Hausrecht erlaubt immer Freiheitsentziehung.\n4. Hausrecht ersetzt das Strafrecht vollständig.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "Richtig sind die Aussagen 1 und 2. Das Hausrecht erlaubt nicht automatisch Freiheitsentziehung und ersetzt keine gesetzlichen Grenzen."
+  },
+  {
+    "id": "bgb_005",
+    "category": "Bürgerliches Recht",
+    "type": "single",
+    "question": "Wann kann Schadensersatz nach dem BGB grundsätzlich eine Rolle spielen?",
+    "answers": [
+      "Wenn jemand rechtswidrig und schuldhaft einen Schaden verursacht",
+      "Wenn jemand freundlich grüßt",
+      "Wenn ein Sicherheitsmitarbeiter eine Dienstmütze trägt",
+      "Wenn eine Person nur anwesend ist"
+    ],
+    "correct": [0],
+    "explanation": "Schadensersatz kann entstehen, wenn jemand rechtswidrig und schuldhaft einen Schaden verursacht oder vertragliche Pflichten verletzt."
+  },
+  {
+    "id": "straf_001",
+    "category": "Straf- und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Was ist eine Straftat?",
+    "answers": [
+      "Ein rechtswidriges und schuldhaftes Verhalten, das gesetzlich mit Strafe bedroht ist",
+      "Jede unfreundliche Handlung",
+      "Ein bloßer Vertragsverstoß ohne Strafgesetz",
+      "Jede Meinungsverschiedenheit"
+    ],
+    "correct": [0],
+    "explanation": "Eine Straftat setzt einen gesetzlichen Straftatbestand, Rechtswidrigkeit und Schuld voraus. Nicht jedes Fehlverhalten ist automatisch strafbar."
+  },
+  {
+    "id": "straf_002",
+    "category": "Straf- und Strafverfahrensrecht",
+    "type": "multiple",
+    "question": "Was bedeutet Notwehr grundsätzlich?",
+    "answers": [
+      "Erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff",
+      "Vergeltung für einen vergangenen Angriff",
+      "Schutz eigener oder fremder Rechtsgüter",
+      "Private Bestrafung durch Sicherheitsmitarbeiter"
+    ],
+    "correct": [0, 2],
+    "explanation": "Notwehr ist die erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff. Sie kann eigene oder fremde Rechtsgüter schützen, ist aber keine Vergeltung."
+  },
+  {
+    "id": "straf_003",
+    "category": "Straf- und Strafverfahrensrecht",
+    "type": "praxisfall",
+    "question": "Ein Ladendieb wird auf frischer Tat betroffen und will flüchten. Was kann für Sicherheitsmitarbeiter rechtlich relevant sein?",
+    "answers": [
+      "Die Voraussetzungen der vorläufigen Festnahme durch Jedermann können zu prüfen sein.",
+      "Die Polizei ist unverzüglich einzuschalten.",
+      "Der Täter darf unbegrenzt festgehalten werden.",
+      "Der Sicherheitsmitarbeiter darf eine Geldstrafe verhängen."
+    ],
+    "correct": [0, 1],
+    "explanation": "Bei frischer Tat und Fluchtverdacht kann die Jedermann-Festnahme relevant sein. Die Polizei ist unverzüglich einzuschalten. Eine unbegrenzte Festhaltung oder private Strafe ist unzulässig."
+  },
+  {
+    "id": "straf_004",
+    "category": "Straf- und Strafverfahrensrecht",
+    "type": "combination",
+    "question": "Welche Aussagen zur Notwehr sind richtig?\n\n1. Es muss ein gegenwärtiger Angriff vorliegen.\n2. Der Angriff muss rechtswidrig sein.\n3. Notwehr ist immer Rache.\n4. Notwehr darf nur von Polizeibeamten ausgeübt werden.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "Richtig sind die Aussagen 1 und 2. Notwehr ist keine Rache und steht nicht nur Polizeibeamten zu."
+  },
+  {
+    "id": "straf_005",
+    "category": "Straf- und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Welche Handlung kann grundsätzlich eine Körperverletzung sein?",
+    "answers": [
+      "Eine körperliche Misshandlung oder Gesundheitsschädigung",
+      "Eine höfliche Begrüßung",
+      "Eine sachliche Wegbeschreibung",
+      "Eine normale Ausweiskontrolle ohne Eingriff"
+    ],
+    "correct": [0],
+    "explanation": "Körperverletzung umfasst körperliche Misshandlung oder Gesundheitsschädigung. Höfliche oder sachliche Kommunikation ist keine Körperverletzung."
+  },
+  {
+    "id": "umgang_001",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Was ist bei einer verbalen Konfliktsituation besonders wichtig?",
+    "answers": [
+      "Ruhige Ansprache",
+      "Provokation erwidern",
+      "Person öffentlich bloßstellen",
+      "Sofort laut werden"
+    ],
+    "correct": [0],
+    "explanation": "Ruhige Ansprache hilft bei der Deeskalation. Provokation, Bloßstellung und Lautwerden verschärfen Konflikte."
+  },
+  {
+    "id": "umgang_002",
+    "category": "Umgang mit Menschen",
+    "type": "multiple",
+    "question": "Welche Aussagen beschreiben professionelles Verhalten im Sicherheitsdienst?",
+    "answers": [
+      "Sachlich bleiben und klare Grenzen setzen",
+      "Aggressiv auftreten, um Respekt zu erzwingen",
+      "Distanz wahren und deeskalierend kommunizieren",
+      "Beleidigungen mit Beleidigungen beantworten"
+    ],
+    "correct": [0, 2],
+    "explanation": "Professionelles Verhalten bedeutet ruhig, sachlich, distanziert und deeskalierend aufzutreten. Aggression und Beleidigungen sind unprofessionell."
+  },
+  {
+    "id": "umgang_003",
+    "category": "Umgang mit Menschen",
+    "type": "praxisfall",
+    "question": "Eine alkoholisierte Person wird laut und nähert sich aggressiv. Was ist richtig?",
+    "answers": [
+      "Sicherheitsabstand halten",
+      "Ruhig und klar kommunizieren",
+      "Die Person provozieren",
+      "Den Konflikt öffentlich lächerlich machen"
+    ],
+    "correct": [0, 1],
+    "explanation": "Bei alkoholisierten oder aggressiven Personen sind Abstand, ruhige Kommunikation und Eigensicherung wichtig. Provokation erhöht das Risiko."
+  },
+  {
+    "id": "umgang_004",
+    "category": "Umgang mit Menschen",
+    "type": "combination",
+    "question": "Welche Aussagen zur Deeskalation sind richtig?\n\n1. Ruhige Stimme kann Konflikte entschärfen.\n2. Ausreichender Abstand kann Sicherheit schaffen.\n3. Provokation ist ein bewährtes Mittel zur Beruhigung.\n4. Bloßstellung hilft immer bei Konflikten.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "Richtig sind die Aussagen 1 und 2. Provokation und Bloßstellung führen meist zu Eskalation."
+  },
+  {
+    "id": "umgang_005",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Was gehört zu guter Kommunikation im Sicherheitsdienst?",
+    "answers": [
+      "Klare, kurze und respektvolle Sprache",
+      "Unnötige Fachbegriffe zur Einschüchterung",
+      "Ironische Bemerkungen in Konflikten",
+      "Unkontrolliertes Schreien"
+    ],
+    "correct": [0],
+    "explanation": "Gute Kommunikation im Sicherheitsdienst ist klar, kurz, respektvoll und kontrolliert. Einschüchterung oder Schreien wirken unprofessionell."
+  },
+  {
+    "id": "uvv_001",
+    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "type": "single",
+    "question": "Wozu dienen Dienstanweisungen im Wach- und Sicherheitsdienst?",
+    "answers": [
+      "Sie regeln das Verhalten des Wach- und Sicherungspersonals.",
+      "Sie ersetzen alle gesetzlichen Vorschriften.",
+      "Sie erlauben immer eigenmächtige Zwangsmaßnahmen.",
+      "Sie machen eine Einweisung überflüssig."
+    ],
+    "correct": [0],
+    "explanation": "Dienstanweisungen regeln das Verhalten des Wach- und Sicherungspersonals. Sie ersetzen aber keine Gesetze und erlauben keine beliebigen Zwangsmaßnahmen."
+  },
+  {
+    "id": "uvv_002",
+    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "type": "multiple",
+    "question": "Was ist bei Dienstantritt besonders wichtig?",
+    "answers": [
+      "Dienstanweisung kennen",
+      "Ausrüstung und Kommunikationsmittel prüfen",
+      "Ohne Einweisung eigenmächtig beginnen",
+      "Objektbezogene Besonderheiten ignorieren"
+    ],
+    "correct": [0, 1],
+    "explanation": "Bei Dienstantritt müssen Dienstanweisung, Ausrüstung und Kommunikationsmittel geprüft beziehungsweise bekannt sein. Ohne Einweisung oder durch Ignorieren objektbezogener Besonderheiten entstehen Sicherheitsrisiken."
+  },
+  {
+    "id": "uvv_003",
+    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "type": "praxisfall",
+    "question": "Während eines Rundgangs entdeckt ein Sicherheitsmitarbeiter eine defekte Notbeleuchtung. Was ist richtig?",
+    "answers": [
+      "Den Mangel melden und dokumentieren",
+      "Den Mangel ignorieren, wenn der Dienst bald endet",
+      "Falls erforderlich, nach Dienstanweisung Sofortmaßnahmen einleiten",
+      "Die Anlage ohne Fachkenntnis selbst reparieren"
+    ],
+    "correct": [0, 2],
+    "explanation": "Gefahren und Mängel müssen gemeldet und dokumentiert werden. Sofortmaßnahmen sind nur im Rahmen der Dienstanweisung und der eigenen Befugnisse zulässig."
+  },
+  {
+    "id": "uvv_004",
+    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "type": "combination",
+    "question": "Welche Aussagen zum Eigenschutz sind richtig?\n\n1. Eigenschutz hat im Sicherheitsdienst hohe Priorität.\n2. Unnötige Eigengefährdung ist zu vermeiden.\n3. Sicherheitsmitarbeiter müssen sich immer körperlich durchsetzen.\n4. Unterstützung darf niemals angefordert werden.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "Richtig sind die Aussagen 1 und 2. Eigenschutz ist wichtig. Unnötige Eigengefährdung ist zu vermeiden. Körperliches Durchsetzen ist nicht immer erforderlich und Unterstützung darf angefordert werden."
+  },
+  {
+    "id": "uvv_005",
+    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "type": "single",
+    "question": "Welche Aussage zu Schreckschuss-, Reizstoff- oder Signalwaffen im Bewachungsdienst ist richtig?",
+    "answers": [
+      "Sie können gefährliche Gegenreaktionen provozieren.",
+      "Sie bieten immer sicheren Schutz.",
+      "Sie ersetzen eine professionelle Gefahreneinschätzung.",
+      "Sie dürfen im Bewachungsdienst immer ohne Einschränkung geführt werden."
+    ],
+    "correct": [0],
+    "explanation": "SRS-Waffen können gefährliche Gegenreaktionen provozieren und ein falsches Sicherheitsgefühl erzeugen. Sie ersetzen keine professionelle Gefahreneinschätzung."
+  },
+  {
+    "id": "technik_001",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "single",
+    "question": "Was gehört zu den Grundzügen der Sicherheitstechnik?",
+    "answers": [
+      "Einbruchmeldeanlagen",
+      "Gerichtliche Urteilsverkündung",
+      "Private Strafverfolgung",
+      "Gesetzgebung durch Sicherheitsmitarbeiter"
+    ],
+    "correct": [0],
+    "explanation": "Einbruchmeldeanlagen gehören zur Sicherheitstechnik. Strafverfolgung, Urteilsverkündung und Gesetzgebung sind keine Aufgaben der Sicherheitstechnik."
+  },
+  {
+    "id": "technik_002",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "multiple",
+    "question": "Was ist bei technischen Sicherheitseinrichtungen besonders wichtig?",
+    "answers": [
+      "Regelmäßige Funktionsprüfung",
+      "Kenntnis der Bedienung",
+      "Ignorieren von Störungen",
+      "Ausschalten bei Unsicherheit ohne Meldung"
+    ],
+    "correct": [0, 1],
+    "explanation": "Technische Sicherheitseinrichtungen müssen funktionsfähig sein und richtig bedient werden. Störungen müssen gemeldet werden."
+  },
+  {
+    "id": "technik_003",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "praxisfall",
+    "question": "Eine Brandmeldeanlage löst Alarm aus, aber es ist zunächst kein Rauch sichtbar. Was ist richtig?",
+    "answers": [
+      "Den Alarm ernst nehmen und nach Dienstanweisung handeln",
+      "Den Alarm grundsätzlich ignorieren",
+      "Meldungen nach objektbezogener Dienstanweisung weitergeben",
+      "Die Anlage dauerhaft ausschalten"
+    ],
+    "correct": [0, 2],
+    "explanation": "Brandmeldungen sind ernst zu nehmen. Auch wenn kein Rauch sichtbar ist, muss nach objektbezogener Dienstanweisung gehandelt und gemeldet werden."
+  },
+  {
+    "id": "technik_004",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "combination",
+    "question": "Welche Aussagen zur Zutrittskontrolle sind richtig?\n\n1. Sie kann unbefugten Zutritt verhindern.\n2. Ausweise oder Berechtigungen können geprüft werden.\n3. Sie ersetzt alle menschlichen Kontrollen vollständig.\n4. Sie darf niemals dokumentiert werden.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "Richtig sind die Aussagen 1 und 2. Zutrittskontrolle hilft, unbefugten Zutritt zu verhindern. Technik ersetzt aber nicht immer menschliche Kontrolle."
+  },
+  {
+    "id": "technik_005",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "single",
+    "question": "Welche Aufgabe kann eine Einbruchmeldeanlage erfüllen?",
+    "answers": [
+      "Einbruchversuche erkennen oder melden",
+      "Täter automatisch verurteilen",
+      "Polizeibefugnisse auf Sicherheitsmitarbeiter übertragen",
+      "Gesetze außer Kraft setzen"
+    ],
+    "correct": [0],
+    "explanation": "Eine Einbruchmeldeanlage kann Einbruchversuche erkennen oder melden. Sie ersetzt keine Polizei, kein Gericht und keine rechtliche Bewertung."
+  },
+  {
+    "id": "waffen_001",
+    "category": "Grundzüge des Waffenrechts",
+    "type": "single",
+    "question": "Welche Aussage zu Anscheinswaffen ist richtig?",
+    "answers": [
+      "Anscheinswaffen können für Dritte wie echte Waffen wirken.",
+      "Anscheinswaffen dürfen im Sicherheitsdienst immer geführt werden.",
+      "Anscheinswaffen sind immer rechtlich bedeutungslos.",
+      "Anscheinswaffen ersetzen eine Schutzausrüstung."
+    ],
+    "correct": [0],
+    "explanation": "Anscheinswaffen können auf Dritte wie echte Waffen wirken. Das kann gefährliche Reaktionen auslösen und ist waffenrechtlich besonders zu beachten."
+  },
+  {
+    "id": "waffen_002",
+    "category": "Grundzüge des Waffenrechts",
+    "type": "multiple",
+    "question": "Was ist im Waffenrecht für Sicherheitsmitarbeiter besonders wichtig?",
+    "answers": [
+      "Besitz und Führen rechtlich unterscheiden",
+      "Rechtliche Erlaubnisse genau beachten",
+      "Eine Uniform erlaubt automatisch jede Waffe.",
+      "§34a ersetzt alle waffenrechtlichen Vorschriften."
+    ],
+    "correct": [0, 1],
+    "explanation": "Im Waffenrecht sind Besitz, Führen und Erlaubnisse genau zu unterscheiden. Eine Uniform oder §34a ersetzt keine waffenrechtlichen Vorschriften."
+  },
+  {
+    "id": "waffen_003",
+    "category": "Grundzüge des Waffenrechts",
+    "type": "praxisfall",
+    "question": "Ein Sicherheitsmitarbeiter möchte im Dienst eine erlaubnispflichtige Schusswaffe führen. Was ist grundsätzlich richtig?",
+    "answers": [
+      "Er benötigt eine passende waffenrechtliche Erlaubnis.",
+      "§34a allein reicht dafür immer aus.",
+      "Die rechtliche Zulässigkeit und Beauftragung müssen geprüft werden.",
+      "Ein Dienstausweis ersetzt den Waffenschein."
+    ],
+    "correct": [0, 2],
+    "explanation": "Für das Führen erlaubnispflichtiger Schusswaffen ist grundsätzlich eine passende waffenrechtliche Erlaubnis erforderlich. Zusätzlich müssen Auftrag und rechtliche Zulässigkeit stimmen."
+  },
+  {
+    "id": "waffen_004",
+    "category": "Grundzüge des Waffenrechts",
+    "type": "combination",
+    "question": "Welche Aussagen zum kleinen Waffenschein sind richtig?\n\n1. Er betrifft das Führen bestimmter Schreckschuss-, Reizstoff- und Signalwaffen.\n2. Er erlaubt automatisch das Führen scharfer Schusswaffen.\n3. Er ersetzt nicht alle sonstigen waffenrechtlichen Grenzen.\n4. Er macht jede Verwendung im Bewachungsdienst automatisch zulässig.",
+    "answers": [
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "Richtig sind die Aussagen 1 und 3. Der kleine Waffenschein betrifft bestimmte SRS-Waffen. Er erlaubt keine scharfen Schusswaffen und ersetzt keine weiteren waffenrechtlichen Grenzen."
+  },
+  {
+    "id": "waffen_005",
+    "category": "Grundzüge des Waffenrechts",
+    "type": "single",
+    "question": "Welche Aussage zum Führen von Waffen ist richtig?",
+    "answers": [
+      "Nicht jede frei verkäufliche Waffe darf überall geführt werden.",
+      "Frei verkäuflich bedeutet immer frei führbar.",
+      "Eine Dienstkleidung ersetzt waffenrechtliche Erlaubnisse.",
+      "Waffenrecht gilt im Bewachungsdienst nicht."
+    ],
+    "correct": [0],
+    "explanation": "Frei verkäuflich bedeutet nicht automatisch, dass ein Gegenstand überall geführt werden darf. Waffenrechtliche Vorschriften gelten auch im Bewachungsdienst."
+  }
+]

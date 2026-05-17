@@ -1,0 +1,1896 @@
+/* =====================================================
+   ACCAOUI §34a LERN-APP
+   v13 MASTER CSS RESPONSIVE CLEAN
+   Ziel:
+   - Desktop sauber
+   - 27-Zoll nicht übergroß
+   - Laptop angenehm
+   - Tablet nutzbar
+   - Handy/PWA vorbereitet
+   - ruhige Lernoptik
+===================================================== */
+
+
+/* =========================
+   1. BASIS
+========================= */
+
+:root {
+  --bg-main: #f4f6f9;
+  --bg-card: #ffffff;
+  --bg-soft: #f8fafc;
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-soft: #94a3b8;
+
+  --blue-main: #2344c6;
+  --blue-dark: #172554;
+  --blue-soft: #e8eefc;
+
+  --red-main: #b91c1c;
+  --red-soft: #fee2e2;
+  --red-border: #fecaca;
+
+  --green-main: #15803d;
+  --green-soft: #dcfce7;
+  --green-border: #bbf7d0;
+
+  --gold-main: #c8a96b;
+  --gold-soft: #f8f1df;
+
+  --orange-main: #ea580c;
+  --orange-soft: #ffedd5;
+
+  --border-soft: #e2e8f0;
+
+  --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.08);
+  --shadow-card: 0 18px 42px rgba(15, 23, 42, 0.11);
+
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 30px;
+
+  --sidebar-width: 280px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+}
+
+
+/* =========================
+   2. HAUPTLAYOUT
+========================= */
+
+body,
+.app,
+.app-layout,
+.dashboard-layout {
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+}
+
+.app,
+.app-layout,
+.dashboard-layout {
+  display: flex;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  padding: 34px 38px;
+  background:
+    radial-gradient(circle at top right, rgba(35, 68, 198, 0.07), transparent 32%),
+    var(--bg-main);
+}
+
+section {
+  width: 100%;
+}
+
+.review-wrapper,
+.result-wrapper {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+
+/* =========================
+   3. SIDEBAR / NAVIGATION
+========================= */
+
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  min-height: 100vh;
+  padding: 32px 24px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sidebar h1,
+.sidebar-title,
+.logo {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+}
+
+.sidebar p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sidebar nav,
+.sidebar-menu,
+.menu {
+  display: grid;
+  gap: 10px;
+}
+
+.menu-item {
+  min-height: 46px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 15px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(3px);
+  color: #ffffff;
+}
+
+
+/* =========================
+   4. ÜBERSCHRIFTEN
+========================= */
+
+.review-header,
+.section-head {
+  margin-bottom: 24px;
+}
+
+.review-header h1,
+.section-head h2,
+.learning-header h1,
+.main-content h1 {
+  margin: 0;
+  color: var(--text-main);
+  letter-spacing: -0.04em;
+}
+
+.main-content h1,
+.review-header h1 {
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1.05;
+}
+
+.learning-header h1 {
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.08;
+}
+
+.review-header p,
+.section-head p {
+  color: var(--text-muted);
+  max-width: 760px;
+}
+
+.eyebrow {
+  margin: 0 0 8px 0;
+  color: var(--blue-main);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+/* =========================
+   5. KARTEN BASIS
+========================= */
+
+.hero-card,
+.category-card,
+.stats-card,
+.result-stat-card,
+.last-exam-box,
+.question-card,
+.review-card,
+.finish-card,
+.topic-stats-section,
+.reset-stats-box,
+.history-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.hero-card,
+.category-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.hero-card:hover,
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+  border-color: rgba(35, 68, 198, 0.22);
+}
+
+
+/* =========================
+   6. DASHBOARD / HERO-KARTEN
+========================= */
+
+.hero-grid,
+.dashboard-grid,
+.cards-grid,
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.hero-card {
+  min-height: 155px;
+  padding: 26px 28px;
+}
+
+.hero-card h2,
+.hero-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.hero-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+
+/* =========================
+   7. THEMENKARTEN
+========================= */
+
+.category-grid,
+#categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.category-card {
+  min-height: 160px;
+  padding: 22px;
+  cursor: pointer;
+}
+
+.category-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--blue-soft);
+  font-size: 24px;
+}
+
+.category-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 17px;
+  line-height: 1.25;
+  color: var(--text-main);
+}
+
+.category-card span,
+.category-card small {
+  display: block;
+  font-size: 13px;
+}
+
+
+/* =========================
+   8. BUTTONS
+========================= */
+
+.back-btn,
+.next-btn,
+.reset-stats-btn,
+.warning-btn,
+.modal-cancel-btn,
+.modal-danger-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 850;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.back-btn {
+  margin-bottom: 22px;
+  background: #ffffff;
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.next-btn {
+  background: var(--blue-main);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(35, 68, 198, 0.22);
+}
+
+.secondary-btn {
+  background: #e2e8f0 !important;
+  color: var(--text-main) !important;
+  box-shadow: none !important;
+}
+
+.danger-training-btn,
+.reset-stats-btn,
+.modal-danger-btn,
+.danger-warning-btn {
+  background: var(--red-main) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(185, 28, 28, 0.20);
+}
+
+.primary-warning-btn {
+  background: var(--blue-main);
+  color: #ffffff;
+}
+
+.back-btn:hover,
+.next-btn:hover,
+.reset-stats-btn:hover,
+.warning-btn:hover,
+.modal-cancel-btn:hover,
+.modal-danger-btn:hover {
+  transform: translateY(-2px);
+}
+
+.result-actions,
+.button-row,
+.exam-actions,
+.warning-actions,
+.confirm-modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+
+/* =========================
+   9. LERNMODUS
+========================= */
+
+.learning-header {
+  max-width: 1180px;
+  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.score-box {
+  min-width: 138px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.score-box span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.score-box strong {
+  display: block;
+  color: var(--blue-main);
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.progress-wrapper {
+  max-width: 1180px;
+  margin: 0 auto 22px auto;
+  padding: 15px 18px;
+  background: #ffffff;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--blue-main);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.question-card {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.question-title {
+  margin: 0 0 22px 0;
+  font-size: clamp(24px, 2.8vw, 36px);
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+}
+
+.exam-hint-box {
+  margin: 0 0 20px 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  border: 1px solid rgba(35, 68, 198, 0.12);
+}
+
+.exam-hint-box p {
+  margin: 0 0 6px 0;
+  color: var(--text-muted);
+}
+
+.answers {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.answer-btn {
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.answer-btn:hover {
+  border-color: rgba(35, 68, 198, 0.35);
+  background: var(--bg-soft);
+  transform: translateY(-1px);
+}
+
+.answer-btn.selected {
+  border-color: var(--blue-main);
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+}
+
+.answer-btn.correct {
+  border-color: var(--green-border);
+  background: var(--green-soft);
+  color: var(--green-main);
+}
+
+.answer-btn.wrong {
+  border-color: var(--red-border);
+  background: var(--red-soft);
+  color: var(--red-main);
+}
+
+.explanation {
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.explanation h3 {
+  margin: 0 0 8px 0;
+}
+
+.explanation p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+
+/* =========================
+   10. KOMBINATIONSFRAGEN
+========================= */
+
+.combo-question {
+  margin-bottom: 20px;
+}
+
+.statement-box {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.statement-line {
+  padding: 13px 15px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+
+/* =========================
+   11. ABSCHLUSS / RESULT
+========================= */
+
+.finish-card {
+  max-width: 760px;
+  margin: 60px auto 0 auto;
+  padding: 36px;
+  text-align: center;
+}
+
+.finish-card h1 {
+  margin: 0 0 14px 0;
+  font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: -0.04em;
+}
+
+.finish-card p {
+  color: var(--text-muted);
+  font-size: 17px;
+}
+
+.result-hero {
+  padding: 42px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  color: #ffffff;
+  margin-bottom: 22px;
+}
+
+.result-hero.passed {
+  background: linear-gradient(135deg, #166534, #15803d);
+}
+
+.result-hero.failed {
+  background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+}
+
+.result-hero h1 {
+  margin: 0;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.result-percent {
+  margin: 20px 0;
+  font-size: clamp(54px, 8vw, 100px);
+  font-weight: 950;
+  line-height: 0.95;
+}
+
+.result-message {
+  max-width: 700px;
+  font-size: 18px;
+  opacity: 0.92;
+}
+
+
+/* =========================
+   12. PRÜFUNG
+========================= */
+
+.exam-timer-box strong {
+  color: var(--red-main);
+}
+
+.exam-nav {
+  max-width: 1180px;
+  margin: 20px auto 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exam-nav-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--text-main);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.exam-nav-btn.active {
+  background: var(--blue-main);
+  color: #ffffff;
+  border-color: var(--blue-main);
+}
+
+.exam-nav-btn.answered {
+  border-color: var(--green-border);
+  background: var(--green-soft);
+  color: var(--green-main);
+}
+
+.exam-warning-box {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--orange-soft);
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.exam-warning-box strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.warning-small {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+
+/* =========================
+   13. STATS / FEHLERÜBERSICHT
+========================= */
+
+.result-stats-grid,
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 15px;
+  margin: 22px 0;
+}
+
+.result-stat-card,
+.stats-card {
+  padding: 20px;
+}
+
+.result-stat-card span,
+.stats-card span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.result-stat-card strong,
+.stats-card strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.success strong,
+.status-passed,
+.topic-strong {
+  color: var(--green-main) !important;
+}
+
+.danger strong,
+.status-failed,
+.topic-weak {
+  color: var(--red-main) !important;
+}
+
+.warning strong,
+.topic-medium {
+  color: var(--orange-main) !important;
+}
+
+.gold-stat strong {
+  color: var(--gold-main) !important;
+}
+
+.topic-neutral {
+  color: var(--text-muted) !important;
+}
+
+.last-exam-box {
+  padding: 22px;
+  margin: 22px 0;
+}
+
+.last-exam-box span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 950;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.last-exam-box strong {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.last-exam-box p {
+  color: var(--text-muted);
+  margin: 0 0 16px 0;
+}
+
+.topic-stats-section,
+.history-section {
+  padding: 22px;
+  margin: 24px 0;
+}
+
+.topic-stats-list,
+.history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.topic-stat-row {
+  display: grid;
+  grid-template-columns: minmax(240px, 2fr) repeat(8, minmax(70px, 1fr)) minmax(130px, auto);
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr 0.8fr 2fr;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.topic-stat-row span,
+.history-row span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.topic-stat-row strong,
+.history-row strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.topic-name strong {
+  font-size: 15px;
+}
+
+.empty-history {
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  border: 1px dashed var(--border-soft);
+  color: var(--text-muted);
+}
+
+.reset-stats-box {
+  padding: 22px;
+  margin: 24px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.reset-stats-box h2 {
+  margin: 0 0 6px 0;
+}
+
+.reset-stats-box p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+
+/* =========================
+   14. FEHLERANALYSE
+========================= */
+
+.review-list {
+  display: grid;
+  gap: 18px;
+}
+
+.review-card {
+  padding: 28px;
+}
+
+.review-card.wrong {
+  border-color: var(--red-border);
+}
+
+.review-card.unanswered {
+  border-color: #fed7aa;
+}
+
+.review-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  font-weight: 850;
+}
+
+.review-topline strong {
+  color: var(--red-main);
+}
+
+.review-answer-box,
+.review-explanation {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+}
+
+.review-answer-box span,
+.review-explanation span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.review-answer-box p,
+.review-explanation p {
+  margin: 0;
+}
+
+.review-answer-box.wrong-answer {
+  background: var(--red-soft);
+  border-color: var(--red-border);
+  color: var(--red-main);
+}
+
+.review-answer-box.correct-answer {
+  background: var(--green-soft);
+  border-color: var(--green-border);
+  color: var(--green-main);
+}
+
+
+/* =========================
+   15. MODAL / HINWEISE
+========================= */
+
+.confirm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(15, 23, 42, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.confirm-modal {
+  width: min(480px, 100%);
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  background: #ffffff;
+  box-shadow: var(--shadow-card);
+}
+
+.confirm-modal h2 {
+  margin: 0 0 10px 0;
+}
+
+.confirm-modal p {
+  margin: 0 0 22px 0;
+  color: var(--text-muted);
+}
+
+.modal-cancel-btn {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.small-notice {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 9999;
+  transform: translateX(-50%) translateY(30px);
+  opacity: 0;
+  pointer-events: none;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 14px 18px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-card);
+  font-weight: 850;
+  transition: all 0.25s ease;
+}
+
+.small-notice.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+
+/* =====================================================
+   RESPONSIVE WEB DESIGN FIX
+   ACCAOUI §34a LERN-APP
+   Ziel:
+   Desktop = Sidebar links + Inhalt rechts
+   Laptop = kompakter
+   Tablet = 2 Spalten
+   Handy = Navigation oben kompakt + Inhalt darunter
+===================================================== */
+
+
+/* =========================
+   1. LAYOUT-FIX FÜR DESKTOP
+========================= */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Falls sidebar und main-content direkt im body liegen */
+body:has(> .sidebar + .main-content) {
+  display: flex;
+}
+
+/* Falls alles in einem Wrapper liegt */
+body > .app,
+body > .app-layout,
+body > .dashboard-layout,
+body > .dashboard,
+body > .layout,
+body > .page,
+body > .wrapper,
+body > .container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  flex: 0 0 var(--sidebar-width);
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  position: relative;
+}
+
+
+/* =========================
+   2. HERO-KARTEN FIX
+   Greift auf mögliche vorhandene Containernamen
+========================= */
+
+.hero-grid,
+.hero-cards,
+.dashboard-grid,
+.dashboard-cards,
+.cards-grid,
+.cards-row,
+.stats-overview,
+.overview-cards,
+.top-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  margin: 28px 0 34px 0;
+}
+
+.hero-card {
+  min-width: 0;
+}
+
+
+/* =========================
+   3. THEMENKARTEN FIX
+========================= */
+
+.category-grid,
+#categories {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+
+/* =========================
+   4. BEREITSCHAFTS-KARTE
+   Falls sie eine eigene Klasse hat
+========================= */
+
+.readiness-card,
+.readiness-box,
+.ready-card {
+  position: absolute;
+  top: 40px;
+  right: 54px;
+  width: 150px;
+  min-height: 120px;
+}
+
+
+/* =========================
+   5. GROẞE MONITORE AB 1500PX
+========================= */
+
+@media (min-width: 1500px) {
+  :root {
+    --sidebar-width: 300px;
+  }
+
+  .main-content {
+    padding: 42px 56px;
+  }
+
+  .main-content h1,
+  .review-header h1 {
+    font-size: clamp(44px, 3.2vw, 62px);
+  }
+
+  .hero-card {
+    min-height: 165px;
+    padding: 28px 32px;
+  }
+
+  .hero-card h2,
+  .hero-card h3 {
+    font-size: 30px;
+    line-height: 1.12;
+  }
+
+  .hero-card p {
+    font-size: 16px;
+  }
+
+  .category-card {
+    min-height: 160px;
+    padding: 22px;
+  }
+}
+
+
+/* =========================
+   6. NORMALER DESKTOP / LAPTOP
+   1200PX BIS 1499PX
+========================= */
+
+@media (min-width: 1200px) and (max-width: 1499px) {
+  :root {
+    --sidebar-width: 260px;
+  }
+
+  .sidebar {
+    padding: 28px 20px;
+  }
+
+  .main-content {
+    padding: 34px 38px;
+  }
+
+  .hero-grid,
+  .hero-cards,
+  .dashboard-grid,
+  .dashboard-cards,
+  .cards-grid,
+  .cards-row,
+  .stats-overview,
+  .overview-cards,
+  .top-cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .hero-card {
+    min-height: 150px;
+    padding: 24px 26px;
+  }
+
+  .hero-card h2,
+  .hero-card h3 {
+    font-size: 26px;
+  }
+
+  .category-grid,
+  #categories {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .topic-stat-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+
+/* =========================
+   7. TABLET / KLEINER LAPTOP
+   821PX BIS 1199PX
+========================= */
+
+@media (min-width: 821px) and (max-width: 1199px) {
+  :root {
+    --sidebar-width: 230px;
+  }
+
+  .sidebar {
+    padding: 24px 18px;
+  }
+
+  .main-content {
+    padding: 28px;
+  }
+
+  .hero-grid,
+  .hero-cards,
+  .dashboard-grid,
+  .dashboard-cards,
+  .cards-grid,
+  .cards-row,
+  .stats-overview,
+  .overview-cards,
+  .top-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .category-grid,
+  #categories,
+  .result-stats-grid,
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-card {
+    min-height: 140px;
+    padding: 22px;
+  }
+
+  .hero-card h2,
+  .hero-card h3 {
+    font-size: 24px;
+  }
+
+  .topic-stat-row,
+  .history-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+/* =========================
+   8. HANDY / KLEINES TABLET
+   BIS 820PX
+========================= */
+
+@media (max-width: 820px) {
+  body,
+  body:has(> .sidebar + .main-content),
+  body > .app,
+  body > .app-layout,
+  body > .dashboard-layout,
+  body > .dashboard,
+  body > .layout,
+  body > .page,
+  body > .wrapper,
+  body > .container {
+    display: block;
+    width: 100%;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    min-height: auto;
+    height: auto;
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .sidebar h1,
+  .sidebar-title,
+  .logo {
+    font-size: 25px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar nav,
+  .sidebar-menu,
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .menu-item {
+    min-height: 42px;
+    padding: 10px 11px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .main-content {
+    width: 100%;
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .readiness-card,
+  .readiness-box,
+  .ready-card {
+    position: static;
+    width: 100%;
+    min-height: auto;
+    margin: 16px 0;
+  }
+
+  .main-content h1,
+  .review-header h1,
+  .learning-header h1 {
+    font-size: clamp(30px, 8vw, 40px);
+  }
+
+  .hero-grid,
+  .hero-cards,
+  .dashboard-grid,
+  .dashboard-cards,
+  .cards-grid,
+  .cards-row,
+  .stats-overview,
+  .overview-cards,
+  .top-cards,
+  .category-grid,
+  #categories,
+  .result-stats-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .hero-card {
+    min-height: 125px;
+    padding: 22px;
+  }
+
+  .hero-card h2,
+  .hero-card h3 {
+    font-size: 24px;
+  }
+
+  .category-card {
+    min-height: 140px;
+    padding: 20px;
+  }
+
+  .learning-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .score-box {
+    width: 100%;
+    text-align: left;
+  }
+
+  .progress-info {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .question-card,
+  .review-card,
+  .finish-card,
+  .topic-stats-section,
+  .history-section,
+  .last-exam-box,
+  .reset-stats-box {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .question-title {
+    font-size: clamp(23px, 7vw, 31px);
+  }
+
+  .answer-btn {
+    font-size: 16px;
+    padding: 15px;
+  }
+
+  .topic-stat-row,
+  .history-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .reset-stats-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .result-actions,
+  .button-row,
+  .exam-actions,
+  .warning-actions,
+  .confirm-modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .next-btn,
+  .back-btn,
+  .reset-stats-btn,
+  .warning-btn,
+  .modal-cancel-btn,
+  .modal-danger-btn {
+    width: 100%;
+  }
+
+  .review-topline {
+    flex-direction: column;
+  }
+
+  .small-notice {
+    width: calc(100% - 32px);
+    text-align: center;
+    border-radius: 18px;
+  }
+}
+
+
+/* =========================
+   9. KLEINES HANDY
+   BIS 480PX
+========================= */
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 14px;
+  }
+
+  .sidebar nav,
+  .sidebar-menu,
+  .menu {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-item {
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+
+  .main-content h1,
+  .review-header h1,
+  .learning-header h1 {
+    font-size: clamp(28px, 9vw, 36px);
+  }
+
+  .hero-card {
+    padding: 20px;
+    min-height: 118px;
+  }
+
+  .category-card {
+    min-height: 135px;
+    padding: 18px;
+  }
+
+  .category-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .question-card {
+    padding: 18px;
+  }
+
+  .question-title {
+    font-size: 23px;
+  }
+
+  .result-percent {
+    font-size: 56px;
+  }
+
+  .exam-nav-btn {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+
+/* =========================
+   10. SEHR KLEINES HANDY
+   BIS 360PX
+========================= */
+
+@media (max-width: 360px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  .hero-card,
+  .category-card,
+  .question-card {
+    padding: 16px;
+  }
+
+  .main-content h1,
+  .review-header h1,
+  .learning-header h1 {
+    font-size: 28px;
+  }
+
+  .answer-btn {
+    font-size: 15px;
+    padding: 13px;
+  }
+}
+
+/* =====================================================
+   FINAL RWD FIX FÜR AKTUELLE INDEX.HTML
+   Struktur:
+   .layout > .sidebar + .main-content
+===================================================== */
+
+/* DESKTOP-GRUNDLAYOUT */
+.layout {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+}
+
+.sidebar {
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  min-height: 100vh !important;
+}
+
+.main-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+  width: auto !important;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 24px !important;
+  margin-bottom: 34px !important;
+}
+
+.topbar .score-box {
+  flex: 0 0 145px !important;
+}
+
+/* HERO-KARTEN */
+.hero-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+  margin-bottom: 34px !important;
+}
+
+/* THEMENBEREICHE */
+.categories,
+#categories {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+}
+
+/* =========================
+   GROẞE MONITORE AB 1500PX
+========================= */
+
+@media (min-width: 1500px) {
+  .sidebar {
+    flex-basis: 300px !important;
+    width: 300px !important;
+    min-width: 300px !important;
+    padding: 38px 28px !important;
+  }
+
+  .main-content {
+    padding: 42px 56px !important;
+  }
+
+  .topbar h1 {
+    font-size: clamp(44px, 3vw, 62px) !important;
+    line-height: 1.05 !important;
+  }
+
+  .hero-card {
+    min-height: 165px !important;
+    padding: 28px 32px !important;
+  }
+
+  .hero-card h2 {
+    font-size: 30px !important;
+    line-height: 1.12 !important;
+  }
+
+  .categories,
+  #categories {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* =========================
+   NORMALER DESKTOP / LAPTOP
+   1200PX BIS 1499PX
+========================= */
+
+@media (min-width: 1200px) and (max-width: 1499px) {
+  .sidebar {
+    flex-basis: 260px !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    padding: 28px 20px !important;
+  }
+
+  .main-content {
+    padding: 34px 38px !important;
+  }
+
+  .topbar h1 {
+    font-size: clamp(38px, 3.4vw, 54px) !important;
+  }
+
+  .hero-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+  }
+
+  .hero-card {
+    min-height: 150px !important;
+    padding: 24px 26px !important;
+  }
+
+  .hero-card h2 {
+    font-size: 26px !important;
+  }
+
+  .categories,
+  #categories {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* =========================
+   TABLET / KLEINER LAPTOP
+   821PX BIS 1199PX
+========================= */
+
+@media (min-width: 821px) and (max-width: 1199px) {
+  .sidebar {
+    flex-basis: 230px !important;
+    width: 230px !important;
+    min-width: 230px !important;
+    padding: 24px 18px !important;
+  }
+
+  .main-content {
+    padding: 28px !important;
+  }
+
+  .topbar {
+    flex-direction: column !important;
+  }
+
+  .topbar .score-box {
+    flex: none !important;
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  .hero-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .categories,
+  #categories {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* =========================
+   HANDY / KLEINES TABLET
+   BIS 820PX
+========================= */
+
+@media (max-width: 820px) {
+  .layout {
+    display: block !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+  }
+
+  .sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding: 16px !important;
+  }
+
+  .logo-area {
+    margin-bottom: 14px !important;
+  }
+
+  .logo-area h2 {
+    font-size: 26px !important;
+    margin: 0 0 4px 0 !important;
+  }
+
+  .logo-area span {
+    font-size: 13px !important;
+  }
+
+  .menu {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+  }
+
+  .menu-item {
+    min-height: 42px !important;
+    padding: 10px 11px !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+  }
+
+  .main-content {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 20px !important;
+  }
+
+  .topbar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .topbar h1 {
+    font-size: clamp(32px, 9vw, 42px) !important;
+    line-height: 1.05 !important;
+  }
+
+  .topbar .score-box {
+    width: 100% !important;
+    flex: none !important;
+    text-align: left !important;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .hero-card {
+    min-height: 125px !important;
+    padding: 22px !important;
+  }
+
+  .hero-card h2 {
+    font-size: 24px !important;
+    line-height: 1.15 !important;
+  }
+
+  .categories,
+  #categories {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .category-card {
+    min-height: 140px !important;
+    padding: 20px !important;
+  }
+
+  .learning-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .question-card,
+  .review-card,
+  .finish-card,
+  .topic-stats-section,
+  .history-section,
+  .last-exam-box,
+  .reset-stats-box {
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+
+  .topic-stat-row,
+  .history-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .result-actions,
+  .button-row,
+  .exam-actions,
+  .warning-actions,
+  .confirm-modal-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .next-btn,
+  .back-btn,
+  .reset-stats-btn,
+  .warning-btn,
+  .modal-cancel-btn,
+  .modal-danger-btn {
+    width: 100% !important;
+  }
+}
+
+/* =========================
+   KLEINES HANDY BIS 480PX
+========================= */
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 14px !important;
+  }
+
+  .menu {
+    grid-template-columns: 1fr !important;
+  }
+
+  .menu-item {
+    min-height: 40px !important;
+    font-size: 13px !important;
+  }
+
+  .main-content {
+    padding: 16px !important;
+  }
+
+  .topbar h1 {
+    font-size: clamp(30px, 10vw, 38px) !important;
+  }
+
+  .hero-card {
+    padding: 20px !important;
+    min-height: 118px !important;
+  }
+
+  .category-card {
+    padding: 18px !important;
+    min-height: 135px !important;
+  }
+}
+
+
