@@ -26,3 +26,4 @@ v15-app-js-clean-pruefung-offene-fragen-stabil
 ## Nächster geplanter Schritt
 
 v16-online-vorschau-mit-github-pages
+GitHub Pages aktiviert.
