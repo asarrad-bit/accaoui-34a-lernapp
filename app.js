@@ -40,7 +40,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v17-pruefungsanalyse-nach-themen-stabil";
+const APP_VERSION = "v18-pruefungsmodus-82-fragen-vorbereitet";
 
 const EXAM_QUESTION_LIMIT = 10;
 // Später für echte Simulation auf 82 ändern.
@@ -1750,6 +1750,587 @@ function finishExamMode() {
   `;
 } 
 
+/* =========================
+   PRÜFUNGSMODUS
+========================= */
+
+const EXAM_SHORT_QUESTION_LIMIT_V18 = EXAM_QUESTION_LIMIT;
+const EXAM_FULL_QUESTION_LIMIT_V18 = 82;
+
+let currentExamLimit = EXAM_SHORT_QUESTION_LIMIT_V18;
+let currentExamTitle = "§34a Kurzprüfung";
+let currentExamType = "short";
+
+function showExamStartPage() {
+  currentMode = "exam-start";
+  clearExamTimer();
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  if (!allQuestions || allQuestions.length === 0) {
+    showSmallNotice("Fragenbank wurde noch nicht geladen.");
+    return;
+  }
+
+  const availableQuestions = allQuestions.length;
+  const shortSimulationCount = Math.min(EXAM_SHORT_QUESTION_LIMIT_V18, availableQuestions);
+  const fullSimulationCount = Math.min(EXAM_FULL_QUESTION_LIMIT_V18, availableQuestions);
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="review-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Prüfungsmodus</p>
+        <h1>Prüfung auswählen</h1>
+        <p>
+          Wählen Sie zwischen einer kurzen Trainingsprüfung und einer vorbereiteten Vollsimulation.
+        </p>
+      </div>
+
+      <div class="hero-grid">
+
+        <div class="hero-card gold" onclick="startExamMode(${EXAM_SHORT_QUESTION_LIMIT_V18}, '§34a Kurzprüfung', 'short')" style="cursor:pointer;">
+          <div class="card-icon">⏱️</div>
+          <h2>Kurzprüfung</h2>
+          <p>${shortSimulationCount} Fragen · schnelle Kontrolle</p>
+        </div>
+
+        <div class="hero-card blue" onclick="startExamMode(${EXAM_FULL_QUESTION_LIMIT_V18}, '§34a Vollsimulation', 'full')" style="cursor:pointer;">
+          <div class="card-icon">📝</div>
+          <h2>Vollsimulation</h2>
+          <p>${fullSimulationCount} Fragen · vorbereitet auf 82 Fragen</p>
+        </div>
+
+      </div>
+
+      <div class="last-exam-box">
+        <span>Hinweis</span>
+        <strong>Aktuell verfügbare Fragen: ${availableQuestions}</strong>
+        <p>
+          Die echte 82-Fragen-Struktur ist vorbereitet. Solange weniger als 82 Fragen vorhanden sind,
+          nutzt die App automatisch alle verfügbaren Fragen.
+        </p>
+      </div>
+
+    </section>
+  `;
+}
+
+function startExamMode(questionLimit, examTitle, examType) {
+  if (arguments.length === 0) {
+    showExamStartPage();
+    return;
+  }
+
+  if (allQuestions.length === 0) {
+    alert("Noch keine Fragen geladen.");
+    return;
+  }
+
+  currentMode = "exam";
+
+  currentExamLimit = Number(questionLimit) || EXAM_SHORT_QUESTION_LIMIT_V18;
+  currentExamTitle = examTitle || "§34a Kurzprüfung";
+  currentExamType = examType || "short";
+
+  examQuestions = shuffleArray([...allQuestions]).slice(
+    0,
+    Math.min(currentExamLimit, allQuestions.length)
+  );
+
+  examQuestionIndex = 0;
+  examAnswers = {};
+  examSecondsLeft = EXAM_DURATION_SECONDS;
+  lastExamMistakes = [];
+
+  showExamView();
+  startExamTimer();
+  renderExamQuestion();
+}
+
+function repeatCurrentExamMode() {
+  startExamMode(currentExamLimit, currentExamTitle, currentExamType);
+}
+
+function showExamView() {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Prüfung verlassen
+    </button>
+
+    <div class="learning-header">
+      <div>
+        <p class="eyebrow">Prüfungsmodus</p>
+        <h1>${escapeHtml(currentExamTitle)}</h1>
+      </div>
+
+      <div class="score-box exam-timer-box">
+        <span>Restzeit</span>
+        <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
+      </div>
+    </div>
+
+    <div class="progress-wrapper">
+      <div class="progress-info">
+        <span id="examProgressText">Frage 1/${examQuestions.length}</span>
+        <span>${examQuestions.length} Fragen · Auswertung erst am Ende</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="examProgressFill"></div>
+      </div>
+    </div>
+
+    <section class="question-card" id="examQuestionArea"></section>
+
+    <div class="exam-nav" id="examNav"></div>
+  `;
+}
+
+function renderExamQuestion() {
+  const question = examQuestions[examQuestionIndex];
+  const examQuestionArea = document.getElementById("examQuestionArea");
+
+  if (!question || !examQuestionArea) return;
+
+  const savedAnswers = examAnswers[examQuestionIndex] || [];
+  const correctCount = question.correct.length;
+
+  examQuestionArea.innerHTML = `
+    ${formatQuestionText(question.question)}
+
+    <div class="exam-hint-box">
+      <p>Prüfungsmodus: Antworten werden erst am Ende ausgewertet.</p>
+      <strong>
+        ${
+          correctCount === 1
+            ? "Es ist 1 Antwort richtig."
+            : "Es sind " + correctCount + " Antworten richtig."
+        }
+      </strong>
+    </div>
+
+    <div class="answers">
+      ${question.answers.map((answer, index) => `
+        <button
+          class="answer-btn ${savedAnswers.includes(index) ? "selected" : ""}"
+          data-index="${index}"
+        >
+          ${escapeHtml(answer)}
+        </button>
+      `).join("")}
+    </div>
+
+    <div class="exam-actions">
+      <button class="next-btn secondary-btn" id="prevExamBtn">
+        Zurück
+      </button>
+
+      <button class="next-btn" id="nextExamBtn">
+        ${examQuestionIndex === examQuestions.length - 1 ? "Prüfung abgeben" : "Nächste Frage"}
+      </button>
+    </div>
+  `;
+
+  document.querySelectorAll(".answer-btn").forEach(button => {
+    button.onclick = () => toggleExamAnswer(button);
+  });
+
+  const prevBtn = document.getElementById("prevExamBtn");
+  const nextBtn = document.getElementById("nextExamBtn");
+
+  if (prevBtn) {
+    prevBtn.onclick = previousExamQuestion;
+
+    if (examQuestionIndex === 0) {
+      prevBtn.disabled = true;
+    }
+  }
+
+  if (nextBtn) {
+    nextBtn.onclick = nextExamQuestion;
+  }
+
+  updateExamProgress();
+  renderExamNavigation();
+}
+
+function toggleExamAnswer(button) {
+  const question = examQuestions[examQuestionIndex];
+
+  if (!question) return;
+
+  const maxAnswers = question.correct.length;
+  const index = Number(button.dataset.index);
+
+  if (!examAnswers[examQuestionIndex]) {
+    examAnswers[examQuestionIndex] = [];
+  }
+
+  if (examAnswers[examQuestionIndex].includes(index)) {
+    examAnswers[examQuestionIndex] =
+      examAnswers[examQuestionIndex].filter(i => i !== index);
+
+    button.classList.remove("selected");
+  } else {
+    if (examAnswers[examQuestionIndex].length >= maxAnswers) {
+      showSmallNotice(
+        maxAnswers === 1
+          ? "Bei dieser Frage ist nur 1 Antwort möglich."
+          : "Bei dieser Frage sind maximal " + maxAnswers + " Antworten möglich."
+      );
+      return;
+    }
+
+    examAnswers[examQuestionIndex].push(index);
+    button.classList.add("selected");
+  }
+
+  renderExamNavigation();
+}
+
+function previousExamQuestion() {
+  if (examQuestionIndex > 0) {
+    examQuestionIndex--;
+    renderExamQuestion();
+  }
+}
+
+function nextExamQuestion() {
+  if (examQuestionIndex >= examQuestions.length - 1) {
+    handleExamSubmitRequest();
+    return;
+  }
+
+  examQuestionIndex++;
+  renderExamQuestion();
+}
+
+function handleExamSubmitRequest() {
+  const firstUnansweredIndex = getFirstUnansweredQuestionIndex();
+
+  if (firstUnansweredIndex !== -1) {
+    const unansweredCount = getUnansweredQuestionsCount();
+    showExamSubmitWarning(firstUnansweredIndex, unansweredCount);
+    return;
+  }
+
+  finishExamMode();
+}
+
+function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
+  const examQuestionArea = document.getElementById("examQuestionArea");
+
+  if (!examQuestionArea) return;
+
+  let warning = document.getElementById("examWarningBox");
+
+  if (!warning) {
+    warning = document.createElement("div");
+    warning.id = "examWarningBox";
+    warning.className = "exam-warning-box";
+    examQuestionArea.prepend(warning);
+  }
+
+  warning.innerHTML = `
+    <strong>Achtung</strong>
+
+    <p>
+      Es gibt noch ${unansweredCount} unbeantwortete Prüfungsfrage(n).
+      Sie können zur ersten offenen Prüfungsfrage springen oder die Prüfung trotzdem abgeben.
+    </p>
+
+    <p class="warning-small">
+      Unbeantwortete Prüfungsfragen werden bei der Auswertung als unbeantwortet gezählt.
+    </p>
+
+    <div class="warning-actions">
+      <button class="warning-btn primary-warning-btn" onclick="goToExamQuestion(${firstUnansweredIndex})">
+        Zur ersten offenen Prüfungsfrage
+      </button>
+
+      <button class="warning-btn danger-warning-btn" onclick="finishExamMode()">
+        Trotzdem abgeben
+      </button>
+    </div>
+  `;
+
+  warning.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function goToExamQuestion(index) {
+  if (index < 0 || index >= examQuestions.length) {
+    return;
+  }
+
+  examQuestionIndex = index;
+  renderExamQuestion();
+}
+
+function updateExamProgress() {
+  const percent = Math.round(
+    ((examQuestionIndex + 1) / examQuestions.length) * 100
+  );
+
+  const examProgressText = document.getElementById("examProgressText");
+  const examProgressFill = document.getElementById("examProgressFill");
+
+  if (examProgressText) {
+    examProgressText.innerText =
+      `Frage ${examQuestionIndex + 1}/${examQuestions.length}`;
+  }
+
+  if (examProgressFill) {
+    examProgressFill.style.width = percent + "%";
+  }
+}
+
+function renderExamNavigation() {
+  const examNav = document.getElementById("examNav");
+
+  if (!examNav) return;
+
+  examNav.innerHTML = "";
+
+  examQuestions.forEach((question, index) => {
+    const button = document.createElement("button");
+
+    button.innerText = index + 1;
+    button.className = "exam-nav-btn";
+
+    if (index === examQuestionIndex) {
+      button.classList.add("active");
+    }
+
+    if (examAnswers[index] && examAnswers[index].length > 0) {
+      button.classList.add("answered");
+    }
+
+    button.onclick = () => {
+      examQuestionIndex = index;
+      renderExamQuestion();
+    };
+
+    examNav.appendChild(button);
+  });
+}
+
+function getUnansweredQuestionsCount() {
+  let count = 0;
+
+  for (let i = 0; i < examQuestions.length; i++) {
+    if (!examAnswers[i] || examAnswers[i].length === 0) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+function getFirstUnansweredQuestionIndex() {
+  for (let i = 0; i < examQuestions.length; i++) {
+    if (!examAnswers[i] || examAnswers[i].length === 0) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+function scrollToAnswers() {
+  const answers = document.querySelector(".answers");
+
+  if (answers) {
+    answers.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}
+
+function startExamTimer() {
+  clearExamTimer();
+
+  examTimer = setInterval(() => {
+    examSecondsLeft--;
+
+    updateExamTimerDisplay();
+
+    if (examSecondsLeft <= 0) {
+      clearExamTimer();
+      finishExamMode();
+    }
+  }, 1000);
+}
+
+function clearExamTimer() {
+  if (examTimer) {
+    clearInterval(examTimer);
+    examTimer = null;
+  }
+}
+
+function updateExamTimerDisplay() {
+  const timerElement = document.getElementById("examTimer");
+
+  if (!timerElement) return;
+
+  timerElement.innerText = formatSeconds(examSecondsLeft);
+}
+
+function finishExamMode() {
+  clearExamTimer();
+
+  let correctCount = 0;
+  let wrongCount = 0;
+  let unansweredCount = 0;
+
+  lastExamMistakes = [];
+
+  examQuestions.forEach((question, index) => {
+    const selected = examAnswers[index] || [];
+
+    if (selected.length === 0) {
+      unansweredCount++;
+      lastExamMistakes.push(question);
+      saveTopicMistake(question);
+      return;
+    }
+
+    markQuestionAsAnswered(question);
+
+    const isCorrect = isExamAnswerCorrect(question, selected);
+
+    saveTopicResult(question.category, isCorrect);
+
+    if (isCorrect) {
+      correctCount++;
+      removeTopicMistake(question);
+    } else {
+      wrongCount++;
+      lastExamMistakes.push(question);
+      saveTopicMistake(question);
+    }
+  });
+
+  const total = examQuestions.length;
+  const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+  const passed = percent >= 50;
+
+  const topicBreakdown = buildExamTopicBreakdown();
+
+  saveExamResult({
+    total,
+    correct: correctCount,
+    wrong: wrongCount,
+    unanswered: unansweredCount,
+    percent,
+    passed,
+    topicBreakdown,
+    examType: currentExamType,
+    examTitle: currentExamTitle,
+    examLimit: currentExamLimit,
+    date: new Date().toLocaleString("de-DE")
+  });
+
+  updateDashboardNumbers();
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="result-wrapper">
+
+      <div class="result-hero ${passed ? "passed" : "failed"}">
+
+        <p class="eyebrow">Prüfungsergebnis · ${escapeHtml(currentExamTitle)}</p>
+
+        <h1>${passed ? "Bestanden" : "Nicht bestanden"}</h1>
+
+        <div class="result-percent">
+          ${percent}%
+        </div>
+
+        <p class="result-message">
+          ${
+            passed
+              ? "Die Prüfungssimulation wurde erfolgreich bestanden."
+              : "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Schwächen."
+          }
+        </p>
+
+      </div>
+
+      <div class="result-stats-grid">
+
+        <div class="result-stat-card">
+          <span>Gesamtfragen</span>
+          <strong>${total}</strong>
+        </div>
+
+        <div class="result-stat-card success">
+          <span>Richtig</span>
+          <strong>${correctCount}</strong>
+        </div>
+
+        <div class="result-stat-card danger">
+          <span>Falsch</span>
+          <strong>${wrongCount}</strong>
+        </div>
+
+        <div class="result-stat-card warning">
+          <span>Unbeantwortet</span>
+          <strong>${unansweredCount}</strong>
+        </div>
+
+      </div>
+
+      ${buildExamFocusRecommendationHtml(topicBreakdown)}
+
+      ${buildExamTopicBreakdownHtml(topicBreakdown)}
+
+      <div class="result-actions">
+
+        <button class="next-btn" onclick="showExamReview()">
+          Fehler ansehen
+        </button>
+
+        <button class="next-btn danger-training-btn" onclick="startMistakeTraining()">
+          Fehlertraining starten
+        </button>
+
+        <button class="next-btn" onclick="repeatCurrentExamMode()">
+          Prüfung wiederholen
+        </button>
+
+        <button class="next-btn secondary-btn" onclick="location.reload()">
+          Zurück zum Dashboard
+        </button>
+
+      </div>
+
+    </section>
+  `;
+}
+
 function isExamAnswerCorrect(question, selectedAnswersForQuestion) {
   if (!question || !Array.isArray(selectedAnswersForQuestion)) {
     return false;
@@ -1968,7 +2549,7 @@ function buildExamTopicBreakdownHtml(topicBreakdown) {
 
     </div>
   `;
-} 
+}
 
 function showExamReview() {
   const mainContent = document.querySelector(".main-content");
@@ -2059,7 +2640,7 @@ function showExamReview() {
           Fehlertraining
         </button>
 
-        <button class="next-btn" onclick="startExamMode()">
+        <button class="next-btn" onclick="repeatCurrentExamMode()">
           Prüfung wiederholen
         </button>
 
@@ -2645,3 +3226,6 @@ window.startAllTopicMistakeTraining = startAllTopicMistakeTraining;
 
 window.showStatsPage = showStatsPage;
 window.resetExamHistory = resetExamHistory;
+
+window.showExamStartPage = showExamStartPage;
+window.repeatCurrentExamMode = repeatCurrentExamMode;
