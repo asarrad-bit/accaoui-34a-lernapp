@@ -1868,8 +1868,14 @@ function startExamMode(questionLimit, examTitle, examType) {
   lastExamMistakes = [];
 
   showExamView();
+
+if (examHasTimer()) {
   startExamTimer();
-  renderExamQuestion();
+} else {
+  clearExamTimer();
+}
+
+renderExamQuestion();
 }
 
 function repeatCurrentExamMode() {
@@ -1892,10 +1898,16 @@ function showExamView() {
         <h1>${escapeHtml(currentExamTitle)}</h1>
       </div>
 
+      ${
+  examHasTimer()
+    ? `
       <div class="score-box exam-timer-box">
         <span>Restzeit</span>
         <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
       </div>
+    `
+    : ""
+} 
     </div>
 <div class="progress-wrapper">
   <div class="progress-info">
@@ -1903,9 +1915,9 @@ function showExamView() {
 
     <span>
       ${
-        examHasTimer()
-          ? examQuestions.length + " Fragen · 120 Minuten · Auswertung erst am Ende"
-          : examQuestions.length + " Fragen · ohne Zeitlimit · Auswertung erst am Ende"
+       examHasTimer()
+  ? examQuestions.length + " Fragen · 120 Minuten · Auswertung erst am Ende"
+  : examQuestions.length + " Fragen · Auswertung erst am Ende"
       }
     </span>
   </div>
