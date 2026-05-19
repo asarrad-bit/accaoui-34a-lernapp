@@ -1893,4 +1893,207 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v20.3 STATISTIK KOMPAKT – QUOTE-FOKUS
+   Ziel:
+   - kompakte alte Struktur behalten
+   - Quote stärker hervorheben
+   - Begriffe klarer lesbar
+   - Status farblich sauber
+===================================================== */
+
+.topic-stat-row {
+  grid-template-columns:
+    minmax(260px, 2.2fr)
+    minmax(64px, 0.55fr)
+    minmax(64px, 0.55fr)
+    minmax(72px, 0.65fr)
+    minmax(72px, 0.65fr)
+    minmax(110px, 0.9fr)
+    minmax(100px, 0.85fr)
+    minmax(100px, 0.85fr)
+    minmax(155px, 1fr)
+    minmax(150px, auto);
+  gap: 12px;
+  padding: 18px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.055);
+}
+
+.topic-stat-row:hover {
+  border-color: rgba(35, 68, 198, 0.18);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.085);
+}
+
+.topic-stat-row span {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+}
+
+.topic-stat-row strong {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.topic-name strong {
+  font-size: 15.5px;
+  line-height: 1.28;
+  letter-spacing: -0.015em;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* Quote als Hauptmerkmal */
+.quote-column {
+  padding: 12px 10px;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-soft);
+}
+
+.quote-column span {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.quote-column strong {
+  display: block;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -0.045em;
+}
+
+/* Statusfarben */
+.topic-neutral {
+  color: var(--text-muted) !important;
+}
+
+.quote-column.topic-neutral {
+  background: #f8fafc;
+  border-color: var(--border-soft);
+}
+
+.quote-column.topic-neutral strong {
+  color: var(--text-muted) !important;
+}
+
+.topic-weak {
+  color: var(--red-main) !important;
+}
+
+.quote-column.topic-weak {
+  background: #fff7f7;
+  border-color: var(--red-border);
+}
+
+.quote-column.topic-weak strong {
+  color: var(--red-main) !important;
+}
+
+.topic-medium {
+  color: var(--orange-main) !important;
+}
+
+.quote-column.topic-medium {
+  background: #fffaf5;
+  border-color: #fed7aa;
+}
+
+.quote-column.topic-medium strong {
+  color: var(--orange-main) !important;
+}
+
+.topic-solid {
+  color: var(--blue-main) !important;
+}
+
+.quote-column.topic-solid {
+  background: #f6f8ff;
+  border-color: rgba(35, 68, 198, 0.22);
+}
+
+.quote-column.topic-solid strong {
+  color: var(--blue-main) !important;
+}
+
+.topic-strong {
+  color: var(--green-main) !important;
+}
+
+.quote-column.topic-strong {
+  background: #f4fff8;
+  border-color: var(--green-border);
+}
+
+.quote-column.topic-strong strong {
+  color: var(--green-main) !important;
+}
+
+/* Buttons in Statistik ruhiger */
+.topic-stat-row .next-btn {
+  width: 100%;
+  min-height: 42px;
+  padding: 11px 14px;
+  border-radius: 13px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Tablet / kleiner Laptop */
+@media (max-width: 1199px) {
+  .topic-stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topic-name {
+    grid-column: 1 / -1;
+  }
+
+  .quote-column {
+    text-align: left;
+  }
+
+  .quote-column strong {
+    font-size: 28px;
+  }
+
+  .topic-stat-row .next-btn {
+    width: auto;
+  }
+}
+
+/* Handy */
+@media (max-width: 600px) {
+  .topic-stat-row {
+    grid-template-columns: 1fr;
+    padding: 18px;
+    gap: 11px;
+  }
+
+  .topic-name strong {
+    font-size: 16px;
+  }
+
+  .quote-column {
+    text-align: center;
+    padding: 18px 14px;
+  }
+
+  .quote-column strong {
+    font-size: 42px;
+  }
+
+  .topic-stat-row .next-btn {
+    width: 100%;
+  }
+}
 
