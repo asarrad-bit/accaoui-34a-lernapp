@@ -40,7 +40,13 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v18-pruefungsmodus-82-fragen-vorbereitet";
+const APP_VERSION = "v19-pruefungsmodus-punktebewertung-vorbereitet";
+
+const DEFAULT_QUESTION_POINTS = 1;
+
+// Technische Bestehensgrenze.
+// Aktuell 50 %, später sauber an echte IHK-/Punkte-Logik anpassbar.
+const EXAM_PASS_PERCENT = 50;
 
 const EXAM_QUESTION_LIMIT = 10;
 // Später für echte Simulation auf 82 ändern.
@@ -1275,10 +1281,16 @@ function startExamMode() {
   examSecondsLeft = EXAM_DURATION_SECONDS;
   lastExamMistakes = [];
 
-  showExamView();
-  startExamTimer();
-  renderExamQuestion();
-}
+ showExamView();
+
+	if (examHasTimer()) {
+	  startExamTimer();
+	} else {
+	  clearExamTimer();
+	}
+
+	renderExamQuestion();
+	}
 
 function showExamView() {
   const mainContent = document.querySelector(".main-content");
@@ -1297,9 +1309,11 @@ function showExamView() {
       </div>
 
       <div class="score-box exam-timer-box">
-        <span>Restzeit</span>
-        <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
-      </div>
+	  <span>${examHasTimer() ? "Restzeit" : "Zeit"}</span>
+	  <strong id="examTimer">
+		${examHasTimer() ? formatSeconds(EXAM_DURATION_SECONDS) : "Ohne Limit"}
+	  </strong>
+	</div>
     </div>
 
     <div class="progress-wrapper">
@@ -1822,6 +1836,10 @@ function showExamStartPage() {
   `;
 }
 
+function examHasTimer() {
+  return currentExamType === "full";
+}
+
 function startExamMode(questionLimit, examTitle, examType) {
   if (arguments.length === 0) {
     showExamStartPage();
@@ -1879,22 +1897,27 @@ function showExamView() {
         <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
       </div>
     </div>
+<div class="progress-wrapper">
+  <div class="progress-info">
+    <span id="examProgressText">Frage 1/${examQuestions.length}</span>
 
-    <div class="progress-wrapper">
-      <div class="progress-info">
-        <span id="examProgressText">Frage 1/${examQuestions.length}</span>
-        <span>${examQuestions.length} Fragen · Auswertung erst am Ende</span>
-      </div>
+    <span>
+      ${
+        examHasTimer()
+          ? examQuestions.length + " Fragen · 120 Minuten · Auswertung erst am Ende"
+          : examQuestions.length + " Fragen · ohne Zeitlimit · Auswertung erst am Ende"
+      }
+    </span>
+  </div>
 
-      <div class="progress-bar">
-        <div class="progress-fill" id="examProgressFill"></div>
-      </div>
-    </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="examProgressFill"></div>
+  </div>
+</div>
 
-    <section class="question-card" id="examQuestionArea"></section>
+<section class="question-card" id="examQuestionArea"></section>
 
-    <div class="exam-nav" id="examNav"></div>
-  `;
+<div class="exam-nav" id="examNav"></div>  `;
 }
 
 function renderExamQuestion() {
@@ -2227,24 +2250,48 @@ function finishExamMode() {
   });
 
   const total = examQuestions.length;
-  const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-  const passed = percent >= 50;
 
-  const topicBreakdown = buildExamTopicBreakdown();
+const questionPercent =
+  total > 0
+    ? Math.round((correctCount / total) * 100)
+    : 0;
+
+const maxPoints = getExamMaxPoints();
+const reachedPoints = getExamReachedPoints();
+const passPoints = getExamPassPoints(maxPoints);
+
+const percent =
+  maxPoints > 0
+    ? Math.round((reachedPoints / maxPoints) * 100)
+    : 0;
+
+const passed = reachedPoints >= passPoints;
+
+const topicBreakdown = buildExamTopicBreakdown();
 
   saveExamResult({
-    total,
-    correct: correctCount,
-    wrong: wrongCount,
-    unanswered: unansweredCount,
-    percent,
-    passed,
-    topicBreakdown,
-    examType: currentExamType,
-    examTitle: currentExamTitle,
-    examLimit: currentExamLimit,
-    date: new Date().toLocaleString("de-DE")
-  });
+  total,
+  correct: correctCount,
+  wrong: wrongCount,
+  unanswered: unansweredCount,
+
+  percent,
+  questionPercent,
+
+  points: {
+    reached: reachedPoints,
+    max: maxPoints,
+    pass: passPoints,
+    passPercent: EXAM_PASS_PERCENT
+  },
+
+  passed,
+  topicBreakdown,
+  examType: currentExamType,
+  examTitle: currentExamTitle,
+  examLimit: currentExamLimit,
+  date: new Date().toLocaleString("de-DE")
+});
 
   updateDashboardNumbers();
 
@@ -2272,8 +2319,8 @@ function finishExamMode() {
         <p class="result-message">
           ${
             passed
-              ? "Die Prüfungssimulation wurde erfolgreich bestanden."
-              : "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Schwächen."
+            ? "Die Prüfungssimulation wurde erfolgreich bestanden. Die Punktebewertung wurde berücksichtigt."
+			: "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Schwächen und achten Sie auf die Punktebewertung."
           }
         </p>
 
@@ -2296,10 +2343,25 @@ function finishExamMode() {
           <strong>${wrongCount}</strong>
         </div>
 
-        <div class="result-stat-card warning">
-          <span>Unbeantwortet</span>
-          <strong>${unansweredCount}</strong>
-        </div>
+        <div class="result-stat-card gold-stat">
+		  <span>Punkte</span>
+		  <strong>${reachedPoints}/${maxPoints}</strong>
+		</div>
+
+		<div class="result-stat-card">
+		  <span>Bestehensgrenze</span>
+		  <strong>${passPoints} Punkte</strong>
+		</div>
+		
+		<div class="result-stat-card gold-stat">
+		  <span>Punkte</span>
+		  <strong>${reachedPoints}/${maxPoints}</strong>
+		</div>
+
+		<div class="result-stat-card">
+		  <span>Bestehensgrenze</span>
+		  <strong>${passPoints} Punkte</strong>
+		</div>
 
       </div>
 
@@ -2346,6 +2408,59 @@ function isExamAnswerCorrect(question, selectedAnswersForQuestion) {
 
   return selectedSorted === correctSorted;
 }
+
+function getQuestionPoints(question) {
+  if (!question) {
+    return DEFAULT_QUESTION_POINTS;
+  }
+
+  const rawPoints =
+    question.points ??
+    question.punkte ??
+    question.score ??
+    DEFAULT_QUESTION_POINTS;
+
+  const points = Number(rawPoints);
+
+  if (!Number.isFinite(points) || points <= 0) {
+    return DEFAULT_QUESTION_POINTS;
+  }
+
+  return points;
+}
+
+function getExamMaxPoints() {
+  return examQuestions.reduce((sum, question) => {
+    return sum + getQuestionPoints(question);
+  }, 0);
+}
+
+function getExamReachedPoints() {
+  let reachedPoints = 0;
+
+  examQuestions.forEach((question, index) => {
+    const selected = examAnswers[index] || [];
+
+    if (selected.length === 0) {
+      return;
+    }
+
+    if (isExamAnswerCorrect(question, selected)) {
+      reachedPoints += getQuestionPoints(question);
+    }
+  });
+
+  return reachedPoints;
+}
+
+function getExamPassPoints(maxPoints) {
+  if (!Number.isFinite(maxPoints) || maxPoints <= 0) {
+    return 0;
+  }
+
+  return Math.ceil((maxPoints * EXAM_PASS_PERCENT) / 100);
+}
+
 
 function buildExamTopicBreakdown() {
   const breakdown = {};
