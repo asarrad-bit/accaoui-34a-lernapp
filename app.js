@@ -40,7 +40,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v19-pruefungsmodus-punktebewertung-vorbereitet";
+const APP_VERSION = "v20-pruefungsmodus-cleanup-stabil";
 
 const DEFAULT_QUESTION_POINTS = 1;
 
@@ -1259,79 +1259,7 @@ function showMistakeOverview() {
 }
 
 
-/* =========================
-   PRÜFUNGSMODUS
-========================= */
 
-function startExamMode() {
-  if (allQuestions.length === 0) {
-    alert("Noch keine Fragen geladen.");
-    return;
-  }
-
-  currentMode = "exam";
-
-  examQuestions = shuffleArray([...allQuestions]).slice(
-    0,
-    Math.min(EXAM_QUESTION_LIMIT, allQuestions.length)
-  );
-
-  examQuestionIndex = 0;
-  examAnswers = {};
-  examSecondsLeft = EXAM_DURATION_SECONDS;
-  lastExamMistakes = [];
-
- showExamView();
-
-	if (examHasTimer()) {
-	  startExamTimer();
-	} else {
-	  clearExamTimer();
-	}
-
-	renderExamQuestion();
-	}
-
-function showExamView() {
-  const mainContent = document.querySelector(".main-content");
-
-  if (!mainContent) return;
-
-  mainContent.innerHTML = `
-    <button class="back-btn" onclick="location.reload()">
-      ← Prüfung verlassen
-    </button>
-
-    <div class="learning-header">
-      <div>
-        <p class="eyebrow">Prüfungsmodus</p>
-        <h1>§34a Prüfungssimulation</h1>
-      </div>
-
-      <div class="score-box exam-timer-box">
-	  <span>${examHasTimer() ? "Restzeit" : "Zeit"}</span>
-	  <strong id="examTimer">
-		${examHasTimer() ? formatSeconds(EXAM_DURATION_SECONDS) : "Ohne Limit"}
-	  </strong>
-	</div>
-    </div>
-
-    <div class="progress-wrapper">
-      <div class="progress-info">
-        <span id="examProgressText">Frage 1/${examQuestions.length}</span>
-        <span>Auswertung erst am Ende</span>
-      </div>
-
-      <div class="progress-bar">
-        <div class="progress-fill" id="examProgressFill"></div>
-      </div>
-    </div>
-
-    <section class="question-card" id="examQuestionArea"></section>
-
-    <div class="exam-nav" id="examNav"></div>
-  `;
-}
 
 function renderExamQuestion() {
   const question = examQuestions[examQuestionIndex];
@@ -1768,10 +1696,10 @@ function finishExamMode() {
    PRÜFUNGSMODUS
 ========================= */
 
-const EXAM_SHORT_QUESTION_LIMIT_V18 = EXAM_QUESTION_LIMIT;
-const EXAM_FULL_QUESTION_LIMIT_V18 = 82;
+const EXAM_SHORT_QUESTION_LIMIT_V20 = EXAM_QUESTION_LIMIT;
+const EXAM_FULL_QUESTION_LIMIT_V20 = 82;
 
-let currentExamLimit = EXAM_SHORT_QUESTION_LIMIT_V18;
+let currentExamLimit = EXAM_SHORT_QUESTION_LIMIT_V20;
 let currentExamTitle = "§34a Kurzprüfung";
 let currentExamType = "short";
 
@@ -1789,8 +1717,8 @@ function showExamStartPage() {
   }
 
   const availableQuestions = allQuestions.length;
-  const shortSimulationCount = Math.min(EXAM_SHORT_QUESTION_LIMIT_V18, availableQuestions);
-  const fullSimulationCount = Math.min(EXAM_FULL_QUESTION_LIMIT_V18, availableQuestions);
+  const shortSimulationCount = Math.min(EXAM_SHORT_QUESTION_LIMIT_V20, availableQuestions);
+  const fullSimulationCount = Math.min(EXAM_FULL_QUESTION_LIMIT_V20, availableQuestions);
 
   mainContent.innerHTML = `
     <button class="back-btn" onclick="location.reload()">
@@ -1809,13 +1737,13 @@ function showExamStartPage() {
 
       <div class="hero-grid">
 
-        <div class="hero-card gold" onclick="startExamMode(${EXAM_SHORT_QUESTION_LIMIT_V18}, '§34a Kurzprüfung', 'short')" style="cursor:pointer;">
+        <div class="hero-card gold" onclick="startExamMode(${EXAM_SHORT_QUESTION_LIMIT_V20}, '§34a Kurzprüfung', 'short')" style="cursor:pointer;">
           <div class="card-icon">⏱️</div>
           <h2>Kurzprüfung</h2>
           <p>${shortSimulationCount} Fragen · schnelle Kontrolle</p>
         </div>
 
-        <div class="hero-card blue" onclick="startExamMode(${EXAM_FULL_QUESTION_LIMIT_V18}, '§34a Vollsimulation', 'full')" style="cursor:pointer;">
+        <div class="hero-card blue" onclick="startExamMode(${EXAM_FULL_QUESTION_LIMIT_V20}, '§34a Vollsimulation', 'full')" style="cursor:pointer;">
           <div class="card-icon">📝</div>
           <h2>Vollsimulation</h2>
           <p>${fullSimulationCount} Fragen · vorbereitet auf 82 Fragen</p>
@@ -1853,7 +1781,7 @@ function startExamMode(questionLimit, examTitle, examType) {
 
   currentMode = "exam";
 
-  currentExamLimit = Number(questionLimit) || EXAM_SHORT_QUESTION_LIMIT_V18;
+  currentExamLimit = Number(questionLimit) || EXAM_SHORT_QUESTION_LIMIT_V20;
   currentExamTitle = examTitle || "§34a Kurzprüfung";
   currentExamType = examType || "short";
 
@@ -1869,13 +1797,13 @@ function startExamMode(questionLimit, examTitle, examType) {
 
   showExamView();
 
-if (examHasTimer()) {
-  startExamTimer();
-} else {
-  clearExamTimer();
-}
+  if (examHasTimer()) {
+    startExamTimer();
+  } else {
+    clearExamTimer();
+  }
 
-renderExamQuestion();
+  renderExamQuestion();
 }
 
 function repeatCurrentExamMode() {
@@ -1899,37 +1827,39 @@ function showExamView() {
       </div>
 
       ${
-  examHasTimer()
-    ? `
-      <div class="score-box exam-timer-box">
-        <span>Restzeit</span>
-        <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
-      </div>
-    `
-    : ""
-} 
-    </div>
-<div class="progress-wrapper">
-  <div class="progress-info">
-    <span id="examProgressText">Frage 1/${examQuestions.length}</span>
-
-    <span>
-      ${
-       examHasTimer()
-  ? examQuestions.length + " Fragen · 120 Minuten · Auswertung erst am Ende"
-  : examQuestions.length + " Fragen · Auswertung erst am Ende"
+        examHasTimer()
+          ? `
+            <div class="score-box exam-timer-box">
+              <span>Restzeit</span>
+              <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
+            </div>
+          `
+          : ""
       }
-    </span>
-  </div>
+    </div>
 
-  <div class="progress-bar">
-    <div class="progress-fill" id="examProgressFill"></div>
-  </div>
-</div>
+    <div class="progress-wrapper">
+      <div class="progress-info">
+        <span id="examProgressText">Frage 1/${examQuestions.length}</span>
 
-<section class="question-card" id="examQuestionArea"></section>
+        <span>
+          ${
+            examHasTimer()
+              ? examQuestions.length + " Fragen · 120 Minuten · Auswertung erst am Ende"
+              : examQuestions.length + " Fragen · Auswertung erst am Ende"
+          }
+        </span>
+      </div>
 
-<div class="exam-nav" id="examNav"></div>  `;
+      <div class="progress-bar">
+        <div class="progress-fill" id="examProgressFill"></div>
+      </div>
+    </div>
+
+    <section class="question-card" id="examQuestionArea"></section>
+
+    <div class="exam-nav" id="examNav"></div>
+  `;
 }
 
 function renderExamQuestion() {
@@ -2263,47 +2193,47 @@ function finishExamMode() {
 
   const total = examQuestions.length;
 
-const questionPercent =
-  total > 0
-    ? Math.round((correctCount / total) * 100)
-    : 0;
+  const questionPercent =
+    total > 0
+      ? Math.round((correctCount / total) * 100)
+      : 0;
 
-const maxPoints = getExamMaxPoints();
-const reachedPoints = getExamReachedPoints();
-const passPoints = getExamPassPoints(maxPoints);
+  const maxPoints = getExamMaxPoints();
+  const reachedPoints = getExamReachedPoints();
+  const passPoints = getExamPassPoints(maxPoints);
 
-const percent =
-  maxPoints > 0
-    ? Math.round((reachedPoints / maxPoints) * 100)
-    : 0;
+  const percent =
+    maxPoints > 0
+      ? Math.round((reachedPoints / maxPoints) * 100)
+      : 0;
 
-const passed = reachedPoints >= passPoints;
+  const passed = reachedPoints >= passPoints;
 
-const topicBreakdown = buildExamTopicBreakdown();
+  const topicBreakdown = buildExamTopicBreakdown();
 
   saveExamResult({
-  total,
-  correct: correctCount,
-  wrong: wrongCount,
-  unanswered: unansweredCount,
+    total,
+    correct: correctCount,
+    wrong: wrongCount,
+    unanswered: unansweredCount,
 
-  percent,
-  questionPercent,
+    percent,
+    questionPercent,
 
-  points: {
-    reached: reachedPoints,
-    max: maxPoints,
-    pass: passPoints,
-    passPercent: EXAM_PASS_PERCENT
-  },
+    points: {
+      reached: reachedPoints,
+      max: maxPoints,
+      pass: passPoints,
+      passPercent: EXAM_PASS_PERCENT
+    },
 
-  passed,
-  topicBreakdown,
-  examType: currentExamType,
-  examTitle: currentExamTitle,
-  examLimit: currentExamLimit,
-  date: new Date().toLocaleString("de-DE")
-});
+    passed,
+    topicBreakdown,
+    examType: currentExamType,
+    examTitle: currentExamTitle,
+    examLimit: currentExamLimit,
+    date: new Date().toLocaleString("de-DE")
+  });
 
   updateDashboardNumbers();
 
@@ -2331,8 +2261,8 @@ const topicBreakdown = buildExamTopicBreakdown();
         <p class="result-message">
           ${
             passed
-            ? "Die Prüfungssimulation wurde erfolgreich bestanden. Die Punktebewertung wurde berücksichtigt."
-			: "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Schwächen und achten Sie auf die Punktebewertung."
+              ? "Die Prüfungssimulation wurde erfolgreich bestanden. Die Punktebewertung wurde berücksichtigt."
+              : "Die Prüfungssimulation wurde nicht bestanden. Wiederholen Sie gezielt Ihre Schwächen und achten Sie auf die Punktebewertung."
           }
         </p>
 
@@ -2355,25 +2285,20 @@ const topicBreakdown = buildExamTopicBreakdown();
           <strong>${wrongCount}</strong>
         </div>
 
+        <div class="result-stat-card warning">
+          <span>Unbeantwortet</span>
+          <strong>${unansweredCount}</strong>
+        </div>
+
         <div class="result-stat-card gold-stat">
-		  <span>Punkte</span>
-		  <strong>${reachedPoints}/${maxPoints}</strong>
-		</div>
+          <span>Punkte</span>
+          <strong>${reachedPoints}/${maxPoints}</strong>
+        </div>
 
-		<div class="result-stat-card">
-		  <span>Bestehensgrenze</span>
-		  <strong>${passPoints} Punkte</strong>
-		</div>
-		
-		<div class="result-stat-card gold-stat">
-		  <span>Punkte</span>
-		  <strong>${reachedPoints}/${maxPoints}</strong>
-		</div>
-
-		<div class="result-stat-card">
-		  <span>Bestehensgrenze</span>
-		  <strong>${passPoints} Punkte</strong>
-		</div>
+        <div class="result-stat-card">
+          <span>Bestehensgrenze</span>
+          <strong>${passPoints} Punkte</strong>
+        </div>
 
       </div>
 
@@ -2472,7 +2397,6 @@ function getExamPassPoints(maxPoints) {
 
   return Math.ceil((maxPoints * EXAM_PASS_PERCENT) / 100);
 }
-
 
 function buildExamTopicBreakdown() {
   const breakdown = {};
@@ -2791,7 +2715,7 @@ function startMistakeTraining() {
     "Fehlertraining aus der Prüfung",
     "last-exam-mistakes"
   );
-}
+} 
 
 
 /* =========================
