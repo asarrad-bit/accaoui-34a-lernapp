@@ -2097,3 +2097,198 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.1 LERNKARTEN – ECHTE KARTENOPTIK MIT FLIP
+===================================================== */
+
+.flashcard-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.flashcard-study-box {
+  background: #ffffff;
+  border: 1px solid var(--border-soft);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.flashcard-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.flashcard-topline span {
+  max-width: 75%;
+}
+
+.flashcard-topline strong {
+  color: var(--blue-main);
+}
+
+.flashcard-scene {
+  perspective: 1400px;
+  min-height: 360px;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+  transform-style: preserve-3d;
+  transition: transform 0.7s ease;
+}
+
+.flashcard-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard-side {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 26px;
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+}
+
+.flashcard-front-side {
+  background:
+    radial-gradient(circle at top left, rgba(35, 68, 198, 0.16), transparent 38%),
+    linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+}
+
+.flashcard-back-side {
+  transform: rotateY(180deg);
+  background:
+    radial-gradient(circle at top right, rgba(21, 128, 61, 0.14), transparent 38%),
+    linear-gradient(135deg, #f7fff9 0%, #eefdf3 100%);
+}
+
+.flashcard-side-label {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.flashcard-question-content {
+  margin-top: 28px;
+}
+
+.flashcard-question-content .question-title {
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.14;
+  letter-spacing: -0.04em;
+  text-align: center;
+  color: var(--text-main);
+}
+
+.flashcard-hint {
+  margin-top: 26px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.flashcard-answer-block,
+.flashcard-explanation-block {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.055);
+}
+
+.flashcard-answer-block {
+  margin-bottom: 16px;
+}
+
+.flashcard-answer-block span,
+.flashcard-explanation-block span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.flashcard-answer-block strong {
+  display: block;
+  color: var(--green-main);
+  font-size: clamp(20px, 3vw, 30px);
+  line-height: 1.25;
+}
+
+.flashcard-explanation-block p {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.flashcard-actions,
+.flashcard-rating {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.flashcard-actions .next-btn,
+.flashcard-rating .next-btn {
+  min-width: 150px;
+}
+
+/* Handy */
+@media (max-width: 600px) {
+  .flashcard-study-box {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .flashcard-scene,
+  .flashcard-inner {
+    min-height: 430px;
+  }
+
+  .flashcard-side {
+    padding: 28px 20px;
+    border-radius: 22px;
+  }
+
+  .flashcard-question-content .question-title {
+    font-size: 26px;
+  }
+
+  .flashcard-actions,
+  .flashcard-rating {
+    flex-direction: column;
+  }
+
+  .flashcard-actions .next-btn,
+  .flashcard-rating .next-btn {
+    width: 100%;
+  }
+} 

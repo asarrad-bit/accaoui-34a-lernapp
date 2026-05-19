@@ -330,9 +330,7 @@ function activateDashboardButtons() {
   activateHeroCards();
 }
 
-if (text.includes("Lernkarten")) {
-  item.onclick = () => showFlashcardsPage();
-} 
+
 
 function activateSidebarButtons() {
   const menuItems = document.querySelectorAll(".menu-item");
@@ -1157,29 +1155,42 @@ function renderFlashcard() {
   flashcardFlipped = false;
 
   flashcardArea.innerHTML = `
-    <div class="flashcard-box">
+    <div class="flashcard-study-box">
 
       <div class="flashcard-topline">
         <span>${escapeHtml(question.category || "§34a")}</span>
         <strong>${flashcardIndex + 1}/${flashcardQuestions.length}</strong>
       </div>
 
-      <div class="flashcard-front" id="flashcardFront">
-        <p class="flashcard-label">Vorderseite</p>
-        ${formatQuestionText(question.question)}
-      </div>
+      <div class="flashcard-scene">
+        <div class="flashcard-inner" id="flashcardInner">
 
-      <div class="flashcard-back" id="flashcardBack" style="display:none;">
-        <p class="flashcard-label">Rückseite</p>
+          <div class="flashcard-side flashcard-front-side">
+            
 
-        <div class="flashcard-answer-block">
-          <span>Richtige Antwort</span>
-          <strong>${getCorrectAnswerText(question)}</strong>
-        </div>
+            <div class="flashcard-question-content">
+              ${formatQuestionText(question.question)}
+            </div>
 
-        <div class="flashcard-explanation-block">
-          <span>Erklärung</span>
-          <p>${escapeHtml(question.explanation || "Keine Erklärung hinterlegt.")}</p>
+            <div class="flashcard-hint">
+              Denken Sie erst selbst nach. Dann Antwort aufdecken.
+            </div>
+          </div>
+
+          <div class="flashcard-side flashcard-back-side">
+           
+
+            <div class="flashcard-answer-block">
+              <span>Richtige Antwort</span>
+              <strong>${getCorrectAnswerText(question)}</strong>
+            </div>
+
+            <div class="flashcard-explanation-block">
+              <span>Erklärung</span>
+              <p>${escapeHtml(question.explanation || "Keine Erklärung hinterlegt.")}</p>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -1193,7 +1204,7 @@ function renderFlashcard() {
           Zurück
         </button>
 
-        <button class="next-btn" onclick="nextFlashcard()">
+        <button class="next-btn secondary-btn" onclick="nextFlashcard()">
           Nächste Karte
         </button>
 
@@ -1216,17 +1227,15 @@ function renderFlashcard() {
 }
 
 function flipFlashcard() {
-  const front = document.getElementById("flashcardFront");
-  const back = document.getElementById("flashcardBack");
+  const inner = document.getElementById("flashcardInner");
   const rating = document.getElementById("flashcardRating");
   const button = document.getElementById("showFlashcardAnswerBtn");
 
-  if (!front || !back) return;
+  if (!inner) return;
 
   flashcardFlipped = true;
 
-  front.style.display = "none";
-  back.style.display = "block";
+  inner.classList.add("flipped");
 
   if (rating) {
     rating.style.display = "flex";
@@ -1236,7 +1245,7 @@ function flipFlashcard() {
     button.disabled = true;
     button.innerText = "Antwort angezeigt";
   }
-}
+} 
 
 function markFlashcardKnown() {
   const question = flashcardQuestions[flashcardIndex];
