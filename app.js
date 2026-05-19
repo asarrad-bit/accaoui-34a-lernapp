@@ -354,6 +354,9 @@ function activateSidebarButtons() {
       item.onclick = () => showAllQuestions();
     }
 
+if (text.includes("Lernkarten")) {
+  item.onclick = () => showFlashcardsPage();
+}
     if (text.includes("Prüfung") && !text.includes("Mündliche")) {
       item.onclick = () => startExamMode();
     }
