@@ -40,7 +40,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v20.2-ihk-themenreihenfolge-stabil";
+const APP_VERSION = "v20.2-statistik-kompakt-begriffe-und-quote-verbessert";
 
 const DEFAULT_QUESTION_POINTS = 1;
 
@@ -2988,22 +2988,24 @@ function buildTopicStatsHtml() {
     let statusClass = "topic-neutral";
     let statusText = "Noch nicht bearbeitet";
 
-    if (stats.answered > 0 && percent >= 80 && mistakeCount === 0) {
+    if (stats.answered > 0 && percent < 50) {
+      statusClass = "topic-weak";
+      statusText = "Nicht bestanden";
+    } else if (stats.answered > 0 && percent >= 50 && percent < 70) {
+      statusClass = "topic-medium";
+      statusText = "Bestanden · Ausbaufähig";
+    } else if (stats.answered > 0 && percent >= 70 && percent < 85) {
+      statusClass = "topic-solid";
+      statusText = "Solide";
+    } else if (stats.answered > 0 && percent >= 85) {
       statusClass = "topic-strong";
       statusText = "Stark";
-    } else if (stats.answered > 0 && percent >= 50) {
-      statusClass = "topic-medium";
-      statusText = "Ausbaufähig";
-    } else if (stats.answered > 0) {
-      statusClass = "topic-weak";
-      statusText = "Schwach";
     }
 
     return `
       <div class="topic-stat-row">
 
         <div class="topic-name">
-          <span>Thema</span>
           <strong>${categoryIcons[categoryName] || "📘"} ${escapeHtml(categoryName)}</strong>
         </div>
 
@@ -3018,8 +3020,8 @@ function buildTopicStatsHtml() {
         </div>
 
         <div>
-          <span>Bearbeitet</span>
-          <strong>${stats.answered}</strong>
+          <span>Geübt</span>
+          <strong>${stats.answered}x</strong>
         </div>
 
         <div>
@@ -3028,17 +3030,17 @@ function buildTopicStatsHtml() {
         </div>
 
         <div>
-          <span>Falsch</span>
+          <span>Falsche Versuche</span>
           <strong>${stats.wrong}</strong>
         </div>
 
-        <div>
+        <div class="quote-column ${statusClass}">
           <span>Quote</span>
           <strong>${percent}%</strong>
         </div>
 
         <div>
-          <span>Fehler</span>
+          <span>Aktive Fehler</span>
           <strong>${mistakeCount}</strong>
         </div>
 
@@ -3064,7 +3066,7 @@ function buildTopicStatsHtml() {
 
       <div class="section-head">
         <h2>Themenstatistik</h2>
-        <p>Auswertung der Lernleistung nach einzelnen Themenbereichen</p>
+        <p>Kompakte Übersicht nach IHK-Themen: Quote, Fortschritt und aktive Fehler.</p>
       </div>
 
       <div class="topic-stats-list">
