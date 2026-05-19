@@ -40,7 +40,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v20.2-statistik-kompakt-begriffe-und-quote-verbessert";
+const APP_VERSION = "v21-lernkarten-modus-vorbereiten";
 
 const DEFAULT_QUESTION_POINTS = 1;
 
@@ -329,6 +329,10 @@ function activateDashboardButtons() {
   activateSidebarButtons();
   activateHeroCards();
 }
+
+if (text.includes("Lernkarten")) {
+  item.onclick = () => showFlashcardsPage();
+} 
 
 function activateSidebarButtons() {
   const menuItems = document.querySelectorAll(".menu-item");
@@ -965,6 +969,389 @@ function startOpenQuestionsTraining() {
   );
 }
 
+/* =========================
+   LERNKARTEN-MODUS
+========================= */
+
+let flashcardQuestions = [];
+let flashcardIndex = 0;
+let flashcardFlipped = false;
+let flashcardKnownCount = 0;
+let flashcardUnknownCount = 0;
+
+function showFlashcardsPage() {
+  currentMode = "flashcards-overview";
+  clearExamTimer();
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  if (!allQuestions || allQuestions.length === 0) {
+    showSmallNotice("Fragenbank wurde noch nicht geladen.");
+    return;
+  }
+
+  const cardsHtml = categories.map(categoryName => {
+    const questionCount = getCategoryQuestions(categoryName).length;
+    const mistakeCount = getTopicMistakeCount(categoryName);
+
+    return `
+      <div class="category-card clickable-card" onclick='startFlashcardSessionByCategory(${JSON.stringify(categoryName)})'>
+
+        <div class="category-icon" style="color:${categoryAccentColor};">
+          ${categoryIcons[categoryName] || "🃏"}
+        </div>
+
+        <h3>${escapeHtml(categoryName)}</h3>
+
+        <span>${questionCount} Lernkarten</span>
+
+        <small style="
+          display:block;
+          margin-top:6px;
+          color:${mistakeCount > 0 ? "#991b1b" : "#64748b"};
+          font-weight:${mistakeCount > 0 ? "700" : "500"};
+        ">
+          ${mistakeCount} aktive Fehler
+        </small>
+
+      </div>
+    `;
+  }).join("");
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="review-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Lernkarten</p>
+        <h1>§34a Lernkarten-Modus</h1>
+        <p>
+          Wiederholen Sie Prüfungswissen mit digitalen Lernkarten.
+          Vorderseite: Frage. Rückseite: richtige Antwort und Erklärung.
+        </p>
+      </div>
+
+      <div class="result-actions" style="margin-bottom:22px;">
+        <button class="next-btn" onclick="startFlashcardSession(allQuestions, 'Alle Lernkarten')">
+          Alle Lernkarten starten
+        </button>
+
+        ${
+          getTotalTopicMistakeCount() > 0
+            ? `<button class="next-btn danger-training-btn" onclick="startFlashcardsFromMistakes()">Fehler als Lernkarten</button>`
+            : ""
+        }
+      </div>
+
+      <div class="category-grid">
+        ${cardsHtml}
+      </div>
+
+    </section>
+  `;
+}
+
+function startFlashcardSessionByCategory(categoryName) {
+  const questions = getCategoryQuestions(categoryName);
+
+  if (questions.length === 0) {
+    showSmallNotice("Für dieses Thema sind noch keine Lernkarten vorhanden.");
+    return;
+  }
+
+  startFlashcardSession(questions, categoryName);
+}
+
+function startFlashcardsFromMistakes() {
+  let mistakes = [];
+
+  Object.values(topicMistakes).forEach(list => {
+    if (Array.isArray(list)) {
+      mistakes = mistakes.concat(list);
+    }
+  });
+
+  if (mistakes.length === 0) {
+    showSmallNotice("Keine Fehler für Lernkarten vorhanden.");
+    return;
+  }
+
+  startFlashcardSession(mistakes, "Fehler-Lernkarten");
+}
+
+function startFlashcardSession(questions, title) {
+  currentMode = "flashcards";
+
+  flashcardQuestions = shuffleArray([...questions]);
+  flashcardIndex = 0;
+  flashcardFlipped = false;
+  flashcardKnownCount = 0;
+  flashcardUnknownCount = 0;
+
+  showFlashcardView(title || "Lernkarten");
+}
+
+function showFlashcardView(title) {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="showFlashcardsPage()">
+      ← Zurück zu den Lernkarten
+    </button>
+
+    <div class="learning-header">
+      <div>
+        <p class="eyebrow">Lernkarten-Modus</p>
+        <h1>${escapeHtml(title)}</h1>
+      </div>
+
+      <div class="score-box">
+        <span>Karte</span>
+        <strong id="flashcardCounter">1/${flashcardQuestions.length}</strong>
+      </div>
+    </div>
+
+    <div class="progress-wrapper">
+      <div class="progress-info">
+        <span id="flashcardProgressText">0%</span>
+        <span id="flashcardStats">0 gewusst · 0 nicht gewusst</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="flashcardProgressFill"></div>
+      </div>
+    </div>
+
+    <section class="flashcard-wrapper" id="flashcardArea"></section>
+  `;
+
+  renderFlashcard();
+}
+
+function renderFlashcard() {
+  const flashcardArea = document.getElementById("flashcardArea");
+  const question = flashcardQuestions[flashcardIndex];
+
+  if (!flashcardArea || !question) return;
+
+  flashcardFlipped = false;
+
+  flashcardArea.innerHTML = `
+    <div class="flashcard-box">
+
+      <div class="flashcard-topline">
+        <span>${escapeHtml(question.category || "§34a")}</span>
+        <strong>${flashcardIndex + 1}/${flashcardQuestions.length}</strong>
+      </div>
+
+      <div class="flashcard-front" id="flashcardFront">
+        <p class="flashcard-label">Vorderseite</p>
+        ${formatQuestionText(question.question)}
+      </div>
+
+      <div class="flashcard-back" id="flashcardBack" style="display:none;">
+        <p class="flashcard-label">Rückseite</p>
+
+        <div class="flashcard-answer-block">
+          <span>Richtige Antwort</span>
+          <strong>${getCorrectAnswerText(question)}</strong>
+        </div>
+
+        <div class="flashcard-explanation-block">
+          <span>Erklärung</span>
+          <p>${escapeHtml(question.explanation || "Keine Erklärung hinterlegt.")}</p>
+        </div>
+      </div>
+
+      <div class="flashcard-actions">
+
+        <button class="next-btn" id="showFlashcardAnswerBtn" onclick="flipFlashcard()">
+          Antwort anzeigen
+        </button>
+
+        <button class="next-btn secondary-btn" onclick="previousFlashcard()">
+          Zurück
+        </button>
+
+        <button class="next-btn" onclick="nextFlashcard()">
+          Nächste Karte
+        </button>
+
+      </div>
+
+      <div class="flashcard-rating" id="flashcardRating" style="display:none;">
+        <button class="next-btn" onclick="markFlashcardKnown()">
+          Gewusst
+        </button>
+
+        <button class="next-btn danger-training-btn" onclick="markFlashcardUnknown()">
+          Nicht gewusst
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  updateFlashcardProgress();
+}
+
+function flipFlashcard() {
+  const front = document.getElementById("flashcardFront");
+  const back = document.getElementById("flashcardBack");
+  const rating = document.getElementById("flashcardRating");
+  const button = document.getElementById("showFlashcardAnswerBtn");
+
+  if (!front || !back) return;
+
+  flashcardFlipped = true;
+
+  front.style.display = "none";
+  back.style.display = "block";
+
+  if (rating) {
+    rating.style.display = "flex";
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.innerText = "Antwort angezeigt";
+  }
+}
+
+function markFlashcardKnown() {
+  const question = flashcardQuestions[flashcardIndex];
+
+  if (question) {
+    markQuestionAsAnswered(question);
+    removeTopicMistake(question);
+  }
+
+  flashcardKnownCount++;
+  updateFlashcardProgress();
+  nextFlashcard();
+}
+
+function markFlashcardUnknown() {
+  const question = flashcardQuestions[flashcardIndex];
+
+  if (question) {
+    saveTopicMistake(question);
+  }
+
+  flashcardUnknownCount++;
+  updateFlashcardProgress();
+  nextFlashcard();
+}
+
+function nextFlashcard() {
+  if (flashcardIndex >= flashcardQuestions.length - 1) {
+    showFlashcardFinishScreen();
+    return;
+  }
+
+  flashcardIndex++;
+  renderFlashcard();
+}
+
+function previousFlashcard() {
+  if (flashcardIndex <= 0) {
+    showSmallNotice("Sie sind bereits bei der ersten Karte.");
+    return;
+  }
+
+  flashcardIndex--;
+  renderFlashcard();
+}
+
+function updateFlashcardProgress() {
+  const total = flashcardQuestions.length;
+  const seen = flashcardIndex + 1;
+  const percent = total > 0 ? Math.round((seen / total) * 100) : 0;
+
+  const counter = document.getElementById("flashcardCounter");
+  const progressText = document.getElementById("flashcardProgressText");
+  const progressFill = document.getElementById("flashcardProgressFill");
+  const stats = document.getElementById("flashcardStats");
+
+  if (counter) {
+    counter.innerText = `${seen}/${total}`;
+  }
+
+  if (progressText) {
+    progressText.innerText = percent + "%";
+  }
+
+  if (progressFill) {
+    progressFill.style.width = percent + "%";
+  }
+
+  if (stats) {
+    stats.innerText =
+      flashcardKnownCount + " gewusst · " +
+      flashcardUnknownCount + " nicht gewusst";
+  }
+}
+
+function showFlashcardFinishScreen() {
+  const totalRated = flashcardKnownCount + flashcardUnknownCount;
+  const percent =
+    totalRated > 0
+      ? Math.round((flashcardKnownCount / totalRated) * 100)
+      : 0;
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="showFlashcardsPage()">
+      ← Zurück zu den Lernkarten
+    </button>
+
+    <div class="finish-card">
+      <h1>Lernkarten beendet</h1>
+
+      <p>Ergebnis: ${percent}% gewusst</p>
+
+      <p>${flashcardKnownCount} gewusst · ${flashcardUnknownCount} nicht gewusst</p>
+
+      <div class="result-actions">
+        <button class="next-btn" onclick="showFlashcardsPage()">
+          Lernkartenübersicht
+        </button>
+
+        ${
+          getTotalTopicMistakeCount() > 0
+            ? `<button class="next-btn danger-training-btn" onclick="startFlashcardsFromMistakes()">Fehler-Lernkarten starten</button>`
+            : ""
+        }
+
+        <button class="next-btn secondary-btn" onclick="location.reload()">
+          Zurück zum Dashboard
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function getCorrectAnswerText(question) {
+  if (!question || !Array.isArray(question.correct)) {
+    return "Keine richtige Antwort hinterlegt.";
+  }
+
+  return question.correct
+    .map(index => question.answers[index])
+    .filter(Boolean)
+    .map(answer => escapeHtml(answer))
+    .join("<br>");
+}
 
 /* =========================
    FEHLERTRAINING NACH THEMEN
@@ -3327,3 +3714,13 @@ window.showExamStartPage = showExamStartPage;
 window.repeatCurrentExamMode = repeatCurrentExamMode;
 
 window.toggleTopicDetails = toggleTopicDetails;
+
+window.showFlashcardsPage = showFlashcardsPage;
+window.startFlashcardSession = startFlashcardSession;
+window.startFlashcardSessionByCategory = startFlashcardSessionByCategory;
+window.startFlashcardsFromMistakes = startFlashcardsFromMistakes;
+window.flipFlashcard = flipFlashcard;
+window.nextFlashcard = nextFlashcard;
+window.previousFlashcard = previousFlashcard;
+window.markFlashcardKnown = markFlashcardKnown;
+window.markFlashcardUnknown = markFlashcardUnknown;
