@@ -40,7 +40,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v20-pruefungsmodus-cleanup-stabil";
+const APP_VERSION = "v20.2-ihk-themenreihenfolge-stabil";
 
 const DEFAULT_QUESTION_POINTS = 1;
 
@@ -63,24 +63,24 @@ const categories = [
   "Recht der öffentlichen Sicherheit und Ordnung",
   "Gewerberecht",
   "Datenschutzrecht",
-  "Bürgerliches Recht",
+  "Bürgerliches Gesetzbuch",
   "Straf- und Strafverfahrensrecht",
+  "Umgang mit Waffen",
+  "Unfallverhütungsvorschrift",
   "Umgang mit Menschen",
-  "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
-  "Grundzüge der Sicherheitstechnik",
-  "Grundzüge des Waffenrechts"
+  "Grundzüge der Sicherheitstechnik"
 ];
 
 const categoryIcons = {
   "Recht der öffentlichen Sicherheit und Ordnung": "⚖️",
   "Gewerberecht": "🏢",
   "Datenschutzrecht": "🔐",
-  "Bürgerliches Recht": "📄",
+  "Bürgerliches Gesetzbuch": "📄",
   "Straf- und Strafverfahrensrecht": "🚨",
+  "Umgang mit Waffen": "🛡️",
+  "Unfallverhütungsvorschrift": "🦺",
   "Umgang mit Menschen": "🗣️",
-  "Unfallverhütungsvorschrift Wach- und Sicherungsdienste": "🦺",
-  "Grundzüge der Sicherheitstechnik": "📹",
-  "Grundzüge des Waffenrechts": "🛡️"
+  "Grundzüge der Sicherheitstechnik": "📹"
 };
 
 const categoryAccentColor = "#2344c6";
@@ -211,11 +211,19 @@ function normalizeQuestion(question, index) {
 function normalizeCategoryName(categoryName) {
   const value = String(categoryName || "").trim();
 
-  if (value === "Bürgerliches Gesetzbuch") {
-    return "Bürgerliches Recht";
-  }
+  const categoryMap = {
+    "Bürgerliches Recht": "Bürgerliches Gesetzbuch",
+    "Bürgerliches Gesetzbuch": "Bürgerliches Gesetzbuch",
 
-  return value;
+    "Grundzüge des Waffenrechts": "Umgang mit Waffen",
+    "Waffenrecht": "Umgang mit Waffen",
+    "Umgang mit Waffen": "Umgang mit Waffen",
+
+    "Unfallverhütungsvorschrift Wach- und Sicherungsdienste": "Unfallverhütungsvorschrift",
+    "Unfallverhütungsvorschrift": "Unfallverhütungsvorschrift"
+  };
+
+  return categoryMap[value] || value;
 }
 
 function normalizeAnswers(question) {
@@ -2723,7 +2731,25 @@ function startMistakeTraining() {
 ========================= */
 
 function loadTopicStats() {
-  topicStats = readStorage(STORAGE_KEYS.topicStats, {});
+  const saved = readStorage(STORAGE_KEYS.topicStats, {});
+  topicStats = {};
+
+  Object.keys(saved).forEach(categoryName => {
+    const normalizedCategory = normalizeCategoryName(categoryName);
+    const stats = saved[categoryName] || {};
+
+    if (!topicStats[normalizedCategory]) {
+      topicStats[normalizedCategory] = {
+        answered: 0,
+        correct: 0,
+        wrong: 0
+      };
+    }
+
+    topicStats[normalizedCategory].answered += Number(stats.answered || 0);
+    topicStats[normalizedCategory].correct += Number(stats.correct || 0);
+    topicStats[normalizedCategory].wrong += Number(stats.wrong || 0);
+  });
 }
 
 function saveTopicStats() {
@@ -3049,6 +3075,23 @@ function buildTopicStatsHtml() {
   `;
 }
 
+function toggleTopicDetails(detailsId) {
+  const detailsBox = document.getElementById(detailsId);
+  const button = document.querySelector(`[data-details-target="${detailsId}"]`);
+
+  if (!detailsBox) return;
+
+  const isHidden = detailsBox.style.display === "none";
+
+  detailsBox.style.display = isHidden ? "grid" : "none";
+
+  if (button) {
+    button.innerText = isHidden
+      ? "Details ausblenden ▲"
+      : "Details anzeigen ▼";
+  }
+} 
+
 function resetExamHistory() {
   showConfirmModal(
     "Statistik zurücksetzen?",
@@ -3280,3 +3323,5 @@ window.resetExamHistory = resetExamHistory;
 
 window.showExamStartPage = showExamStartPage;
 window.repeatCurrentExamMode = repeatCurrentExamMode;
+
+window.toggleTopicDetails = toggleTopicDetails;
