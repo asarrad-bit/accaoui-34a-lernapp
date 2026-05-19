@@ -1000,7 +1000,11 @@ function showFlashcardsPage() {
     const mistakeCount = getTopicMistakeCount(categoryName);
 
     return `
-      <div class="category-card clickable-card" onclick='startFlashcardSessionByCategory(${JSON.stringify(categoryName)})'>
+      <div
+        class="category-card clickable-card flashcard-category-card"
+        data-category="${escapeHtml(categoryName)}"
+        style="cursor:pointer;"
+      >
 
         <div class="category-icon" style="color:${categoryAccentColor};">
           ${categoryIcons[categoryName] || "🃏"}
@@ -1057,8 +1061,14 @@ function showFlashcardsPage() {
 
     </section>
   `;
-}
 
+  document.querySelectorAll(".flashcard-category-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const categoryName = card.dataset.category;
+      startFlashcardSessionByCategory(categoryName);
+    });
+  });
+}
 function startFlashcardSessionByCategory(categoryName) {
   const questions = getCategoryQuestions(categoryName);
 
