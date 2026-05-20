@@ -2578,3 +2578,62 @@ body > .container {
 .flashcard-answer-block strong {
   color: var(--topic-accent) !important;
 }
+
+/* =====================================================
+   v21.3.3 LERNKARTEN – PREMIUM OVERRIDE FINAL
+   Entfernt Spielkarten-Look, behält dezente Themenfarben
+===================================================== */
+
+.flashcard-category-card[class*="theme-"] {
+  background:
+    radial-gradient(circle at top right, var(--topic-soft), transparent 38%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-left: 5px solid var(--topic-accent) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.07) !important;
+}
+
+.flashcard-category-card[class*="theme-"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.11) !important;
+  border-color: rgba(226, 232, 240, 0.95) !important;
+  border-left-color: var(--topic-accent) !important;
+}
+
+.flashcard-category-card[class*="theme-"]::before {
+  background: none !important;
+}
+
+.flashcard-category-card[class*="theme-"] .category-icon {
+  background: var(--topic-soft) !important;
+  color: var(--topic-accent) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+}
+
+.flashcard-category-card[class*="theme-"] h3 {
+  color: #0f172a !important;
+}
+
+.flashcard-category-card[class*="theme-"] span,
+.flashcard-category-card[class*="theme-"] small {
+  color: #475569 !important;
+}
+
+.flashcard-study-box[class*="theme-"] .flashcard-front-side {
+  background:
+    radial-gradient(circle at top right, var(--topic-soft), transparent 38%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-top: 5px solid var(--topic-accent) !important;
+}
+
+.flashcard-study-box[class*="theme-"] .flashcard-back-side {
+  background:
+    radial-gradient(circle at top right, var(--topic-soft), transparent 38%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-top: 5px solid var(--topic-accent) !important;
+}
