@@ -2292,3 +2292,118 @@ body > .container {
     width: 100%;
   }
 } 
+
+/* =====================================================
+   v21.3 LERNKARTEN – THEMENFARBEN FINAL
+===================================================== */
+
+.flashcard-study-box.theme-public-order .flashcard-front-side,
+.flashcard-category-card.theme-public-order {
+  background: linear-gradient(135deg, #f8fbff 0%, #e8eefc 100%);
+  border-color: rgba(35, 68, 198, 0.22);
+}
+
+.flashcard-study-box.theme-public-order .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #eef4ff 100%);
+}
+
+.flashcard-study-box.theme-trade-law .flashcard-front-side,
+.flashcard-category-card.theme-trade-law {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+  border-color: rgba(2, 132, 199, 0.22);
+}
+
+.flashcard-study-box.theme-trade-law .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #ecfeff 100%);
+}
+
+.flashcard-study-box.theme-data-protection .flashcard-front-side,
+.flashcard-category-card.theme-data-protection {
+  background: linear-gradient(135deg, #f8fffb 0%, #dcfce7 100%);
+  border-color: rgba(21, 128, 61, 0.22);
+}
+
+.flashcard-study-box.theme-data-protection .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.flashcard-study-box.theme-civil-law .flashcard-front-side,
+.flashcard-category-card.theme-civil-law {
+  background: linear-gradient(135deg, #fffdf7 0%, #fef3c7 100%);
+  border-color: rgba(202, 138, 4, 0.25);
+}
+
+.flashcard-study-box.theme-civil-law .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+}
+
+.flashcard-study-box.theme-criminal-law .flashcard-front-side,
+.flashcard-category-card.theme-criminal-law {
+  background: linear-gradient(135deg, #fff7f7 0%, #fee2e2 100%);
+  border-color: rgba(185, 28, 28, 0.24);
+}
+
+.flashcard-study-box.theme-criminal-law .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+}
+
+.flashcard-study-box.theme-weapons .flashcard-front-side,
+.flashcard-category-card.theme-weapons {
+  background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
+  border-color: rgba(51, 65, 85, 0.24);
+}
+
+.flashcard-study-box.theme-weapons .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+}
+
+.flashcard-study-box.theme-safety .flashcard-front-side,
+.flashcard-category-card.theme-safety {
+  background: linear-gradient(135deg, #fffaf5 0%, #ffedd5 100%);
+  border-color: rgba(234, 88, 12, 0.24);
+}
+
+.flashcard-study-box.theme-safety .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+}
+
+.flashcard-study-box.theme-people .flashcard-front-side,
+.flashcard-category-card.theme-people {
+  background: linear-gradient(135deg, #faf7ff 0%, #ede9fe 100%);
+  border-color: rgba(124, 58, 237, 0.22);
+}
+
+.flashcard-study-box.theme-people .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+}
+
+.flashcard-study-box.theme-security-tech .flashcard-front-side,
+.flashcard-category-card.theme-security-tech {
+  background: linear-gradient(135deg, #f7ffff 0%, #ccfbf1 100%);
+  border-color: rgba(13, 148, 136, 0.24);
+}
+
+.flashcard-study-box.theme-security-tech .flashcard-back-side {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%);
+}
+
+/* Lernkarten-Themenkarten optisch hochwertiger */
+.flashcard-category-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+}
+
+.flashcard-category-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at top right, rgba(255,255,255,0.9), transparent 45%);
+}
+
+.flashcard-category-card > * {
+  position: relative;
+  z-index: 1;
+}
