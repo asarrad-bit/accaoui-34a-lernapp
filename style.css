@@ -2743,3 +2743,81 @@ body > .container {
 .flashcard-answer-block strong {
   color: rgba(15, 23, 42, 0.88) !important;
 }
+
+/* =====================================================
+   v21.4 FEHLERTRAINING – ZEILEN RUHIGER
+   Ziel: Fehlerübersicht klarer, weniger gedrückt
+===================================================== */
+
+.topic-stats-section .topic-stats-list .topic-stat-row {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.8fr) 90px 150px 150px;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.055);
+}
+
+.topic-stats-section .topic-stats-list .topic-stat-row .topic-name span {
+  display: none;
+}
+
+.topic-stats-section .topic-stats-list .topic-stat-row .topic-name strong {
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.topic-stats-section .topic-stats-list .topic-stat-row > div:not(.topic-name) span {
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.topic-stats-section .topic-stats-list .topic-stat-row > div:not(.topic-name) strong {
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.topic-stats-section .topic-stats-list .topic-stat-row .next-btn {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 15px;
+  font-size: 14px;
+}
+
+/* Nur Button ruhiger machen, wenn keine Fehler vorhanden sind */
+.topic-stats-section .topic-stats-list .topic-stat-row .secondary-btn:disabled {
+  background: #eef2f7 !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+}
+
+/* Tablet */
+@media (max-width: 1000px) {
+  .topic-stats-section .topic-stats-list .topic-stat-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .topic-stats-section .topic-stats-list .topic-stat-row .topic-name {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Handy */
+@media (max-width: 600px) {
+  .topic-stats-section .topic-stats-list .topic-stat-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .topic-stats-section .topic-stats-list .topic-stat-row .topic-name strong {
+    font-size: 17px;
+  }
+}
