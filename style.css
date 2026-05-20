@@ -291,10 +291,6 @@ window.getTotalFlashcardProgress = getTotalFlashcardProgress;
   font-weight: 700;
 }
 
-   /* =====================================================
-   v21.6 LERNKARTEN – AKTIVE FEHLER ALS CHIP-BUTTON
-===================================================== */
-
 .flashcard-mistake-chip {
   margin-top: 10px;
   display: inline-flex;
