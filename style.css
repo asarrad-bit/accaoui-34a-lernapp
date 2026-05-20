@@ -2821,3 +2821,26 @@ body > .container {
     font-size: 17px;
   }
 }
+
+/* =====================================================
+   v21.5 LERNKARTEN – FORTSCHRITT MINI-ANZEIGE
+===================================================== */
+
+.flashcard-progress-mini {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.flashcard-progress-mini span {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(241, 245, 249, 0.9);
+  color: #475569 !important;
+  font-size: 11.5px !important;
+  font-weight: 850;
+  line-height: 1;
+}

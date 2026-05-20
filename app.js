@@ -3746,3 +3746,260 @@ window.nextFlashcard = nextFlashcard;
 window.previousFlashcard = previousFlashcard;
 window.markFlashcardKnown = markFlashcardKnown;
 window.markFlashcardUnknown = markFlashcardUnknown;
+
+/* =====================================================
+   v21.5 LERNKARTEN – FORTSCHRITT SPEICHERN
+===================================================== */
+
+const FLASHCARD_PROGRESS_KEY = "accaoui_flashcard_progress";
+
+let flashcardProgressStore = {};
+
+function loadFlashcardProgressStore() {
+  if (typeof readStorage === "function") {
+    flashcardProgressStore = readStorage(FLASHCARD_PROGRESS_KEY, {});
+  } else {
+    const saved = localStorage.getItem(FLASHCARD_PROGRESS_KEY);
+    flashcardProgressStore = saved ? JSON.parse(saved) : {};
+  }
+}
+
+function saveFlashcardProgressStore() {
+  if (typeof writeStorage === "function") {
+    writeStorage(FLASHCARD_PROGRESS_KEY, flashcardProgressStore);
+  } else {
+    localStorage.setItem(FLASHCARD_PROGRESS_KEY, JSON.stringify(flashcardProgressStore));
+  }
+}
+
+function getFlashcardProgressKey(question) {
+  if (!question) return "";
+
+  if (typeof getQuestionKey === "function") {
+    return getQuestionKey(question);
+  }
+
+  return String(question.id || question.question || JSON.stringify(question));
+}
+
+function saveFlashcardProgress(question, status) {
+  if (!question) return;
+
+  loadFlashcardProgressStore();
+
+  const key = getFlashcardProgressKey(question);
+  const oldEntry = flashcardProgressStore[key] || {
+    knownCount: 0,
+    unknownCount: 0
+  };
+
+  const category = typeof normalizeCategoryName === "function"
+    ? normalizeCategoryName(question.category || "")
+    : String(question.category || "");
+
+  const newEntry = {
+    id: question.id || key,
+    category,
+    question: question.question || "",
+    lastStatus: status,
+    knownCount: Number(oldEntry.knownCount || 0) + (status === "known" ? 1 : 0),
+    unknownCount: Number(oldEntry.unknownCount || 0) + (status === "unknown" ? 1 : 0),
+    updatedAt: new Date().toISOString()
+  };
+
+  flashcardProgressStore[key] = newEntry;
+  saveFlashcardProgressStore();
+}
+
+function getFlashcardCategoryProgress(categoryName) {
+  loadFlashcardProgressStore();
+
+  const questions = getCategoryQuestions(categoryName);
+  let known = 0;
+  let unknown = 0;
+  let untouched = 0;
+
+  questions.forEach(question => {
+    const key = getFlashcardProgressKey(question);
+    const entry = flashcardProgressStore[key];
+
+    if (!entry) {
+      untouched++;
+      return;
+    }
+
+    if (entry.lastStatus === "known") {
+      known++;
+    } else if (entry.lastStatus === "unknown") {
+      unknown++;
+    } else {
+      untouched++;
+    }
+  });
+
+  return {
+    total: questions.length,
+    known,
+    unknown,
+    untouched
+  };
+}
+
+function getTotalFlashcardProgress() {
+  loadFlashcardProgressStore();
+
+  let known = 0;
+  let unknown = 0;
+
+  Object.values(flashcardProgressStore).forEach(entry => {
+    if (entry.lastStatus === "known") known++;
+    if (entry.lastStatus === "unknown") unknown++;
+  });
+
+  return {
+    known,
+    unknown
+  };
+}
+
+/* Überschreibt die bisherige Gewusst-Funktion */
+function markFlashcardKnown() {
+  const question = flashcardQuestions[flashcardIndex];
+
+  if (question) {
+    markQuestionAsAnswered(question);
+    removeTopicMistake(question);
+    saveFlashcardProgress(question, "known");
+  }
+
+  flashcardKnownCount++;
+  updateFlashcardProgress();
+  nextFlashcard();
+}
+
+/* Überschreibt die bisherige Nicht-gewusst-Funktion */
+function markFlashcardUnknown() {
+  const question = flashcardQuestions[flashcardIndex];
+
+  if (question) {
+    saveTopicMistake(question);
+    saveFlashcardProgress(question, "unknown");
+  }
+
+  flashcardUnknownCount++;
+  updateFlashcardProgress();
+  nextFlashcard();
+}
+
+/* Überschreibt die Lernkartenübersicht mit Fortschritt */
+function showFlashcardsPage() {
+  currentMode = "flashcards-overview";
+  clearExamTimer();
+  loadFlashcardProgressStore();
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  if (!allQuestions || allQuestions.length === 0) {
+    showSmallNotice("Fragenbank wurde noch nicht geladen.");
+    return;
+  }
+
+  const totalProgress = getTotalFlashcardProgress();
+
+  const cardsHtml = getSafeCategories().map(categoryName => {
+    const questionCount = getCategoryQuestions(categoryName).length;
+    const mistakeCount = getTopicMistakeCount(categoryName);
+    const themeClass = getCategoryThemeClass(categoryName);
+    const progress = getFlashcardCategoryProgress(categoryName);
+
+    return `
+      <div class="category-card clickable-card flashcard-category-card ${themeClass}" data-category="${escapeHtml(categoryName)}" style="cursor:pointer;">
+
+        <div class="category-icon" style="color:${categoryAccentColor};">
+          ${categoryIcons[categoryName] || "🃏"}
+        </div>
+
+        <h3>${escapeHtml(categoryName)}</h3>
+
+        <span>${questionCount} Lernkarten</span>
+
+        <div class="flashcard-progress-mini">
+          <span>${progress.known} gewusst</span>
+          <span>${progress.unknown} offen/wiederholen</span>
+        </div>
+
+        <small style="display:block;margin-top:6px;color:${mistakeCount > 0 ? "#991b1b" : "#64748b"};font-weight:${mistakeCount > 0 ? "700" : "500"};">
+          ${mistakeCount} aktive Fehler
+        </small>
+
+      </div>
+    `;
+  }).join("");
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="review-wrapper">
+
+      <div class="review-header">
+        <p class="eyebrow">Lernkarten</p>
+        <h1>§34a Lernkarten-Modus</h1>
+        <p>
+          Wiederholen Sie Prüfungswissen mit digitalen Lernkarten.
+          Fortschritt wird lokal gespeichert.
+        </p>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stats-card success">
+          <span>Gewusst</span>
+          <strong>${totalProgress.known}</strong>
+        </div>
+
+        <div class="stats-card danger">
+          <span>Wiederholen</span>
+          <strong>${totalProgress.unknown}</strong>
+        </div>
+
+        <div class="stats-card">
+          <span>Lernkarten gesamt</span>
+          <strong>${allQuestions.length}</strong>
+        </div>
+      </div>
+
+      <div class="result-actions" style="margin-bottom:22px;">
+        <button class="next-btn" onclick="startFlashcardSession(allQuestions, 'Alle Lernkarten')">
+          Alle Lernkarten starten
+        </button>
+
+        ${
+          getTotalTopicMistakeCount() > 0
+            ? `<button class="next-btn danger-training-btn" onclick="startFlashcardsFromMistakes()">Fehler als Lernkarten</button>`
+            : ""
+        }
+      </div>
+
+      <div class="category-grid">
+        ${cardsHtml}
+      </div>
+
+    </section>
+  `;
+
+  document.querySelectorAll(".flashcard-category-card").forEach(card => {
+    card.addEventListener("click", () => {
+      startFlashcardSessionByCategory(card.dataset.category);
+    });
+  });
+}
+
+window.markFlashcardKnown = markFlashcardKnown;
+window.markFlashcardUnknown = markFlashcardUnknown;
+window.showFlashcardsPage = showFlashcardsPage;
+window.saveFlashcardProgress = saveFlashcardProgress;
+window.getFlashcardCategoryProgress = getFlashcardCategoryProgress;
+window.getTotalFlashcardProgress = getTotalFlashcardProgress;
