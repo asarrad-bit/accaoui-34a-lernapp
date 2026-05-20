@@ -114,9 +114,17 @@ function showFlashcardsPage() {
         <h3>${escapeHtml(categoryName)}</h3>
         <span>${questionCount} Lernkarten</span>
 
-        <small style="display:block;margin-top:6px;color:${mistakeCount > 0 ? "#991b1b" : "#64748b"};font-weight:${mistakeCount > 0 ? "700" : "500"};">
-          ${mistakeCount} aktive Fehler
-        </small>
+       ${
+  mistakeCount > 0
+    ? `<button
+        type="button"
+        class="flashcard-mistake-chip"
+        onclick='event.stopPropagation(); startTopicMistakeTraining(${JSON.stringify(categoryName)})'
+      >
+        ${mistakeCount} aktive Fehler trainieren
+      </button>`
+    : `<small class="flashcard-no-mistakes">Keine aktiven Fehler</small>`
+}
       </div>
     `;
   }).join("");
