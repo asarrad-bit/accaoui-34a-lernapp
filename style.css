@@ -2407,3 +2407,60 @@ body > .container {
   position: relative;
   z-index: 1;
 }
+/* =====================================================
+   v21.3.1 LERNKARTEN – THEMENFARBEN SICHTBAR FORCE
+===================================================== */
+
+.flashcard-category-card.theme-public-order,
+.flashcard-study-box.theme-public-order .flashcard-front-side {
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%) !important;
+  border: 2px solid #2563eb !important;
+}
+
+.flashcard-category-card.theme-trade-law,
+.flashcard-study-box.theme-trade-law .flashcard-front-side {
+  background: linear-gradient(135deg, #cffafe 0%, #ecfeff 100%) !important;
+  border: 2px solid #0891b2 !important;
+}
+
+.flashcard-category-card.theme-data-protection,
+.flashcard-study-box.theme-data-protection .flashcard-front-side {
+  background: linear-gradient(135deg, #bbf7d0 0%, #f0fdf4 100%) !important;
+  border: 2px solid #16a34a !important;
+}
+
+.flashcard-category-card.theme-civil-law,
+.flashcard-study-box.theme-civil-law .flashcard-front-side {
+  background: linear-gradient(135deg, #fde68a 0%, #fffbeb 100%) !important;
+  border: 2px solid #ca8a04 !important;
+}
+
+.flashcard-category-card.theme-criminal-law,
+.flashcard-study-box.theme-criminal-law .flashcard-front-side {
+  background: linear-gradient(135deg, #fecaca 0%, #fef2f2 100%) !important;
+  border: 2px solid #dc2626 !important;
+}
+
+.flashcard-category-card.theme-weapons,
+.flashcard-study-box.theme-weapons .flashcard-front-side {
+  background: linear-gradient(135deg, #cbd5e1 0%, #f8fafc 100%) !important;
+  border: 2px solid #475569 !important;
+}
+
+.flashcard-category-card.theme-safety,
+.flashcard-study-box.theme-safety .flashcard-front-side {
+  background: linear-gradient(135deg, #fed7aa 0%, #fff7ed 100%) !important;
+  border: 2px solid #ea580c !important;
+}
+
+.flashcard-category-card.theme-people,
+.flashcard-study-box.theme-people .flashcard-front-side {
+  background: linear-gradient(135deg, #ddd6fe 0%, #f5f3ff 100%) !important;
+  border: 2px solid #7c3aed !important;
+}
+
+.flashcard-category-card.theme-security-tech,
+.flashcard-study-box.theme-security-tech .flashcard-front-side {
+  background: linear-gradient(135deg, #99f6e4 0%, #f0fdfa 100%) !important;
+  border: 2px solid #0d9488 !important;
+}
