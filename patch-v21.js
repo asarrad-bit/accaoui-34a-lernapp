@@ -253,3 +253,88 @@ window.buildCategoryCards = buildCategoryCards;
 window.showFlashcardsPage = showFlashcardsPage;
 window.renderFlashcard = renderFlashcard;
 window.flipFlashcard = flipFlashcard;
+
+/* =====================================================
+   v21.5 LERNKARTEN – FORTSCHRITT SPEICHERN
+===================================================== */
+
+const FLASHCARD_PROGRESS_KEY = "accaoui_flashcard_progress";
+
+function loadFlashcardProgress() {
+  const saved = localStorage.getItem(FLASHCARD_PROGRESS_KEY);
+
+  if (!saved) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(saved);
+  } catch (error) {
+    console.error("Fehler beim Laden des Lernkarten-Fortschritts:", error);
+    return {};
+  }
+}
+
+function saveFlashcardProgressData(progressData) {
+  localStorage.setItem(FLASHCARD_PROGRESS_KEY, JSON.stringify(progressData));
+}
+
+function saveSingleFlashcardProgress(question, status) {
+  if (!question) return;
+
+  const progressData = loadFlashcardProgress();
+  const questionKey = typeof getQuestionKey === "function"
+    ? getQuestionKey(question)
+    : String(question.id || question.question || "");
+
+  const oldEntry = progressData[questionKey] || {
+    knownCount: 0,
+    unknownCount: 0
+  };
+
+  progressData[questionKey] = {
+    id: question.id || questionKey,
+    category: question.category || "Ohne Kategorie",
+    question: question.question || "",
+    lastStatus: status,
+    knownCount: Number(oldEntry.knownCount || 0) + (status === "known" ? 1 : 0),
+    unknownCount: Number(oldEntry.unknownCount || 0) + (status === "unknown" ? 1 : 0),
+    updatedAt: new Date().toISOString()
+  };
+
+  saveFlashcardProgressData(progressData);
+}
+
+/* Gewusst speichern */
+function markFlashcardKnown() {
+  const question = flashcardQuestions[flashcardIndex];
+
+  if (question) {
+    markQuestionAsAnswered(question);
+    removeTopicMistake(question);
+    saveSingleFlashcardProgress(question, "known");
+  }
+
+  flashcardKnownCount++;
+  updateFlashcardProgress();
+  nextFlashcard();
+}
+
+/* Nicht gewusst speichern */
+function markFlashcardUnknown() {
+  const question = flashcardQuestions[flashcardIndex];
+
+  if (question) {
+    saveTopicMistake(question);
+    saveSingleFlashcardProgress(question, "unknown");
+  }
+
+  flashcardUnknownCount++;
+  updateFlashcardProgress();
+  nextFlashcard();
+}
+
+window.markFlashcardKnown = markFlashcardKnown;
+window.markFlashcardUnknown = markFlashcardUnknown;
+window.saveSingleFlashcardProgress = saveSingleFlashcardProgress;
+window.loadFlashcardProgress = loadFlashcardProgress;
