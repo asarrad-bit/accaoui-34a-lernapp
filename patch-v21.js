@@ -261,3 +261,31 @@ window.buildCategoryCards = buildCategoryCards;
 window.showFlashcardsPage = showFlashcardsPage;
 window.renderFlashcard = renderFlashcard;
 window.flipFlashcard = flipFlashcard;
+
+/* =====================================================
+   v21.6.1 LERNKARTEN – MENÜKLICK SICHERN
+===================================================== */
+
+function bindFlashcardsMenuPatch() {
+  const flashcardsMenu = document.getElementById("flashcardsMenu");
+
+  if (!flashcardsMenu) {
+    console.warn("Menüpunkt Lernkarten wurde nicht gefunden.");
+    return;
+  }
+
+  flashcardsMenu.style.cursor = "pointer";
+
+  flashcardsMenu.onclick = event => {
+    event.preventDefault();
+    showFlashcardsPage();
+  };
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", bindFlashcardsMenuPatch);
+} else {
+  bindFlashcardsMenuPatch();
+}
+
+window.bindFlashcardsMenuPatch = bindFlashcardsMenuPatch;
