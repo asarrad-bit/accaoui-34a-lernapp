@@ -2132,3 +2132,39 @@ body > .container {
   font-size: 12px !important;
   font-weight: 700;
 }
+
+/* =====================================================
+   v21.6 LERNKARTEN – AKTIVE FEHLER ALS CHIP-BUTTON
+===================================================== */
+
+.flashcard-mistake-chip {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(185, 28, 28, 0.18);
+  background: rgba(254, 242, 242, 0.85);
+  color: #991b1b;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.flashcard-mistake-chip:hover {
+  background: rgba(254, 226, 226, 0.95);
+  border-color: rgba(185, 28, 28, 0.28);
+  transform: translateY(-1px);
+}
+
+.flashcard-no-mistakes {
+  display: block;
+  margin-top: 10px;
+  color: #94a3b8 !important;
+  font-size: 12px !important;
+  font-weight: 700;
+}
