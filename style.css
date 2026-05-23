@@ -2783,3 +2783,46 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.6.7 LERNKARTEN – EIN GEMEINSAMER ZURÜCK-BUTTON
+   Ziel: Zurück-Button nie doppelt anzeigen
+===================================================== */
+
+.flashcard-shared-back {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.flashcard-shared-back .next-btn {
+  min-width: 150px;
+}
+
+@media (max-width: 700px) {
+  .flashcard-shared-back {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .flashcard-shared-back .next-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #flashcardFrontActions {
+    display: flex !important;
+  }
+
+  #flashcardRating {
+    display: none !important;
+  }
+
+  .flashcard-study-box.is-flipped #flashcardFrontActions {
+    display: none !important;
+  }
+
+  .flashcard-study-box.is-flipped #flashcardRating {
+    display: flex !important;
+  }
+}
+

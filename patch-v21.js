@@ -211,10 +211,6 @@ function renderFlashcard() {
         <button class="next-btn" id="showFlashcardAnswerBtn" onclick="flipFlashcard()">
           Antwort anzeigen
         </button>
-
-        <button class="next-btn secondary-btn" onclick="previousFlashcard()">
-          Zurück
-        </button>
       </div>
 
       <div class="flashcard-rating" id="flashcardRating" style="display:none;">
@@ -225,7 +221,9 @@ function renderFlashcard() {
         <button class="next-btn danger-training-btn" onclick="markFlashcardUnknown()">
           Nicht gewusst
         </button>
+      </div>
 
+      <div class="flashcard-shared-back">
         <button class="next-btn secondary-btn" onclick="previousFlashcard()">
           Zurück
         </button>
@@ -243,15 +241,21 @@ function flipFlashcard() {
 
   if (!inner) return;
 
+  const studyBox = inner.closest(".flashcard-study-box");
+
   flashcardFlipped = true;
   inner.classList.add("flipped");
 
+  if (studyBox) {
+    studyBox.classList.add("is-flipped");
+  }
+
   if (frontActions) {
-    frontActions.style.display = "none";
+    frontActions.style.setProperty("display", "none", "important");
   }
 
   if (rating) {
-    rating.style.display = "flex";
+    rating.style.setProperty("display", "flex", "important");
   }
 }
 
