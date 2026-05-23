@@ -2760,3 +2760,26 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.6.6 LERNKARTEN – MOBILE BUTTON STATUS FIX
+   Ziel: Zurück-Button nur einmal anzeigen
+===================================================== */
+
+@media (max-width: 700px) {
+  #flashcardFrontActions {
+    display: flex !important;
+  }
+
+  #flashcardRating {
+    display: none !important;
+  }
+
+  .flashcard-study-box.is-flipped #flashcardFrontActions {
+    display: none !important;
+  }
+
+  .flashcard-study-box.is-flipped #flashcardRating {
+    display: flex !important;
+  }
+}
+
