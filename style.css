@@ -2720,3 +2720,43 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.6.5 LERNKARTEN – MOBILE BUTTON-DOPPLUNG FIX
+   Ziel: Zurück-Button nicht doppelt anzeigen
+===================================================== */
+
+@media (max-width: 700px) {
+  .flashcard-actions,
+  .flashcard-rating {
+    position: relative !important;
+    z-index: 2 !important;
+    margin-top: 18px !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .flashcard-actions .next-btn,
+  .flashcard-rating .next-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Vorderseite: nur Antwort anzeigen + Zurück */
+  .flashcard-study-box:not(:has(.flashcard-inner.flipped)) #flashcardFrontActions {
+    display: flex !important;
+  }
+
+  .flashcard-study-box:not(:has(.flashcard-inner.flipped)) #flashcardRating {
+    display: none !important;
+  }
+
+  /* Rückseite: nur Gewusst / Nicht gewusst / Zurück */
+  .flashcard-study-box:has(.flashcard-inner.flipped) #flashcardFrontActions {
+    display: none !important;
+  }
+
+  .flashcard-study-box:has(.flashcard-inner.flipped) #flashcardRating {
+    display: flex !important;
+  }
+}
+
