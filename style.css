@@ -2856,3 +2856,94 @@ body > .container {
   display: flex !important;
 }
 
+/* =====================================================
+   v21.9 LERNKARTEN – FORTSCHRITT IN ÜBERSICHT
+   Ziel: Gewusst / Wiederholen / Offen sichtbar machen
+===================================================== */
+
+.flashcard-overview-stats .stats-card strong {
+  letter-spacing: -0.04em;
+}
+
+.flashcard-progress-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.flashcard-progress-main {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.flashcard-progress-main strong {
+  color: var(--topic-accent, #2344c6) !important;
+  font-size: 30px !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.055em !important;
+}
+
+.flashcard-progress-main span {
+  color: #64748b !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+}
+
+.flashcard-progress-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.flashcard-progress-details span {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  color: #475569 !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  line-height: 1;
+}
+
+.flashcard-progress-track {
+  margin-top: 10px;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(226, 232, 240, 0.9);
+}
+
+.flashcard-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--topic-accent, #2344c6);
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 700px) {
+  .flashcard-progress-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .flashcard-progress-details {
+    justify-content: flex-start;
+  }
+
+  .flashcard-progress-main strong {
+    font-size: 34px !important;
+  }
+}
+

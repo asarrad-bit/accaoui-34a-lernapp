@@ -100,10 +100,33 @@ function showFlashcardsPage() {
     return;
   }
 
+  const totalProgress = typeof getTotalFlashcardProgress === "function"
+    ? getTotalFlashcardProgress()
+    : { known: 0, unknown: 0 };
+
+  const totalKnown = Number(totalProgress.known || 0);
+  const totalUnknown = Number(totalProgress.unknown || 0);
+  const totalOpen = Math.max(0, allQuestions.length - totalKnown - totalUnknown);
+
   const cardsHtml = getSafeCategories().map(categoryName => {
-    const questionCount = getCategoryQuestions(categoryName).length;
+    const questions = getCategoryQuestions(categoryName);
+    const questionCount = questions.length;
     const mistakeCount = getTopicMistakeCount(categoryName);
     const themeClass = getCategoryThemeClass(categoryName);
+
+    const progress = typeof getFlashcardCategoryProgress === "function"
+      ? getFlashcardCategoryProgress(categoryName)
+      : {
+          total: questionCount,
+          known: 0,
+          unknown: 0,
+          untouched: questionCount
+        };
+
+    const known = Number(progress.known || 0);
+    const unknown = Number(progress.unknown || 0);
+    const untouched = Number(progress.untouched || Math.max(0, questionCount - known - unknown));
+    const percent = questionCount === 0 ? 0 : Math.round((known / questionCount) * 100);
 
     return `
       <div class="category-card clickable-card flashcard-category-card ${themeClass}" data-category="${escapeHtml(categoryName)}" style="cursor:pointer;">
@@ -112,19 +135,37 @@ function showFlashcardsPage() {
         </div>
 
         <h3>${escapeHtml(categoryName)}</h3>
+
         <span>${questionCount} Lernkarten</span>
 
-       ${
-  mistakeCount > 0
-    ? `<button
-        type="button"
-        class="flashcard-mistake-chip"
-        onclick='event.stopPropagation(); startTopicMistakeTraining(${JSON.stringify(categoryName)})'
-      >
-        ${mistakeCount} aktive Fehler trainieren
-      </button>`
-    : `<small class="flashcard-no-mistakes">Keine aktiven Fehler</small>`
-}
+        <div class="flashcard-progress-row">
+          <div class="flashcard-progress-main">
+            <strong>${percent}%</strong>
+            <span>gewusst</span>
+          </div>
+
+          <div class="flashcard-progress-details">
+            <span>${known} gewusst</span>
+            <span>${unknown} wiederholen</span>
+            <span>${untouched} offen</span>
+          </div>
+        </div>
+
+        <div class="flashcard-progress-track" aria-hidden="true">
+          <div class="flashcard-progress-fill" style="width:${percent}%;"></div>
+        </div>
+
+        ${
+          mistakeCount > 0
+            ? `<button
+                type="button"
+                class="flashcard-mistake-chip"
+                onclick='event.stopPropagation(); startTopicMistakeTraining(${JSON.stringify(categoryName)})'
+              >
+                ${mistakeCount} aktive Fehler trainieren
+              </button>`
+            : `<small class="flashcard-no-mistakes">Keine aktiven Fehler</small>`
+        }
       </div>
     `;
   }).join("");
@@ -140,8 +181,25 @@ function showFlashcardsPage() {
         <h1>§34a Lernkarten-Modus</h1>
         <p>
           Wiederholen Sie Prüfungswissen mit digitalen Lernkarten.
-          Vorderseite: Frage. Rückseite: richtige Antwort und Erklärung.
+          Ihr Fortschritt wird lokal im Browser gespeichert.
         </p>
+      </div>
+
+      <div class="stats-grid flashcard-overview-stats" style="margin-bottom:22px;">
+        <div class="stats-card success">
+          <span>Gewusst</span>
+          <strong>${totalKnown}</strong>
+        </div>
+
+        <div class="stats-card danger">
+          <span>Wiederholen</span>
+          <strong>${totalUnknown}</strong>
+        </div>
+
+        <div class="stats-card">
+          <span>Offen</span>
+          <strong>${totalOpen}</strong>
+        </div>
       </div>
 
       <div class="result-actions" style="margin-bottom:22px;">
