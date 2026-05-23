@@ -2826,3 +2826,33 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.7.1 LERNKARTEN – RATING ERST NACH ANTWORT
+   Ziel: Gewusst/Nicht gewusst erst nach Flip sichtbar
+===================================================== */
+
+/* Grundzustand: Bewertung immer ausblenden */
+#flashcardRating {
+  display: none !important;
+}
+
+/* Vorderseite: Antwort anzeigen sichtbar */
+#flashcardFrontActions {
+  display: flex !important;
+}
+
+/* Nach Flip: Antwort anzeigen ausblenden */
+.flashcard-study-box.is-flipped #flashcardFrontActions {
+  display: none !important;
+}
+
+/* Nach Flip: Bewertung sichtbar */
+.flashcard-study-box.is-flipped #flashcardRating {
+  display: flex !important;
+}
+
+/* Gemeinsamer Zurück-Button bleibt immer sichtbar */
+.flashcard-shared-back {
+  display: flex !important;
+}
+
