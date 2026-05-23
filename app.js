@@ -443,59 +443,6 @@ function updateDashboardNumbers() {
   }
 }
 
-function buildCategoryCards() {
-  const categoryContainer = document.getElementById("categories");
-
-  if (!categoryContainer) {
-    console.warn("Container #categories wurde nicht gefunden.");
-    return;
-  }
-
-  categoryContainer.innerHTML = "";
-
-  categories.forEach(categoryName => {
-    const questionCount = getCategoryQuestions(categoryName).length;
-    const mistakeCount = getTopicMistakeCount(categoryName);
-    const openCount = getCategoryOpenQuestions(categoryName).length;
-
-    const card = document.createElement("div");
-    card.className = "category-card clickable-card";
-    card.style.cursor = "pointer";
-
-    card.innerHTML = `
-      <div class="category-icon" style="color:${categoryAccentColor};">
-        ${categoryIcons[categoryName] || "📘"}
-      </div>
-
-      <h3>${escapeHtml(categoryName)}</h3>
-
-      <span>${questionCount} Fragen</span>
-
-      <small style="
-        display:block;
-        margin-top:6px;
-        color:#64748b;
-        font-weight:500;
-      ">
-        ${openCount} offen
-      </small>
-
-      <small style="
-        display:block;
-        margin-top:4px;
-        color:${mistakeCount > 0 ? "#991b1b" : "#64748b"};
-        font-weight:${mistakeCount > 0 ? "700" : "500"};
-      ">
-        ${mistakeCount} Fehler gespeichert
-      </small>
-    `;
-
-    card.onclick = () => openCategory(categoryName);
-
-    categoryContainer.appendChild(card);
-  });
-}
-
 function showAllQuestions() {
   currentMode = "all-questions";
 
@@ -980,93 +927,6 @@ let flashcardFlipped = false;
 let flashcardKnownCount = 0;
 let flashcardUnknownCount = 0;
 
-function showFlashcardsPage() {
-  currentMode = "flashcards-overview";
-  clearExamTimer();
-
-  const mainContent = document.querySelector(".main-content");
-
-  if (!mainContent) return;
-
-  if (!allQuestions || allQuestions.length === 0) {
-    showSmallNotice("Fragenbank wurde noch nicht geladen.");
-    return;
-  }
-
-  const cardsHtml = categories.map(categoryName => {
-    const questionCount = getCategoryQuestions(categoryName).length;
-    const mistakeCount = getTopicMistakeCount(categoryName);
-
-    return `
-      <div
-        class="category-card clickable-card flashcard-category-card"
-        data-category="${escapeHtml(categoryName)}"
-        style="cursor:pointer;"
-      >
-
-        <div class="category-icon" style="color:${categoryAccentColor};">
-          ${categoryIcons[categoryName] || "🃏"}
-        </div>
-
-        <h3>${escapeHtml(categoryName)}</h3>
-
-        <span>${questionCount} Lernkarten</span>
-
-        <small style="
-          display:block;
-          margin-top:6px;
-          color:${mistakeCount > 0 ? "#991b1b" : "#64748b"};
-          font-weight:${mistakeCount > 0 ? "700" : "500"};
-        ">
-          ${mistakeCount} aktive Fehler
-        </small>
-
-      </div>
-    `;
-  }).join("");
-
-  mainContent.innerHTML = `
-    <button class="back-btn" onclick="location.reload()">
-      ← Zurück zum Dashboard
-    </button>
-
-    <section class="review-wrapper">
-
-      <div class="review-header">
-        <p class="eyebrow">Lernkarten</p>
-        <h1>§34a Lernkarten-Modus</h1>
-        <p>
-          Wiederholen Sie Prüfungswissen mit digitalen Lernkarten.
-          Vorderseite: Frage. Rückseite: richtige Antwort und Erklärung.
-        </p>
-      </div>
-
-      <div class="result-actions" style="margin-bottom:22px;">
-        <button class="next-btn" onclick="startFlashcardSession(allQuestions, 'Alle Lernkarten')">
-          Alle Lernkarten starten
-        </button>
-
-        ${
-          getTotalTopicMistakeCount() > 0
-            ? `<button class="next-btn danger-training-btn" onclick="startFlashcardsFromMistakes()">Fehler als Lernkarten</button>`
-            : ""
-        }
-      </div>
-
-      <div class="category-grid">
-        ${cardsHtml}
-      </div>
-
-    </section>
-  `;
-
-  document.querySelectorAll(".flashcard-category-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const categoryName = card.dataset.category;
-      startFlashcardSessionByCategory(categoryName);
-    });
-  });
-}
 function startFlashcardSessionByCategory(categoryName) {
   const questions = getCategoryQuestions(categoryName);
 
@@ -1146,86 +1006,6 @@ function showFlashcardView(title) {
   renderFlashcard();
 }
 
-function renderFlashcard() {
-  const flashcardArea = document.getElementById("flashcardArea");
-  const question = flashcardQuestions[flashcardIndex];
-
-  if (!flashcardArea || !question) return;
-
-  flashcardFlipped = false;
-
-  flashcardArea.innerHTML = `
-    <div class="flashcard-study-box">
-
-      <div class="flashcard-topline">
-        <span>${escapeHtml(question.category || "§34a")}</span>
-        <strong>${flashcardIndex + 1}/${flashcardQuestions.length}</strong>
-      </div>
-
-      <div class="flashcard-scene">
-        <div class="flashcard-inner" id="flashcardInner">
-
-          <div class="flashcard-side flashcard-front-side">
-            
-
-            <div class="flashcard-question-content">
-              ${formatQuestionText(question.question)}
-            </div>
-
-            <div class="flashcard-hint">
-              Denken Sie erst selbst nach. Dann Antwort aufdecken.
-            </div>
-          </div>
-
-          <div class="flashcard-side flashcard-back-side">
-           
-
-            <div class="flashcard-answer-block">
-              <span>Richtige Antwort</span>
-              <strong>${getCorrectAnswerText(question)}</strong>
-            </div>
-
-            <div class="flashcard-explanation-block">
-              <span>Erklärung</span>
-              <p>${escapeHtml(question.explanation || "Keine Erklärung hinterlegt.")}</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="flashcard-actions">
-
-        <button class="next-btn" id="showFlashcardAnswerBtn" onclick="flipFlashcard()">
-          Antwort anzeigen
-        </button>
-
-        <button class="next-btn secondary-btn" onclick="previousFlashcard()">
-          Zurück
-        </button>
-
-        <button class="next-btn secondary-btn" onclick="nextFlashcard()">
-          Nächste Karte
-        </button>
-
-      </div>
-
-      <div class="flashcard-rating" id="flashcardRating" style="display:none;">
-        <button class="next-btn" onclick="markFlashcardKnown()">
-          Gewusst
-        </button>
-
-        <button class="next-btn danger-training-btn" onclick="markFlashcardUnknown()">
-          Nicht gewusst
-        </button>
-      </div>
-
-    </div>
-  `;
-
-  updateFlashcardProgress();
-}
-
 function flipFlashcard() {
   const inner = document.getElementById("flashcardInner");
   const rating = document.getElementById("flashcardRating");
@@ -1247,30 +1027,10 @@ function flipFlashcard() {
   }
 } 
 
-function markFlashcardKnown() {
-  const question = flashcardQuestions[flashcardIndex];
-
-  if (question) {
-    markQuestionAsAnswered(question);
-    removeTopicMistake(question);
-  }
-
-  flashcardKnownCount++;
-  updateFlashcardProgress();
-  nextFlashcard();
-}
-
-function markFlashcardUnknown() {
-  const question = flashcardQuestions[flashcardIndex];
-
-  if (question) {
-    saveTopicMistake(question);
-  }
-
-  flashcardUnknownCount++;
-  updateFlashcardProgress();
-  nextFlashcard();
-}
+// Duplicate simple mark functions removed here in favor of the
+// v21.5 progress-tracking implementations later in this file.
+// The v21.5 implementations perform the same actions and also
+// persist flashcard progress (see definitions near FLASHCARD_PROGRESS_KEY).
 
 function nextFlashcard() {
   if (flashcardIndex >= flashcardQuestions.length - 1) {
@@ -3737,7 +3497,6 @@ window.repeatCurrentExamMode = repeatCurrentExamMode;
 
 window.toggleTopicDetails = toggleTopicDetails;
 
-window.showFlashcardsPage = showFlashcardsPage;
 window.startFlashcardSession = startFlashcardSession;
 window.startFlashcardSessionByCategory = startFlashcardSessionByCategory;
 window.startFlashcardsFromMistakes = startFlashcardsFromMistakes;
@@ -3861,7 +3620,7 @@ function getTotalFlashcardProgress() {
     unknown
   };
 }
-
+ 
 /* Überschreibt die bisherige Gewusst-Funktion */
 function markFlashcardKnown() {
   const question = flashcardQuestions[flashcardIndex];
@@ -3891,123 +3650,8 @@ function markFlashcardUnknown() {
   nextFlashcard();
 }
 
-/* Überschreibt die Lernkartenübersicht mit Fortschritt */
-function showFlashcardsPage() {
-  currentMode = "flashcards-overview";
-  clearExamTimer();
-  loadFlashcardProgressStore();
-
-  const mainContent = document.querySelector(".main-content");
-
-  if (!mainContent) return;
-
-  if (!allQuestions || allQuestions.length === 0) {
-    showSmallNotice("Fragenbank wurde noch nicht geladen.");
-    return;
-  }
-
-  const totalProgress = getTotalFlashcardProgress();
-
-  const cardsHtml = getSafeCategories().map(categoryName => {
-    const questionCount = getCategoryQuestions(categoryName).length;
-    const mistakeCount = getTopicMistakeCount(categoryName);
-    const themeClass = getCategoryThemeClass(categoryName);
-    const progress = getFlashcardCategoryProgress(categoryName);
-
-    return `
-      <div class="category-card clickable-card flashcard-category-card ${themeClass}" data-category="${escapeHtml(categoryName)}" style="cursor:pointer;">
-
-        <div class="category-icon" style="color:${categoryAccentColor};">
-          ${categoryIcons[categoryName] || "🃏"}
-        </div>
-
-        <h3>${escapeHtml(categoryName)}</h3>
-
-        <span>${questionCount} Lernkarten</span>
-
-        <div class="flashcard-progress-mini">
-          <span>${progress.known} gewusst</span>
-          <span>${progress.unknown} offen/wiederholen</span>
-        </div>
-
-        ${
-  mistakeCount > 0
-    ? `<button
-        type="button"
-        class="flashcard-mistake-chip"
-        onclick='event.stopPropagation(); startTopicMistakeTraining(${JSON.stringify(categoryName)})'
-      >
-        ${mistakeCount} aktive Fehler trainieren
-      </button>`
-    : `<small class="flashcard-no-mistakes">Keine aktiven Fehler</small>`
-} 
-
-      </div>
-    `;
-  }).join("");
-
-  mainContent.innerHTML = `
-    <button class="back-btn" onclick="location.reload()">
-      ← Zurück zum Dashboard
-    </button>
-
-    <section class="review-wrapper">
-
-      <div class="review-header">
-        <p class="eyebrow">Lernkarten</p>
-        <h1>§34a Lernkarten-Modus</h1>
-        <p>
-          Wiederholen Sie Prüfungswissen mit digitalen Lernkarten.
-          Fortschritt wird lokal gespeichert.
-        </p>
-      </div>
-
-      <div class="stats-grid" style="margin-bottom:22px;">
-        <div class="stats-card success">
-          <span>Gewusst</span>
-          <strong>${totalProgress.known}</strong>
-        </div>
-
-        <div class="stats-card danger">
-          <span>Wiederholen</span>
-          <strong>${totalProgress.unknown}</strong>
-        </div>
-
-        <div class="stats-card">
-          <span>Lernkarten gesamt</span>
-          <strong>${allQuestions.length}</strong>
-        </div>
-      </div>
-
-      <div class="result-actions" style="margin-bottom:22px;">
-        <button class="next-btn" onclick="startFlashcardSession(allQuestions, 'Alle Lernkarten')">
-          Alle Lernkarten starten
-        </button>
-
-        ${
-          getTotalTopicMistakeCount() > 0
-            ? `<button class="next-btn danger-training-btn" onclick="startFlashcardsFromMistakes()">Fehler als Lernkarten</button>`
-            : ""
-        }
-      </div>
-
-      <div class="category-grid">
-        ${cardsHtml}
-      </div>
-
-    </section>
-  `;
-
-  document.querySelectorAll(".flashcard-category-card").forEach(card => {
-    card.addEventListener("click", () => {
-      startFlashcardSessionByCategory(card.dataset.category);
-    });
-  });
-}
-
 window.markFlashcardKnown = markFlashcardKnown;
 window.markFlashcardUnknown = markFlashcardUnknown;
-window.showFlashcardsPage = showFlashcardsPage;
 window.saveFlashcardProgress = saveFlashcardProgress;
 window.getFlashcardCategoryProgress = getFlashcardCategoryProgress;
 window.getTotalFlashcardProgress = getTotalFlashcardProgress;
