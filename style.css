@@ -3564,7 +3564,7 @@ body > .container {
     width: 100% !important;
   }
 }
-
+ 
 /* =====================================================
    v21.12.4 LERNKARTEN – FORTSCHRITT NUR BEI WIEDERHOLUNG
    Ziel:
@@ -3572,77 +3572,6 @@ body > .container {
    - Wiederholen-Runde zeigt detaillierte Bewertungs-Chips
    - keine Änderung an Speicherlogik
 ===================================================== */
-
-function isCurrentFlashcardRepeatSessionV21124() {
-  const title = String(window.accaouiFlashcardSessionTitleV2111 || "").trim();
-
-  return title === "Wiederholen-Karten dieser Runde";
-}
-
-function updateFlashcardProgress() {
-  const total = Array.isArray(flashcardQuestions) ? flashcardQuestions.length : 0;
-  const seen = total > 0 ? flashcardIndex + 1 : 0;
-  const known = Number(flashcardKnownCount || 0);
-  const unknown = Number(flashcardUnknownCount || 0);
-  const answered = known + unknown;
-
-  const positionPercent = total > 0
-    ? Math.round((seen / total) * 100)
-    : 0;
-
-  const counter = document.getElementById("flashcardCounter");
-  const progressText = document.getElementById("flashcardProgressText");
-  const progressFill = document.getElementById("flashcardProgressFill");
-  const stats = document.getElementById("flashcardStats");
-
-  if (counter) {
-    counter.innerText = `${seen}/${total}`;
-  }
-
-  if (progressFill) {
-    progressFill.style.width = positionPercent + "%";
-  }
-
-  if (isCurrentFlashcardRepeatSessionV21124()) {
-    if (progressText) {
-      progressText.innerText = `Position: ${seen}/${total}`;
-    }
-
-    if (stats) {
-      stats.classList.add("flashcard-repeat-progress-stats");
-
-      stats.innerHTML = `
-        <span class="flashcard-progress-chip">
-          <small>Bewertet</small>
-          <strong>${answered}/${total}</strong>
-        </span>
-
-        <span class="flashcard-progress-chip success">
-          <small>Gewusst</small>
-          <strong>${known}</strong>
-        </span>
-
-        <span class="flashcard-progress-chip danger">
-          <small>Wiederholen</small>
-          <strong>${unknown}</strong>
-        </span>
-      `;
-    }
-
-    return;
-  }
-
-  if (progressText) {
-    progressText.innerText = positionPercent + "%";
-  }
-
-  if (stats) {
-    stats.classList.remove("flashcard-repeat-progress-stats");
-    stats.innerText =
-      known + " gewusst · " +
-      unknown + " nicht gewusst";
-  }
-}
 
 window.updateFlashcardProgress = updateFlashcardProgress;
 
@@ -3923,7 +3852,7 @@ window.updateFlashcardProgress = updateFlashcardProgress;
   .oral-finish-actions .next-btn {
     width: 100% !important;
   }
-}ok
+}
 
 /* =====================================================
    v22.1 MÜNDLICHE PRÜFUNG – REALISTISCHE PRÜFUNGSRAUM-SZENE
