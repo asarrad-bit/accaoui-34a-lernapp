@@ -3179,3 +3179,184 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.10 LERNKARTEN – ANTWORTTEXT LESBARKEIT
+   Ziel:
+   - lange Antworttexte ruhiger darstellen
+   - mehrere Antwortbestandteile sichtbar trennen
+   - mobil besser lesbar
+===================================================== */
+
+.flashcard-answer-text {
+  display: grid !important;
+  gap: 7px !important;
+}
+
+.flashcard-answer-line {
+  display: block !important;
+  padding: 0 !important;
+  color: #0f172a !important;
+  font-weight: 950 !important;
+}
+
+.flashcard-answer-line + .flashcard-answer-line {
+  position: relative !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(226, 232, 240, 0.95) !important;
+}
+
+.flashcard-answer-line + .flashcard-answer-line::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: -1px !important;
+  width: 42px !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: var(--topic-accent, #2344c6) !important;
+}
+
+@media (max-width: 700px) {
+  .flashcard-answer-text {
+    gap: 6px !important;
+  }
+
+  .flashcard-answer-line {
+    line-height: 1.18 !important;
+  }
+
+  .flashcard-answer-line + .flashcard-answer-line {
+    padding-top: 7px !important;
+  }
+}
+
+/* =====================================================
+   v21.10.2 LERNKARTEN – ANTWORTTEXT CSS FIX
+   Ziel:
+   - Antwortzeilen nicht vom Label-Span-Style beeinflussen lassen
+   - <br>-Antworten sauber groß und lesbar darstellen
+   - mobile Darstellung stabil halten
+===================================================== */
+
+.flashcard-answer-block .flashcard-answer-text {
+  display: grid !important;
+  gap: 8px !important;
+  color: #0f172a !important;
+  font-size: clamp(20px, 2.6vw, 30px) !important;
+  line-height: 1.22 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.035em !important;
+  text-transform: none !important;
+}
+
+.flashcard-answer-block .flashcard-answer-text .flashcard-answer-line {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #0f172a !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-weight: 950 !important;
+  letter-spacing: inherit !important;
+  text-transform: none !important;
+}
+
+.flashcard-answer-block .flashcard-answer-text .flashcard-answer-line + .flashcard-answer-line {
+  position: relative !important;
+  margin-top: 2px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(226, 232, 240, 0.95) !important;
+}
+
+.flashcard-answer-block .flashcard-answer-text .flashcard-answer-line + .flashcard-answer-line::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: -1px !important;
+  width: 42px !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: var(--topic-accent, #2344c6) !important;
+}
+
+@media (max-width: 700px) {
+  .flashcard-answer-block .flashcard-answer-text {
+    gap: 7px !important;
+    font-size: clamp(21px, 6vw, 26px) !important;
+    line-height: 1.18 !important;
+  }
+
+  .flashcard-answer-block .flashcard-answer-text .flashcard-answer-line + .flashcard-answer-line {
+    padding-top: 8px !important;
+  }
+}
+
+@media (max-width: 370px) {
+  .flashcard-answer-block .flashcard-answer-text {
+    font-size: 22px !important;
+    line-height: 1.16 !important;
+  }
+}
+
+/* =====================================================
+   v21.10.3 LERNKARTEN – ANTWORTDARSTELLUNG FINAL
+   Ziel:
+   - blauen Trennstrich entfernen
+   - Antwortteile dezent trennen
+   - lange Antworten ruhiger darstellen
+   - Firefox/mobile Darstellung stabilisieren
+===================================================== */
+
+.flashcard-answer-block .flashcard-answer-text {
+  gap: 7px !important;
+  font-size: clamp(19px, 2.35vw, 28px) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.032em !important;
+}
+
+.flashcard-answer-block .flashcard-answer-text .flashcard-answer-line {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  hyphens: auto !important;
+}
+
+.flashcard-answer-block .flashcard-answer-text .flashcard-answer-line + .flashcard-answer-line::before {
+  display: none !important;
+  content: none !important;
+}
+
+.flashcard-answer-block .flashcard-answer-text .flashcard-answer-line + .flashcard-answer-line {
+  margin-top: 4px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(203, 213, 225, 0.7) !important;
+}
+
+@media (max-width: 700px) {
+  .flashcard-answer-block {
+    padding: 15px !important;
+  }
+
+  .flashcard-answer-block .flashcard-answer-text {
+    gap: 6px !important;
+    font-size: clamp(20px, 5.45vw, 24px) !important;
+    line-height: 1.16 !important;
+  }
+
+  .flashcard-answer-block .flashcard-answer-text .flashcard-answer-line + .flashcard-answer-line {
+    margin-top: 3px !important;
+    padding-top: 9px !important;
+  }
+}
+
+@media (max-width: 370px) {
+  .flashcard-answer-block {
+    padding: 14px !important;
+  }
+
+  .flashcard-answer-block .flashcard-answer-text {
+    font-size: 20px !important;
+    line-height: 1.15 !important;
+  }
+}
+

@@ -223,6 +223,77 @@ function showFlashcardsPage() {
   });
 }
 
+/* =====================================================
+   v21.10 LERNKARTEN – ANTWORTTEXT FORMATIEREN
+   Ziel:
+   - Lange Antworten besser lesbar darstellen
+   - Mehrteilige Antworten optisch trennen
+   - Originaldaten bleiben unverändert
+===================================================== */
+
+/* =====================================================
+   v21.10.2 LERNKARTEN – ANTWORTTEXT STABIL FORMATIEREN
+   Ziel:
+   - <br> aus Datenquelle korrekt als Zeilentrennung behandeln
+   - lange Antworten besser lesbar darstellen
+   - mehrere Antwortbestandteile optisch trennen
+   - Originaldaten bleiben unverändert
+===================================================== */
+
+function splitFlashcardAnswerParts(answerText) {
+  const raw = String(answerText || "").trim();
+
+  if (!raw) {
+    return ["Keine Antwort hinterlegt."];
+  }
+
+  let normalized = raw
+    .replace(/<br\s*\/?>/gi, " | ")
+    .replace(/&lt;br\s*\/?>/gi, " | ")
+    .replace(/\s+/g, " ")
+    .replace(/\s*;\s*/g, " | ")
+    .replace(/\s+\|\s+/g, " | ")
+    .trim();
+
+  /*
+    Lesbarkeitsregeln:
+    Nur an klaren zweiten Antwortbestandteilen trennen.
+    Nicht aggressiv an jedem Begriff trennen.
+  */
+  normalized = normalized
+    .replace(/\s+(Vorbeugendes\s+Handeln\s+)/gi, " | $1")
+    .replace(/\s+(Tätigkeit\s+im\s+)/gi, " | $1")
+    .replace(/\s+(Tätigkeit\s+als\s+)/gi, " | $1")
+    .replace(/\s+(Bewachung\s+von\s+)/gi, " | $1")
+    .replace(/\s+(Schutz\s+vor\s+)/gi, " | $1");
+
+  const parts = normalized
+    .split("|")
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  if (parts.length <= 1) {
+    return [normalized];
+  }
+
+  return parts;
+}
+
+function formatFlashcardAnswerText(question) {
+  const answerText = typeof getCorrectAnswerText === "function"
+    ? getCorrectAnswerText(question)
+    : "";
+
+  const parts = splitFlashcardAnswerParts(answerText);
+
+  return parts
+    .map(part => `<span class="flashcard-answer-line">${escapeHtml(part)}</span>`)
+    .join("");
+}
+
+window.splitFlashcardAnswerParts = splitFlashcardAnswerParts;
+window.formatFlashcardAnswerText = formatFlashcardAnswerText;
+
 function renderFlashcard() {
   const flashcardArea = document.getElementById("flashcardArea");
   const question = flashcardQuestions[flashcardIndex];
@@ -254,7 +325,7 @@ function renderFlashcard() {
           <div class="flashcard-side flashcard-back-side">
             <div class="flashcard-answer-block">
               <span>Richtige Antwort</span>
-              <strong>${getCorrectAnswerText(question)}</strong>
+              <strong class="flashcard-answer-text">${formatFlashcardAnswerText(question)}</strong>
             </div>
 
             <div class="flashcard-explanation-block">
