@@ -1358,3 +1358,344 @@ window.showOralExamAnswerV220 = showOralExamAnswerV220;
 window.rateOralExamQuestionV220 = rateOralExamQuestionV220;
 window.previousOralExamQuestionV220 = previousOralExamQuestionV220;
 window.showOralExamFinishScreenV220 = showOralExamFinishScreenV220;
+
+/* =====================================================
+   v22.1 MÜNDLICHE PRÜFUNG – REALISTISCHE PRÜFUNGSRAUM-SZENE
+   Ziel:
+   - reale mündliche Prüfung optisch simulieren
+   - 3 Prüfer hinter Tisch, 3 Prüflinge gegenüber
+   - Unterlagen / Bewertungsbögen / Stifte darstellen
+   - keine Änderung an app.js, questions.json oder localStorage
+===================================================== */
+
+if (!window.ACCAOUI_V221_ORAL_ROOM_SCENE_PATCH) {
+  window.ACCAOUI_V221_ORAL_ROOM_SCENE_PATCH = true;
+
+  function buildOralExamRoomSceneV221(mode) {
+    const isSession = mode === "session";
+
+    return `
+      <section class="oral-room-scene-v221 ${isSession ? "is-session" : "is-overview"}" aria-label="Realistische mündliche Prüfungssituation">
+
+        <div class="oral-room-header-v221">
+          <div>
+            <span>Prüfungsraum-Simulation</span>
+            <strong>${isSession ? "Aktive mündliche Prüfung" : "Realistische IHK-Prüfungssituation"}</strong>
+          </div>
+
+          <div class="oral-room-status-v221">
+            ${isSession ? "Prüfung läuft" : "Vorbereitung"}
+          </div>
+        </div>
+
+        <div class="oral-room-stage-v221">
+
+          <div class="oral-room-wall-v221">
+            <div class="oral-room-board-v221">
+              <span>Mündliche Sachkundeprüfung §34a</span>
+              <small>Prüfungsausschuss · Bewertungsbogen · Fallfragen</small>
+            </div>
+          </div>
+
+          <div class="oral-examiner-row-v221">
+
+            <div class="oral-person-v221 examiner-v221">
+              <div class="oral-person-head-v221"></div>
+              <div class="oral-person-body-v221"></div>
+              <strong>Prüfer 1</strong>
+              <span>Fragen</span>
+            </div>
+
+            <div class="oral-person-v221 examiner-v221 lead-v221">
+              <div class="oral-person-head-v221"></div>
+              <div class="oral-person-body-v221"></div>
+              <strong>Vorsitz</strong>
+              <span>Bewertung</span>
+            </div>
+
+            <div class="oral-person-v221 examiner-v221">
+              <div class="oral-person-head-v221"></div>
+              <div class="oral-person-body-v221"></div>
+              <strong>Prüfer 3</strong>
+              <span>Notizen</span>
+            </div>
+
+          </div>
+
+          <div class="oral-table-v221">
+
+            <div class="oral-documents-v221">
+              <div class="oral-doc-v221">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              <div class="oral-doc-v221 marked-v221">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              <div class="oral-pen-v221"></div>
+
+              <div class="oral-nameplate-v221">
+                Prüfungsausschuss
+              </div>
+            </div>
+
+          </div>
+
+          <div class="oral-candidate-row-v221">
+
+            <div class="oral-person-v221 candidate-v221">
+              <div class="oral-person-head-v221"></div>
+              <div class="oral-person-body-v221"></div>
+              <strong>Prüfling 1</strong>
+              <span>wartet</span>
+            </div>
+
+            <div class="oral-person-v221 candidate-v221 active-v221">
+              <div class="oral-person-head-v221"></div>
+              <div class="oral-person-body-v221"></div>
+              <strong>Sie</strong>
+              <span>${isSession ? "antwortet" : "bereit"}</span>
+            </div>
+
+            <div class="oral-person-v221 candidate-v221">
+              <div class="oral-person-head-v221"></div>
+              <div class="oral-person-body-v221"></div>
+              <strong>Prüfling 3</strong>
+              <span>hört zu</span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="oral-room-caption-v221">
+          <strong>Realitätsnahes Training:</strong>
+          Drei Prüfer, mehrere Prüflinge, Unterlagen auf dem Tisch und eine klare Prüfungssituation.
+        </div>
+
+      </section>
+    `;
+  }
+
+  function enhanceOralExamOverviewV221() {
+    const hero = document.querySelector(".oral-exam-hero");
+
+    if (!hero) return;
+
+    if (document.querySelector(".oral-room-scene-v221.is-overview")) {
+      return;
+    }
+
+    hero.insertAdjacentHTML("afterend", buildOralExamRoomSceneV221("overview"));
+  }
+
+  function enhanceOralExamSessionV221() {
+    const header = document.querySelector(".oral-session-header");
+
+    if (!header) return;
+
+    if (document.querySelector(".oral-room-scene-v221.is-session")) {
+      return;
+    }
+
+    header.insertAdjacentHTML("afterend", buildOralExamRoomSceneV221("session"));
+  }
+
+  window.accaouiOriginalShowOralExamPageV221 =
+    window.accaouiOriginalShowOralExamPageV221 ||
+    window.showOralExamPage;
+
+  window.showOralExamPage = function patchedShowOralExamPageV221() {
+    if (typeof window.accaouiOriginalShowOralExamPageV221 === "function") {
+      window.accaouiOriginalShowOralExamPageV221();
+      setTimeout(enhanceOralExamOverviewV221, 0);
+      return;
+    }
+
+    showSmallNotice("Mündliche Prüfung konnte nicht geöffnet werden.");
+  };
+
+  window.accaouiOriginalStartOralExamSessionV221 =
+    window.accaouiOriginalStartOralExamSessionV221 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV221(questions, title) {
+    if (typeof window.accaouiOriginalStartOralExamSessionV221 === "function") {
+      const result = window.accaouiOriginalStartOralExamSessionV221(questions, title);
+      setTimeout(enhanceOralExamSessionV221, 0);
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  function bindOralExamMenuPatchV221() {
+    const menuItems = document.querySelectorAll(".menu-item");
+
+    menuItems.forEach(item => {
+      const text = item.innerText || "";
+
+      if (text.includes("Mündliche Prüfung")) {
+        item.style.cursor = "pointer";
+        item.onclick = () => window.showOralExamPage();
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bindOralExamMenuPatchV221);
+  } else {
+    bindOralExamMenuPatchV221();
+  }
+
+  window.buildOralExamRoomSceneV221 = buildOralExamRoomSceneV221;
+  window.enhanceOralExamOverviewV221 = enhanceOralExamOverviewV221;
+  window.enhanceOralExamSessionV221 = enhanceOralExamSessionV221;
+}
+
+/* =====================================================
+   v22.2 MÜNDLICHE PRÜFUNG – FRAGE IN PRÜFUNGSRAUM-SZENE
+   Ziel:
+   - aktuelle Prüferfrage zwischen Prüfertisch und Prüfling anzeigen
+   - aktiver Prüfling später mit Login-Namen möglich
+   - keine Änderung an app.js, questions.json oder localStorage-Struktur
+===================================================== */
+
+if (!window.ACCAOUI_V222_ORAL_SCENE_QUESTION_PATCH) {
+  window.ACCAOUI_V222_ORAL_SCENE_QUESTION_PATCH = true;
+
+  function getOralExamUserDisplayNameV222() {
+    const directWindowName = String(window.accaouiCurrentUserName || "").trim();
+
+    if (directWindowName) {
+      return directWindowName;
+    }
+
+    const directStorageName =
+      String(localStorage.getItem("accaoui_user_name") || "").trim() ||
+      String(localStorage.getItem("accaoui_current_user_name") || "").trim();
+
+    if (directStorageName) {
+      return directStorageName;
+    }
+
+    try {
+      const profile = JSON.parse(localStorage.getItem("accaoui_user_profile") || "{}");
+      const profileName = String(profile.name || profile.fullName || "").trim();
+
+      if (profileName) {
+        return profileName;
+      }
+    } catch (error) {
+      // Kein Problem: Login-System ist noch nicht aktiv.
+    }
+
+    return "Sie";
+  }
+
+  function getCurrentOralExamQuestionV222() {
+    if (
+      Array.isArray(window.oralExamQuestionsV220) &&
+      Number.isInteger(window.oralExamIndexV220)
+    ) {
+      return window.oralExamQuestionsV220[window.oralExamIndexV220];
+    }
+
+    if (
+      typeof oralExamQuestionsV220 !== "undefined" &&
+      Array.isArray(oralExamQuestionsV220) &&
+      typeof oralExamIndexV220 !== "undefined"
+    ) {
+      return oralExamQuestionsV220[oralExamIndexV220];
+    }
+
+    return null;
+  }
+
+  function syncOralRoomQuestionPromptV222() {
+    const scene = document.querySelector(".oral-room-scene-v221.is-session");
+
+    if (!scene) return;
+
+    const table = scene.querySelector(".oral-table-v221");
+
+    if (!table) return;
+
+    const question = getCurrentOralExamQuestionV222();
+    const userName = getOralExamUserDisplayNameV222();
+
+    const questionText = question && question.question
+      ? String(question.question)
+      : "Die aktuelle Prüferfrage wird hier angezeigt.";
+
+    let prompt = scene.querySelector(".oral-room-question-prompt-v222");
+
+    if (!prompt) {
+      prompt = document.createElement("div");
+      prompt.className = "oral-room-question-prompt-v222";
+      table.insertAdjacentElement("afterend", prompt);
+    }
+
+    prompt.innerHTML = `
+      <span>Prüferfrage an ${escapeHtml(userName)}</span>
+      <strong>${escapeHtml(questionText)}</strong>
+    `;
+
+    const activeCandidate = scene.querySelector(".candidate-v221.active-v221");
+
+    if (activeCandidate) {
+      const nameElement = activeCandidate.querySelector("strong");
+      const statusElement = activeCandidate.querySelector("span");
+
+      if (nameElement) {
+        nameElement.textContent = userName;
+      }
+
+      if (statusElement) {
+        statusElement.textContent = "antwortet";
+      }
+    }
+  }
+
+  window.accaouiOriginalStartOralExamSessionV222 =
+    window.accaouiOriginalStartOralExamSessionV222 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV222(questions, title) {
+    if (typeof window.accaouiOriginalStartOralExamSessionV222 === "function") {
+      const result = window.accaouiOriginalStartOralExamSessionV222(questions, title);
+
+      setTimeout(syncOralRoomQuestionPromptV222, 80);
+      setTimeout(syncOralRoomQuestionPromptV222, 250);
+
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  const originalRenderOralExamQuestionV222 =
+    typeof window.renderOralExamQuestionV220 === "function"
+      ? window.renderOralExamQuestionV220
+      : typeof renderOralExamQuestionV220 === "function"
+        ? renderOralExamQuestionV220
+        : null;
+
+  if (typeof originalRenderOralExamQuestionV222 === "function") {
+    window.renderOralExamQuestionV220 = function patchedRenderOralExamQuestionV222() {
+      const result = originalRenderOralExamQuestionV222();
+
+      setTimeout(syncOralRoomQuestionPromptV222, 0);
+
+      return result;
+    };
+  }
+
+  window.syncOralRoomQuestionPromptV222 = syncOralRoomQuestionPromptV222;
+  window.getOralExamUserDisplayNameV222 = getOralExamUserDisplayNameV222;
+}

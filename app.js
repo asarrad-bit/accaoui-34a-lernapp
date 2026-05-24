@@ -3655,3 +3655,173 @@ window.markFlashcardUnknown = markFlashcardUnknown;
 window.saveFlashcardProgress = saveFlashcardProgress;
 window.getFlashcardCategoryProgress = getFlashcardCategoryProgress;
 window.getTotalFlashcardProgress = getTotalFlashcardProgress;
+
+/* =====================================================
+   v22.3 MÜNDLICHE PRÜFUNG – FRAGE/ANTWORT ALS FLIP IN SZENE
+   Ziel:
+   - keine doppelte Frage mehr
+   - Frage sitzt in der Prüfungsszene
+   - Musterantwort erscheint in derselben Markierung
+   - untere Karte dient nur noch als Bedienpanel
+===================================================== */
+
+if (!window.ACCAOUI_V223_ORAL_SCENE_FLIP_PATCH) {
+  window.ACCAOUI_V223_ORAL_SCENE_FLIP_PATCH = true;
+
+  function getOralExamUserDisplayNameV223() {
+    if (typeof getOralExamUserDisplayNameV222 === "function") {
+      return getOralExamUserDisplayNameV222();
+    }
+
+    return "Sie";
+  }
+
+  function getCurrentOralExamQuestionV223() {
+    if (
+      typeof oralExamQuestionsV220 !== "undefined" &&
+      Array.isArray(oralExamQuestionsV220) &&
+      typeof oralExamIndexV220 !== "undefined"
+    ) {
+      return oralExamQuestionsV220[oralExamIndexV220];
+    }
+
+    return null;
+  }
+
+  function markOralQuestionCardAsSceneDrivenV223() {
+    const card = document.querySelector(".oral-question-card");
+
+    if (!card) return;
+
+    card.classList.add("oral-scene-driven-v223");
+  }
+
+  function syncOralRoomFlipCardV223(showAnswer) {
+    const scene = document.querySelector(".oral-room-scene-v221.is-session");
+
+    if (!scene) return;
+
+    const table = scene.querySelector(".oral-table-v221");
+
+    if (!table) return;
+
+    const question = getCurrentOralExamQuestionV223();
+    const userName = getOralExamUserDisplayNameV223();
+
+    const questionText = question && question.question
+      ? String(question.question)
+      : "Die aktuelle Prüferfrage wird hier angezeigt.";
+
+    const sampleAnswer = question && question.sampleAnswer
+      ? String(question.sampleAnswer)
+      : "Keine Musterantwort hinterlegt.";
+
+    const examinerNote = question && question.examinerNote
+      ? String(question.examinerNote)
+      : "Kein Prüfer-Hinweis hinterlegt.";
+
+    let prompt = scene.querySelector(".oral-room-question-prompt-v222");
+
+    if (!prompt) {
+      prompt = document.createElement("div");
+      prompt.className = "oral-room-question-prompt-v222";
+      table.insertAdjacentElement("afterend", prompt);
+    }
+
+    prompt.classList.add("oral-room-flip-v223");
+
+    if (showAnswer) {
+      prompt.classList.add("is-answer-visible");
+    } else {
+      prompt.classList.remove("is-answer-visible");
+    }
+
+    prompt.innerHTML = `
+      <div class="oral-room-flip-front-v223">
+        <span>Prüferfrage an ${escapeHtml(userName)}</span>
+        <strong>${escapeHtml(questionText)}</strong>
+      </div>
+
+      <div class="oral-room-flip-back-v223">
+        <span>Musterantwort</span>
+        <strong>${escapeHtml(sampleAnswer)}</strong>
+
+        <div class="oral-room-examiner-note-v223">
+          <small>Prüfer-Hinweis</small>
+          <p>${escapeHtml(examinerNote)}</p>
+        </div>
+      </div>
+    `;
+
+    const activeCandidate = scene.querySelector(".candidate-v221.active-v221");
+
+    if (activeCandidate) {
+      const nameElement = activeCandidate.querySelector("strong");
+      const statusElement = activeCandidate.querySelector("span");
+
+      if (nameElement) {
+        nameElement.textContent = userName;
+      }
+
+      if (statusElement) {
+        statusElement.textContent = showAnswer ? "antwort geprüft" : "antwortet";
+      }
+    }
+
+    markOralQuestionCardAsSceneDrivenV223();
+  }
+
+  window.accaouiOriginalRenderOralExamQuestionV223 =
+    window.accaouiOriginalRenderOralExamQuestionV223 ||
+    window.renderOralExamQuestionV220;
+
+  if (typeof window.accaouiOriginalRenderOralExamQuestionV223 === "function") {
+    window.renderOralExamQuestionV220 = function patchedRenderOralExamQuestionV223() {
+      const result = window.accaouiOriginalRenderOralExamQuestionV223();
+
+      setTimeout(() => {
+        syncOralRoomFlipCardV223(false);
+      }, 0);
+
+      return result;
+    };
+  }
+
+  window.accaouiOriginalShowOralExamAnswerV223 =
+    window.accaouiOriginalShowOralExamAnswerV223 ||
+    window.showOralExamAnswerV220;
+
+  window.showOralExamAnswerV220 = function patchedShowOralExamAnswerV223() {
+    if (typeof window.accaouiOriginalShowOralExamAnswerV223 === "function") {
+      const result = window.accaouiOriginalShowOralExamAnswerV223();
+
+      setTimeout(() => {
+        syncOralRoomFlipCardV223(true);
+      }, 0);
+
+      return result;
+    }
+
+    syncOralRoomFlipCardV223(true);
+  };
+
+  window.accaouiOriginalStartOralExamSessionV223 =
+    window.accaouiOriginalStartOralExamSessionV223 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV223(questions, title) {
+    if (typeof window.accaouiOriginalStartOralExamSessionV223 === "function") {
+      const result = window.accaouiOriginalStartOralExamSessionV223(questions, title);
+
+      setTimeout(() => {
+        syncOralRoomFlipCardV223(false);
+      }, 120);
+
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  window.syncOralRoomFlipCardV223 = syncOralRoomFlipCardV223;
+}
