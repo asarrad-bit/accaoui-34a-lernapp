@@ -3360,3 +3360,123 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.11 LERNKARTEN – ABSCHLUSSBILDSCHIRM STYLE
+   Ziel:
+   - Abschluss professionell darstellen
+   - Ergebniswerte klar zeigen
+   - mobil stabil
+===================================================== */
+
+.flashcard-finish-wrapper {
+  max-width: 980px !important;
+  margin: 0 auto !important;
+}
+
+.flashcard-finish-hero {
+  padding: 34px !important;
+  border-radius: 30px !important;
+  background:
+    radial-gradient(circle at top right, rgba(35, 68, 198, 0.12), transparent 42%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-top: 5px solid var(--blue-main, #2344c6) !important;
+  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.10) !important;
+  margin-bottom: 20px !important;
+}
+
+.flashcard-finish-hero h1 {
+  margin: 0 0 10px 0 !important;
+  color: #0f172a !important;
+  font-size: clamp(34px, 5vw, 58px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.055em !important;
+}
+
+.flashcard-finish-hero p {
+  max-width: 720px !important;
+  margin: 0 !important;
+  color: #64748b !important;
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+}
+
+.flashcard-finish-percent {
+  margin-top: 24px !important;
+  color: var(--blue-main, #2344c6) !important;
+  font-size: clamp(56px, 9vw, 96px) !important;
+  line-height: 0.92 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.075em !important;
+}
+
+.flashcard-finish-label {
+  display: block !important;
+  margin-top: 8px !important;
+  color: #64748b !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.075em !important;
+  text-transform: uppercase !important;
+}
+
+.flashcard-finish-stats {
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.flashcard-finish-note {
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.flashcard-finish-actions {
+  margin-top: 20px !important;
+}
+
+@media (max-width: 700px) {
+  .flashcard-finish-hero {
+    padding: 24px !important;
+    border-radius: 24px !important;
+  }
+
+  .flashcard-finish-hero h1 {
+    font-size: clamp(31px, 9vw, 42px) !important;
+  }
+
+  .flashcard-finish-hero p {
+    font-size: 15px !important;
+  }
+
+  .flashcard-finish-percent {
+    font-size: clamp(54px, 17vw, 78px) !important;
+  }
+
+  .flashcard-finish-stats {
+    grid-template-columns: 1fr !important;
+  }
+
+  .flashcard-finish-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .flashcard-finish-actions .next-btn {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 370px) {
+  .flashcard-finish-hero {
+    padding: 14px !important;
+  }
+
+  .flashcard-finish-hero h1 {
+    font-size: 26px !important;
+  }
+
+  .flashcard-finish-percent {
+    font-size: 44px !important;
+  }
+}
+

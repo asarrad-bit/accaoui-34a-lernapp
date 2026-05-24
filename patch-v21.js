@@ -422,3 +422,154 @@ if (document.readyState === "loading") {
 }
 
 window.bindFlashcardsMenuPatch = bindFlashcardsMenuPatch;
+
+/* =====================================================
+   v21.11 LERNKARTEN – ABSCHLUSSBILDSCHIRM
+   Ziel:
+   - Lernkartenrunde professionell abschließen
+   - Ergebnis klar anzeigen
+   - Runde wiederholen ermöglichen
+   - bestehende Speicherlogik unverändert lassen
+===================================================== */
+
+if (!window.ACCAOUI_V2111_FLASHCARD_FINISH_PATCH) {
+  window.ACCAOUI_V2111_FLASHCARD_FINISH_PATCH = true;
+
+  window.accaouiOriginalStartFlashcardSessionV2111 =
+    window.accaouiOriginalStartFlashcardSessionV2111 ||
+    window.startFlashcardSession;
+
+  window.accaouiFlashcardSessionTitleV2111 = "Lernkarten";
+
+  window.startFlashcardSession = function patchedStartFlashcardSessionV2111(questions, title) {
+    window.accaouiFlashcardSessionTitleV2111 = title || "Lernkarten";
+
+    if (typeof window.accaouiOriginalStartFlashcardSessionV2111 === "function") {
+      return window.accaouiOriginalStartFlashcardSessionV2111(questions, title);
+    }
+
+    showSmallNotice("Lernkarten konnten nicht gestartet werden.");
+  };
+
+  window.repeatCurrentFlashcardSession = function repeatCurrentFlashcardSession() {
+    if (!Array.isArray(flashcardQuestions) || flashcardQuestions.length === 0) {
+      showSmallNotice("Keine Lernkartenrunde zum Wiederholen vorhanden.");
+      showFlashcardsPage();
+      return;
+    }
+
+    window.startFlashcardSession(
+      flashcardQuestions,
+      window.accaouiFlashcardSessionTitleV2111 || "Lernkarten"
+    );
+  };
+
+  window.showFlashcardFinishScreen = function showFlashcardFinishScreen() {
+    const total = Array.isArray(flashcardQuestions) ? flashcardQuestions.length : 0;
+    const known = Number(flashcardKnownCount || 0);
+    const unknown = Number(flashcardUnknownCount || 0);
+    const rated = known + unknown;
+    const open = Math.max(0, total - rated);
+
+    const percent = rated > 0
+      ? Math.round((known / rated) * 100)
+      : 0;
+
+    const sessionTitle = window.accaouiFlashcardSessionTitleV2111 || "Lernkarten";
+
+    if (typeof updateDashboardNumbers === "function") {
+      updateDashboardNumbers();
+    }
+
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="showFlashcardsPage()">
+        ← Zurück zu den Lernkarten
+      </button>
+
+      <section class="result-wrapper flashcard-finish-wrapper">
+
+        <div class="flashcard-finish-hero">
+          <p class="eyebrow">Lernkarten abgeschlossen</p>
+
+          <h1>Lernrunde abgeschlossen</h1>
+
+          <p>
+            ${escapeHtml(sessionTitle)} wurde ausgewertet.
+            Ihr Fortschritt wurde lokal im Browser gespeichert.
+          </p>
+
+          <div class="flashcard-finish-percent">
+            ${percent}%
+          </div>
+
+          <span class="flashcard-finish-label">
+            Gewusst-Quote dieser Runde
+          </span>
+        </div>
+
+        <div class="result-stats-grid flashcard-finish-stats">
+
+          <div class="result-stat-card">
+            <span>Bearbeitet</span>
+            <strong>${rated}</strong>
+          </div>
+
+          <div class="result-stat-card success">
+            <span>Gewusst</span>
+            <strong>${known}</strong>
+          </div>
+
+          <div class="result-stat-card danger">
+            <span>Wiederholen</span>
+            <strong>${unknown}</strong>
+          </div>
+
+          <div class="result-stat-card">
+            <span>Offen</span>
+            <strong>${open}</strong>
+          </div>
+
+        </div>
+
+        <div class="last-exam-box flashcard-finish-note">
+          <span>Empfehlung</span>
+          <strong>${unknown > 0 ? "Wiederholung einplanen" : "Sehr gute Runde"}</strong>
+          <p>
+            ${
+              unknown > 0
+                ? "Bearbeiten Sie die markierten Wiederholen-Karten später erneut. Wiederholung ist entscheidend für sichere Prüfungsleistung."
+                : "Alle bewerteten Karten wurden als gewusst markiert. Halten Sie den Stand durch regelmäßige Wiederholung stabil."
+            }
+          </p>
+        </div>
+
+        <div class="result-actions flashcard-finish-actions">
+
+          <button class="next-btn" onclick="repeatCurrentFlashcardSession()">
+            Runde nochmal starten
+          </button>
+
+          <button class="next-btn" onclick="showFlashcardsPage()">
+            Zur Lernkarten-Übersicht
+          </button>
+
+          ${
+            unknown > 0 && typeof getTotalTopicMistakeCount === "function" && getTotalTopicMistakeCount() > 0
+              ? `<button class="next-btn danger-training-btn" onclick="startFlashcardsFromMistakes()">Fehler-Lernkarten starten</button>`
+              : ""
+          }
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+
+        </div>
+
+      </section>
+    `;
+  };
+}
