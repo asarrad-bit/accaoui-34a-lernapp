@@ -882,3 +882,479 @@ function updateFlashcardProgress() {
 }
 
 window.updateFlashcardProgress = updateFlashcardProgress;
+
+/* =====================================================
+   v22.0 MÜNDLICHE PRÜFUNG – GRUNDSTRUKTUR
+   Ziel:
+   - Menüpunkt "Mündliche Prüfung" mit echtem Trainingsmodus füllen
+   - typische mündliche Fragen, Musterantworten und Prüferhinweise
+   - keine Änderung an app.js, questions.json oder localStorage
+===================================================== */
+
+const ORAL_EXAM_QUESTIONS_V220 = [
+  {
+    category: "Gewerberecht",
+    question: "Welche Bedeutung hat §34a GewO für das Bewachungsgewerbe?",
+    sampleAnswer: "§34a GewO regelt den Zugang zum Bewachungsgewerbe. Er legt fest, wer Bewachungstätigkeiten ausüben darf und welche Voraussetzungen erfüllt sein müssen, zum Beispiel Zuverlässigkeit, geordnete Vermögensverhältnisse und je nach Tätigkeit Unterrichtung oder Sachkundeprüfung.",
+    examinerNote: "Wichtig ist: §34a GewO ist keine Polizeibefugnis, sondern eine gewerberechtliche Zugangsvorschrift."
+  },
+  {
+    category: "Recht der öffentlichen Sicherheit und Ordnung",
+    question: "Darf ein privater Sicherheitsmitarbeiter polizeiliche Maßnahmen durchführen?",
+    sampleAnswer: "Nein. Private Sicherheitsmitarbeiter haben grundsätzlich keine polizeilichen Hoheitsrechte. Sie handeln auf Grundlage von Jedermannsrechten, Hausrecht, Besitzrecht oder privatrechtlichen Befugnissen.",
+    examinerNote: "Der Prüfling muss klar zwischen Staat/Polizei und privatem Sicherheitsdienst unterscheiden."
+  },
+  {
+    category: "Straf- und Strafverfahrensrecht",
+    question: "Was bedeutet vorläufige Festnahme nach §127 Absatz 1 StPO?",
+    sampleAnswer: "Nach §127 Absatz 1 StPO darf jedermann eine Person vorläufig festnehmen, wenn sie auf frischer Tat betroffen oder verfolgt wird und Fluchtverdacht besteht oder die Identität nicht sofort festgestellt werden kann.",
+    examinerNote: "Wichtig sind die Voraussetzungen: frische Tat, Fluchtverdacht oder Identität nicht feststellbar."
+  },
+  {
+    category: "Bürgerliches Gesetzbuch",
+    question: "Was ist der Unterschied zwischen Hausrecht und Notwehr?",
+    sampleAnswer: "Das Hausrecht erlaubt dem Berechtigten zu bestimmen, wer eine private Fläche betreten oder dort bleiben darf. Notwehr ist die Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff. Hausrecht regelt also den Zutritt, Notwehr die Abwehr eines Angriffs.",
+    examinerNote: "Gute Antwort trennt Zweck, Rechtsnatur und praktische Anwendung."
+  },
+  {
+    category: "Umgang mit Menschen",
+    question: "Wie verhalten Sie sich bei einem aggressiven Besucher im Eingangsbereich?",
+    sampleAnswer: "Ich bleibe ruhig, halte Abstand, spreche klar und deeskalierend, vermeide Provokationen und sichere den Eigenschutz. Wenn nötig hole ich Unterstützung, setze das Hausrecht durch und informiere bei Gefahr die Polizei.",
+    examinerNote: "Prüfer achten auf Deeskalation, Eigenschutz, klare Kommunikation und keine unnötige Gewalt."
+  },
+  {
+    category: "Datenschutzrecht",
+    question: "Dürfen Sicherheitsmitarbeiter personenbezogene Daten beliebig weitergeben?",
+    sampleAnswer: "Nein. Personenbezogene Daten dürfen nur verarbeitet oder weitergegeben werden, wenn dafür eine rechtliche Grundlage besteht oder es zur Aufgabenerfüllung erforderlich und zulässig ist. Der Grundsatz der Verhältnismäßigkeit und Zweckbindung ist zu beachten.",
+    examinerNote: "Wichtig: keine private Weitergabe, keine Neugier-Abfragen, Zweckbindung beachten."
+  },
+  {
+    category: "Unfallverhütungsvorschrift",
+    question: "Warum ist Eigenschutz im Sicherheitsdienst besonders wichtig?",
+    sampleAnswer: "Eigenschutz ist wichtig, weil Sicherheitsmitarbeiter Gefahren erkennen und vermeiden müssen. Sie sollen sich nicht unnötig selbst gefährden, müssen auf sichere Arbeitsweise achten und bei Gefahr Unterstützung holen.",
+    examinerNote: "Gute Antwort verbindet UVV, Gefährdungsbeurteilung, Verhalten und praktische Sicherheit."
+  },
+  {
+    category: "Umgang mit Waffen",
+    question: "Darf ein Sicherheitsmitarbeiter grundsätzlich Waffen führen?",
+    sampleAnswer: "Nein, nicht grundsätzlich. Das Führen von Waffen unterliegt strengen gesetzlichen Voraussetzungen. Erforderlich sind je nach Fall Erlaubnisse, Eignung, Zuverlässigkeit und ein konkreter dienstlicher Bedarf.",
+    examinerNote: "Wichtig ist: keine pauschale Waffenbefugnis im Sicherheitsdienst."
+  },
+  {
+    category: "Grundzüge der Sicherheitstechnik",
+    question: "Wozu dient Sicherheitstechnik im Bewachungsgewerbe?",
+    sampleAnswer: "Sicherheitstechnik dient der Unterstützung der Bewachungsaufgabe. Beispiele sind Videoüberwachung, Einbruchmeldeanlagen, Zutrittskontrolle und Brandmeldetechnik. Sie ersetzt nicht die rechtliche Bewertung und nicht das richtige Verhalten des Sicherheitsmitarbeiters.",
+    examinerNote: "Wichtig ist der Zusammenhang zwischen Technik, Kontrolle, Datenschutz und Reaktion."
+  }
+];
+
+let oralExamQuestionsV220 = [];
+let oralExamIndexV220 = 0;
+let oralExamKnownV220 = 0;
+let oralExamPracticeV220 = 0;
+let oralExamTitleV220 = "Mündliche Prüfung";
+
+function getOralExamCategoriesV220() {
+  return [...new Set(ORAL_EXAM_QUESTIONS_V220.map(item => item.category))];
+}
+
+function getOralExamQuestionsByCategoryV220(categoryName) {
+  return ORAL_EXAM_QUESTIONS_V220.filter(item => item.category === categoryName);
+}
+
+function showOralExamPage() {
+  currentMode = "oral-exam";
+
+  if (typeof clearExamTimer === "function") {
+    clearExamTimer();
+  }
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  const totalQuestions = ORAL_EXAM_QUESTIONS_V220.length;
+  const categories = getOralExamCategoriesV220();
+
+  const categoryCards = categories.map(categoryName => {
+    const count = getOralExamQuestionsByCategoryV220(categoryName).length;
+    const themeClass = typeof getCategoryThemeClass === "function"
+      ? getCategoryThemeClass(categoryName)
+      : "theme-default";
+
+    return `
+      <div class="oral-topic-card ${themeClass}" onclick='startOralExamSessionV220(getOralExamQuestionsByCategoryV220(${JSON.stringify(categoryName)}), ${JSON.stringify(categoryName)})'>
+        <div class="oral-topic-icon">
+          ${categoryIcons[categoryName] || "🎤"}
+        </div>
+
+        <div>
+          <h3>${escapeHtml(categoryName)}</h3>
+          <p>${count} mündliche Frage(n)</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="location.reload()">
+      ← Zurück zum Dashboard
+    </button>
+
+    <section class="review-wrapper oral-exam-wrapper">
+
+      <div class="oral-exam-hero">
+        <p class="eyebrow">Mündliche Prüfung</p>
+
+        <h1>Prüfermodus vorbereiten</h1>
+
+        <p>
+          Trainieren Sie typische mündliche Prüfungssituationen mit Frage,
+          Musterantwort und Prüfer-Hinweis. Die Fragen sind Trainingsbeispiele
+          und ersetzen keine offizielle IHK-Prüfung.
+        </p>
+
+        <div class="oral-hero-actions">
+          <button class="next-btn" onclick="startOralExamSessionV220(ORAL_EXAM_QUESTIONS_V220, 'Alle mündlichen Fragen')">
+            Alle mündlichen Fragen starten
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid oral-exam-stats">
+        <div class="stats-card">
+          <span>Fragen</span>
+          <strong>${totalQuestions}</strong>
+        </div>
+
+        <div class="stats-card">
+          <span>Themen</span>
+          <strong>${categories.length}</strong>
+        </div>
+
+        <div class="stats-card gold-stat">
+          <span>Modus</span>
+          <strong>Prüfer</strong>
+        </div>
+      </div>
+
+      <div class="topic-stats-section oral-topic-section">
+        <div class="section-head">
+          <h2>Themen für die mündliche Prüfung</h2>
+          <p>Wählen Sie ein Thema oder starten Sie alle mündlichen Fragen.</p>
+        </div>
+
+        <div class="oral-topic-grid">
+          ${categoryCards}
+        </div>
+      </div>
+
+    </section>
+  `;
+}
+
+function startOralExamSessionV220(questions, title) {
+  if (!Array.isArray(questions) || questions.length === 0) {
+    showSmallNotice("Keine mündlichen Fragen vorhanden.");
+    return;
+  }
+
+  currentMode = "oral-exam-session";
+
+  oralExamQuestionsV220 = [...questions];
+  oralExamIndexV220 = 0;
+  oralExamKnownV220 = 0;
+  oralExamPracticeV220 = 0;
+  oralExamTitleV220 = title || "Mündliche Prüfung";
+
+  showOralExamSessionViewV220();
+}
+
+function showOralExamSessionViewV220() {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="showOralExamPage()">
+      ← Zurück zur mündlichen Prüfung
+    </button>
+
+    <div class="learning-header oral-session-header">
+      <div>
+        <p class="eyebrow">Mündliche Prüfung</p>
+        <h1>${escapeHtml(oralExamTitleV220)}</h1>
+      </div>
+
+      <div class="score-box">
+        <span>Frage</span>
+        <strong id="oralExamCounterV220">1/${oralExamQuestionsV220.length}</strong>
+      </div>
+    </div>
+
+    <div class="progress-wrapper oral-progress-wrapper">
+      <div class="progress-info">
+        <span id="oralExamProgressTextV220">Frage 1/${oralExamQuestionsV220.length}</span>
+        <span id="oralExamStatsV220">0 sicher · 0 üben</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="oralExamProgressFillV220"></div>
+      </div>
+    </div>
+
+    <section class="oral-question-area" id="oralQuestionAreaV220"></section>
+  `;
+
+  renderOralExamQuestionV220();
+}
+
+function renderOralExamQuestionV220() {
+  const question = oralExamQuestionsV220[oralExamIndexV220];
+  const area = document.getElementById("oralQuestionAreaV220");
+
+  if (!question || !area) return;
+
+  const themeClass = typeof getCategoryThemeClass === "function"
+    ? getCategoryThemeClass(question.category)
+    : "theme-default";
+
+  area.innerHTML = `
+    <div class="oral-question-card ${themeClass}">
+
+      <div class="oral-question-topline">
+        <span>${escapeHtml(question.category)}</span>
+        <strong>${oralExamIndexV220 + 1}/${oralExamQuestionsV220.length}</strong>
+      </div>
+
+      <div class="oral-question-main">
+        <span>Prüferfrage</span>
+        <h2>${escapeHtml(question.question)}</h2>
+      </div>
+
+      <div class="oral-answer-box" id="oralAnswerBoxV220" style="display:none;">
+        <div class="oral-answer-section">
+          <span>Musterantwort</span>
+          <p>${escapeHtml(question.sampleAnswer)}</p>
+        </div>
+
+        <div class="oral-examiner-note">
+          <span>Prüfer-Hinweis</span>
+          <p>${escapeHtml(question.examinerNote)}</p>
+        </div>
+      </div>
+
+      <div class="oral-actions" id="oralRevealActionsV220">
+        <button class="next-btn" onclick="showOralExamAnswerV220()">
+          Musterantwort anzeigen
+        </button>
+      </div>
+
+      <div class="oral-actions oral-rating-actions" id="oralRatingActionsV220" style="display:none;">
+        <button class="next-btn" onclick="rateOralExamQuestionV220('known')">
+          Sicher beantwortet
+        </button>
+
+        <button class="next-btn danger-training-btn" onclick="rateOralExamQuestionV220('practice')">
+          Noch üben
+        </button>
+      </div>
+
+      <div class="oral-actions oral-nav-actions">
+        <button class="next-btn secondary-btn" onclick="previousOralExamQuestionV220()">
+          Zurück
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  updateOralExamProgressV220();
+}
+
+function showOralExamAnswerV220() {
+  const answerBox = document.getElementById("oralAnswerBoxV220");
+  const revealActions = document.getElementById("oralRevealActionsV220");
+  const ratingActions = document.getElementById("oralRatingActionsV220");
+
+  if (answerBox) {
+    answerBox.style.display = "grid";
+  }
+
+  if (revealActions) {
+    revealActions.style.display = "none";
+  }
+
+  if (ratingActions) {
+    ratingActions.style.display = "flex";
+  }
+}
+
+function rateOralExamQuestionV220(status) {
+  if (status === "known") {
+    oralExamKnownV220++;
+  } else {
+    oralExamPracticeV220++;
+  }
+
+  if (oralExamIndexV220 >= oralExamQuestionsV220.length - 1) {
+    showOralExamFinishScreenV220();
+    return;
+  }
+
+  oralExamIndexV220++;
+  renderOralExamQuestionV220();
+}
+
+function previousOralExamQuestionV220() {
+  if (oralExamIndexV220 <= 0) {
+    showSmallNotice("Sie sind bereits bei der ersten mündlichen Frage.");
+    return;
+  }
+
+  oralExamIndexV220--;
+  renderOralExamQuestionV220();
+}
+
+function updateOralExamProgressV220() {
+  const total = oralExamQuestionsV220.length;
+  const seen = oralExamIndexV220 + 1;
+  const answered = oralExamKnownV220 + oralExamPracticeV220;
+  const percent = total > 0 ? Math.round((seen / total) * 100) : 0;
+
+  const counter = document.getElementById("oralExamCounterV220");
+  const progressText = document.getElementById("oralExamProgressTextV220");
+  const progressFill = document.getElementById("oralExamProgressFillV220");
+  const stats = document.getElementById("oralExamStatsV220");
+
+  if (counter) {
+    counter.innerText = `${seen}/${total}`;
+  }
+
+  if (progressText) {
+    progressText.innerText = `Frage ${seen}/${total}`;
+  }
+
+  if (progressFill) {
+    progressFill.style.width = percent + "%";
+  }
+
+  if (stats) {
+    stats.innerText =
+      answered + "/" + total + " bewertet · " +
+      oralExamKnownV220 + " sicher · " +
+      oralExamPracticeV220 + " üben";
+  }
+}
+
+function showOralExamFinishScreenV220() {
+  const total = oralExamQuestionsV220.length;
+  const percent = total > 0
+    ? Math.round((oralExamKnownV220 / total) * 100)
+    : 0;
+
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  mainContent.innerHTML = `
+    <button class="back-btn" onclick="showOralExamPage()">
+      ← Zurück zur mündlichen Prüfung
+    </button>
+
+    <section class="result-wrapper oral-finish-wrapper">
+
+      <div class="oral-finish-hero">
+        <p class="eyebrow">Mündliche Prüfung</p>
+
+        <h1>Trainingsrunde abgeschlossen</h1>
+
+        <p>
+          ${escapeHtml(oralExamTitleV220)} wurde abgeschlossen.
+          Nutzen Sie die Auswertung, um unsichere Antworten gezielt zu wiederholen.
+        </p>
+
+        <div class="oral-finish-percent">
+          ${percent}%
+        </div>
+
+        <span class="oral-finish-label">
+          Sicher beantwortet
+        </span>
+      </div>
+
+      <div class="result-stats-grid oral-finish-stats">
+
+        <div class="result-stat-card">
+          <span>Fragen</span>
+          <strong>${total}</strong>
+        </div>
+
+        <div class="result-stat-card success">
+          <span>Sicher</span>
+          <strong>${oralExamKnownV220}</strong>
+        </div>
+
+        <div class="result-stat-card danger">
+          <span>Noch üben</span>
+          <strong>${oralExamPracticeV220}</strong>
+        </div>
+
+      </div>
+
+      <div class="last-exam-box oral-finish-note">
+        <span>Empfehlung</span>
+        <strong>${oralExamPracticeV220 > 0 ? "Antworten nacharbeiten" : "Sehr gute mündliche Runde"}</strong>
+        <p>
+          ${
+            oralExamPracticeV220 > 0
+              ? "Wiederholen Sie die unsicheren Antworten laut. In der mündlichen Prüfung zählt nicht nur Wissen, sondern auch klare, ruhige und rechtlich saubere Formulierung."
+              : "Die Antworten wurden sicher bewertet. Wiederholen Sie regelmäßig, damit die Formulierungen prüfungssicher bleiben."
+          }
+        </p>
+      </div>
+
+      <div class="result-actions oral-finish-actions">
+        <button class="next-btn" onclick="startOralExamSessionV220(oralExamQuestionsV220, oralExamTitleV220)">
+          Runde nochmal starten
+        </button>
+
+        <button class="next-btn" onclick="showOralExamPage()">
+          Zur Themenübersicht
+        </button>
+
+        <button class="next-btn secondary-btn" onclick="location.reload()">
+          Zurück zum Dashboard
+        </button>
+      </div>
+
+    </section>
+  `;
+}
+
+function bindOralExamMenuPatchV220() {
+  const menuItems = document.querySelectorAll(".menu-item");
+
+  menuItems.forEach(item => {
+    const text = item.innerText || "";
+
+    if (text.includes("Mündliche Prüfung")) {
+      item.style.cursor = "pointer";
+      item.onclick = () => showOralExamPage();
+    }
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", bindOralExamMenuPatchV220);
+} else {
+  bindOralExamMenuPatchV220();
+}
+
+window.showOralExamPage = showOralExamPage;
+window.startOralExamSessionV220 = startOralExamSessionV220;
+window.getOralExamQuestionsByCategoryV220 = getOralExamQuestionsByCategoryV220;
+window.showOralExamAnswerV220 = showOralExamAnswerV220;
+window.rateOralExamQuestionV220 = rateOralExamQuestionV220;
+window.previousOralExamQuestionV220 = previousOralExamQuestionV220;
+window.showOralExamFinishScreenV220 = showOralExamFinishScreenV220;
