@@ -3113,3 +3113,69 @@ body > .container {
   }
 }
 
+/* =====================================================
+   v21.9.2 LERNKARTEN – MOBILE FEINKORREKTUR
+   Ziel:
+   - mobile Lernkarte etwas kompakter
+   - Fragetext ruhiger
+   - weniger unnötige Höhe
+   - Buttons unverändert stabil
+===================================================== */
+
+@media (max-width: 700px) {
+  .flashcard-study-box {
+    padding: 13px !important;
+    border-radius: 22px !important;
+  }
+
+  .flashcard-side {
+    min-height: 320px !important;
+    padding: 20px 13px !important;
+    border-radius: 20px !important;
+  }
+
+  .flashcard-question-content {
+    min-height: 160px !important;
+    padding: 6px 0 !important;
+  }
+
+  .flashcard-question-content .question-title,
+  .flashcard-question-content h2,
+  .flashcard-question-content h3,
+  .flashcard-question-content p {
+    font-size: clamp(22px, 6.3vw, 25px) !important;
+    line-height: 1.16 !important;
+    letter-spacing: -0.035em !important;
+  }
+
+  .flashcard-hint {
+    margin-top: 18px !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .flashcard-actions,
+  .flashcard-rating,
+  .flashcard-shared-back {
+    margin-top: 14px !important;
+  }
+}
+
+@media (max-width: 370px) {
+  .flashcard-side {
+    min-height: 305px !important;
+    padding: 18px 12px !important;
+  }
+
+  .flashcard-question-content {
+    min-height: 150px !important;
+  }
+
+  .flashcard-question-content .question-title,
+  .flashcard-question-content h2,
+  .flashcard-question-content h3,
+  .flashcard-question-content p {
+    font-size: 22px !important;
+  }
+}
+
