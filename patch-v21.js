@@ -573,3 +573,312 @@ if (!window.ACCAOUI_V2111_FLASHCARD_FINISH_PATCH) {
     `;
   };
 }
+
+/* =====================================================
+   v21.12 LERNKARTEN – WIEDERHOLEN-KARTEN DIESER RUNDE
+   Ziel:
+   - Nicht-gewusst-Karten der aktuellen Sitzung sammeln
+   - direkte Wiederholungsrunde starten
+   - keine Änderung an localStorage-Struktur
+===================================================== */
+
+if (!window.ACCAOUI_V2112_FLASHCARD_REPEAT_PATCH) {
+  window.ACCAOUI_V2112_FLASHCARD_REPEAT_PATCH = true;
+
+  window.accaouiFlashcardSessionRepeatCardsV2112 = [];
+  window.accaouiFlashcardSessionRepeatKeysV2112 = new Set();
+
+  function getFlashcardSessionKeyV2112(question) {
+    if (!question) return "";
+
+    if (typeof getFlashcardProgressKey === "function") {
+      return getFlashcardProgressKey(question);
+    }
+
+    if (typeof getQuestionKey === "function") {
+      return getQuestionKey(question);
+    }
+
+    return String(question.id || question.question || JSON.stringify(question));
+  }
+
+  function addFlashcardRepeatCardV2112(question) {
+    if (!question) return;
+
+    const key = getFlashcardSessionKeyV2112(question);
+
+    if (!key || window.accaouiFlashcardSessionRepeatKeysV2112.has(key)) {
+      return;
+    }
+
+    window.accaouiFlashcardSessionRepeatKeysV2112.add(key);
+    window.accaouiFlashcardSessionRepeatCardsV2112.push(question);
+  }
+
+  function removeFlashcardRepeatCardV2112(question) {
+    if (!question) return;
+
+    const key = getFlashcardSessionKeyV2112(question);
+
+    if (!key || !window.accaouiFlashcardSessionRepeatKeysV2112.has(key)) {
+      return;
+    }
+
+    window.accaouiFlashcardSessionRepeatKeysV2112.delete(key);
+
+    window.accaouiFlashcardSessionRepeatCardsV2112 =
+      window.accaouiFlashcardSessionRepeatCardsV2112.filter(savedQuestion => {
+        return getFlashcardSessionKeyV2112(savedQuestion) !== key;
+      });
+  }
+
+  function resetFlashcardRepeatCardsV2112() {
+    window.accaouiFlashcardSessionRepeatCardsV2112 = [];
+    window.accaouiFlashcardSessionRepeatKeysV2112 = new Set();
+  }
+
+  window.accaouiPreviousStartFlashcardSessionV2112 =
+    window.accaouiPreviousStartFlashcardSessionV2112 ||
+    window.startFlashcardSession;
+
+  window.startFlashcardSession = function patchedStartFlashcardSessionV2112(questions, title) {
+    resetFlashcardRepeatCardsV2112();
+
+    if (typeof window.accaouiPreviousStartFlashcardSessionV2112 === "function") {
+      return window.accaouiPreviousStartFlashcardSessionV2112(questions, title);
+    }
+
+    showSmallNotice("Lernkarten konnten nicht gestartet werden.");
+  };
+
+  window.accaouiPreviousMarkFlashcardUnknownV2112 =
+    window.accaouiPreviousMarkFlashcardUnknownV2112 ||
+    window.markFlashcardUnknown;
+
+  window.markFlashcardUnknown = function patchedMarkFlashcardUnknownV2112() {
+    const question = Array.isArray(flashcardQuestions)
+      ? flashcardQuestions[flashcardIndex]
+      : null;
+
+    addFlashcardRepeatCardV2112(question);
+
+    if (typeof window.accaouiPreviousMarkFlashcardUnknownV2112 === "function") {
+      return window.accaouiPreviousMarkFlashcardUnknownV2112();
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.accaouiPreviousMarkFlashcardKnownV2112 =
+    window.accaouiPreviousMarkFlashcardKnownV2112 ||
+    window.markFlashcardKnown;
+
+  window.markFlashcardKnown = function patchedMarkFlashcardKnownV2112() {
+    const question = Array.isArray(flashcardQuestions)
+      ? flashcardQuestions[flashcardIndex]
+      : null;
+
+    removeFlashcardRepeatCardV2112(question);
+
+    if (typeof window.accaouiPreviousMarkFlashcardKnownV2112 === "function") {
+      return window.accaouiPreviousMarkFlashcardKnownV2112();
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.startCurrentFlashcardRepeatCards = function startCurrentFlashcardRepeatCards() {
+    const repeatCards = Array.isArray(window.accaouiFlashcardSessionRepeatCardsV2112)
+      ? [...window.accaouiFlashcardSessionRepeatCardsV2112]
+      : [];
+
+    if (repeatCards.length === 0) {
+      showSmallNotice("Keine Wiederholen-Karten aus dieser Runde vorhanden.");
+      return;
+    }
+
+    window.startFlashcardSession(
+      repeatCards,
+      "Wiederholen-Karten dieser Runde"
+    );
+  };
+
+  window.showFlashcardFinishScreen = function showFlashcardFinishScreen() {
+    const total = Array.isArray(flashcardQuestions) ? flashcardQuestions.length : 0;
+    const known = Number(flashcardKnownCount || 0);
+    const unknown = Number(flashcardUnknownCount || 0);
+    const rated = known + unknown;
+    const open = Math.max(0, total - rated);
+
+    const repeatCards = Array.isArray(window.accaouiFlashcardSessionRepeatCardsV2112)
+      ? window.accaouiFlashcardSessionRepeatCardsV2112
+      : [];
+
+    const repeatCount = repeatCards.length;
+
+    const percent = rated > 0
+      ? Math.round((known / rated) * 100)
+      : 0;
+
+    const sessionTitle = window.accaouiFlashcardSessionTitleV2111 || "Lernkarten";
+
+    if (typeof updateDashboardNumbers === "function") {
+      updateDashboardNumbers();
+    }
+
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="showFlashcardsPage()">
+        ← Zurück zu den Lernkarten
+      </button>
+
+      <section class="result-wrapper flashcard-finish-wrapper">
+
+        <div class="flashcard-finish-hero">
+          <p class="eyebrow">Lernkarten abgeschlossen</p>
+
+          <h1>Lernrunde abgeschlossen</h1>
+
+          <p>
+            ${escapeHtml(sessionTitle)} wurde ausgewertet.
+            Ihr Fortschritt wurde lokal im Browser gespeichert.
+          </p>
+
+          <div class="flashcard-finish-percent">
+            ${percent}%
+          </div>
+
+          <span class="flashcard-finish-label">
+            Gewusst-Quote dieser Runde
+          </span>
+        </div>
+
+        <div class="result-stats-grid flashcard-finish-stats">
+
+          <div class="result-stat-card">
+            <span>Bearbeitet</span>
+            <strong>${rated}</strong>
+          </div>
+
+          <div class="result-stat-card success">
+            <span>Gewusst</span>
+            <strong>${known}</strong>
+          </div>
+
+          <div class="result-stat-card danger">
+            <span>Wiederholen</span>
+            <strong>${unknown}</strong>
+          </div>
+
+          <div class="result-stat-card">
+            <span>Offen</span>
+            <strong>${open}</strong>
+          </div>
+
+        </div>
+
+        <div class="last-exam-box flashcard-finish-note">
+          <span>Empfehlung</span>
+          <strong>${repeatCount > 0 ? "Wiederholen-Karten direkt nacharbeiten" : "Sehr gute Runde"}</strong>
+          <p>
+            ${
+              repeatCount > 0
+                ? "In dieser Runde wurden " + repeatCount + " Karte(n) als Wiederholen markiert. Sie können genau diese Karten jetzt direkt nochmal lernen."
+                : "Alle bewerteten Karten wurden als gewusst markiert. Halten Sie den Stand durch regelmäßige Wiederholung stabil."
+            }
+          </p>
+        </div>
+
+        <div class="result-actions flashcard-finish-actions">
+
+          ${
+            repeatCount > 0
+              ? `<button class="next-btn flashcard-repeat-session-btn" onclick="startCurrentFlashcardRepeatCards()">Diese Wiederholen-Karten nochmal lernen</button>`
+              : ""
+          }
+
+          <button class="next-btn" onclick="repeatCurrentFlashcardSession()">
+            Ganze Runde nochmal starten
+          </button>
+
+          <button class="next-btn" onclick="showFlashcardsPage()">
+            Zur Lernkarten-Übersicht
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+
+        </div>
+
+      </section>
+    `;
+  };
+
+  window.getCurrentFlashcardRepeatCards = function getCurrentFlashcardRepeatCards() {
+    return Array.isArray(window.accaouiFlashcardSessionRepeatCardsV2112)
+      ? [...window.accaouiFlashcardSessionRepeatCardsV2112]
+      : [];
+  };
+}
+
+/* =====================================================
+   v21.12.3 LERNKARTEN – FORTSCHRITT MOBIL SAUBER
+   Ziel:
+   - Position und Bewertung klar trennen
+   - keine unschöne lange Textzeile auf Handy
+   - Bewertet / Gewusst / Wiederholen als kompakte Chips
+===================================================== */
+
+function updateFlashcardProgress() {
+  const total = Array.isArray(flashcardQuestions) ? flashcardQuestions.length : 0;
+  const seen = total > 0 ? flashcardIndex + 1 : 0;
+  const known = Number(flashcardKnownCount || 0);
+  const unknown = Number(flashcardUnknownCount || 0);
+  const answered = known + unknown;
+
+  const positionPercent = total > 0
+    ? Math.round((seen / total) * 100)
+    : 0;
+
+  const counter = document.getElementById("flashcardCounter");
+  const progressText = document.getElementById("flashcardProgressText");
+  const progressFill = document.getElementById("flashcardProgressFill");
+  const stats = document.getElementById("flashcardStats");
+
+  if (counter) {
+    counter.innerText = `${seen}/${total}`;
+  }
+
+  if (progressText) {
+    progressText.innerText = `Position: ${seen}/${total}`;
+  }
+
+  if (progressFill) {
+    progressFill.style.width = positionPercent + "%";
+  }
+
+  if (stats) {
+    stats.innerHTML = `
+      <span class="flashcard-progress-chip">
+        <small>Bewertet</small>
+        <strong>${answered}/${total}</strong>
+      </span>
+
+      <span class="flashcard-progress-chip success">
+        <small>Gewusst</small>
+        <strong>${known}</strong>
+      </span>
+
+      <span class="flashcard-progress-chip danger">
+        <small>Wiederholen</small>
+        <strong>${unknown}</strong>
+      </span>
+    `;
+  }
+}
+
+window.updateFlashcardProgress = updateFlashcardProgress;

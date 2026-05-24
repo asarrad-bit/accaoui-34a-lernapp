@@ -3479,4 +3479,169 @@ body > .container {
     font-size: 44px !important;
   }
 }
+/* =====================================================
+   v21.12 LERNKARTEN – WIEDERHOLEN-RUNDE BUTTON
+   Ziel:
+   - Wiederholen-Karten dieser Runde klar hervorheben
+   - Abschlussbildschirm weiterhin ruhig halten
+===================================================== */
 
+.flashcard-repeat-session-btn {
+  background: #b91c1c !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 26px rgba(185, 28, 28, 0.20) !important;
+}
+
+.flashcard-repeat-session-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 34px rgba(185, 28, 28, 0.24) !important;
+}
+
+@media (max-width: 700px) {
+  .flashcard-repeat-session-btn {
+    width: 100% !important;
+  }
+}
+
+/* =====================================================
+   v21.12.3 LERNKARTEN – FORTSCHRITT CHIPS
+   Ziel:
+   - Bewertungsstatus mobil sauber darstellen
+   - keine umbrechende Textzeile
+===================================================== */
+
+#flashcardStats {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  align-items: center !important;
+}
+
+.flashcard-progress-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  min-height: 24px !important;
+  padding: 5px 8px !important;
+  border-radius: 999px !important;
+  background: rgba(248, 250, 252, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  color: #475569 !important;
+  line-height: 1 !important;
+}
+
+.flashcard-progress-chip small {
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #64748b !important;
+}
+
+.flashcard-progress-chip strong {
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  color: #0f172a !important;
+}
+
+.flashcard-progress-chip.success strong {
+  color: #15803d !important;
+}
+
+.flashcard-progress-chip.danger strong {
+  color: #b91c1c !important;
+}
+
+@media (max-width: 700px) {
+  #flashcardStats {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+
+  .flashcard-progress-chip {
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+}
+
+/* =====================================================
+   v21.12.4 LERNKARTEN – FORTSCHRITT NUR BEI WIEDERHOLUNG
+   Ziel:
+   - normale Lernkartenrunde bleibt ruhig wie vorher
+   - Wiederholen-Runde zeigt detaillierte Bewertungs-Chips
+   - keine Änderung an Speicherlogik
+===================================================== */
+
+function isCurrentFlashcardRepeatSessionV21124() {
+  const title = String(window.accaouiFlashcardSessionTitleV2111 || "").trim();
+
+  return title === "Wiederholen-Karten dieser Runde";
+}
+
+function updateFlashcardProgress() {
+  const total = Array.isArray(flashcardQuestions) ? flashcardQuestions.length : 0;
+  const seen = total > 0 ? flashcardIndex + 1 : 0;
+  const known = Number(flashcardKnownCount || 0);
+  const unknown = Number(flashcardUnknownCount || 0);
+  const answered = known + unknown;
+
+  const positionPercent = total > 0
+    ? Math.round((seen / total) * 100)
+    : 0;
+
+  const counter = document.getElementById("flashcardCounter");
+  const progressText = document.getElementById("flashcardProgressText");
+  const progressFill = document.getElementById("flashcardProgressFill");
+  const stats = document.getElementById("flashcardStats");
+
+  if (counter) {
+    counter.innerText = `${seen}/${total}`;
+  }
+
+  if (progressFill) {
+    progressFill.style.width = positionPercent + "%";
+  }
+
+  if (isCurrentFlashcardRepeatSessionV21124()) {
+    if (progressText) {
+      progressText.innerText = `Position: ${seen}/${total}`;
+    }
+
+    if (stats) {
+      stats.classList.add("flashcard-repeat-progress-stats");
+
+      stats.innerHTML = `
+        <span class="flashcard-progress-chip">
+          <small>Bewertet</small>
+          <strong>${answered}/${total}</strong>
+        </span>
+
+        <span class="flashcard-progress-chip success">
+          <small>Gewusst</small>
+          <strong>${known}</strong>
+        </span>
+
+        <span class="flashcard-progress-chip danger">
+          <small>Wiederholen</small>
+          <strong>${unknown}</strong>
+        </span>
+      `;
+    }
+
+    return;
+  }
+
+  if (progressText) {
+    progressText.innerText = positionPercent + "%";
+  }
+
+  if (stats) {
+    stats.classList.remove("flashcard-repeat-progress-stats");
+    stats.innerText =
+      known + " gewusst · " +
+      unknown + " nicht gewusst";
+  }
+}
+
+window.updateFlashcardProgress = updateFlashcardProgress;
