@@ -2262,3 +2262,233 @@ if (!window.ACCAOUI_V227_MOBILE_NAV_PATCH) {
   window.closeMobileMoreMenuV227 = closeMobileMoreMenuV227;
   window.syncMobileNavigationV227 = syncMobileNavigationV227;
 }
+
+/* =====================================================
+   v22.7.6 MOBILE BACK GUARD
+   Ziel:
+   - Handy-Zurück-Button soll nicht auf externe Webseiten springen
+   - App bleibt innerhalb der Accaoui-Lern-App
+   - Aktive Prüfung wird vor versehentlichem Verlassen geschützt
+===================================================== */
+
+if (!window.ACCAOUI_V2276_MOBILE_BACK_GUARD_PATCH) {
+  window.ACCAOUI_V2276_MOBILE_BACK_GUARD_PATCH = true;
+
+  function isMobileBackGuardActiveV2276() {
+    return window.matchMedia && window.matchMedia("(max-width: 820px)").matches;
+  }
+
+  function getCurrentModeV2276() {
+    try {
+      if (typeof currentMode !== "undefined") {
+        return String(currentMode || "dashboard");
+      }
+    } catch (error) {
+      return "dashboard";
+    }
+
+    return "dashboard";
+  }
+
+  function isActiveExamModeV2276(mode) {
+    return mode === "exam";
+  }
+
+  function isActiveOralExamModeV2276(mode) {
+    return mode === "oral-exam-session";
+  }
+
+  function isActiveLearningModeV2276(mode) {
+    return [
+      "learning",
+      "category",
+      "open-questions",
+      "flashcards"
+    ].includes(mode);
+  }
+
+  function goToDashboardV2276() {
+    try {
+      if (typeof clearExamTimer === "function") {
+        clearExamTimer();
+      }
+    } catch (error) {
+      /* bewusst still */
+    }
+
+    location.reload();
+  }
+
+  function closeMobileBackDialogV2276() {
+    const dialog = document.getElementById("mobileBackDialogV2276");
+
+    if (dialog) {
+      dialog.remove();
+    }
+
+    document.body.classList.remove("mobile-back-dialog-open-v2276");
+  }
+
+  function showMobileBackDialogV2276(options) {
+    closeMobileBackDialogV2276();
+
+    const title = options && options.title
+      ? options.title
+      : "Bereich verlassen?";
+
+    const message = options && options.message
+      ? options.message
+      : "Möchten Sie diesen Bereich wirklich verlassen?";
+
+    const confirmText = options && options.confirmText
+      ? options.confirmText
+      : "Ja, verlassen";
+
+    const cancelText = options && options.cancelText
+      ? options.cancelText
+      : "Abbrechen";
+
+    const dialog = document.createElement("div");
+    dialog.id = "mobileBackDialogV2276";
+    dialog.className = "mobile-back-dialog-v2276";
+
+    dialog.innerHTML = `
+      <div class="mobile-back-dialog-card-v2276">
+        <div class="mobile-back-dialog-icon-v2276">↩</div>
+
+        <h2>${escapeHtml(title)}</h2>
+
+        <p>${escapeHtml(message)}</p>
+
+        <div class="mobile-back-dialog-actions-v2276">
+          <button type="button" class="mobile-back-cancel-v2276" id="mobileBackCancelV2276">
+            ${escapeHtml(cancelText)}
+          </button>
+
+          <button type="button" class="mobile-back-confirm-v2276" id="mobileBackConfirmV2276">
+            ${escapeHtml(confirmText)}
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(dialog);
+    document.body.classList.add("mobile-back-dialog-open-v2276");
+
+    const cancelButton = document.getElementById("mobileBackCancelV2276");
+    const confirmButton = document.getElementById("mobileBackConfirmV2276");
+
+    if (cancelButton) {
+      cancelButton.onclick = closeMobileBackDialogV2276;
+    }
+
+    if (confirmButton) {
+      confirmButton.onclick = function () {
+        closeMobileBackDialogV2276();
+
+        if (options && typeof options.onConfirm === "function") {
+          options.onConfirm();
+        }
+      };
+    }
+  }
+
+  function handleMobileBackV2276() {
+    const mode = getCurrentModeV2276();
+
+    if (isActiveExamModeV2276(mode)) {
+      showMobileBackDialogV2276({
+        title: "Prüfung wirklich verlassen?",
+        message: "Ihre laufende Prüfung wird beendet. Nicht abgegebene Antworten können verloren gehen.",
+        confirmText: "Prüfung verlassen",
+        cancelText: "Weiter prüfen",
+        onConfirm: goToDashboardV2276
+      });
+
+      return;
+    }
+
+    if (isActiveOralExamModeV2276(mode)) {
+      showMobileBackDialogV2276({
+        title: "Mündliche Prüfung verlassen?",
+        message: "Die aktuelle mündliche Prüfungsrunde wird beendet.",
+        confirmText: "Runde verlassen",
+        cancelText: "Weiter üben",
+        onConfirm: goToDashboardV2276
+      });
+
+      return;
+    }
+
+    if (isActiveLearningModeV2276(mode)) {
+      showMobileBackDialogV2276({
+        title: "Lernrunde verlassen?",
+        message: "Sie kehren zur Startseite zurück. Ihr gespeicherter Fortschritt bleibt erhalten.",
+        confirmText: "Zur Startseite",
+        cancelText: "Weiter lernen",
+        onConfirm: goToDashboardV2276
+      });
+
+      return;
+    }
+
+    if (mode !== "dashboard") {
+      goToDashboardV2276();
+      return;
+    }
+
+    if (typeof showSmallNotice === "function") {
+      showSmallNotice("Sie sind bereits auf der Startseite.");
+    }
+  }
+
+  function installMobileBackGuardV2276() {
+    if (window.ACCAOUI_V2276_BACK_GUARD_INSTALLED) return;
+
+    window.ACCAOUI_V2276_BACK_GUARD_INSTALLED = true;
+
+    try {
+      history.replaceState(
+        { accaouiApp: true },
+        "",
+        location.href
+      );
+
+      history.pushState(
+        { accaouiBackGuard: true },
+        "",
+        location.href
+      );
+    } catch (error) {
+      console.warn("Mobile Back Guard konnte nicht initialisiert werden.", error);
+    }
+
+    window.addEventListener("popstate", function () {
+      if (!isMobileBackGuardActiveV2276()) {
+        return;
+      }
+
+      try {
+        history.pushState(
+          { accaouiBackGuard: true },
+          "",
+          location.href
+        );
+      } catch (error) {
+        /* bewusst still */
+      }
+
+      handleMobileBackV2276();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installMobileBackGuardV2276);
+  } else {
+    installMobileBackGuardV2276();
+  }
+
+  window.showMobileBackDialogV2276 = showMobileBackDialogV2276;
+  window.closeMobileBackDialogV2276 = closeMobileBackDialogV2276;
+  window.handleMobileBackV2276 = handleMobileBackV2276;
+}

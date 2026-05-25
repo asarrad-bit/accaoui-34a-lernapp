@@ -5853,3 +5853,95 @@ body:has(.oral-room-scene-v221.is-session .oral-room-controls-v226) .oral-questi
     border-radius: 23px !important;
   }
 }
+
+/* =====================================================
+   v22.7.6 MOBILE BACK GUARD DIALOG
+   Ziel:
+   - schöner Sicherheitsdialog beim Handy-Zurück-Button
+===================================================== */
+
+.mobile-back-dialog-v2276 {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 12000 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 18px !important;
+  background: rgba(15, 23, 42, 0.42) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.mobile-back-dialog-card-v2276 {
+  width: min(100%, 390px) !important;
+  padding: 22px !important;
+  border-radius: 26px !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.95) !important;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.30) !important;
+  text-align: left !important;
+}
+
+.mobile-back-dialog-icon-v2276 {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 16px !important;
+  display: grid !important;
+  place-items: center !important;
+  margin-bottom: 14px !important;
+  background: rgba(36, 72, 199, 0.10) !important;
+  color: #2448c7 !important;
+  font-size: 24px !important;
+  font-weight: 950 !important;
+}
+
+.mobile-back-dialog-card-v2276 h2 {
+  margin: 0 0 8px 0 !important;
+  color: #071229 !important;
+  font-size: 24px !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+  font-weight: 950 !important;
+}
+
+.mobile-back-dialog-card-v2276 p {
+  margin: 0 !important;
+  color: #536179 !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+  font-weight: 650 !important;
+}
+
+.mobile-back-dialog-actions-v2276 {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-top: 20px !important;
+}
+
+.mobile-back-dialog-actions-v2276 button {
+  min-height: 48px !important;
+  border-radius: 16px !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+}
+
+.mobile-back-cancel-v2276 {
+  border: 1px solid rgba(203, 213, 225, 0.95) !important;
+  background: #ffffff !important;
+  color: #071229 !important;
+}
+
+.mobile-back-confirm-v2276 {
+  border: 1px solid rgba(36, 72, 199, 0.22) !important;
+  background:
+    linear-gradient(135deg, #071229 0%, #2448c7 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 30px rgba(36, 72, 199, 0.25) !important;
+}
+
+body.mobile-back-dialog-open-v2276 {
+  overflow: hidden !important;
+}
