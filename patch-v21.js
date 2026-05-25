@@ -1,4 +1,4 @@
-/* =====================================================
+ /* =====================================================
    ACCAOUI §34a LERN-APP
    PATCH v21.2 – Lernkarten & Kategorien stabil
    Zweck:
@@ -2043,4 +2043,222 @@ if (!window.ACCAOUI_V226_ORAL_SCENE_CONTROLS_PATCH) {
   };
 
   window.renderOralSceneControlsV226 = renderOralSceneControlsV226;
+}
+
+/* =====================================================
+   v22.7 MOBILE NAVIGATION – APP-TAUGLICHE HANDY-NAVIGATION
+   Ziel:
+   - Desktop-Sidebar bleibt unverändert
+   - Mobile bekommt Bottom-Navigation
+   - große Sidebar auf Handy wird ausgeblendet
+   - aktive Lern-/Prüfungsrunden laufen im Fokusmodus
+   - vorbereitet für spätere PWA / App Store / Google Play
+===================================================== */
+
+if (!window.ACCAOUI_V227_MOBILE_NAV_PATCH) {
+  window.ACCAOUI_V227_MOBILE_NAV_PATCH = true;
+
+  function getCurrentModeV227() {
+    try {
+      if (typeof currentMode !== "undefined") {
+        return String(currentMode || "dashboard");
+      }
+    } catch (error) {
+      return "dashboard";
+    }
+
+    return "dashboard";
+  }
+
+  function isFocusModeV227(mode) {
+    return [
+      "exam",
+      "learning",
+      "category",
+      "open-questions",
+      "flashcards",
+      "oral-exam-session"
+    ].includes(mode);
+  }
+
+  function closeMobileMoreMenuV227() {
+    const sheet = document.getElementById("mobileMoreSheetV227");
+    const backdrop = document.getElementById("mobileMoreBackdropV227");
+
+    if (sheet) {
+      sheet.classList.remove("is-open");
+    }
+
+    if (backdrop) {
+      backdrop.classList.remove("is-open");
+    }
+
+    document.body.classList.remove("mobile-more-open-v227");
+  }
+
+  function toggleMobileMoreMenuV227() {
+    const sheet = document.getElementById("mobileMoreSheetV227");
+    const backdrop = document.getElementById("mobileMoreBackdropV227");
+
+    if (!sheet || !backdrop) return;
+
+    const willOpen = !sheet.classList.contains("is-open");
+
+    sheet.classList.toggle("is-open", willOpen);
+    backdrop.classList.toggle("is-open", willOpen);
+    document.body.classList.toggle("mobile-more-open-v227", willOpen);
+  }
+
+  function navigateMobileV227(target) {
+    closeMobileMoreMenuV227();
+
+    if (target === "dashboard") {
+      location.reload();
+      return;
+    }
+
+    if (target === "questions" && typeof showAllQuestions === "function") {
+      showAllQuestions();
+      return;
+    }
+
+    if (target === "flashcards" && typeof showFlashcardsPage === "function") {
+      showFlashcardsPage();
+      return;
+    }
+
+    if (target === "exam" && typeof startExamMode === "function") {
+      startExamMode();
+      return;
+    }
+
+    if (target === "stats" && typeof showStatsPage === "function") {
+      showStatsPage();
+      return;
+    }
+
+    if (target === "mistakes" && typeof showMistakeOverview === "function") {
+      showMistakeOverview();
+      return;
+    }
+
+    if (target === "oral" && typeof showOralExamPage === "function") {
+      showOralExamPage();
+      return;
+    }
+
+    showSmallNotice("Dieser Bereich konnte nicht geöffnet werden.");
+  }
+
+  function createMobileNavigationV227() {
+    if (document.getElementById("mobileBottomNavV227")) return;
+
+    const navHtml = `
+      <div class="mobile-more-backdrop-v227" id="mobileMoreBackdropV227" onclick="closeMobileMoreMenuV227()"></div>
+
+      <nav class="mobile-bottom-nav-v227" id="mobileBottomNavV227" aria-label="Mobile Hauptnavigation">
+        <button type="button" class="mobile-nav-btn-v227" data-mobile-target="dashboard" onclick="navigateMobileV227('dashboard')">
+          <span>🏠</span>
+          <strong>Start</strong>
+        </button>
+
+        <button type="button" class="mobile-nav-btn-v227" data-mobile-target="questions" onclick="navigateMobileV227('questions')">
+          <span>📚</span>
+          <strong>Fragen</strong>
+        </button>
+
+        <button type="button" class="mobile-nav-btn-v227" data-mobile-target="flashcards" onclick="navigateMobileV227('flashcards')">
+          <span>🃏</span>
+          <strong>Karten</strong>
+        </button>
+
+        <button type="button" class="mobile-nav-btn-v227" data-mobile-target="exam" onclick="navigateMobileV227('exam')">
+          <span>📝</span>
+          <strong>Prüfung</strong>
+        </button>
+
+        <button type="button" class="mobile-nav-btn-v227" data-mobile-target="more" onclick="toggleMobileMoreMenuV227()">
+          <span>☰</span>
+          <strong>Mehr</strong>
+        </button>
+      </nav>
+
+      <section class="mobile-more-sheet-v227" id="mobileMoreSheetV227" aria-label="Weitere Bereiche">
+        <div class="mobile-more-handle-v227"></div>
+
+        <div class="mobile-more-head-v227">
+          <span>Accaoui §34a</span>
+          <strong>Weitere Bereiche</strong>
+        </div>
+
+        <div class="mobile-more-grid-v227">
+          <button type="button" onclick="navigateMobileV227('stats')">
+            <span>📊</span>
+            <strong>Statistik</strong>
+          </button>
+
+          <button type="button" onclick="navigateMobileV227('mistakes')">
+            <span>🎯</span>
+            <strong>Fehlertraining</strong>
+          </button>
+
+          <button type="button" onclick="navigateMobileV227('oral')">
+            <span>🎤</span>
+            <strong>Mündliche Prüfung</strong>
+          </button>
+
+          <button type="button" onclick="navigateMobileV227('dashboard')">
+            <span>🏠</span>
+            <strong>Dashboard</strong>
+          </button>
+        </div>
+      </section>
+    `;
+
+    document.body.insertAdjacentHTML("beforeend", navHtml);
+  }
+
+  function syncMobileNavigationV227() {
+    const mode = getCurrentModeV227();
+    const isFocus = isFocusModeV227(mode);
+
+    document.body.classList.toggle("mobile-session-focus-v227", isFocus);
+
+    const buttons = document.querySelectorAll(".mobile-nav-btn-v227");
+
+    buttons.forEach(button => {
+      const target = button.dataset.mobileTarget;
+      let active = false;
+
+      if (target === "dashboard" && mode === "dashboard") active = true;
+      if (target === "questions" && ["all-questions"].includes(mode)) active = true;
+      if (target === "flashcards" && ["flashcards-overview"].includes(mode)) active = true;
+      if (target === "exam" && ["exam-start"].includes(mode)) active = true;
+      if (target === "more" && ["stats", "mistake-overview", "oral-exam"].includes(mode)) active = true;
+
+      button.classList.toggle("is-active", active);
+    });
+  }
+
+  function initMobileNavigationV227() {
+    createMobileNavigationV227();
+    syncMobileNavigationV227();
+
+    document.addEventListener("click", () => {
+      setTimeout(syncMobileNavigationV227, 80);
+    });
+
+    setInterval(syncMobileNavigationV227, 700);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMobileNavigationV227);
+  } else {
+    initMobileNavigationV227();
+  }
+
+  window.navigateMobileV227 = navigateMobileV227;
+  window.toggleMobileMoreMenuV227 = toggleMobileMoreMenuV227;
+  window.closeMobileMoreMenuV227 = closeMobileMoreMenuV227;
+  window.syncMobileNavigationV227 = syncMobileNavigationV227;
 }
