@@ -5617,3 +5617,135 @@ body:has(.oral-room-scene-v221.is-session .oral-room-controls-v226) .oral-questi
     content: "Lernen · Prüfen · Bestehen" !important;
   }
 }
+
+/* =====================================================
+   v22.7.3 PREMIUM MOBILE DASHBOARD CARDS
+   Ziel:
+   - Prüfung starten wird Hauptaktion
+   - Startkarten wirken stärker und hochwertiger
+   - Bottom-Navigation bleibt unverändert: Start · Fragen · Karten · Prüfung · Mehr
+   - Kein sichtbarer Text "Neuer IHK-Standard"
+===================================================== */
+
+@media (max-width: 820px) {
+  .hero-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    margin-top: 22px !important;
+  }
+
+  #examCard {
+    order: -2 !important;
+    min-height: 155px !important;
+    color: #ffffff !important;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(96, 165, 250, 0.32), transparent 34%),
+      radial-gradient(circle at 92% 18%, rgba(217, 180, 92, 0.20), transparent 30%),
+      linear-gradient(135deg, #071229 0%, #122657 55%, #2448c7 100%) !important;
+    border: 1px solid rgba(147, 197, 253, 0.36) !important;
+    box-shadow:
+      0 24px 52px rgba(35, 68, 198, 0.30),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  }
+
+  #examCard .card-icon {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 16px !important;
+    display: grid !important;
+    place-items: center !important;
+    margin-bottom: 16px !important;
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    font-size: 22px !important;
+  }
+
+  #examCard h2 {
+    color: #ffffff !important;
+    font-size: 31px !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.05em !important;
+    margin-bottom: 9px !important;
+  }
+
+  #examCard p {
+    color: rgba(226, 232, 240, 0.94) !important;
+    font-weight: 750 !important;
+  }
+
+  #examCard::after {
+    content: "Simulation starten";
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: fit-content !important;
+    margin-top: 14px !important;
+    padding: 10px 15px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.01em !important;
+  }
+
+  #allQuestionsCard,
+  #openQuestionsCard,
+  #mistakeTrainingCard {
+    min-height: 126px !important;
+    background:
+      linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+    border: 1px solid rgba(203, 213, 225, 0.92) !important;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.10) !important;
+  }
+
+  #allQuestionsCard {
+    border-left: 5px solid #2344c6 !important;
+  }
+
+  #openQuestionsCard {
+    border-left: 5px solid #64748b !important;
+  }
+
+  #mistakeTrainingCard {
+    border-left: 5px solid #c8191e !important;
+  }
+
+  #allQuestionsCard .card-icon,
+  #openQuestionsCard .card-icon,
+  #mistakeTrainingCard .card-icon {
+    margin-bottom: 13px !important;
+    font-size: 22px !important;
+  }
+
+  #allQuestionsCard h2,
+  #openQuestionsCard h2,
+  #mistakeTrainingCard h2 {
+    margin: 0 0 8px 0 !important;
+    font-size: 26px !important;
+    line-height: 1.06 !important;
+    letter-spacing: -0.045em !important;
+  }
+
+  #allQuestionsCard p,
+  #openQuestionsCard p,
+  #mistakeTrainingCard p {
+    font-size: 15px !important;
+    font-weight: 650 !important;
+  }
+
+  .section-head {
+    margin-top: 26px !important;
+    padding: 0 2px !important;
+  }
+
+  .section-head h2 {
+    font-size: 22px !important;
+    letter-spacing: -0.04em !important;
+  }
+
+  .section-head p {
+    font-size: 14px !important;
+  }
+}
