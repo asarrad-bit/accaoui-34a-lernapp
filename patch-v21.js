@@ -1699,3 +1699,348 @@ if (!window.ACCAOUI_V222_ORAL_SCENE_QUESTION_PATCH) {
   window.syncOralRoomQuestionPromptV222 = syncOralRoomQuestionPromptV222;
   window.getOralExamUserDisplayNameV222 = getOralExamUserDisplayNameV222;
 }
+
+/* =====================================================
+   v22.5 MÜNDLICHE PRÜFUNG – FRAGE/ANTWORT KOMPAKT IN SZENE
+   Ziel:
+   - Frage bleibt als Sprechblase in der Prüfungsszene
+   - Musterantwort erscheint nach Klick in derselben Sprechblase
+   - untere Karte wird nur Bedienpanel
+   - keine Änderung an app.js, questions.json oder localStorage
+===================================================== */
+
+if (!window.ACCAOUI_V225_ORAL_SCENE_QA_PATCH) {
+  window.ACCAOUI_V225_ORAL_SCENE_QA_PATCH = true;
+
+  function getOralExamUserDisplayNameV225() {
+    if (typeof getOralExamUserDisplayNameV222 === "function") {
+      return getOralExamUserDisplayNameV222();
+    }
+
+    const storedName =
+      String(localStorage.getItem("accaoui_user_name") || "").trim() ||
+      String(localStorage.getItem("accaoui_current_user_name") || "").trim();
+
+    return storedName || "Sie";
+  }
+
+  function getCurrentOralExamQuestionV225() {
+    if (
+      typeof oralExamQuestionsV220 !== "undefined" &&
+      Array.isArray(oralExamQuestionsV220) &&
+      typeof oralExamIndexV220 !== "undefined"
+    ) {
+      return oralExamQuestionsV220[oralExamIndexV220];
+    }
+
+    return null;
+  }
+
+  function markOralControlPanelV225() {
+    const card = document.querySelector(".oral-question-card");
+
+    if (!card) return;
+
+    card.classList.add("oral-control-panel-v225");
+  }
+
+  function syncOralSceneQAV225(showAnswer) {
+    const scene = document.querySelector(".oral-room-scene-v221.is-session");
+
+    if (!scene) return;
+
+    const table = scene.querySelector(".oral-table-v221");
+
+    if (!table) return;
+
+    const question = getCurrentOralExamQuestionV225();
+    const userName = getOralExamUserDisplayNameV225();
+
+    const questionText = question && question.question
+      ? String(question.question)
+      : "Die aktuelle Prüferfrage wird hier angezeigt.";
+
+    const sampleAnswer = question && question.sampleAnswer
+      ? String(question.sampleAnswer)
+      : "Keine Musterantwort hinterlegt.";
+
+    const examinerNote = question && question.examinerNote
+      ? String(question.examinerNote)
+      : "Kein Prüfer-Hinweis hinterlegt.";
+
+    let bubble = scene.querySelector(".oral-room-question-prompt-v222");
+
+    if (!bubble) {
+      bubble = document.createElement("div");
+      bubble.className = "oral-room-question-prompt-v222";
+      table.insertAdjacentElement("afterend", bubble);
+    }
+
+    bubble.classList.add("oral-room-qa-bubble-v225");
+
+    if (showAnswer) {
+      bubble.classList.add("is-answer-visible");
+    } else {
+      bubble.classList.remove("is-answer-visible");
+    }
+
+    bubble.innerHTML = `
+      <div class="oral-room-question-view-v225">
+        <span>Prüferfrage an ${escapeHtml(userName)}</span>
+        <strong>${escapeHtml(questionText)}</strong>
+      </div>
+
+      <div class="oral-room-answer-view-v225">
+        <span>Musterantwort</span>
+        <strong>${escapeHtml(sampleAnswer)}</strong>
+
+        <div class="oral-room-note-v225">
+          <small>Prüfer-Hinweis</small>
+          <p>${escapeHtml(examinerNote)}</p>
+        </div>
+      </div>
+    `;
+
+    const activeCandidate = scene.querySelector(".candidate-v221.active-v221");
+
+    if (activeCandidate) {
+      const nameElement = activeCandidate.querySelector("strong");
+      const statusElement = activeCandidate.querySelector("span");
+
+      if (nameElement) {
+        nameElement.textContent = userName;
+      }
+
+      if (statusElement) {
+        statusElement.textContent = showAnswer ? "antwort geprüft" : "antwortet";
+      }
+    }
+
+    markOralControlPanelV225();
+  }
+
+  function scheduleOralSceneQASyncV225(showAnswer) {
+    setTimeout(() => syncOralSceneQAV225(showAnswer), 40);
+    setTimeout(() => syncOralSceneQAV225(showAnswer), 160);
+    setTimeout(() => syncOralSceneQAV225(showAnswer), 360);
+  }
+
+  window.accaouiPreviousStartOralExamSessionV225 =
+    window.accaouiPreviousStartOralExamSessionV225 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV225(questions, title) {
+    if (typeof window.accaouiPreviousStartOralExamSessionV225 === "function") {
+      const result = window.accaouiPreviousStartOralExamSessionV225(questions, title);
+      scheduleOralSceneQASyncV225(false);
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  window.accaouiPreviousShowOralExamAnswerV225 =
+    window.accaouiPreviousShowOralExamAnswerV225 ||
+    window.showOralExamAnswerV220;
+
+  window.showOralExamAnswerV220 = function patchedShowOralExamAnswerV225() {
+    if (typeof window.accaouiPreviousShowOralExamAnswerV225 === "function") {
+      const result = window.accaouiPreviousShowOralExamAnswerV225();
+      scheduleOralSceneQASyncV225(true);
+      return result;
+    }
+
+    syncOralSceneQAV225(true);
+  };
+
+  window.accaouiPreviousRateOralExamQuestionV225 =
+    window.accaouiPreviousRateOralExamQuestionV225 ||
+    window.rateOralExamQuestionV220;
+
+  window.rateOralExamQuestionV220 = function patchedRateOralExamQuestionV225(status) {
+    if (typeof window.accaouiPreviousRateOralExamQuestionV225 === "function") {
+      const result = window.accaouiPreviousRateOralExamQuestionV225(status);
+      scheduleOralSceneQASyncV225(false);
+      return result;
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.accaouiPreviousPreviousOralExamQuestionV225 =
+    window.accaouiPreviousPreviousOralExamQuestionV225 ||
+    window.previousOralExamQuestionV220;
+
+  window.previousOralExamQuestionV220 = function patchedPreviousOralExamQuestionV225() {
+    if (typeof window.accaouiPreviousPreviousOralExamQuestionV225 === "function") {
+      const result = window.accaouiPreviousPreviousOralExamQuestionV225();
+      scheduleOralSceneQASyncV225(false);
+      return result;
+    }
+
+    showSmallNotice("Zurück nicht möglich.");
+  };
+
+  window.syncOralSceneQAV225 = syncOralSceneQAV225;
+}
+
+/* =====================================================
+   v22.6 MÜNDLICHE PRÜFUNG – BEDIENUNG IN PRÜFUNGSRAUM
+   Ziel:
+   - Hinweistext unter der Szene entfernen
+   - Buttons in die Prüfungsszene integrieren
+   - Fortschritt direkt darunter anzeigen
+   - externe Bedienkarte ausblenden
+   - keine Änderung an app.js oder questions.json
+===================================================== */
+
+if (!window.ACCAOUI_V226_ORAL_SCENE_CONTROLS_PATCH) {
+  window.ACCAOUI_V226_ORAL_SCENE_CONTROLS_PATCH = true;
+
+  function getOralSceneProgressTextV226() {
+    const total = typeof oralExamQuestionsV220 !== "undefined" && Array.isArray(oralExamQuestionsV220)
+      ? oralExamQuestionsV220.length
+      : 0;
+
+    const index = typeof oralExamIndexV220 !== "undefined"
+      ? oralExamIndexV220 + 1
+      : 0;
+
+    const known = Number(typeof oralExamKnownV220 !== "undefined" ? oralExamKnownV220 : 0);
+    const practice = Number(typeof oralExamPracticeV220 !== "undefined" ? oralExamPracticeV220 : 0);
+    const answered = known + practice;
+
+    return {
+      title: `Frage ${index}/${total}`,
+      stats: `${answered}/${total} bewertet · ${known} sicher · ${practice} üben`
+    };
+  }
+
+  function isOralAnswerVisibleV226() {
+    const answerBox = document.getElementById("oralAnswerBoxV220");
+
+    if (!answerBox) return false;
+
+    return answerBox.style.display !== "none";
+  }
+
+  function renderOralSceneControlsV226() {
+    const scene = document.querySelector(".oral-room-scene-v221.is-session");
+
+    if (!scene) return;
+
+    const caption = scene.querySelector(".oral-room-caption-v221");
+
+    if (caption) {
+      caption.remove();
+    }
+
+    let controls = scene.querySelector(".oral-room-controls-v226");
+
+    if (!controls) {
+      controls = document.createElement("div");
+      controls.className = "oral-room-controls-v226";
+      scene.appendChild(controls);
+    }
+
+    const progress = getOralSceneProgressTextV226();
+    const answerVisible = isOralAnswerVisibleV226();
+
+    controls.innerHTML = `
+      <div class="oral-room-action-row-v226">
+        ${
+          answerVisible
+            ? `
+              <button class="next-btn oral-scene-btn-v226" onclick="rateOralExamQuestionV220('known')">
+                Sicher beantwortet
+              </button>
+
+              <button class="next-btn danger-training-btn oral-scene-btn-v226" onclick="rateOralExamQuestionV220('practice')">
+                Noch üben
+              </button>
+            `
+            : `
+              <button class="next-btn oral-scene-btn-v226" onclick="showOralExamAnswerV220()">
+                Musterantwort anzeigen
+              </button>
+            `
+        }
+
+        <button class="next-btn secondary-btn oral-scene-btn-v226" onclick="previousOralExamQuestionV220()">
+          Zurück
+        </button>
+      </div>
+
+      <div class="oral-room-progress-v226">
+        <span>${escapeHtml(progress.title)}</span>
+        <strong>${escapeHtml(progress.stats)}</strong>
+      </div>
+    `;
+
+    document.body.classList.add("oral-scene-controls-active-v226");
+  }
+
+  function scheduleOralSceneControlsV226() {
+    setTimeout(renderOralSceneControlsV226, 60);
+    setTimeout(renderOralSceneControlsV226, 180);
+    setTimeout(renderOralSceneControlsV226, 360);
+  }
+
+  window.accaouiPreviousStartOralExamSessionV226 =
+    window.accaouiPreviousStartOralExamSessionV226 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV226(questions, title) {
+    if (typeof window.accaouiPreviousStartOralExamSessionV226 === "function") {
+      const result = window.accaouiPreviousStartOralExamSessionV226(questions, title);
+      scheduleOralSceneControlsV226();
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  window.accaouiPreviousShowOralExamAnswerV226 =
+    window.accaouiPreviousShowOralExamAnswerV226 ||
+    window.showOralExamAnswerV220;
+
+  window.showOralExamAnswerV220 = function patchedShowOralExamAnswerV226() {
+    if (typeof window.accaouiPreviousShowOralExamAnswerV226 === "function") {
+      const result = window.accaouiPreviousShowOralExamAnswerV226();
+      scheduleOralSceneControlsV226();
+      return result;
+    }
+
+    showSmallNotice("Musterantwort konnte nicht angezeigt werden.");
+  };
+
+  window.accaouiPreviousRateOralExamQuestionV226 =
+    window.accaouiPreviousRateOralExamQuestionV226 ||
+    window.rateOralExamQuestionV220;
+
+  window.rateOralExamQuestionV220 = function patchedRateOralExamQuestionV226(status) {
+    if (typeof window.accaouiPreviousRateOralExamQuestionV226 === "function") {
+      const result = window.accaouiPreviousRateOralExamQuestionV226(status);
+      scheduleOralSceneControlsV226();
+      return result;
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.accaouiPreviousPreviousOralExamQuestionV226 =
+    window.accaouiPreviousPreviousOralExamQuestionV226 ||
+    window.previousOralExamQuestionV220;
+
+  window.previousOralExamQuestionV220 = function patchedPreviousOralExamQuestionV226() {
+    if (typeof window.accaouiPreviousPreviousOralExamQuestionV226 === "function") {
+      const result = window.accaouiPreviousPreviousOralExamQuestionV226();
+      scheduleOralSceneControlsV226();
+      return result;
+    }
+
+    showSmallNotice("Zurück nicht möglich.");
+  };
+
+  window.renderOralSceneControlsV226 = renderOralSceneControlsV226;
+}
