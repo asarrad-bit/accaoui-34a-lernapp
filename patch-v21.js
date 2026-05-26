@@ -2492,3 +2492,200 @@ if (!window.ACCAOUI_V2276_MOBILE_BACK_GUARD_PATCH) {
   window.closeMobileBackDialogV2276 = closeMobileBackDialogV2276;
   window.handleMobileBackV2276 = handleMobileBackV2276;
 }
+
+/* =====================================================
+   v23.1.1 LERNMODUS – VORZEITIGE AUSWERTUNG
+   Ziel:
+   - Themenrunde kann vorzeitig beendet werden
+   - Nutzer sieht Zwischenergebnis
+   - offene Fragen werden nicht automatisch als falsch gewertet
+   - keine Änderung an app.js oder questions.json
+===================================================== */
+
+if (!window.ACCAOUI_V2311_LEARNING_PARTIAL_RESULT_PATCH) {
+  window.ACCAOUI_V2311_LEARNING_PARTIAL_RESULT_PATCH = true;
+
+  function isLearningSessionActiveV2311() {
+    try {
+      return [
+        "learning",
+        "category",
+        "open-questions",
+        "topic-mistakes",
+        "all-mistakes"
+      ].includes(String(currentMode || ""));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function getLearningSessionStatsV2311() {
+    const total = Array.isArray(currentQuestions) ? currentQuestions.length : 0;
+    const correct = Number(correctAnswersCount || 0);
+    const wrong = Number(wrongAnswersCount || 0);
+    const answered = correct + wrong;
+    const open = Math.max(0, total - answered);
+    const percent = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+
+    return {
+      total,
+      correct,
+      wrong,
+      answered,
+      open,
+      percent
+    };
+  }
+
+  function renderLearningAbortControlsV2311() {
+    if (!isLearningSessionActiveV2311()) return;
+
+    const progressWrapper = document.querySelector(".progress-wrapper");
+    const questionArea = document.getElementById("questionArea");
+
+    if (!progressWrapper || !questionArea) return;
+
+    let controls = document.getElementById("learningAbortControlsV2311");
+
+    if (!controls) {
+      controls = document.createElement("div");
+      controls.id = "learningAbortControlsV2311";
+      controls.className = "learning-abort-controls-v2311";
+
+      progressWrapper.insertAdjacentElement("afterend", controls);
+    }
+
+    const stats = getLearningSessionStatsV2311();
+
+    controls.innerHTML = `
+      <button type="button" class="learning-finish-btn-v2311" onclick="showLearningPartialResultV2311()">
+        Auswertung anzeigen
+      </button>
+
+      <span>
+        ${stats.answered}/${stats.total} bearbeitet
+      </span>
+    `;
+  }
+
+  function showLearningPartialResultV2311() {
+    if (!isLearningSessionActiveV2311()) {
+      return;
+    }
+
+    const stats = getLearningSessionStatsV2311();
+
+    if (stats.answered === 0) {
+      if (typeof showSmallNotice === "function") {
+        showSmallNotice("Beantworten Sie zuerst mindestens eine Frage.");
+      }
+      return;
+    }
+
+    const title = currentTrainingTitle || "Lernrunde";
+
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="location.reload()">
+        ← Zurück zum Dashboard
+      </button>
+
+      <section class="finish-card learning-partial-result-v2311">
+
+        <p class="eyebrow">Zwischenauswertung</p>
+
+        <h1>${escapeHtml(title)}</h1>
+
+        <div class="learning-partial-percent-v2311">
+          ${stats.percent}%
+        </div>
+
+        <p class="learning-partial-subline-v2311">
+          Ergebnis bezogen auf die bearbeiteten Fragen.
+        </p>
+
+        <div class="learning-partial-grid-v2311">
+
+          <div>
+            <span>Bearbeitet</span>
+            <strong>${stats.answered}/${stats.total}</strong>
+          </div>
+
+          <div class="success">
+            <span>Richtig</span>
+            <strong>${stats.correct}</strong>
+          </div>
+
+          <div class="danger">
+            <span>Falsch</span>
+            <strong>${stats.wrong}</strong>
+          </div>
+
+          <div>
+            <span>Offen</span>
+            <strong>${stats.open}</strong>
+          </div>
+
+        </div>
+
+        <div class="result-actions">
+
+          <button class="next-btn" onclick="showMistakeOverview()">
+            Fehlertraining
+          </button>
+
+          <button class="next-btn" onclick="showAllQuestions()">
+            Themenübersicht
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+
+        </div>
+
+      </section>
+    `;
+  }
+
+  const originalShowLearningViewV2311 =
+    typeof window.showLearningView === "function"
+      ? window.showLearningView
+      : typeof showLearningView === "function"
+        ? showLearningView
+        : null;
+
+  if (typeof originalShowLearningViewV2311 === "function") {
+    window.showLearningView = function patchedShowLearningViewV2311(title) {
+      const result = originalShowLearningViewV2311(title);
+
+      setTimeout(renderLearningAbortControlsV2311, 40);
+      setTimeout(renderLearningAbortControlsV2311, 160);
+
+      return result;
+    };
+  }
+
+  const originalUpdateProgressV2311 =
+    typeof window.updateProgress === "function"
+      ? window.updateProgress
+      : typeof updateProgress === "function"
+        ? updateProgress
+        : null;
+
+  if (typeof originalUpdateProgressV2311 === "function") {
+    window.updateProgress = function patchedUpdateProgressV2311() {
+      const result = originalUpdateProgressV2311();
+
+      setTimeout(renderLearningAbortControlsV2311, 40);
+
+      return result;
+    };
+  }
+
+  window.renderLearningAbortControlsV2311 = renderLearningAbortControlsV2311;
+  window.showLearningPartialResultV2311 = showLearningPartialResultV2311;
+}

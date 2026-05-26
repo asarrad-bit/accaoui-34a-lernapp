@@ -5945,3 +5945,119 @@ body:has(.oral-room-scene-v221.is-session .oral-room-controls-v226) .oral-questi
 body.mobile-back-dialog-open-v2276 {
   overflow: hidden !important;
 }
+
+/* =====================================================
+   v23.1.1 LERNMODUS – VORZEITIGE AUSWERTUNG DESIGN
+===================================================== */
+
+.learning-abort-controls-v2311 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin: 14px 0 18px 0 !important;
+  padding: 12px 14px !important;
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08) !important;
+}
+
+.learning-abort-controls-v2311 span {
+  color: #64748b !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  white-space: nowrap !important;
+}
+
+.learning-finish-btn-v2311 {
+  appearance: none !important;
+  border: 1px solid rgba(36, 72, 199, 0.20) !important;
+  background:
+    linear-gradient(135deg, #071229 0%, #2448c7 100%) !important;
+  color: #ffffff !important;
+  min-height: 42px !important;
+  padding: 10px 14px !important;
+  border-radius: 14px !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+  box-shadow: 0 12px 26px rgba(36, 72, 199, 0.22) !important;
+}
+
+.learning-partial-result-v2311 {
+  text-align: left !important;
+}
+
+.learning-partial-percent-v2311 {
+  margin: 16px 0 8px 0 !important;
+  color: #2448c7 !important;
+  font-size: 58px !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.06em !important;
+}
+
+.learning-partial-subline-v2311 {
+  margin-bottom: 20px !important;
+  color: #64748b !important;
+  font-weight: 700 !important;
+}
+
+.learning-partial-grid-v2311 {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 12px !important;
+  margin: 20px 0 !important;
+}
+
+.learning-partial-grid-v2311 div {
+  padding: 14px !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06) !important;
+}
+
+.learning-partial-grid-v2311 span {
+  display: block !important;
+  color: #64748b !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  margin-bottom: 5px !important;
+}
+
+.learning-partial-grid-v2311 strong {
+  display: block !important;
+  color: #071229 !important;
+  font-size: 24px !important;
+  font-weight: 950 !important;
+}
+
+.learning-partial-grid-v2311 .success strong {
+  color: #15803d !important;
+}
+
+.learning-partial-grid-v2311 .danger strong {
+  color: #c8191e !important;
+}
+
+@media (max-width: 640px) {
+  .learning-abort-controls-v2311 {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .learning-abort-controls-v2311 span {
+    text-align: center !important;
+  }
+
+  .learning-finish-btn-v2311 {
+    width: 100% !important;
+  }
+
+  .learning-partial-grid-v2311 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
