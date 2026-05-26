@@ -182,6 +182,48 @@
     "explanation": "Bei fehlender Zuverlässigkeit kann die Behörde eine Erlaubnis versagen oder eine Tätigkeit untersagen. Eine automatische Ernennung zum Polizeibeamten gibt es nicht."
   },
   {
+  "id": "v23_gewo_006",
+  "category": "Gewerberecht",
+  "type": "single",
+  "question": "Welche Aussage zur Sachkundeprüfung nach § 34a GewO ist richtig?",
+  "answers": [
+    "Sie kann für bestimmte Tätigkeiten im Bewachungsgewerbe gesetzlich erforderlich sein.",
+    "Sie ersetzt automatisch jede gewerberechtliche Erlaubnis des Unternehmens.",
+    "Sie berechtigt private Sicherheitsmitarbeiter zu polizeilichen Hoheitsrechten.",
+    "Sie ist nur für Polizeibeamte vorgeschrieben."
+  ],
+  "correct": [0],
+  "explanation": "Die Sachkundeprüfung nach § 34a GewO kann für bestimmte Tätigkeiten im Bewachungsgewerbe erforderlich sein. Sie ersetzt aber nicht die gewerberechtliche Erlaubnis des Unternehmens und verleiht keine polizeilichen Hoheitsrechte."
+},
+{
+  "id": "v23_gewo_007",
+  "category": "Gewerberecht",
+  "type": "multiple",
+  "question": "Welche Aussagen zur Zuverlässigkeit im Bewachungsgewerbe sind richtig?",
+  "answers": [
+    "Die Zuverlässigkeit ist eine wichtige Voraussetzung im Bewachungsgewerbe.",
+    "Bei fehlender Zuverlässigkeit kann die Behörde eine Tätigkeit untersagen.",
+    "Zuverlässigkeit spielt nur bei Polizeibeamten eine Rolle.",
+    "Ein bestandener Kurs schließt eine Zuverlässigkeitsprüfung immer vollständig aus."
+  ],
+  "correct": [0, 1],
+  "explanation": "Die Zuverlässigkeit ist im Bewachungsgewerbe besonders wichtig. Bei fehlender Zuverlässigkeit kann die zuständige Behörde Maßnahmen treffen, zum Beispiel eine Tätigkeit untersagen. Sie betrifft nicht nur Polizeibeamte und wird nicht automatisch durch einen Kurs ersetzt."
+},
+{
+  "id": "v23_gewo_008",
+  "category": "Gewerberecht",
+  "type": "multiple",
+  "question": "Ein Sicherheitsmitarbeiter soll im Eingangsbereich einer Diskothek eingesetzt werden. Welche Aussagen sind grundsätzlich richtig?",
+  "answers": [
+    "Für bestimmte Tätigkeiten im Einlassbereich von gastgewerblichen Diskotheken kann die Sachkundeprüfung erforderlich sein.",
+    "Der Arbeitgeber muss prüfen, ob der Mitarbeiter für die konkrete Bewachungstätigkeit geeignet und ausreichend qualifiziert ist.",
+    "Ein Dienstausweis ersetzt automatisch die erforderliche Sachkundeprüfung.",
+    "Für jede Tätigkeit im Sicherheitsdienst reicht immer eine kurze mündliche Einweisung ohne weiteren Nachweis."
+  ],
+  "correct": [0, 1],
+  "explanation": "Für bestimmte Tätigkeiten im Einlassbereich von gastgewerblichen Diskotheken kann die Sachkundeprüfung nach § 34a GewO erforderlich sein. Außerdem muss der Arbeitgeber prüfen, ob der Mitarbeiter für die konkrete Tätigkeit geeignet und ausreichend qualifiziert ist. Ein Dienstausweis ersetzt keinen erforderlichen Nachweis."
+}
+  {
     "id": "ds_001",
     "category": "Datenschutzrecht",
     "type": "multiple",
