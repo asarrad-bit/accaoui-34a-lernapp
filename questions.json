@@ -70,6 +70,48 @@
     "explanation": "Sicherheitsmitarbeiter müssen ihre Befugnisse kennen und bei Straftaten richtig reagieren. Bestrafung ist keine Aufgabe des Sicherheitsdienstes."
   },
   {
+  "id": "v23_roso_006",
+  "category": "Recht der öffentlichen Sicherheit und Ordnung",
+  "type": "single",
+  "question": "Welche Aussage beschreibt die Grenze zwischen privatem Sicherheitsdienst und Polizei am besten?",
+  "answers": [
+    "Private Sicherheitsmitarbeiter dürfen grundsätzlich keine hoheitlichen Polizeibefugnisse ausüben.",
+    "Private Sicherheitsmitarbeiter dürfen im öffentlichen Raum jederzeit Platzverweise erteilen.",
+    "Private Sicherheitsmitarbeiter dürfen Personen ohne Anlass durchsuchen.",
+    "Private Sicherheitsmitarbeiter ersetzen bei Straftaten die Polizei vollständig."
+  ],
+  "correct": [0],
+  "explanation": "Private Sicherheitsmitarbeiter haben grundsätzlich keine hoheitlichen Polizeibefugnisse. Sie handeln vor allem auf Grundlage von Hausrecht, Jedermannsrechten und privatrechtlichen Befugnissen. Platzverweise im öffentlichen Raum und anlasslose Durchsuchungen gehören grundsätzlich nicht zu ihren Befugnissen."
+},
+{
+  "id": "v23_roso_007",
+  "category": "Recht der öffentlichen Sicherheit und Ordnung",
+  "type": "single",
+  "question": "Welche Antwortkombination ist richtig?\n\n1. Die öffentliche Sicherheit umfasst auch den Schutz der Rechtsordnung.\n2. Die öffentliche Ordnung betrifft ungeschriebene Regeln für ein geordnetes Zusammenleben.\n3. Private Sicherheitsmitarbeiter haben automatisch dieselben Rechte wie die Polizei.\n4. Die Durchsetzung staatlicher Zwangsmaßnahmen ist grundsätzlich Aufgabe der zuständigen Behörden.",
+  "answers": [
+    "Nur die Aussagen 1 und 3 sind richtig.",
+    "Nur die Aussagen 2 und 3 sind richtig.",
+    "Nur die Aussagen 1, 2 und 4 sind richtig.",
+    "Alle Aussagen sind richtig."
+  ],
+  "correct": [2],
+  "explanation": "Die Aussagen 1, 2 und 4 sind richtig. Die öffentliche Sicherheit schützt unter anderem die Rechtsordnung. Die öffentliche Ordnung betrifft ungeschriebene Verhaltensregeln für das geordnete Zusammenleben. Staatliche Zwangsmaßnahmen sind grundsätzlich Aufgabe der zuständigen Behörden. Aussage 3 ist falsch, weil private Sicherheitsmitarbeiter nicht automatisch Polizeirechte haben."
+},
+{
+  "id": "v23_roso_008",
+  "category": "Recht der öffentlichen Sicherheit und Ordnung",
+  "type": "multiple",
+  "question": "Ein Sicherheitsmitarbeiter arbeitet in einem Einkaufszentrum. Eine Person stört wiederholt andere Besucher, beleidigt aber niemanden konkret und begeht keine erkennbare Straftat. Der Betreiber möchte, dass die Person das Einkaufszentrum verlässt. Welche Aussagen sind richtig?",
+  "answers": [
+    "Der Sicherheitsmitarbeiter kann im Auftrag des Betreibers auf das Hausrecht hinweisen.",
+    "Der Sicherheitsmitarbeiter darf die Person ohne Weiteres wie ein Polizeibeamter im öffentlichen Straßenraum wegschicken.",
+    "Wenn die Person trotz wirksamer Aufforderung nicht geht, kann ein Hausverbot oder eine weitere Maßnahme nach Hausrecht in Betracht kommen.",
+    "Der Sicherheitsmitarbeiter darf die Person allein wegen der Störung automatisch festnehmen."
+  ],
+  "correct": [0, 2],
+  "explanation": "Im Einkaufszentrum kann der Sicherheitsmitarbeiter im Auftrag des Betreibers auf das Hausrecht hinweisen. Wenn eine Person trotz wirksamer Aufforderung nicht geht, können weitere Schritte auf Grundlage des Hausrechts in Betracht kommen. Er handelt aber nicht wie ein Polizeibeamter im öffentlichen Straßenraum. Eine Festnahme ist nicht automatisch zulässig, sondern nur unter engen Voraussetzungen, zum Beispiel bei § 127 Abs. 1 StPO."
+},
+  {
     "id": "gewo_001",
     "category": "Gewerberecht",
     "type": "single",
