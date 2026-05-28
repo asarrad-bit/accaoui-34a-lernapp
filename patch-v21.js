@@ -3673,3 +3673,343 @@ if (!window.ACCAOUI_V2320_ORAL_EXAM_SHEET_A_PATCH) {
   window.ORAL_EXAM_SHEET_A_V2320 = ORAL_EXAM_SHEET_A_V2320;
   window.getOralExamSheetAQuestionsV2320 = getOralExamSheetAQuestionsV2320;
 }
+
+/* =====================================================
+   v23.2.1 MÜNDLICHE PRÜFUNG – AUSWERTUNG NACH PRÜFERBLÖCKEN
+   Ziel:
+   - 15-Minuten-Simulation wird nach 3 Prüferblöcken ausgewertet
+   - Prüfer 1 / Vorsitz / Prüfer 3 getrennt anzeigen
+   - offene Fragen werden nicht als falsch gewertet
+   - eigene Accaoui-Trainingsbewertung, keine offizielle IHK-Bewertung
+===================================================== */
+
+if (!window.ACCAOUI_V2321_ORAL_BLOCK_RESULT_PATCH) {
+  window.ACCAOUI_V2321_ORAL_BLOCK_RESULT_PATCH = true;
+
+  let oralExamRatingsV2321 = [];
+
+  function isOralSheetASessionV2321() {
+    try {
+      return (
+        window.ACCAOUI_V2317_ORAL_SIMULATION_MODE === "15" &&
+        Array.isArray(oralExamQuestionsV220) &&
+        oralExamQuestionsV220.some(question => question && question.sheetId === "oral_sheet_a_v2320")
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function resetOralRatingsV2321() {
+    oralExamRatingsV2321 = [];
+  }
+
+  function getCurrentOralQuestionIndexV2321() {
+    try {
+      return Number(oralExamIndexV220 || 0);
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  function getCurrentOralQuestionV2321() {
+    try {
+      if (Array.isArray(oralExamQuestionsV220)) {
+        return oralExamQuestionsV220[getCurrentOralQuestionIndexV2321()];
+      }
+    } catch (error) {
+      return null;
+    }
+
+    return null;
+  }
+
+  function getExaminerIndexForQuestionV2321(question, fallbackIndex) {
+    if (question && Number.isInteger(question.examinerIndex)) {
+      return question.examinerIndex;
+    }
+
+    if (fallbackIndex < 5) return 0;
+    if (fallbackIndex < 10) return 1;
+    return 2;
+  }
+
+  function saveOralRatingV2321(status) {
+    if (!isOralSheetASessionV2321()) return;
+
+    const questionIndex = getCurrentOralQuestionIndexV2321();
+    const question = getCurrentOralQuestionV2321();
+
+    oralExamRatingsV2321[questionIndex] = {
+      index: questionIndex,
+      status: status === "known" ? "known" : "practice",
+      questionId: question && question.id ? question.id : "oral_question_" + questionIndex,
+      category: question && question.category ? question.category : "Ohne Kategorie",
+      examinerIndex: getExaminerIndexForQuestionV2321(question, questionIndex),
+      examinerName: question && question.examinerName ? question.examinerName : "",
+      blockTitle: question && question.examinerBlockTitle ? question.examinerBlockTitle : ""
+    };
+  }
+
+  function getOralBlockDefinitionsV2321() {
+    return [
+      {
+        examinerIndex: 0,
+        examinerName: "Prüfer 1",
+        title: "Öffentliches Recht / Gewerberecht",
+        range: "Frage 1–5"
+      },
+      {
+        examinerIndex: 1,
+        examinerName: "Vorsitz",
+        title: "Umgang mit Menschen",
+        range: "Frage 6–10"
+      },
+      {
+        examinerIndex: 2,
+        examinerName: "Prüfer 3",
+        title: "Mischblock",
+        range: "Frage 11–15"
+      }
+    ];
+  }
+
+  function getOralBlockResultStatsV2321() {
+    const questions = Array.isArray(oralExamQuestionsV220)
+      ? oralExamQuestionsV220
+      : [];
+
+    const blocks = getOralBlockDefinitionsV2321();
+
+    return blocks.map(block => {
+      const blockQuestions = questions.filter((question, index) => {
+        return getExaminerIndexForQuestionV2321(question, index) === block.examinerIndex;
+      });
+
+      const blockRatings = oralExamRatingsV2321.filter(rating => {
+        return rating && rating.examinerIndex === block.examinerIndex;
+      });
+
+      const known = blockRatings.filter(rating => rating.status === "known").length;
+      const practice = blockRatings.filter(rating => rating.status === "practice").length;
+      const answered = known + practice;
+      const total = blockQuestions.length || 5;
+      const open = Math.max(0, total - answered);
+      const percent = answered > 0 ? Math.round((known / answered) * 100) : 0;
+
+      return {
+        ...block,
+        total,
+        answered,
+        known,
+        practice,
+        open,
+        percent
+      };
+    });
+  }
+
+  function getOverallOralResultV2321(blockStats) {
+    const total = blockStats.reduce((sum, block) => sum + block.total, 0);
+    const known = blockStats.reduce((sum, block) => sum + block.known, 0);
+    const practice = blockStats.reduce((sum, block) => sum + block.practice, 0);
+    const answered = known + practice;
+    const open = Math.max(0, total - answered);
+    const percent = answered > 0 ? Math.round((known / answered) * 100) : 0;
+
+    return {
+      total,
+      known,
+      practice,
+      answered,
+      open,
+      percent
+    };
+  }
+
+  function getOralTrainingLabelV2321(percent) {
+    if (percent >= 90) return "Sehr sicher";
+    if (percent >= 75) return "Sicher";
+    if (percent >= 60) return "Teilweise sicher";
+    if (percent >= 40) return "Unsicher";
+    return "Deutlich nacharbeiten";
+  }
+
+  function renderOralExamBlockFinishV2321() {
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    const blockStats = getOralBlockResultStatsV2321();
+    const overall = getOverallOralResultV2321(blockStats);
+    const label = getOralTrainingLabelV2321(overall.percent);
+
+    const blockCards = blockStats.map(block => {
+      return `
+        <div class="oral-block-result-card-v2321">
+          <div class="oral-block-result-head-v2321">
+            <span>${escapeHtml(block.examinerName)}</span>
+            <strong>${escapeHtml(block.range)}</strong>
+          </div>
+
+          <h3>${escapeHtml(block.title)}</h3>
+
+          <div class="oral-block-result-percent-v2321">
+            ${block.percent}%
+          </div>
+
+          <div class="oral-block-result-mini-v2321">
+            <div class="success">
+              <span>Sicher</span>
+              <strong>${block.known}</strong>
+            </div>
+
+            <div class="danger">
+              <span>Noch üben</span>
+              <strong>${block.practice}</strong>
+            </div>
+
+            <div>
+              <span>Offen</span>
+              <strong>${block.open}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="showOralExamPage()">
+        ← Zurück zur mündlichen Prüfung
+      </button>
+
+      <section class="result-wrapper oral-block-result-wrapper-v2321">
+
+        <div class="oral-block-result-hero-v2321">
+          <p class="eyebrow">15-Minuten-Simulation</p>
+
+          <h1>Prüfungsbogen A abgeschlossen</h1>
+
+          <p>
+            Die Auswertung zeigt Ihre Trainingsleistung nach Prüferblöcken.
+            Offene Fragen werden nicht als falsch gewertet.
+          </p>
+
+          <div class="oral-block-overall-v2321">
+            <strong>${overall.percent}%</strong>
+            <span>${escapeHtml(label)}</span>
+          </div>
+
+          <p class="oral-block-legal-note-v2321">
+            Trainingsbewertung. Keine offizielle IHK-Bewertung.
+          </p>
+        </div>
+
+        <div class="oral-block-result-grid-v2321">
+          ${blockCards}
+        </div>
+
+        <div class="oral-block-summary-v2321">
+          <div>
+            <span>Bearbeitet</span>
+            <strong>${overall.answered}/${overall.total}</strong>
+          </div>
+
+          <div class="success">
+            <span>Sicher</span>
+            <strong>${overall.known}</strong>
+          </div>
+
+          <div class="danger">
+            <span>Noch üben</span>
+            <strong>${overall.practice}</strong>
+          </div>
+
+          <div>
+            <span>Offen</span>
+            <strong>${overall.open}</strong>
+          </div>
+        </div>
+
+        <div class="result-actions oral-block-actions-v2321">
+          <button class="next-btn" onclick="startOralSimulation15V2314()">
+            Prüfungsbogen A wiederholen
+          </button>
+
+          <button class="next-btn" onclick="showOralExamPage()">
+            Zur Modusauswahl
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+        </div>
+
+      </section>
+    `;
+  }
+
+  window.accaouiPreviousStartOralExamSessionV2321 =
+    window.accaouiPreviousStartOralExamSessionV2321 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV2321(questions, title) {
+    const isSheetA =
+      Array.isArray(questions) &&
+      questions.some(question => question && question.sheetId === "oral_sheet_a_v2320");
+
+    if (isSheetA) {
+      resetOralRatingsV2321();
+    }
+
+    if (typeof window.accaouiPreviousStartOralExamSessionV2321 === "function") {
+      return window.accaouiPreviousStartOralExamSessionV2321(questions, title);
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  window.accaouiPreviousRateOralExamQuestionV2321 =
+    window.accaouiPreviousRateOralExamQuestionV2321 ||
+    window.rateOralExamQuestionV220;
+
+  window.rateOralExamQuestionV220 = function patchedRateOralExamQuestionV2321(status) {
+    saveOralRatingV2321(status);
+
+    if (typeof window.accaouiPreviousRateOralExamQuestionV2321 === "function") {
+      return window.accaouiPreviousRateOralExamQuestionV2321(status);
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.accaouiPreviousShowOralExamFinishScreenV2321 =
+    window.accaouiPreviousShowOralExamFinishScreenV2321 ||
+    window.showOralExamFinishScreenV220;
+
+  window.showOralExamFinishScreenV220 = function patchedShowOralExamFinishScreenV2321() {
+    if (isOralSheetASessionV2321()) {
+      if (typeof window.accaouiPreviousShowOralExamFinishScreenV2321 === "function") {
+        window.accaouiPreviousShowOralExamFinishScreenV2321();
+      }
+
+      renderOralExamBlockFinishV2321();
+      return;
+    }
+
+    if (typeof window.accaouiPreviousShowOralExamFinishScreenV2321 === "function") {
+      return window.accaouiPreviousShowOralExamFinishScreenV2321();
+    }
+  };
+
+  try {
+    startOralExamSessionV220 = window.startOralExamSessionV220;
+    rateOralExamQuestionV220 = window.rateOralExamQuestionV220;
+    showOralExamFinishScreenV220 = window.showOralExamFinishScreenV220;
+  } catch (error) {
+    /* Rebinding ist je nach Browser nicht notwendig */
+  }
+
+  window.renderOralExamBlockFinishV2321 = renderOralExamBlockFinishV2321;
+  window.getOralBlockResultStatsV2321 = getOralBlockResultStatsV2321;
+}
