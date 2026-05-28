@@ -4013,3 +4013,1029 @@ if (!window.ACCAOUI_V2321_ORAL_BLOCK_RESULT_PATCH) {
   window.renderOralExamBlockFinishV2321 = renderOralExamBlockFinishV2321;
   window.getOralBlockResultStatsV2321 = getOralBlockResultStatsV2321;
 }
+
+/* =====================================================
+   v23.2.2 MÜNDLICHE PRÜFUNG – AUSWERTUNG VEREDLUNG
+   Ziel:
+   - Ergebnis-Auswertung verständlicher machen
+   - Mischblock erklären
+   - Empfehlung anzeigen
+   - weiterhin Accaoui-Trainingsbewertung, keine IHK-Bewertung
+===================================================== */
+
+if (!window.ACCAOUI_V2322_ORAL_RESULT_POLISH_PATCH) {
+  window.ACCAOUI_V2322_ORAL_RESULT_POLISH_PATCH = true;
+
+  function getOralResultRecommendationV2322(overall) {
+    const percent = Number(overall && overall.percent ? overall.percent : 0);
+    const practice = Number(overall && overall.practice ? overall.practice : 0);
+
+    if (percent >= 90 && practice === 0) {
+      return {
+        title: "Sehr starke mündliche Runde",
+        text: "Die Antworten wurden sehr sicher bewertet. Wiederholen Sie die Formulierungen regelmäßig laut, damit sie in der Prüfung ruhig und klar abrufbar bleiben."
+      };
+    }
+
+    if (percent >= 75) {
+      return {
+        title: "Gute Grundlage",
+        text: "Die mündliche Struktur ist vorhanden. Arbeiten Sie gezielt an den Antworten, die mit „Noch üben“ bewertet wurden."
+      };
+    }
+
+    if (percent >= 60) {
+      return {
+        title: "Teilweise sicher",
+        text: "Einige Antworten sitzen bereits. Wiederholen Sie die schwächeren Prüferblöcke laut und achten Sie auf rechtlich saubere Begriffe."
+      };
+    }
+
+    return {
+      title: "Gezielt nacharbeiten",
+      text: "Die mündliche Prüfung braucht klare, ruhige und vollständige Antworten. Beginnen Sie mit dem Prüferblock, in dem die meisten Antworten mit „Noch üben“ bewertet wurden."
+    };
+  }
+
+  function getOralBlockDisplayTitleV2322(block) {
+    const title = String(block && block.title ? block.title : "");
+
+    if (title === "Mischblock") {
+      return "Mischblock – weitere Sachgebiete";
+    }
+
+    return title;
+  }
+
+  function getOralBlockDescriptionV2322(block) {
+    const title = String(block && block.title ? block.title : "");
+
+    if (title.includes("Öffentliches Recht") || title.includes("Gewerberecht")) {
+      return "Abgrenzung privater Sicherheitsdienst, § 34a GewO, Zuverlässigkeit und Pflichten.";
+    }
+
+    if (title.includes("Umgang mit Menschen")) {
+      return "Kommunikation, Deeskalation, Eigensicherung und professionelles Auftreten.";
+    }
+
+    if (title === "Mischblock") {
+      return "Datenschutz, BGB, Strafrecht, UVV, Waffenrecht und Sicherheitstechnik.";
+    }
+
+    return "Zusammenfassung dieses Prüferblocks.";
+  }
+
+  function renderOralExamBlockFinishV2322() {
+    if (typeof getOralBlockResultStatsV2321 !== "function") {
+      if (typeof window.renderOralExamBlockFinishV2321 === "function") {
+        window.renderOralExamBlockFinishV2321();
+      }
+      return;
+    }
+
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    const blockStats = getOralBlockResultStatsV2321();
+
+    const total = blockStats.reduce((sum, block) => sum + block.total, 0);
+    const known = blockStats.reduce((sum, block) => sum + block.known, 0);
+    const practice = blockStats.reduce((sum, block) => sum + block.practice, 0);
+    const answered = known + practice;
+    const open = Math.max(0, total - answered);
+    const percent = answered > 0 ? Math.round((known / answered) * 100) : 0;
+
+    const overall = {
+      total,
+      known,
+      practice,
+      answered,
+      open,
+      percent
+    };
+
+    const label =
+      percent >= 90 ? "Sehr sicher" :
+      percent >= 75 ? "Sicher" :
+      percent >= 60 ? "Teilweise sicher" :
+      percent >= 40 ? "Unsicher" :
+      "Deutlich nacharbeiten";
+
+    const recommendation = getOralResultRecommendationV2322(overall);
+
+    const blockCards = blockStats.map(block => {
+      return `
+        <div class="oral-block-result-card-v2321 oral-block-result-card-v2322">
+          <div class="oral-block-result-head-v2321">
+            <span>${escapeHtml(block.examinerName)}</span>
+            <strong>${escapeHtml(block.range)}</strong>
+          </div>
+
+          <h3>${escapeHtml(getOralBlockDisplayTitleV2322(block))}</h3>
+
+          <p class="oral-block-description-v2322">
+            ${escapeHtml(getOralBlockDescriptionV2322(block))}
+          </p>
+
+          <div class="oral-block-result-percent-v2321">
+            ${block.percent}%
+          </div>
+
+          <div class="oral-block-result-mini-v2321">
+            <div class="success">
+              <span>Sicher</span>
+              <strong>${block.known}</strong>
+            </div>
+
+            <div class="danger">
+              <span>Noch üben</span>
+              <strong>${block.practice}</strong>
+            </div>
+
+            <div>
+              <span>Offen</span>
+              <strong>${block.open}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="showOralExamPage()">
+        ← Zurück zur mündlichen Prüfung
+      </button>
+
+      <section class="result-wrapper oral-block-result-wrapper-v2321 oral-block-result-wrapper-v2322">
+
+        <div class="oral-block-result-hero-v2321 oral-block-result-hero-v2322">
+          <p class="eyebrow">15-Minuten-Simulation</p>
+
+          <h1>Prüfungsbogen A abgeschlossen</h1>
+
+          <p>
+            Die Auswertung zeigt Ihre Trainingsleistung nach Prüferblöcken.
+            Offene Fragen werden nicht als falsch gewertet.
+          </p>
+
+          <div class="oral-block-overall-v2321">
+            <strong>${overall.percent}%</strong>
+            <span>${escapeHtml(label)}</span>
+          </div>
+
+          <p class="oral-block-legal-note-v2321">
+            Trainingsbewertung. Keine offizielle IHK-Bewertung.
+          </p>
+        </div>
+
+        <div class="oral-block-result-grid-v2321">
+          ${blockCards}
+        </div>
+
+        <div class="oral-result-recommendation-v2322">
+          <span>Empfehlung</span>
+          <strong>${escapeHtml(recommendation.title)}</strong>
+          <p>${escapeHtml(recommendation.text)}</p>
+        </div>
+
+        <div class="oral-block-summary-v2321">
+          <div>
+            <span>Bearbeitet</span>
+            <strong>${overall.answered}/${overall.total}</strong>
+          </div>
+
+          <div class="success">
+            <span>Sicher</span>
+            <strong>${overall.known}</strong>
+          </div>
+
+          <div class="danger">
+            <span>Noch üben</span>
+            <strong>${overall.practice}</strong>
+          </div>
+
+          <div>
+            <span>Offen</span>
+            <strong>${overall.open}</strong>
+          </div>
+        </div>
+
+        <div class="result-actions oral-block-actions-v2321">
+          <button class="next-btn" onclick="startOralSimulation15V2314()">
+            Prüfungsbogen A wiederholen
+          </button>
+
+          <button class="next-btn" onclick="showOralExamPage()">
+            Zur Modusauswahl
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+        </div>
+
+      </section>
+    `;
+  }
+
+  window.accaouiPreviousShowOralExamFinishScreenV2322 =
+    window.accaouiPreviousShowOralExamFinishScreenV2322 ||
+    window.showOralExamFinishScreenV220;
+
+  window.showOralExamFinishScreenV220 = function patchedShowOralExamFinishScreenV2322() {
+    try {
+      if (
+        window.ACCAOUI_V2317_ORAL_SIMULATION_MODE === "15" &&
+        typeof oralExamQuestionsV220 !== "undefined" &&
+        Array.isArray(oralExamQuestionsV220) &&
+        oralExamQuestionsV220.some(question => question && question.sheetId === "oral_sheet_a_v2320")
+      ) {
+        renderOralExamBlockFinishV2322();
+        return;
+      }
+    } catch (error) {
+      console.warn("v23.2.2 Ergebnis-Patch konnte Prüfungsbogen nicht erkennen:", error);
+    }
+
+    if (typeof window.accaouiPreviousShowOralExamFinishScreenV2322 === "function") {
+      return window.accaouiPreviousShowOralExamFinishScreenV2322();
+    }
+  };
+
+  try {
+    showOralExamFinishScreenV220 = window.showOralExamFinishScreenV220;
+  } catch (error) {
+    /* Rebinding ist je nach Browser nicht nötig */
+  }
+
+  window.renderOralExamBlockFinishV2322 = renderOralExamBlockFinishV2322;
+}
+
+/* =====================================================
+   v23.2.3 AUSWERTUNG NACHARBEITEN + THEMENWERTE RUHIGER
+   Ziel:
+   - Nach Prüfung: Prüfungsbogen A nacharbeiten
+   - 15 Fragen mit Musterantwort und Prüfer-Hinweis anzeigen
+   - Themenkarten-Werte kompakter als ruhige Statistikzeile darstellen
+===================================================== */
+
+if (!window.ACCAOUI_V2323_REVIEW_AND_TOPIC_STATS_PATCH) {
+  window.ACCAOUI_V2323_REVIEW_AND_TOPIC_STATS_PATCH = true;
+
+  function getOralSheetAQuestionsForReviewV2323() {
+    if (typeof getOralExamSheetAQuestionsV2320 === "function") {
+      return getOralExamSheetAQuestionsV2320();
+    }
+
+    try {
+      if (Array.isArray(oralExamQuestionsV220)) {
+        const sheetQuestions = oralExamQuestionsV220.filter(question => {
+          return question && question.sheetId === "oral_sheet_a_v2320";
+        });
+
+        if (sheetQuestions.length) return sheetQuestions;
+      }
+    } catch (error) {
+      return [];
+    }
+
+    return [];
+  }
+
+  function showOralSheetAReviewV2323() {
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    const questions = getOralSheetAQuestionsForReviewV2323();
+
+    if (!questions.length) {
+      showSmallNotice("Prüfungsbogen A konnte nicht geladen werden.");
+      return;
+    }
+
+    const blocks = [
+      {
+        examinerIndex: 0,
+        examinerName: "Prüfer 1",
+        range: "Frage 1–5",
+        title: "Öffentliches Recht / Gewerberecht"
+      },
+      {
+        examinerIndex: 1,
+        examinerName: "Vorsitz",
+        range: "Frage 6–10",
+        title: "Umgang mit Menschen"
+      },
+      {
+        examinerIndex: 2,
+        examinerName: "Prüfer 3",
+        range: "Frage 11–15",
+        title: "Mischblock – weitere Sachgebiete"
+      }
+    ];
+
+    const blockHtml = blocks.map(block => {
+      const blockQuestions = questions.filter((question, index) => {
+        const examinerIndex = Number.isInteger(question.examinerIndex)
+          ? question.examinerIndex
+          : index < 5 ? 0 : index < 10 ? 1 : 2;
+
+        return examinerIndex === block.examinerIndex;
+      });
+
+      return `
+        <section class="oral-review-block-v2323">
+          <div class="oral-review-block-head-v2323">
+            <div>
+              <span>${escapeHtml(block.examinerName)}</span>
+              <h2>${escapeHtml(block.title)}</h2>
+            </div>
+
+            <strong>${escapeHtml(block.range)}</strong>
+          </div>
+
+          <div class="oral-review-question-list-v2323">
+            ${blockQuestions.map((question, questionIndex) => {
+              const absoluteNumber = block.examinerIndex * 5 + questionIndex + 1;
+
+              return `
+                <article class="oral-review-question-v2323">
+                  <div class="oral-review-question-top-v2323">
+                    <span>Frage ${absoluteNumber}</span>
+                    <strong>${escapeHtml(question.category || "Sachgebiet")}</strong>
+                  </div>
+
+                  <h3>${escapeHtml(question.question || "")}</h3>
+
+                  <div class="oral-review-answer-v2323">
+                    <span>Musterantwort</span>
+                    <p>${escapeHtml(question.sampleAnswer || "Keine Musterantwort hinterlegt.")}</p>
+                  </div>
+
+                  <div class="oral-review-note-v2323">
+                    <span>Prüfer-Hinweis</span>
+                    <p>${escapeHtml(question.examinerNote || "Kein Prüfer-Hinweis hinterlegt.")}</p>
+                  </div>
+                </article>
+              `;
+            }).join("")}
+          </div>
+        </section>
+      `;
+    }).join("");
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="renderOralExamBlockFinishV2322 ? renderOralExamBlockFinishV2322() : showOralExamPage()">
+        ← Zurück zur Auswertung
+      </button>
+
+      <section class="result-wrapper oral-review-wrapper-v2323">
+
+        <div class="oral-review-hero-v2323">
+          <p class="eyebrow">Nacharbeit</p>
+          <h1>Prüfungsbogen A nacharbeiten</h1>
+          <p>
+            Wiederholen Sie die Fragen mit Musterantwort und Prüfer-Hinweis.
+            Ziel ist nicht Auswendiglernen, sondern eine ruhige, vollständige und rechtlich saubere Antwort.
+          </p>
+        </div>
+
+        ${blockHtml}
+
+        <div class="result-actions oral-review-actions-v2323">
+          <button class="next-btn" onclick="startOralSimulation15V2314()">
+            Prüfungsbogen A wiederholen
+          </button>
+
+          <button class="next-btn" onclick="showOralExamPage()">
+            Zur Modusauswahl
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+        </div>
+
+      </section>
+    `;
+  }
+
+  function injectOralReviewButtonV2323() {
+    const actions = document.querySelector(".oral-block-actions-v2321");
+
+    if (!actions || document.getElementById("oralReviewButtonV2323")) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.id = "oralReviewButtonV2323";
+    button.className = "next-btn oral-review-result-btn-v2323";
+    button.type = "button";
+    button.textContent = "Prüfungsbogen A nacharbeiten";
+    button.onclick = showOralSheetAReviewV2323;
+
+    const firstButton = actions.querySelector("button");
+
+    if (firstButton && firstButton.nextSibling) {
+      actions.insertBefore(button, firstButton.nextSibling);
+    } else {
+      actions.appendChild(button);
+    }
+  }
+
+  function scheduleOralReviewButtonV2323() {
+    setTimeout(injectOralReviewButtonV2323, 60);
+    setTimeout(injectOralReviewButtonV2323, 220);
+    setTimeout(injectOralReviewButtonV2323, 520);
+  }
+
+  window.accaouiPreviousShowOralExamFinishScreenV2323 =
+    window.accaouiPreviousShowOralExamFinishScreenV2323 ||
+    window.showOralExamFinishScreenV220;
+
+  window.showOralExamFinishScreenV220 = function patchedShowOralExamFinishScreenV2323() {
+    if (typeof window.accaouiPreviousShowOralExamFinishScreenV2323 === "function") {
+      const result = window.accaouiPreviousShowOralExamFinishScreenV2323();
+      scheduleOralReviewButtonV2323();
+      return result;
+    }
+  };
+
+  try {
+    showOralExamFinishScreenV220 = window.showOralExamFinishScreenV220;
+  } catch (error) {
+    /* Rebinding ist je nach Browser nicht notwendig */
+  }
+
+  function compactCategoryStatsV2323() {
+    const cards = document.querySelectorAll(".category-card");
+
+    cards.forEach(card => {
+      if (card.querySelector(".category-inline-stats-v2323")) return;
+
+      const title = card.querySelector("h3");
+      const statElements = Array.from(card.children).filter(child => {
+        return child.tagName === "SPAN" || child.tagName === "SMALL";
+      });
+
+      if (!title || statElements.length < 2) return;
+
+      const statRow = document.createElement("div");
+      statRow.className = "category-inline-stats-v2323";
+
+      statElements.forEach(element => {
+        const text = String(element.textContent || "").trim();
+
+        if (!text) return;
+
+        const item = document.createElement("span");
+        item.textContent = text;
+
+        if (text.toLowerCase().includes("fehler") && !text.startsWith("0")) {
+          item.classList.add("has-warning-v2323");
+        }
+
+        statRow.appendChild(item);
+        element.classList.add("category-old-stat-v2323");
+      });
+
+      title.insertAdjacentElement("afterend", statRow);
+    });
+  }
+
+  function scheduleCompactCategoryStatsV2323() {
+    setTimeout(compactCategoryStatsV2323, 60);
+    setTimeout(compactCategoryStatsV2323, 220);
+    setTimeout(compactCategoryStatsV2323, 520);
+  }
+
+  window.accaouiPreviousShowAllQuestionsV2323 =
+    window.accaouiPreviousShowAllQuestionsV2323 ||
+    window.showAllQuestions;
+
+  window.showAllQuestions = function patchedShowAllQuestionsV2323() {
+    if (typeof window.accaouiPreviousShowAllQuestionsV2323 === "function") {
+      const result = window.accaouiPreviousShowAllQuestionsV2323();
+      scheduleCompactCategoryStatsV2323();
+      return result;
+    }
+  };
+
+  try {
+    showAllQuestions = window.showAllQuestions;
+  } catch (error) {
+    /* Rebinding ist je nach Browser nicht notwendig */
+  }
+
+  window.showOralSheetAReviewV2323 = showOralSheetAReviewV2323;
+  window.compactCategoryStatsV2323 = compactCategoryStatsV2323;
+}
+
+/* =====================================================
+   v23.2.4 MÜNDLICHE PRÜFUNGSFEHLER TRAINIEREN
+   Ziel:
+   - "Nacharbeiten" durch echten mündlichen Fehlertrainer ersetzen
+   - nur Fragen mit "Noch üben" speichern
+   - bei "Sicher beantwortet" wieder entfernen
+   - mündliche Fehler im normalen Fehlertraining anzeigen
+===================================================== */
+
+if (!window.ACCAOUI_V2324_ORAL_MISTAKE_TRAINER_PATCH) {
+  window.ACCAOUI_V2324_ORAL_MISTAKE_TRAINER_PATCH = true;
+
+  const ORAL_MISTAKE_STORAGE_KEY_V2324 = "accaoui_oral_exam_mistakes_v2324";
+
+  function readOralMistakesV2324() {
+    try {
+      const raw = localStorage.getItem(ORAL_MISTAKE_STORAGE_KEY_V2324);
+      const parsed = JSON.parse(raw || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function writeOralMistakesV2324(list) {
+    localStorage.setItem(
+      ORAL_MISTAKE_STORAGE_KEY_V2324,
+      JSON.stringify(Array.isArray(list) ? list : [])
+    );
+  }
+
+  function getOralMistakeKeyV2324(question) {
+    if (!question) return "";
+
+    return String(
+      question.id ||
+      question.question ||
+      ""
+    ).trim();
+  }
+
+  function getCurrentOralQuestionV2324() {
+    try {
+      if (
+        typeof oralExamQuestionsV220 !== "undefined" &&
+        Array.isArray(oralExamQuestionsV220) &&
+        typeof oralExamIndexV220 !== "undefined"
+      ) {
+        return oralExamQuestionsV220[oralExamIndexV220];
+      }
+    } catch (error) {
+      return null;
+    }
+
+    return null;
+  }
+
+  function saveOralMistakeV2324(question) {
+    if (!question) return;
+
+    const key = getOralMistakeKeyV2324(question);
+
+    if (!key) return;
+
+    const mistakes = readOralMistakesV2324();
+
+    const exists = mistakes.some(item => item && item.key === key);
+
+    const entry = {
+      key,
+      id: question.id || key,
+      category: question.category || "Mündliche Prüfung",
+      question: question.question || "",
+      sampleAnswer: question.sampleAnswer || "",
+      examinerNote: question.examinerNote || "",
+      examinerName: question.examinerName || "",
+      examinerBlockTitle: question.examinerBlockTitle || "",
+      sheetId: question.sheetId || "",
+      sheetTitle: question.sheetTitle || "Prüfungsbogen A",
+      savedAt: new Date().toISOString()
+    };
+
+    if (exists) {
+      const updated = mistakes.map(item => item.key === key ? entry : item);
+      writeOralMistakesV2324(updated);
+      return;
+    }
+
+    mistakes.push(entry);
+    writeOralMistakesV2324(mistakes);
+  }
+
+  function removeOralMistakeV2324(questionOrKey) {
+    const key = typeof questionOrKey === "string"
+      ? questionOrKey
+      : getOralMistakeKeyV2324(questionOrKey);
+
+    if (!key) return;
+
+    const mistakes = readOralMistakesV2324().filter(item => item && item.key !== key);
+    writeOralMistakesV2324(mistakes);
+  }
+
+  function getOralMistakeCountV2324() {
+    return readOralMistakesV2324().length;
+  }
+
+  function markOralMistakeResolvedV2324(key) {
+    removeOralMistakeV2324(key);
+    showOralMistakeTrainingV2324();
+  }
+
+  function showOralMistakeTrainingV2324() {
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    const mistakes = readOralMistakesV2324();
+
+    if (!mistakes.length) {
+      showSmallNotice("Keine mündlichen Prüfungsfehler gespeichert.");
+      return;
+    }
+
+    const cards = mistakes.map((item, index) => {
+      return `
+        <article class="oral-mistake-card-v2324">
+          <div class="oral-mistake-top-v2324">
+            <span>Frage ${index + 1}</span>
+            <strong>${escapeHtml(item.examinerName || item.category || "Mündliche Prüfung")}</strong>
+          </div>
+
+          <p class="oral-mistake-category-v2324">
+            ${escapeHtml(item.examinerBlockTitle || item.category || "Prüfungsbogen A")}
+          </p>
+
+          <h3>${escapeHtml(item.question || "")}</h3>
+
+          <div class="oral-mistake-answer-v2324">
+            <span>Musterantwort</span>
+            <p>${escapeHtml(item.sampleAnswer || "Keine Musterantwort hinterlegt.")}</p>
+          </div>
+
+          <div class="oral-mistake-note-v2324">
+            <span>Prüfer-Hinweis</span>
+            <p>${escapeHtml(item.examinerNote || "Kein Prüfer-Hinweis hinterlegt.")}</p>
+          </div>
+
+          <button class="next-btn oral-mistake-resolve-btn-v2324" onclick='markOralMistakeResolvedV2324(${JSON.stringify(item.key)})'>
+            Als sicher markieren
+          </button>
+        </article>
+      `;
+    }).join("");
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="showMistakeOverview()">
+        ← Zurück zum Fehlertraining
+      </button>
+
+      <section class="result-wrapper oral-mistake-wrapper-v2324">
+
+        <div class="oral-mistake-hero-v2324">
+          <p class="eyebrow">Mündliche Prüfung</p>
+
+          <h1>Mündliche Fehler trainieren</h1>
+
+          <p>
+            Hier erscheinen nur Fragen, die in der mündlichen Simulation mit
+            „Noch üben“ bewertet wurden.
+          </p>
+
+          <div class="oral-mistake-count-v2324">
+            <strong>${mistakes.length}</strong>
+            <span>offene mündliche Fehler</span>
+          </div>
+        </div>
+
+        <div class="oral-mistake-list-v2324">
+          ${cards}
+        </div>
+
+        <div class="result-actions oral-mistake-actions-v2324">
+          <button class="next-btn" onclick="startOralSimulation15V2314()">
+            Prüfungsbogen A wiederholen
+          </button>
+
+          <button class="next-btn" onclick="showMistakeOverview()">
+            Zur Fehlerübersicht
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+        </div>
+
+      </section>
+    `;
+  }
+
+  window.accaouiPreviousRateOralExamQuestionV2324 =
+    window.accaouiPreviousRateOralExamQuestionV2324 ||
+    window.rateOralExamQuestionV220;
+
+  window.rateOralExamQuestionV220 = function patchedRateOralExamQuestionV2324(status) {
+    const currentQuestion = getCurrentOralQuestionV2324();
+
+    if (status === "practice") {
+      saveOralMistakeV2324(currentQuestion);
+    }
+
+    if (status === "known") {
+      removeOralMistakeV2324(currentQuestion);
+    }
+
+    if (typeof window.accaouiPreviousRateOralExamQuestionV2324 === "function") {
+      return window.accaouiPreviousRateOralExamQuestionV2324(status);
+    }
+
+    showSmallNotice("Mündliche Bewertung konnte nicht gespeichert werden.");
+  };
+
+  try {
+    rateOralExamQuestionV220 = window.rateOralExamQuestionV220;
+  } catch (error) {
+    /* Rebinding je nach Browser nicht notwendig */
+  }
+
+  function replaceOralReviewButtonV2324() {
+    const button = document.getElementById("oralReviewButtonV2323");
+
+    if (!button) return;
+
+    button.textContent = "Mündliche Fehler trainieren";
+    button.onclick = showOralMistakeTrainingV2324;
+    button.classList.add("oral-mistake-result-btn-v2324");
+
+    const count = getOralMistakeCountV2324();
+
+    if (count > 0) {
+      button.textContent = `Mündliche Fehler trainieren (${count})`;
+    }
+  }
+
+  function injectOralMistakeBoxIntoOverviewV2324() {
+    const wrapper = document.querySelector(".result-wrapper");
+    const topicSection = document.querySelector(".topic-stats-section");
+
+    if (!wrapper || document.getElementById("oralMistakeOverviewBoxV2324")) return;
+
+    const count = getOralMistakeCountV2324();
+
+    if (count <= 0) return;
+
+    const box = document.createElement("div");
+    box.id = "oralMistakeOverviewBoxV2324";
+    box.className = "oral-mistake-overview-box-v2324";
+
+    box.innerHTML = `
+      <span>Mündliche Prüfung</span>
+      <strong>${count} mündliche Prüfungsfehler</strong>
+      <p>
+        Diese Fragen wurden in der 15-Minuten-Simulation mit „Noch üben“
+        bewertet.
+      </p>
+
+      <button class="next-btn oral-mistake-result-btn-v2324" onclick="showOralMistakeTrainingV2324()">
+        Mündliche Fehler trainieren
+      </button>
+    `;
+
+    if (topicSection) {
+      topicSection.insertAdjacentElement("beforebegin", box);
+    } else {
+      wrapper.appendChild(box);
+    }
+  }
+
+  function scheduleOralMistakeUiV2324() {
+    setTimeout(replaceOralReviewButtonV2324, 60);
+    setTimeout(replaceOralReviewButtonV2324, 220);
+    setTimeout(replaceOralReviewButtonV2324, 520);
+
+    setTimeout(injectOralMistakeBoxIntoOverviewV2324, 60);
+    setTimeout(injectOralMistakeBoxIntoOverviewV2324, 220);
+    setTimeout(injectOralMistakeBoxIntoOverviewV2324, 520);
+  }
+
+  window.accaouiPreviousShowOralExamFinishScreenV2324 =
+    window.accaouiPreviousShowOralExamFinishScreenV2324 ||
+    window.showOralExamFinishScreenV220;
+
+  window.showOralExamFinishScreenV220 = function patchedShowOralExamFinishScreenV2324() {
+    if (typeof window.accaouiPreviousShowOralExamFinishScreenV2324 === "function") {
+      const result = window.accaouiPreviousShowOralExamFinishScreenV2324();
+      scheduleOralMistakeUiV2324();
+      return result;
+    }
+  };
+
+  window.accaouiPreviousShowMistakeOverviewV2324 =
+    window.accaouiPreviousShowMistakeOverviewV2324 ||
+    window.showMistakeOverview;
+
+  window.showMistakeOverview = function patchedShowMistakeOverviewV2324() {
+    if (typeof window.accaouiPreviousShowMistakeOverviewV2324 === "function") {
+      const result = window.accaouiPreviousShowMistakeOverviewV2324();
+      scheduleOralMistakeUiV2324();
+      return result;
+    }
+  };
+
+  try {
+    showOralExamFinishScreenV220 = window.showOralExamFinishScreenV220;
+    showMistakeOverview = window.showMistakeOverview;
+  } catch (error) {
+    /* Rebinding je nach Browser nicht notwendig */
+  }
+
+  window.showOralMistakeTrainingV2324 = showOralMistakeTrainingV2324;
+  window.markOralMistakeResolvedV2324 = markOralMistakeResolvedV2324;
+  window.getOralMistakeCountV2324 = getOralMistakeCountV2324;
+}
+
+/* =====================================================
+   v23.2.5 MÜNDLICHE FEHLERTRAINER – ANTWORT AUFDECKEN
+   Ziel:
+   - Frage zuerst ohne Musterantwort anzeigen
+   - Musterantwort + Prüfer-Hinweis erst nach Klick anzeigen
+   - "Als sicher markieren" erst nach Antwortanzeige
+===================================================== */
+
+if (!window.ACCAOUI_V2325_ORAL_MISTAKE_REVEAL_PATCH) {
+  window.ACCAOUI_V2325_ORAL_MISTAKE_REVEAL_PATCH = true;
+
+  const ORAL_MISTAKE_STORAGE_KEY_V2325 = "accaoui_oral_exam_mistakes_v2324";
+
+  function readOralMistakesV2325() {
+    try {
+      const raw = localStorage.getItem(ORAL_MISTAKE_STORAGE_KEY_V2325);
+      const parsed = JSON.parse(raw || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function writeOralMistakesV2325(list) {
+    localStorage.setItem(
+      ORAL_MISTAKE_STORAGE_KEY_V2325,
+      JSON.stringify(Array.isArray(list) ? list : [])
+    );
+  }
+
+  function removeOralMistakeV2325(key) {
+    const mistakes = readOralMistakesV2325().filter(item => {
+      return item && item.key !== key;
+    });
+
+    writeOralMistakesV2325(mistakes);
+  }
+
+  function revealOralMistakeAnswerV2325(index) {
+    const card = document.querySelector(`[data-oral-mistake-index-v2325="${index}"]`);
+
+    if (!card) return;
+
+    card.classList.add("is-answer-visible-v2325");
+
+    const revealButton = card.querySelector(".oral-mistake-reveal-btn-v2325");
+    const resolveButton = card.querySelector(".oral-mistake-resolve-btn-v2325");
+
+    if (revealButton) {
+      revealButton.textContent = "Antwort angezeigt";
+      revealButton.disabled = true;
+    }
+
+    if (resolveButton) {
+      resolveButton.style.display = "inline-flex";
+    }
+  }
+
+  function markOralMistakeResolvedV2325(key) {
+    removeOralMistakeV2325(key);
+
+    if (typeof showSmallNotice === "function") {
+      showSmallNotice("Mündlicher Fehler wurde als sicher markiert.");
+    }
+
+    showOralMistakeTrainingV2325();
+  }
+
+  function showOralMistakeTrainingV2325() {
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    const mistakes = readOralMistakesV2325();
+
+    if (!mistakes.length) {
+      showSmallNotice("Keine mündlichen Prüfungsfehler gespeichert.");
+      return;
+    }
+
+    const cards = mistakes.map((item, index) => {
+      return `
+        <article class="oral-mistake-card-v2324 oral-mistake-card-v2325" data-oral-mistake-index-v2325="${index}">
+          <div class="oral-mistake-top-v2324">
+            <span>Frage ${index + 1}</span>
+            <strong>${escapeHtml(item.examinerName || item.category || "Mündliche Prüfung")}</strong>
+          </div>
+
+          <p class="oral-mistake-category-v2324">
+            ${escapeHtml(item.examinerBlockTitle || item.category || "Prüfungsbogen A")}
+          </p>
+
+          <h3>${escapeHtml(item.question || "")}</h3>
+
+          <div class="oral-mistake-training-hint-v2325">
+            <span>Übungsauftrag</span>
+            <p>
+              Antworten Sie zuerst laut und vollständig. Danach Musterantwort anzeigen und vergleichen.
+            </p>
+          </div>
+
+          <div class="oral-mistake-hidden-content-v2325">
+            <div class="oral-mistake-answer-v2324">
+              <span>Musterantwort</span>
+              <p>${escapeHtml(item.sampleAnswer || "Keine Musterantwort hinterlegt.")}</p>
+            </div>
+
+            <div class="oral-mistake-note-v2324">
+              <span>Prüfer-Hinweis</span>
+              <p>${escapeHtml(item.examinerNote || "Kein Prüfer-Hinweis hinterlegt.")}</p>
+            </div>
+          </div>
+
+          <div class="oral-mistake-card-actions-v2325">
+            <button class="next-btn oral-mistake-reveal-btn-v2325" onclick="revealOralMistakeAnswerV2325(${index})">
+              Musterantwort anzeigen
+            </button>
+
+            <button class="next-btn oral-mistake-resolve-btn-v2324 oral-mistake-resolve-btn-v2325" style="display:none;" onclick='markOralMistakeResolvedV2325(${JSON.stringify(item.key)})'>
+              Als sicher markieren
+            </button>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="showMistakeOverview()">
+        ← Zurück zum Fehlertraining
+      </button>
+
+      <section class="result-wrapper oral-mistake-wrapper-v2324 oral-mistake-wrapper-v2325">
+
+        <div class="oral-mistake-hero-v2324">
+          <p class="eyebrow">Mündliche Prüfung</p>
+
+          <h1>Mündliche Fehler trainieren</h1>
+
+          <p>
+            Hier erscheinen nur Fragen, die in der mündlichen Simulation mit
+            „Noch üben“ bewertet wurden. Die Musterantwort bleibt zuerst verdeckt.
+          </p>
+
+          <div class="oral-mistake-count-v2324">
+            <strong>${mistakes.length}</strong>
+            <span>offene mündliche Fehler</span>
+          </div>
+        </div>
+
+        <div class="oral-mistake-list-v2324">
+          ${cards}
+        </div>
+
+        <div class="result-actions oral-mistake-actions-v2324">
+          <button class="next-btn" onclick="startOralSimulation15V2314()">
+            Prüfungsbogen A wiederholen
+          </button>
+
+          <button class="next-btn" onclick="showMistakeOverview()">
+            Zur Fehlerübersicht
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+        </div>
+
+      </section>
+    `;
+  }
+
+  window.showOralMistakeTrainingV2324 = showOralMistakeTrainingV2325;
+  window.showOralMistakeTrainingV2325 = showOralMistakeTrainingV2325;
+  window.revealOralMistakeAnswerV2325 = revealOralMistakeAnswerV2325;
+  window.markOralMistakeResolvedV2325 = markOralMistakeResolvedV2325;
+
+  try {
+    showOralMistakeTrainingV2324 = window.showOralMistakeTrainingV2324;
+  } catch (error) {
+    /* Rebinding je nach Browser nicht notwendig */
+  }
+}

@@ -7220,3 +7220,549 @@ body.oral-mode-sheet-open-v2314 {
     font-size: 44px !important;
   }
 }
+
+/* =====================================================
+   v23.2.2 MÜNDLICHE PRÜFUNG – AUSWERTUNG VEREDLUNG
+===================================================== */
+
+@media (min-width: 1024px) {
+  .oral-block-result-wrapper-v2322 {
+    max-width: 1180px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+.oral-block-description-v2322 {
+  margin: -8px 0 16px 0 !important;
+  color: #64748b !important;
+  font-size: 13px !important;
+  line-height: 1.38 !important;
+  font-weight: 700 !important;
+}
+
+.oral-result-recommendation-v2322 {
+  padding: 22px !important;
+  border-radius: 24px !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08) !important;
+}
+
+.oral-result-recommendation-v2322 span {
+  display: inline-flex !important;
+  margin-bottom: 8px !important;
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+}
+
+.oral-result-recommendation-v2322 strong {
+  display: block !important;
+  margin-bottom: 8px !important;
+  color: #071229 !important;
+  font-size: 24px !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.04em !important;
+  font-weight: 950 !important;
+}
+
+.oral-result-recommendation-v2322 p {
+  margin: 0 !important;
+  color: #536179 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  font-weight: 650 !important;
+}
+
+.oral-block-result-card-v2322 h3 {
+  min-height: 56px !important;
+}
+
+@media (max-width: 900px) {
+  .oral-block-result-card-v2322 h3 {
+    min-height: auto !important;
+  }
+
+  .oral-result-recommendation-v2322 {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .oral-result-recommendation-v2322 strong {
+    font-size: 22px !important;
+  }
+
+  .oral-result-recommendation-v2322 p {
+    font-size: 14px !important;
+  }
+}
+
+/* =====================================================
+   v23.2.3 AUSWERTUNG NACHARBEITEN + THEMENWERTE RUHIGER
+===================================================== */
+
+/* Themenkarten: alte getrennte Werte ausblenden */
+.category-card .category-old-stat-v2323 {
+  display: none !important;
+}
+
+/* Neue ruhige Statistikzeile */
+.category-inline-stats-v2323 {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 7px !important;
+  margin: 10px 0 12px 0 !important;
+}
+
+.category-inline-stats-v2323 span {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 28px !important;
+  padding: 6px 9px !important;
+  border-radius: 999px !important;
+  background: rgba(36, 72, 199, 0.07) !important;
+  color: #536179 !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 850 !important;
+  white-space: nowrap !important;
+}
+
+.category-inline-stats-v2323 .has-warning-v2323 {
+  background: rgba(200, 25, 30, 0.08) !important;
+  color: #b91c1c !important;
+}
+
+/* Nacharbeit Ergebnisbutton */
+.oral-review-result-btn-v2323 {
+  background: linear-gradient(135deg, #071229 0%, #2448c7 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Nacharbeit-Seite */
+.oral-review-wrapper-v2323 {
+  display: grid !important;
+  gap: 18px !important;
+}
+
+.oral-review-hero-v2323 {
+  padding: 26px !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(96, 165, 250, 0.18), transparent 34%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.11) !important;
+}
+
+.oral-review-hero-v2323 h1 {
+  margin: 0 0 10px 0 !important;
+  color: #071229 !important;
+  font-size: clamp(32px, 5vw, 52px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.06em !important;
+  font-weight: 950 !important;
+}
+
+.oral-review-hero-v2323 p:not(.eyebrow) {
+  max-width: 760px !important;
+  margin: 0 !important;
+  color: #536179 !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  font-weight: 650 !important;
+}
+
+.oral-review-block-v2323 {
+  padding: 22px !important;
+  border-radius: 28px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08) !important;
+}
+
+.oral-review-block-head-v2323 {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  margin-bottom: 16px !important;
+}
+
+.oral-review-block-head-v2323 span {
+  display: inline-flex !important;
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+  margin-bottom: 6px !important;
+}
+
+.oral-review-block-head-v2323 h2 {
+  margin: 0 !important;
+  color: #071229 !important;
+  font-size: 26px !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.04em !important;
+  font-weight: 950 !important;
+}
+
+.oral-review-block-head-v2323 strong {
+  color: #64748b !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.oral-review-question-list-v2323 {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.oral-review-question-v2323 {
+  padding: 18px !important;
+  border-radius: 22px !important;
+  background: #f8fafc !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+}
+
+.oral-review-question-top-v2323 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.oral-review-question-top-v2323 span {
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.oral-review-question-top-v2323 strong {
+  color: #64748b !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  text-align: right !important;
+}
+
+.oral-review-question-v2323 h3 {
+  margin: 0 0 14px 0 !important;
+  color: #071229 !important;
+  font-size: 20px !important;
+  line-height: 1.22 !important;
+  letter-spacing: -0.035em !important;
+  font-weight: 950 !important;
+}
+
+.oral-review-answer-v2323,
+.oral-review-note-v2323 {
+  padding: 14px !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+  margin-top: 10px !important;
+}
+
+.oral-review-answer-v2323 span,
+.oral-review-note-v2323 span {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.oral-review-answer-v2323 p,
+.oral-review-note-v2323 p {
+  margin: 0 !important;
+  color: #334155 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  font-weight: 650 !important;
+}
+
+@media (min-width: 1024px) {
+  .oral-review-wrapper-v2323 {
+    max-width: 1180px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .category-inline-stats-v2323 {
+    gap: 6px !important;
+  }
+
+  .category-inline-stats-v2323 span {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  .oral-review-hero-v2323,
+  .oral-review-block-v2323 {
+    padding: 20px !important;
+    border-radius: 24px !important;
+  }
+
+  .oral-review-hero-v2323 h1 {
+    font-size: 31px !important;
+  }
+
+  .oral-review-block-head-v2323 {
+    display: grid !important;
+  }
+
+  .oral-review-question-top-v2323 {
+    align-items: flex-start !important;
+  }
+}
+
+/* =====================================================
+   v23.2.4 MÜNDLICHE PRÜFUNGSFEHLER TRAINIEREN
+===================================================== */
+
+.oral-mistake-result-btn-v2324 {
+  background: linear-gradient(135deg, #071229 0%, #2448c7 100%) !important;
+  color: #ffffff !important;
+}
+
+.oral-mistake-overview-box-v2324,
+.oral-mistake-hero-v2324 {
+  padding: 24px !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(96, 165, 250, 0.18), transparent 34%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.10) !important;
+}
+
+.oral-mistake-overview-box-v2324 span,
+.oral-mistake-card-v2324 span,
+.oral-mistake-hero-v2324 .eyebrow {
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+}
+
+.oral-mistake-overview-box-v2324 strong {
+  display: block !important;
+  margin: 8px 0 !important;
+  color: #071229 !important;
+  font-size: 25px !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.04em !important;
+  font-weight: 950 !important;
+}
+
+.oral-mistake-overview-box-v2324 p,
+.oral-mistake-hero-v2324 p:not(.eyebrow) {
+  margin: 0 0 16px 0 !important;
+  color: #536179 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  font-weight: 650 !important;
+}
+
+.oral-mistake-wrapper-v2324 {
+  display: grid !important;
+  gap: 18px !important;
+}
+
+.oral-mistake-hero-v2324 h1 {
+  margin: 0 0 10px 0 !important;
+  color: #071229 !important;
+  font-size: clamp(32px, 5vw, 52px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.06em !important;
+  font-weight: 950 !important;
+}
+
+.oral-mistake-count-v2324 {
+  display: inline-grid !important;
+  gap: 4px !important;
+  padding: 16px 20px !important;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg, #071229 0%, #2448c7 100%) !important;
+  color: #ffffff !important;
+}
+
+.oral-mistake-count-v2324 strong {
+  color: #ffffff !important;
+  font-size: 42px !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+}
+
+.oral-mistake-count-v2324 span {
+  color: rgba(226, 232, 240, 0.90) !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+}
+
+.oral-mistake-list-v2324 {
+  display: grid !important;
+  gap: 14px !important;
+}
+
+.oral-mistake-card-v2324 {
+  padding: 20px !important;
+  border-radius: 24px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.92) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08) !important;
+}
+
+.oral-mistake-top-v2324 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin-bottom: 10px !important;
+}
+
+.oral-mistake-top-v2324 strong {
+  color: #64748b !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  text-align: right !important;
+}
+
+.oral-mistake-category-v2324 {
+  margin: 0 0 10px 0 !important;
+  color: #536179 !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.oral-mistake-card-v2324 h3 {
+  margin: 0 0 14px 0 !important;
+  color: #071229 !important;
+  font-size: 22px !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.04em !important;
+  font-weight: 950 !important;
+}
+
+.oral-mistake-answer-v2324,
+.oral-mistake-note-v2324 {
+  padding: 14px !important;
+  border-radius: 18px !important;
+  background: #f8fafc !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  margin-top: 10px !important;
+}
+
+.oral-mistake-answer-v2324 p,
+.oral-mistake-note-v2324 p {
+  margin: 6px 0 0 0 !important;
+  color: #334155 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  font-weight: 650 !important;
+}
+
+.oral-mistake-resolve-btn-v2324 {
+  margin-top: 14px !important;
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%) !important;
+  color: #ffffff !important;
+}
+
+@media (min-width: 1024px) {
+  .oral-mistake-wrapper-v2324 {
+    max-width: 1180px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .oral-mistake-overview-box-v2324,
+  .oral-mistake-hero-v2324,
+  .oral-mistake-card-v2324 {
+    padding: 20px !important;
+    border-radius: 24px !important;
+  }
+
+  .oral-mistake-hero-v2324 h1 {
+    font-size: 31px !important;
+  }
+
+  .oral-mistake-card-v2324 h3 {
+    font-size: 20px !important;
+  }
+}
+
+/* =====================================================
+   v23.2.5 MÜNDLICHE FEHLERTRAINER – ANTWORT AUFDECKEN
+===================================================== */
+
+.oral-mistake-training-hint-v2325 {
+  padding: 14px !important;
+  border-radius: 18px !important;
+  background: rgba(36, 72, 199, 0.07) !important;
+  border: 1px solid rgba(36, 72, 199, 0.14) !important;
+  margin-top: 12px !important;
+}
+
+.oral-mistake-training-hint-v2325 span {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.oral-mistake-training-hint-v2325 p {
+  margin: 0 !important;
+  color: #334155 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+
+.oral-mistake-hidden-content-v2325 {
+  display: none !important;
+}
+
+.oral-mistake-card-v2325.is-answer-visible-v2325 .oral-mistake-hidden-content-v2325 {
+  display: block !important;
+}
+
+.oral-mistake-card-actions-v2325 {
+  display: grid !important;
+  gap: 10px !important;
+  margin-top: 14px !important;
+}
+
+.oral-mistake-reveal-btn-v2325 {
+  background: linear-gradient(135deg, #2448c7 0%, #1736a8 100%) !important;
+  color: #ffffff !important;
+}
+
+.oral-mistake-reveal-btn-v2325:disabled {
+  opacity: 0.72 !important;
+  cursor: not-allowed !important;
+}
+
+.oral-mistake-resolve-btn-v2325 {
+  justify-content: center !important;
+}
