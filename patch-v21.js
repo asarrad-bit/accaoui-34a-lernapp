@@ -2689,3 +2689,138 @@ if (!window.ACCAOUI_V2311_LEARNING_PARTIAL_RESULT_PATCH) {
   window.renderLearningAbortControlsV2311 = renderLearningAbortControlsV2311;
   window.showLearningPartialResultV2311 = showLearningPartialResultV2311;
 }
+
+/* =====================================================
+   v23.1.2 MÜNDLICHE PRÜFUNG – KOMPAKTE MOBILE ÜBERSICHT
+   Ziel:
+   - große Einführungskarte reduzieren
+   - Prüfungsszene stärker nach oben holen
+   - "Vorbereitung" durch Startbutton ersetzen
+   - große Statistik-Karten als kompakte Statuszeile anzeigen
+   - rechtlich sauber: Simulation / Trainingsbeispiele
+===================================================== */
+
+if (!window.ACCAOUI_V2312_ORAL_COMPACT_OVERVIEW_PATCH) {
+  window.ACCAOUI_V2312_ORAL_COMPACT_OVERVIEW_PATCH = true;
+
+  function buildCompactOralRoomSceneV2312() {
+    let sceneHtml = "";
+
+    if (typeof window.buildOralExamRoomSceneV221 === "function") {
+      sceneHtml = window.buildOralExamRoomSceneV221("overview");
+    }
+
+    if (!sceneHtml) {
+      return "";
+    }
+
+    sceneHtml = sceneHtml
+      .replace(
+        "Realistische IHK-Prüfungssituation",
+        "Mündliche Prüfungssimulation § 34a"
+      )
+      .replace(
+        /<div class="oral-room-status-v221">\s*Vorbereitung\s*<\/div>/,
+        `<button type="button" class="oral-room-start-btn-v2312" onclick="startOralExamSessionV220(ORAL_EXAM_QUESTIONS_V220, 'Alle mündlichen Fragen')">
+          Mündliche Prüfung starten
+        </button>`
+      )
+      .replace(
+        `aria-label="Realistische mündliche Prüfungssituation"`,
+        `aria-label="Mündliche Prüfungssimulation § 34a"`
+      );
+
+    return sceneHtml;
+  }
+
+  function showCompactOralExamPageV2312() {
+    currentMode = "oral-exam";
+
+    if (typeof clearExamTimer === "function") {
+      clearExamTimer();
+    }
+
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    const totalQuestions = ORAL_EXAM_QUESTIONS_V220.length;
+    const oralCategories = getOralExamCategoriesV220();
+
+    const categoryCards = oralCategories.map(categoryName => {
+      const count = getOralExamQuestionsByCategoryV220(categoryName).length;
+      const themeClass = typeof getCategoryThemeClass === "function"
+        ? getCategoryThemeClass(categoryName)
+        : "theme-default";
+
+      return `
+        <div class="oral-topic-card ${themeClass}" onclick='startOralExamSessionV220(getOralExamQuestionsByCategoryV220(${JSON.stringify(categoryName)}), ${JSON.stringify(categoryName)})'>
+          <div class="oral-topic-icon">
+            ${categoryIcons[categoryName] || "🎤"}
+          </div>
+
+          <div>
+            <h3>${escapeHtml(categoryName)}</h3>
+            <p>${count} mündliche Frage(n)</p>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="location.reload()">
+        ← Zurück zum Dashboard
+      </button>
+
+      <section class="review-wrapper oral-exam-wrapper oral-compact-overview-v2312">
+
+        <div class="oral-compact-hero-v2312">
+          <p class="eyebrow">Mündliche Prüfung</p>
+
+          <h1>Prüfermodus trainieren</h1>
+
+          <p>
+            Üben Sie typische mündliche Prüfungssituationen mit Frage,
+            Musterantwort und Prüfer-Hinweis.
+          </p>
+
+          <button class="next-btn oral-compact-start-v2312" onclick="startOralExamSessionV220(ORAL_EXAM_QUESTIONS_V220, 'Alle mündlichen Fragen')">
+            Alle mündlichen Fragen starten
+          </button>
+        </div>
+
+        ${buildCompactOralRoomSceneV2312()}
+
+        <div class="oral-compact-status-v2312">
+          <span><strong>${totalQuestions}</strong> Fragen</span>
+          <span><strong>${oralCategories.length}</strong> Themen</span>
+          <span><strong>Prüfermodus</strong></span>
+        </div>
+
+        <p class="oral-compact-legal-note-v2312">
+          Trainingsbeispiele. Keine offizielle IHK-Prüfung.
+        </p>
+
+        <div class="topic-stats-section oral-topic-section oral-topic-section-compact-v2312">
+          <div class="section-head">
+            <h2>Themen für die mündliche Prüfung</h2>
+            <p>Wählen Sie ein Thema oder starten Sie alle mündlichen Fragen.</p>
+          </div>
+
+          <div class="oral-topic-grid">
+            ${categoryCards}
+          </div>
+        </div>
+
+      </section>
+    `;
+  }
+
+  window.showOralExamPage = showCompactOralExamPageV2312;
+
+  try {
+    showOralExamPage = window.showOralExamPage;
+  } catch (error) {
+    /* globales Rebinding ist nicht in jeder Umgebung nötig */
+  }
+}
