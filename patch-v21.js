@@ -3061,3 +3061,353 @@ if (!window.ACCAOUI_V2315_ORAL_POLISH_PATCH) {
     showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
   };
 }
+
+/* =====================================================
+   v23.1.7 MÜNDLICHE PRÜFUNG – 15-MINUTEN-SIMULATION MIT 3 PRÜFERN
+   Ziel:
+   - 15 mündliche Trainingsfragen sicherstellen
+   - 15-Minuten-Simulation startet 15 Fragen
+   - Frage 1–5: Prüfer 1 aktiv
+   - Frage 6–10: Vorsitz aktiv
+   - Frage 11–15: Prüfer 3 aktiv
+   - Timer 15:00 Minuten
+   - eigene Accaoui-Trainingslogik, keine offizielle IHK-Bewertung
+===================================================== */
+
+if (!window.ACCAOUI_V2317_ORAL_THREE_EXAMINER_SIM_PATCH) {
+  window.ACCAOUI_V2317_ORAL_THREE_EXAMINER_SIM_PATCH = true;
+
+  const IHK_ORAL_CATEGORY_ORDER_V2317 = [
+    "Recht der öffentlichen Sicherheit und Ordnung",
+    "Gewerberecht",
+    "Datenschutzrecht",
+    "Bürgerliches Gesetzbuch",
+    "Straf- und Strafverfahrensrecht",
+    "Unfallverhütungsvorschrift",
+    "Umgang mit Waffen",
+    "Umgang mit Menschen",
+    "Grundzüge der Sicherheitstechnik"
+  ];
+
+  const ORAL_EXAM_EXTRA_QUESTIONS_V2317 = [
+    {
+      id: "oral_v2317_roso_002",
+      category: "Recht der öffentlichen Sicherheit und Ordnung",
+      question: "Welche Grenze besteht zwischen privatem Sicherheitsdienst und staatlicher Gefahrenabwehr?",
+      sampleAnswer: "Private Sicherheitsmitarbeiter handeln grundsätzlich nicht hoheitlich. Sie dürfen im Rahmen von Hausrecht, Besitzrecht, Jedermannsrechten oder privatrechtlichen Befugnissen tätig werden. Staatliche Gefahrenabwehr und hoheitliche Maßnahmen bleiben grundsätzlich Aufgabe der zuständigen Behörden.",
+      examinerNote: "Wichtig ist die klare Abgrenzung: privat handeln, keine automatische Polizeibefugnis."
+    },
+    {
+      id: "oral_v2317_gewo_002",
+      category: "Gewerberecht",
+      question: "Welche Bedeutung haben Zuverlässigkeit und geeigneter Nachweis im Bewachungsgewerbe?",
+      sampleAnswer: "Zuverlässigkeit ist eine zentrale Voraussetzung im Bewachungsgewerbe. Je nach Tätigkeit ist außerdem ein geeigneter Nachweis erforderlich, zum Beispiel Unterrichtung oder Sachkundeprüfung. Ohne diese Voraussetzungen kann eine Tätigkeit untersagt oder nicht erlaubt werden.",
+      examinerNote: "Gute Antwort nennt Zuverlässigkeit, Unterrichtung/Sachkunde und behördliche Kontrolle."
+    },
+    {
+      id: "oral_v2317_ds_002",
+      category: "Datenschutzrecht",
+      question: "Was muss ein Sicherheitsmitarbeiter beim Umgang mit personenbezogenen Daten besonders beachten?",
+      sampleAnswer: "Personenbezogene Daten dürfen nur zweckgebunden, vertraulich und auf einer zulässigen Grundlage verarbeitet werden. Sie dürfen nicht aus Neugier eingesehen, privat weitergegeben oder länger als erforderlich gespeichert werden.",
+      examinerNote: "Wichtig sind Zweckbindung, Vertraulichkeit, Datenminimierung und keine private Weitergabe."
+    },
+    {
+      id: "oral_v2317_bgb_002",
+      category: "Bürgerliches Gesetzbuch",
+      question: "Welche Rolle spielt das Hausrecht in der praktischen Arbeit eines Sicherheitsmitarbeiters?",
+      sampleAnswer: "Das Hausrecht erlaubt dem Berechtigten oder Beauftragten zu bestimmen, wer ein Objekt betreten oder dort bleiben darf. Sicherheitsmitarbeiter können im Auftrag des Hausrechtsinhabers Personen ansprechen, zum Verlassen auffordern oder ein Hausverbot durchsetzen, soweit dies rechtlich zulässig und verhältnismäßig ist.",
+      examinerNote: "Wichtig: Hausrecht ist privatrechtlich, aber nicht grenzenlos."
+    },
+    {
+      id: "oral_v2317_straf_002",
+      category: "Straf- und Strafverfahrensrecht",
+      question: "Welche Voraussetzungen müssen bei einer vorläufigen Festnahme durch Jedermann besonders geprüft werden?",
+      sampleAnswer: "Es muss eine Person auf frischer Tat betroffen oder verfolgt sein. Zusätzlich muss Fluchtverdacht bestehen oder die Identität darf nicht sofort feststellbar sein. Die Polizei ist unverzüglich zu informieren und die Maßnahme muss verhältnismäßig bleiben.",
+      examinerNote: "Prüfer achten auf frische Tat, Fluchtverdacht oder Identitätsfeststellung und sofortige Polizei."
+    },
+    {
+      id: "oral_v2317_umm_002",
+      category: "Umgang mit Menschen",
+      question: "Wie sprechen Sie eine provozierende Person professionell an?",
+      sampleAnswer: "Ich bleibe ruhig, halte Sicherheitsabstand, spreche klar und respektvoll, vermeide Gegenprovokationen und setze eindeutige Grenzen. Wenn die Situation eskaliert, hole ich Unterstützung und handle nach Dienstanweisung.",
+      examinerNote: "Wichtig sind Deeskalation, Eigensicherung, klare Sprache und keine Eskalation durch den Sicherheitsmitarbeiter."
+    }
+  ];
+
+  let oralSimulationTimerV2317 = null;
+  let oralSimulationSecondsLeftV2317 = 15 * 60;
+
+  function installExtraOralQuestionsV2317() {
+    if (!Array.isArray(ORAL_EXAM_QUESTIONS_V220)) return;
+
+    ORAL_EXAM_EXTRA_QUESTIONS_V2317.forEach(extraQuestion => {
+      const exists = ORAL_EXAM_QUESTIONS_V220.some(existingQuestion => {
+        return (
+          existingQuestion.id === extraQuestion.id ||
+          existingQuestion.question === extraQuestion.question
+        );
+      });
+
+      if (!exists) {
+        ORAL_EXAM_QUESTIONS_V220.push(extraQuestion);
+      }
+    });
+  }
+
+  function getIhkOrderedOralQuestionsV2317() {
+    installExtraOralQuestionsV2317();
+
+    const questions = Array.isArray(ORAL_EXAM_QUESTIONS_V220)
+      ? [...ORAL_EXAM_QUESTIONS_V220]
+      : [];
+
+    return questions.sort((a, b) => {
+      const categoryA = String(a.category || "");
+      const categoryB = String(b.category || "");
+
+      const indexA = IHK_ORAL_CATEGORY_ORDER_V2317.indexOf(categoryA);
+      const indexB = IHK_ORAL_CATEGORY_ORDER_V2317.indexOf(categoryB);
+
+      const safeA = indexA >= 0 ? indexA : 999;
+      const safeB = indexB >= 0 ? indexB : 999;
+
+      return safeA - safeB;
+    });
+  }
+
+  function getFifteenMinuteOralQuestionsV2317() {
+    const orderedQuestions = getIhkOrderedOralQuestionsV2317();
+
+    return orderedQuestions.slice(0, 15);
+  }
+
+  function clearOralSimulationTimerV2317() {
+    if (oralSimulationTimerV2317) {
+      clearInterval(oralSimulationTimerV2317);
+      oralSimulationTimerV2317 = null;
+    }
+  }
+
+  function formatOralSimulationTimeV2317(seconds) {
+    const safeSeconds = Math.max(0, Number(seconds || 0));
+    const minutes = Math.floor(safeSeconds / 60);
+    const restSeconds = safeSeconds % 60;
+
+    return String(minutes).padStart(2, "0") + ":" + String(restSeconds).padStart(2, "0");
+  }
+
+  function renderOralSimulationTimerV2317() {
+    if (window.ACCAOUI_V2317_ORAL_SIMULATION_MODE !== "15") return;
+
+    const header = document.querySelector(".oral-session-header");
+
+    if (!header) return;
+
+    let timer = document.getElementById("oralSimulationTimerV2317");
+
+    if (!timer) {
+      timer = document.createElement("div");
+      timer.id = "oralSimulationTimerV2317";
+      timer.className = "oral-simulation-timer-v2317";
+      header.appendChild(timer);
+    }
+
+    timer.innerHTML = `
+      <span>Prüfungszeit</span>
+      <strong>${formatOralSimulationTimeV2317(oralSimulationSecondsLeftV2317)}</strong>
+    `;
+  }
+
+  function startOralSimulationTimerV2317() {
+    clearOralSimulationTimerV2317();
+
+    oralSimulationSecondsLeftV2317 = 15 * 60;
+
+    renderOralSimulationTimerV2317();
+
+    oralSimulationTimerV2317 = setInterval(() => {
+      oralSimulationSecondsLeftV2317--;
+
+      renderOralSimulationTimerV2317();
+
+      if (oralSimulationSecondsLeftV2317 <= 0) {
+        clearOralSimulationTimerV2317();
+
+        if (typeof showSmallNotice === "function") {
+          showSmallNotice("Die 15 Minuten sind abgelaufen.");
+        }
+
+        if (typeof showOralExamFinishScreenV220 === "function") {
+          showOralExamFinishScreenV220();
+        }
+      }
+    }, 1000);
+  }
+
+  function getActiveExaminerIndexV2317() {
+    const currentIndex = typeof oralExamIndexV220 !== "undefined"
+      ? Number(oralExamIndexV220 || 0)
+      : 0;
+
+    if (currentIndex < 5) return 0;
+    if (currentIndex < 10) return 1;
+    return 2;
+  }
+
+  function getActiveExaminerLabelV2317(index) {
+    if (index === 0) return "Prüfer 1 fragt";
+    if (index === 1) return "Vorsitz fragt";
+    return "Prüfer 3 fragt";
+  }
+
+  function updateActiveExaminerV2317() {
+    const scenes = document.querySelectorAll(".oral-room-scene-v221.is-session");
+
+    scenes.forEach(scene => {
+      const examiners = scene.querySelectorAll(".oral-examiner-row-v221 .oral-person-v221");
+
+      if (!examiners.length) return;
+
+      const isSimulation = window.ACCAOUI_V2317_ORAL_SIMULATION_MODE === "15";
+      const activeIndex = isSimulation ? getActiveExaminerIndexV2317() : 0;
+
+      scene.classList.toggle("oral-three-examiner-simulation-v2317", isSimulation);
+
+      examiners.forEach((examiner, index) => {
+        examiner.classList.remove("is-active-examiner-v2317");
+
+        const status = examiner.querySelector("span");
+
+        if (isSimulation) {
+          if (index === 0 && status) status.textContent = "Frage 1–5";
+          if (index === 1 && status) status.textContent = "Frage 6–10";
+          if (index === 2 && status) status.textContent = "Frage 11–15";
+        }
+
+        if (index === activeIndex) {
+  examiner.classList.add("is-active-examiner-v2317");
+
+  if (status) {
+    if (index === 0) status.textContent = "Frage 1–5";
+    if (index === 1) status.textContent = "Frage 6–10";
+    if (index === 2) status.textContent = "Frage 11–15";
+  }
+}
+      });
+
+      const roomStatus = scene.querySelector(".oral-room-status-v221");
+
+      if (roomStatus && isSimulation) {
+        roomStatus.textContent = getActiveExaminerLabelV2317(activeIndex);
+      }
+    });
+  }
+
+  function scheduleOralSimulationPolishV2317() {
+    setTimeout(updateActiveExaminerV2317, 40);
+    setTimeout(updateActiveExaminerV2317, 180);
+    setTimeout(updateActiveExaminerV2317, 420);
+    setTimeout(renderOralSimulationTimerV2317, 420);
+  }
+
+  installExtraOralQuestionsV2317();
+
+  window.accaouiPreviousStartOralSimulation15V2317 =
+    window.startOralSimulation15V2314;
+
+  window.startOralSimulation15V2314 = function patchedStartOralSimulation15V2317() {
+    if (typeof closeOralModeSheetV2314 === "function") {
+      closeOralModeSheetV2314();
+    }
+
+    const questions = getFifteenMinuteOralQuestionsV2317();
+
+    if (questions.length < 15 && typeof showSmallNotice === "function") {
+      showSmallNotice("Es sind aktuell weniger als 15 mündliche Fragen vorhanden.");
+    }
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
+
+    startOralExamSessionV220(
+      questions,
+      "15-Minuten-Prüfungssimulation"
+    );
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = false;
+
+    startOralSimulationTimerV2317();
+    scheduleOralSimulationPolishV2317();
+  };
+
+  window.accaouiPreviousStartOralExamSessionV2317 =
+    window.accaouiPreviousStartOralExamSessionV2317 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV2317(questions, title) {
+    const isStarting15 = window.ACCAOUI_V2317_STARTING_15_SIMULATION === true;
+
+    if (!isStarting15) {
+      window.ACCAOUI_V2317_ORAL_SIMULATION_MODE = "training";
+      clearOralSimulationTimerV2317();
+    } else {
+      window.ACCAOUI_V2317_ORAL_SIMULATION_MODE = "15";
+    }
+
+    if (typeof window.accaouiPreviousStartOralExamSessionV2317 === "function") {
+      const result = window.accaouiPreviousStartOralExamSessionV2317(questions, title);
+
+      scheduleOralSimulationPolishV2317();
+
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  window.accaouiPreviousRateOralExamQuestionV2317 =
+    window.accaouiPreviousRateOralExamQuestionV2317 ||
+    window.rateOralExamQuestionV220;
+
+  window.rateOralExamQuestionV220 = function patchedRateOralExamQuestionV2317(status) {
+    if (typeof window.accaouiPreviousRateOralExamQuestionV2317 === "function") {
+      const result = window.accaouiPreviousRateOralExamQuestionV2317(status);
+
+      scheduleOralSimulationPolishV2317();
+
+      return result;
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.accaouiPreviousPreviousOralExamQuestionV2317 =
+    window.accaouiPreviousPreviousOralExamQuestionV2317 ||
+    window.previousOralExamQuestionV220;
+
+  window.previousOralExamQuestionV220 = function patchedPreviousOralExamQuestionV2317() {
+    if (typeof window.accaouiPreviousPreviousOralExamQuestionV2317 === "function") {
+      const result = window.accaouiPreviousPreviousOralExamQuestionV2317();
+
+      scheduleOralSimulationPolishV2317();
+
+      return result;
+    }
+
+    showSmallNotice("Zurück nicht möglich.");
+  };
+
+  window.accaouiPreviousShowOralExamFinishScreenV2317 =
+    window.accaouiPreviousShowOralExamFinishScreenV2317 ||
+    window.showOralExamFinishScreenV220;
+
+  window.showOralExamFinishScreenV220 = function patchedShowOralExamFinishScreenV2317() {
+    clearOralSimulationTimerV2317();
+
+    if (typeof window.accaouiPreviousShowOralExamFinishScreenV2317 === "function") {
+      return window.accaouiPreviousShowOralExamFinishScreenV2317();
+    }
+  };
+
+  window.getFifteenMinuteOralQuestionsV2317 = getFifteenMinuteOralQuestionsV2317;
+  window.updateActiveExaminerV2317 = updateActiveExaminerV2317;
+}
