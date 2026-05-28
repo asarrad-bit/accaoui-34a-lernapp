@@ -2824,3 +2824,240 @@ if (!window.ACCAOUI_V2312_ORAL_COMPACT_OVERVIEW_PATCH) {
     /* globales Rebinding ist nicht in jeder Umgebung nötig */
   }
 }
+
+/* =====================================================
+   v23.1.4 MÜNDLICHE PRÜFUNG – MODUSAUSWAHL
+   Ziel:
+   - Startbutton öffnet Auswahl statt sofort zu starten
+   - Training / 15-Minuten-Simulation / Volltraining
+   - Grundlage für spätere Accaoui-Trainingsbewertung
+===================================================== */
+
+if (!window.ACCAOUI_V2314_ORAL_MODE_SELECTION_PATCH) {
+  window.ACCAOUI_V2314_ORAL_MODE_SELECTION_PATCH = true;
+
+  function closeOralModeSheetV2314() {
+    const sheet = document.getElementById("oralModeSheetV2314");
+    const backdrop = document.getElementById("oralModeBackdropV2314");
+
+    if (sheet) sheet.remove();
+    if (backdrop) backdrop.remove();
+
+    document.body.classList.remove("oral-mode-sheet-open-v2314");
+  }
+
+  function getRandomOralQuestionsV2314(count) {
+    const questions = Array.isArray(ORAL_EXAM_QUESTIONS_V220)
+      ? [...ORAL_EXAM_QUESTIONS_V220]
+      : [];
+
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+
+    return questions.slice(0, count);
+  }
+
+  function scrollToOralTopicsV2314() {
+    closeOralModeSheetV2314();
+
+    const section =
+      document.querySelector(".oral-topic-section") ||
+      document.querySelector(".oral-topic-section-compact-v2312");
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+      return;
+    }
+
+    showSmallNotice("Themenübersicht wurde nicht gefunden.");
+  }
+
+  function startOralSimulation15V2314() {
+    closeOralModeSheetV2314();
+
+    const questions = getRandomOralQuestionsV2314(15);
+
+    if (!questions.length) {
+      showSmallNotice("Keine mündlichen Fragen vorhanden.");
+      return;
+    }
+
+    startOralExamSessionV220(
+      questions,
+      "15-Minuten-Prüfungssimulation"
+    );
+  }
+
+  function startOralFullTrainingV2314() {
+    closeOralModeSheetV2314();
+
+    startOralExamSessionV220(
+      ORAL_EXAM_QUESTIONS_V220,
+      "Volltraining mündliche Prüfung"
+    );
+  }
+
+  function showOralExamModeSelectV2314() {
+    closeOralModeSheetV2314();
+
+    const backdrop = document.createElement("div");
+    backdrop.id = "oralModeBackdropV2314";
+    backdrop.className = "oral-mode-backdrop-v2314";
+    backdrop.onclick = closeOralModeSheetV2314;
+
+    const sheet = document.createElement("section");
+    sheet.id = "oralModeSheetV2314";
+    sheet.className = "oral-mode-sheet-v2314";
+
+    sheet.innerHTML = `
+      <div class="oral-mode-handle-v2314"></div>
+
+      <div class="oral-mode-head-v2314">
+        <span>Mündliche Prüfung</span>
+        <h2>Modus auswählen</h2>
+        <p>Wählen Sie, wie Sie die mündliche Prüfung trainieren möchten.</p>
+      </div>
+
+      <div class="oral-mode-grid-v2314">
+
+        <button type="button" class="oral-mode-card-v2314" onclick="scrollToOralTopicsV2314()">
+          <span>🎤</span>
+          <strong>Training nach Themen</strong>
+          <small>Thema auswählen · mit Musterantwort · ohne Zeitdruck</small>
+        </button>
+
+        <button type="button" class="oral-mode-card-v2314 is-primary" onclick="startOralSimulation15V2314()">
+          <span>⏱️</span>
+          <strong>15-Minuten-Simulation</strong>
+         <small>3 Prüfer · 15 Fragen · Auswertung am Ende</small>
+        </button>
+
+        <button type="button" class="oral-mode-card-v2314" onclick="startOralFullTrainingV2314()">
+          <span>📚</span>
+          <strong>Volltraining</strong>
+          <small>Alle mündlichen Fragen · IHK-Themenreihenfolge · ohne Zeitdruck</small>
+        </button>
+
+      </div>
+
+      <p class="oral-mode-note-v2314">
+        Trainingsbeispiele. Keine offizielle IHK-Prüfung.
+      </p>
+    `;
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(sheet);
+    document.body.classList.add("oral-mode-sheet-open-v2314");
+  }
+
+  function bindOralModeStartButtonsV2314() {
+    const buttons = document.querySelectorAll(
+      ".oral-room-start-btn-v2312, .oral-compact-start-v2312"
+    );
+
+    buttons.forEach(button => {
+      button.onclick = showOralExamModeSelectV2314;
+      button.setAttribute("onclick", "showOralExamModeSelectV2314()");
+      button.textContent = "Mündliche Prüfung starten";
+    });
+  }
+
+  window.accaouiPreviousShowOralExamPageV2314 =
+    window.accaouiPreviousShowOralExamPageV2314 ||
+    window.showOralExamPage;
+
+  window.showOralExamPage = function patchedShowOralExamPageV2314() {
+    if (typeof window.accaouiPreviousShowOralExamPageV2314 === "function") {
+      const result = window.accaouiPreviousShowOralExamPageV2314();
+
+      setTimeout(bindOralModeStartButtonsV2314, 40);
+      setTimeout(bindOralModeStartButtonsV2314, 180);
+      setTimeout(bindOralModeStartButtonsV2314, 420);
+
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfung konnte nicht geöffnet werden.");
+  };
+
+  window.showOralExamModeSelectV2314 = showOralExamModeSelectV2314;
+  window.closeOralModeSheetV2314 = closeOralModeSheetV2314;
+  window.scrollToOralTopicsV2314 = scrollToOralTopicsV2314;
+  window.startOralSimulation15V2314 = startOralSimulation15V2314;
+  window.startOralFullTrainingV2314 = startOralFullTrainingV2314;
+}
+
+/* =====================================================
+   v23.1.5 MÜNDLICHE PRÜFUNG – MODUSAUSWAHL HOTFIX & SZENE POLISH
+   Ziel:
+   - Prüfer 1 optisch als fragender Prüfer hervorheben
+   - kleine Textkorrektur § 34a
+   - nach Rendering sauber nachpolieren
+===================================================== */
+
+if (!window.ACCAOUI_V2315_ORAL_POLISH_PATCH) {
+  window.ACCAOUI_V2315_ORAL_POLISH_PATCH = true;
+
+  function polishOralExamSceneV2315() {
+    const scenes = document.querySelectorAll(".oral-room-scene-v221");
+
+    scenes.forEach(scene => {
+      const firstExaminer = scene.querySelector(".oral-examiner-row-v221 .oral-person-v221:first-child");
+
+      if (firstExaminer) {
+        firstExaminer.classList.add("is-active-examiner-v2315");
+      }
+
+      const boardTitle = scene.querySelector(".oral-room-board-v221 span");
+
+      if (boardTitle && boardTitle.textContent.includes("§34a")) {
+        boardTitle.textContent = boardTitle.textContent.replace("§34a", "§ 34a");
+      }
+
+      const headerTitle = scene.querySelector(".oral-room-header-v221 strong");
+
+      if (headerTitle && headerTitle.textContent.includes("§ 34a")) {
+        headerTitle.textContent = headerTitle.textContent.replace("§ 34a", "§ 34a");
+      }
+    });
+  }
+
+  function scheduleOralPolishV2315() {
+    setTimeout(polishOralExamSceneV2315, 40);
+    setTimeout(polishOralExamSceneV2315, 180);
+    setTimeout(polishOralExamSceneV2315, 420);
+  }
+
+  window.accaouiPreviousShowOralExamPageV2315 =
+    window.accaouiPreviousShowOralExamPageV2315 ||
+    window.showOralExamPage;
+
+  window.showOralExamPage = function patchedShowOralExamPageV2315() {
+    if (typeof window.accaouiPreviousShowOralExamPageV2315 === "function") {
+      const result = window.accaouiPreviousShowOralExamPageV2315();
+      scheduleOralPolishV2315();
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfung konnte nicht geöffnet werden.");
+  };
+
+  window.accaouiPreviousStartOralExamSessionV2315 =
+    window.accaouiPreviousStartOralExamSessionV2315 ||
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV2315(questions, title) {
+    if (typeof window.accaouiPreviousStartOralExamSessionV2315 === "function") {
+      const result = window.accaouiPreviousStartOralExamSessionV2315(questions, title);
+      scheduleOralPolishV2315();
+      return result;
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+}

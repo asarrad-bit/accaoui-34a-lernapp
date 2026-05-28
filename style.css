@@ -6407,3 +6407,356 @@ body.mobile-back-dialog-open-v2276 {
     font-size: 26px !important;
   }
 }
+
+/* =====================================================
+   v23.1.4 MÜNDLICHE PRÜFUNG – MODUSAUSWAHL DESIGN
+===================================================== */
+
+.oral-mode-backdrop-v2314 {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 13000 !important;
+  background: rgba(15, 23, 42, 0.42) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.oral-mode-sheet-v2314 {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 18px !important;
+  transform: translateX(-50%) !important;
+  z-index: 13001 !important;
+  width: min(94vw, 520px) !important;
+  max-height: calc(100vh - 36px) !important;
+  overflow-y: auto !important;
+  padding: 18px !important;
+  border-radius: 30px !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.95) !important;
+  box-shadow: 0 34px 90px rgba(15, 23, 42, 0.34) !important;
+}
+
+.oral-mode-handle-v2314 {
+  width: 46px !important;
+  height: 5px !important;
+  border-radius: 999px !important;
+  margin: 0 auto 14px auto !important;
+  background: rgba(100, 116, 139, 0.32) !important;
+}
+
+.oral-mode-head-v2314 span {
+  display: inline-flex !important;
+  margin-bottom: 8px !important;
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(36, 72, 199, 0.10) !important;
+  color: #2448c7 !important;
+  font-size: 11px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+}
+
+.oral-mode-head-v2314 h2 {
+  margin: 0 0 8px 0 !important;
+  color: #071229 !important;
+  font-size: 30px !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.05em !important;
+  font-weight: 950 !important;
+}
+
+.oral-mode-head-v2314 p {
+  margin: 0 0 16px 0 !important;
+  color: #536179 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  font-weight: 650 !important;
+}
+
+.oral-mode-grid-v2314 {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+.oral-mode-card-v2314 {
+  appearance: none !important;
+  width: 100% !important;
+  border: 1px solid rgba(203, 213, 225, 0.95) !important;
+  background: #ffffff !important;
+  border-radius: 22px !important;
+  padding: 16px !important;
+  display: grid !important;
+  grid-template-columns: 42px 1fr !important;
+  column-gap: 12px !important;
+  row-gap: 4px !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07) !important;
+}
+
+.oral-mode-card-v2314 span {
+  grid-row: 1 / span 2 !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 16px !important;
+  background: rgba(36, 72, 199, 0.09) !important;
+  font-size: 21px !important;
+}
+
+.oral-mode-card-v2314 strong {
+  color: #071229 !important;
+  font-size: 17px !important;
+  line-height: 1.1 !important;
+  font-weight: 950 !important;
+}
+
+.oral-mode-card-v2314 small {
+  color: #64748b !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-weight: 650 !important;
+}
+
+.oral-mode-card-v2314.is-primary {
+  border-color: rgba(36, 72, 199, 0.30) !important;
+  background:
+    linear-gradient(135deg, #071229 0%, #2448c7 100%) !important;
+  box-shadow: 0 18px 40px rgba(36, 72, 199, 0.28) !important;
+}
+
+.oral-mode-card-v2314.is-primary span {
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+
+.oral-mode-card-v2314.is-primary strong,
+.oral-mode-card-v2314.is-primary small {
+  color: #ffffff !important;
+}
+
+.oral-mode-note-v2314 {
+  margin: 14px 2px 0 2px !important;
+  color: #64748b !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  font-weight: 750 !important;
+  text-align: center !important;
+}
+
+body.oral-mode-sheet-open-v2314 {
+  overflow: hidden !important;
+}
+
+/* =====================================================
+   v23.1.5 MÜNDLICHE PRÜFUNG – HOTFIX MODUSAUSWAHL & POLISH
+===================================================== */
+
+/* Modusauswahl erzwingen, falls v23.1.4-CSS nicht sauber greift */
+.oral-mode-backdrop-v2314 {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 13000 !important;
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.oral-mode-sheet-v2314 {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: 18px !important;
+  transform: translateX(-50%) !important;
+  z-index: 13001 !important;
+  width: min(94vw, 520px) !important;
+  max-height: calc(100vh - 36px) !important;
+  overflow-y: auto !important;
+  padding: 18px !important;
+  border-radius: 30px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.95) !important;
+  box-shadow: 0 34px 90px rgba(15, 23, 42, 0.34) !important;
+}
+
+.oral-mode-handle-v2314 {
+  width: 46px !important;
+  height: 5px !important;
+  border-radius: 999px !important;
+  margin: 0 auto 14px auto !important;
+  background: rgba(100, 116, 139, 0.32) !important;
+}
+
+.oral-mode-head-v2314 span {
+  display: inline-flex !important;
+  margin-bottom: 8px !important;
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(36, 72, 199, 0.10) !important;
+  color: #2448c7 !important;
+  font-size: 11px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+}
+
+.oral-mode-head-v2314 h2 {
+  margin: 0 0 8px 0 !important;
+  color: #071229 !important;
+  font-size: 30px !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.05em !important;
+  font-weight: 950 !important;
+}
+
+.oral-mode-head-v2314 p {
+  margin: 0 0 16px 0 !important;
+  color: #536179 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  font-weight: 650 !important;
+}
+
+.oral-mode-grid-v2314 {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+.oral-mode-card-v2314 {
+  appearance: none !important;
+  width: 100% !important;
+  border: 1px solid rgba(203, 213, 225, 0.95) !important;
+  background: #ffffff !important;
+  border-radius: 22px !important;
+  padding: 16px !important;
+  display: grid !important;
+  grid-template-columns: 42px 1fr !important;
+  column-gap: 12px !important;
+  row-gap: 4px !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07) !important;
+}
+
+.oral-mode-card-v2314 span {
+  grid-row: 1 / span 2 !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 16px !important;
+  background: rgba(36, 72, 199, 0.09) !important;
+  font-size: 21px !important;
+}
+
+.oral-mode-card-v2314 strong {
+  color: #071229 !important;
+  font-size: 17px !important;
+  line-height: 1.1 !important;
+  font-weight: 950 !important;
+}
+
+.oral-mode-card-v2314 small {
+  color: #64748b !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-weight: 650 !important;
+}
+
+.oral-mode-card-v2314.is-primary {
+  border-color: rgba(36, 72, 199, 0.30) !important;
+  background: linear-gradient(135deg, #071229 0%, #2448c7 100%) !important;
+  box-shadow: 0 18px 40px rgba(36, 72, 199, 0.28) !important;
+}
+
+.oral-mode-card-v2314.is-primary span {
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+
+.oral-mode-card-v2314.is-primary strong,
+.oral-mode-card-v2314.is-primary small {
+  color: #ffffff !important;
+}
+
+.oral-mode-note-v2314 {
+  margin: 14px 2px 0 2px !important;
+  color: #64748b !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  font-weight: 750 !important;
+  text-align: center !important;
+}
+
+body.oral-mode-sheet-open-v2314 {
+  overflow: hidden !important;
+}
+
+/* Statuszeile: nicht wie Buttons, sondern elegant wie Infoleiste */
+.oral-compact-status-v2312 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  padding: 8px 4px !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.oral-compact-status-v2312 span {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  min-height: auto !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #536179 !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+}
+
+.oral-compact-status-v2312 span:not(:last-child)::after {
+  content: "·" !important;
+  margin-left: 8px !important;
+  color: #94a3b8 !important;
+  font-weight: 950 !important;
+}
+
+.oral-compact-status-v2312 strong {
+  color: #2448c7 !important;
+  font-weight: 950 !important;
+}
+
+/* Fragender Prüfer hervorheben */
+.oral-room-scene-v221 .oral-person-v221.is-active-examiner-v2315 .oral-person-head-v221,
+.oral-room-scene-v221 .oral-examiner-row-v221 .oral-person-v221:first-child .oral-person-head-v221 {
+  background: linear-gradient(135deg, #bfdbfe 0%, #2448c7 100%) !important;
+  box-shadow:
+    0 0 0 4px rgba(36, 72, 199, 0.12),
+    0 10px 22px rgba(36, 72, 199, 0.22) !important;
+}
+
+.oral-room-scene-v221 .oral-person-v221.is-active-examiner-v2315 .oral-person-body-v221,
+.oral-room-scene-v221 .oral-examiner-row-v221 .oral-person-v221:first-child .oral-person-body-v221 {
+  background: linear-gradient(180deg, #2448c7 0%, #172554 100%) !important;
+}
+
+.oral-room-scene-v221 .oral-person-v221.is-active-examiner-v2315 strong,
+.oral-room-scene-v221 .oral-examiner-row-v221 .oral-person-v221:first-child strong {
+  color: #2448c7 !important;
+}
+
+@media (max-width: 420px) {
+  .oral-compact-status-v2312 {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .oral-compact-status-v2312 span:last-child {
+    grid-column: auto !important;
+  }
+}
