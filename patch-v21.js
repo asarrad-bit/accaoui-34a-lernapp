@@ -5226,3 +5226,70 @@ if (!window.ACCAOUI_V2326_ORAL_MISTAKE_FORCE_REVEAL_PATCH) {
     /* Rebinding je nach Browser nicht notwendig */
   }
 }
+
+/* =====================================================
+   v23.3.3 MÜNDLICHE PRÜFUNG – ANTWORT IN SIMULATION VERDECKEN
+   Ziel:
+   - in der 15-Minuten-Simulation ist die Musterantwort zuerst verdeckt
+   - Antwort erscheint erst nach Klick auf „Musterantwort anzeigen“
+===================================================== */
+
+if (!window.ACCAOUI_V2333_FORCE_ORAL_SESSION_ANSWER_HIDDEN) {
+  window.ACCAOUI_V2333_FORCE_ORAL_SESSION_ANSWER_HIDDEN = true;
+
+  function forceOralSessionAnswerHiddenV2333() {
+    const answerBox = document.getElementById("oralAnswerBoxV220");
+    const revealActions = document.getElementById("oralRevealActionsV220");
+    const ratingActions = document.getElementById("oralRatingActionsV220");
+
+    if (answerBox && !answerBox.classList.contains("is-manually-revealed-v2333")) {
+      answerBox.style.display = "none";
+    }
+
+    if (revealActions && !answerBox?.classList.contains("is-manually-revealed-v2333")) {
+      revealActions.style.display = "flex";
+    }
+
+    if (ratingActions && !answerBox?.classList.contains("is-manually-revealed-v2333")) {
+      ratingActions.style.display = "none";
+    }
+  }
+
+  window.accaouiPreviousRenderOralExamQuestionV2333 =
+    window.accaouiPreviousRenderOralExamQuestionV2333 ||
+    window.renderOralExamQuestionV220;
+
+  window.renderOralExamQuestionV220 = function patchedRenderOralExamQuestionV2333() {
+    if (typeof window.accaouiPreviousRenderOralExamQuestionV2333 === "function") {
+      const result = window.accaouiPreviousRenderOralExamQuestionV2333();
+
+      setTimeout(forceOralSessionAnswerHiddenV2333, 20);
+      setTimeout(forceOralSessionAnswerHiddenV2333, 120);
+
+      return result;
+    }
+  };
+
+  window.accaouiPreviousShowOralExamAnswerV2333 =
+    window.accaouiPreviousShowOralExamAnswerV2333 ||
+    window.showOralExamAnswerV220;
+
+  window.showOralExamAnswerV220 = function patchedShowOralExamAnswerV2333() {
+    const answerBox = document.getElementById("oralAnswerBoxV220");
+
+    if (answerBox) {
+      answerBox.classList.add("is-manually-revealed-v2333");
+    }
+
+    if (typeof window.accaouiPreviousShowOralExamAnswerV2333 === "function") {
+      return window.accaouiPreviousShowOralExamAnswerV2333();
+    }
+  };
+
+  try {
+    renderOralExamQuestionV220 = window.renderOralExamQuestionV220;
+    showOralExamAnswerV220 = window.showOralExamAnswerV220;
+  } catch (error) {
+    /* Rebinding je nach Browser nicht notwendig */
+  }
+}
