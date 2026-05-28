@@ -7766,3 +7766,61 @@ body.oral-mode-sheet-open-v2314 {
 .oral-mistake-resolve-btn-v2325 {
   justify-content: center !important;
 }
+
+/* =====================================================
+   v23.2.6 MÜNDLICHE FEHLERTRAINER – AUFDECKUNG ERZWINGEN
+===================================================== */
+
+.oral-mistake-training-hint-v2326 {
+  padding: 14px !important;
+  border-radius: 18px !important;
+  background: rgba(36, 72, 199, 0.07) !important;
+  border: 1px solid rgba(36, 72, 199, 0.14) !important;
+  margin-top: 12px !important;
+}
+
+.oral-mistake-training-hint-v2326 span {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.oral-mistake-training-hint-v2326 p {
+  margin: 0 !important;
+  color: #334155 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+
+.oral-mistake-hidden-content-v2326 {
+  display: none !important;
+}
+
+.oral-mistake-card-v2326.is-answer-visible-v2326 .oral-mistake-hidden-content-v2326 {
+  display: block !important;
+}
+
+.oral-mistake-card-actions-v2326 {
+  display: grid !important;
+  gap: 10px !important;
+  margin-top: 14px !important;
+}
+
+.oral-mistake-reveal-btn-v2326 {
+  background: linear-gradient(135deg, #2448c7 0%, #1736a8 100%) !important;
+  color: #ffffff !important;
+}
+
+.oral-mistake-reveal-btn-v2326:disabled {
+  opacity: 0.72 !important;
+  cursor: not-allowed !important;
+}
+
+.oral-mistake-resolve-btn-v2326 {
+  justify-content: center !important;
+}

@@ -5039,3 +5039,190 @@ if (!window.ACCAOUI_V2325_ORAL_MISTAKE_REVEAL_PATCH) {
     /* Rebinding je nach Browser nicht notwendig */
   }
 }
+
+/* =====================================================
+   v23.2.6 MÜNDLICHE FEHLERTRAINER – AUFDECKUNG ERZWINGEN
+   Ziel:
+   - alte v23.2.4 Ansicht sicher überschreiben
+   - Musterantwort zuerst verstecken
+   - Button "Musterantwort anzeigen" erzwingen
+===================================================== */
+
+if (!window.ACCAOUI_V2326_ORAL_MISTAKE_FORCE_REVEAL_PATCH) {
+  window.ACCAOUI_V2326_ORAL_MISTAKE_FORCE_REVEAL_PATCH = true;
+
+  const ORAL_MISTAKE_STORAGE_KEY_V2326 = "accaoui_oral_exam_mistakes_v2324";
+
+  function readOralMistakesV2326() {
+    try {
+      const raw = localStorage.getItem(ORAL_MISTAKE_STORAGE_KEY_V2326);
+      const parsed = JSON.parse(raw || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function writeOralMistakesV2326(list) {
+    localStorage.setItem(
+      ORAL_MISTAKE_STORAGE_KEY_V2326,
+      JSON.stringify(Array.isArray(list) ? list : [])
+    );
+  }
+
+  function removeOralMistakeV2326(key) {
+    const mistakes = readOralMistakesV2326().filter(item => {
+      return item && item.key !== key;
+    });
+
+    writeOralMistakesV2326(mistakes);
+  }
+
+  function revealOralMistakeAnswerV2326(index) {
+    const card = document.querySelector(`[data-oral-mistake-index-v2326="${index}"]`);
+
+    if (!card) return;
+
+    card.classList.add("is-answer-visible-v2326");
+
+    const revealButton = card.querySelector(".oral-mistake-reveal-btn-v2326");
+    const resolveButton = card.querySelector(".oral-mistake-resolve-btn-v2326");
+
+    if (revealButton) {
+      revealButton.textContent = "Antwort angezeigt";
+      revealButton.disabled = true;
+    }
+
+    if (resolveButton) {
+      resolveButton.style.display = "inline-flex";
+    }
+  }
+
+  function markOralMistakeResolvedV2326(key) {
+    removeOralMistakeV2326(key);
+
+    if (typeof showSmallNotice === "function") {
+      showSmallNotice("Mündlicher Fehler wurde als sicher markiert.");
+    }
+
+    showOralMistakeTrainingV2326();
+  }
+
+  function showOralMistakeTrainingV2326() {
+    const mainContent = document.querySelector(".main-content");
+
+    if (!mainContent) return;
+
+    const mistakes = readOralMistakesV2326();
+
+    if (!mistakes.length) {
+      showSmallNotice("Keine mündlichen Prüfungsfehler gespeichert.");
+      return;
+    }
+
+    const cards = mistakes.map((item, index) => {
+      return `
+        <article class="oral-mistake-card-v2324 oral-mistake-card-v2326" data-oral-mistake-index-v2326="${index}">
+          <div class="oral-mistake-top-v2324">
+            <span>Frage ${index + 1}</span>
+            <strong>${escapeHtml(item.examinerName || item.category || "Mündliche Prüfung")}</strong>
+          </div>
+
+          <p class="oral-mistake-category-v2324">
+            ${escapeHtml(item.examinerBlockTitle || item.category || "Prüfungsbogen A")}
+          </p>
+
+          <h3>${escapeHtml(item.question || "")}</h3>
+
+          <div class="oral-mistake-training-hint-v2326">
+            <span>Übungsauftrag</span>
+            <p>
+              Antworten Sie zuerst laut und vollständig. Danach klicken Sie auf
+              „Musterantwort anzeigen“ und vergleichen Ihre Antwort.
+            </p>
+          </div>
+
+          <div class="oral-mistake-hidden-content-v2326">
+            <div class="oral-mistake-answer-v2324">
+              <span>Musterantwort</span>
+              <p>${escapeHtml(item.sampleAnswer || "Keine Musterantwort hinterlegt.")}</p>
+            </div>
+
+            <div class="oral-mistake-note-v2324">
+              <span>Prüfer-Hinweis</span>
+              <p>${escapeHtml(item.examinerNote || "Kein Prüfer-Hinweis hinterlegt.")}</p>
+            </div>
+          </div>
+
+          <div class="oral-mistake-card-actions-v2326">
+            <button class="next-btn oral-mistake-reveal-btn-v2326" onclick="revealOralMistakeAnswerV2326(${index})">
+              Musterantwort anzeigen
+            </button>
+
+            <button class="next-btn oral-mistake-resolve-btn-v2324 oral-mistake-resolve-btn-v2326" style="display:none;" onclick='markOralMistakeResolvedV2326(${JSON.stringify(item.key)})'>
+              Als sicher markieren
+            </button>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    mainContent.innerHTML = `
+      <button class="back-btn" onclick="showMistakeOverview()">
+        ← Zurück zum Fehlertraining
+      </button>
+
+      <section class="result-wrapper oral-mistake-wrapper-v2324 oral-mistake-wrapper-v2326">
+
+        <div class="oral-mistake-hero-v2324">
+          <p class="eyebrow">Mündliche Prüfung</p>
+
+          <h1>Mündliche Fehler trainieren</h1>
+
+          <p>
+            Hier erscheinen nur Fragen, die in der mündlichen Simulation mit
+            „Noch üben“ bewertet wurden. Die Musterantwort bleibt zuerst verdeckt.
+          </p>
+
+          <div class="oral-mistake-count-v2324">
+            <strong>${mistakes.length}</strong>
+            <span>offene mündliche Fehler</span>
+          </div>
+        </div>
+
+        <div class="oral-mistake-list-v2324">
+          ${cards}
+        </div>
+
+        <div class="result-actions oral-mistake-actions-v2324">
+          <button class="next-btn" onclick="startOralSimulation15V2314()">
+            Prüfungsbogen A wiederholen
+          </button>
+
+          <button class="next-btn" onclick="showMistakeOverview()">
+            Zur Fehlerübersicht
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zurück zum Dashboard
+          </button>
+        </div>
+
+      </section>
+    `;
+  }
+
+  window.showOralMistakeTrainingV2324 = showOralMistakeTrainingV2326;
+  window.showOralMistakeTrainingV2325 = showOralMistakeTrainingV2326;
+  window.showOralMistakeTrainingV2326 = showOralMistakeTrainingV2326;
+
+  window.revealOralMistakeAnswerV2326 = revealOralMistakeAnswerV2326;
+  window.markOralMistakeResolvedV2326 = markOralMistakeResolvedV2326;
+
+  try {
+    showOralMistakeTrainingV2324 = window.showOralMistakeTrainingV2326;
+    showOralMistakeTrainingV2325 = window.showOralMistakeTrainingV2326;
+  } catch (error) {
+    /* Rebinding je nach Browser nicht notwendig */
+  }
+}
