@@ -7824,3 +7824,59 @@ body.oral-mode-sheet-open-v2314 {
 .oral-mistake-resolve-btn-v2326 {
   justify-content: center !important;
 }
+
+/* =====================================================
+   v23.3.5 MÜNDLICHE FEHLERTRAINER – ALTE KARTEN VERDECKEN
+===================================================== */
+
+.oral-mistake-card-v2324.is-normalized-v2335:not(.is-answer-visible-v2335) .oral-mistake-answer-v2324,
+.oral-mistake-card-v2324.is-normalized-v2335:not(.is-answer-visible-v2335) .oral-mistake-note-v2324 {
+  display: none !important;
+}
+
+.oral-mistake-card-v2324.is-normalized-v2335.is-answer-visible-v2335 .oral-mistake-answer-v2324,
+.oral-mistake-card-v2324.is-normalized-v2335.is-answer-visible-v2335 .oral-mistake-note-v2324 {
+  display: block !important;
+}
+
+.oral-mistake-training-hint-v2335 {
+  padding: 14px !important;
+  border-radius: 18px !important;
+  background: rgba(36, 72, 199, 0.07) !important;
+  border: 1px solid rgba(36, 72, 199, 0.14) !important;
+  margin: 12px 0 !important;
+}
+
+.oral-mistake-training-hint-v2335 span {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #2448c7 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.oral-mistake-training-hint-v2335 p {
+  margin: 0 !important;
+  color: #334155 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+
+.oral-mistake-card-actions-v2335 {
+  display: grid !important;
+  gap: 10px !important;
+  margin-top: 14px !important;
+}
+
+.oral-mistake-reveal-btn-v2335 {
+  background: linear-gradient(135deg, #2448c7 0%, #1736a8 100%) !important;
+  color: #ffffff !important;
+}
+
+.oral-mistake-reveal-btn-v2335:disabled {
+  opacity: 0.72 !important;
+  cursor: not-allowed !important;
+}
