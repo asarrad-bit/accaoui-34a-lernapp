@@ -3616,7 +3616,18 @@ if (!window.ACCAOUI_V2320_ORAL_EXAM_SHEET_A_PATCH) {
       closeOralModeSheetV2314();
     }
 
-    const questions = getOralExamSheetAQuestionsV2320();
+    let questions = [];
+
+    if (
+      window.AccaouiOralSheets &&
+      typeof window.AccaouiOralSheets.getSheetAQuestions === "function"
+    ) {
+      questions = window.AccaouiOralSheets.getSheetAQuestions();
+    }
+
+    if (!Array.isArray(questions) || questions.length !== 15) {
+      questions = getOralExamSheetAQuestionsV2320();
+    }
 
     window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
 
@@ -5292,123 +5303,4 @@ if (!window.ACCAOUI_V2333_FORCE_ORAL_SESSION_ANSWER_HIDDEN) {
   } catch (error) {
     /* Rebinding je nach Browser nicht notwendig */
   }
-}
-
-/* =====================================================
-   v23.3.5 MÜNDLICHE FEHLERTRAINER – ALTE KARTEN NORMALISIEREN
-   Ziel:
-   - alte v23.2.4 Karten nachträglich korrigieren
-   - Musterantwort und Prüfer-Hinweis zuerst verdecken
-   - Button „Musterantwort anzeigen“ erzwingen
-===================================================== */
-
-if (!window.ACCAOUI_V2335_ORAL_MISTAKE_CARD_NORMALIZER) {
-  window.ACCAOUI_V2335_ORAL_MISTAKE_CARD_NORMALIZER = true;
-
-  function revealOralMistakeCardV2335(button) {
-    const card = button.closest(".oral-mistake-card-v2324");
-
-    if (!card) return;
-
-    card.classList.add("is-answer-visible-v2335");
-
-    button.textContent = "Antwort angezeigt";
-    button.disabled = true;
-
-    const resolveButton = card.querySelector(".oral-mistake-resolve-btn-v2324");
-
-    if (resolveButton) {
-      resolveButton.style.display = "inline-flex";
-    }
-  }
-
-  function normalizeOralMistakeCardsV2335() {
-    const cards = document.querySelectorAll(".oral-mistake-card-v2324");
-
-    cards.forEach((card) => {
-      if (card.classList.contains("is-normalized-v2335")) return;
-
-      const answerBox = card.querySelector(".oral-mistake-answer-v2324");
-      const noteBox = card.querySelector(".oral-mistake-note-v2324");
-      const resolveButton = card.querySelector(".oral-mistake-resolve-btn-v2324");
-
-      if (!answerBox && !noteBox) return;
-
-      card.classList.add("is-normalized-v2335");
-
-      const hint = document.createElement("div");
-      hint.className = "oral-mistake-training-hint-v2335";
-      hint.innerHTML = `
-        <span>Übungsauftrag</span>
-        <p>
-          Antworten Sie zuerst laut. Danach Musterantwort anzeigen und vergleichen.
-        </p>
-      `;
-
-      const actions = document.createElement("div");
-      actions.className = "oral-mistake-card-actions-v2335";
-
-      const revealButton = document.createElement("button");
-      revealButton.type = "button";
-      revealButton.className = "next-btn oral-mistake-reveal-btn-v2335";
-      revealButton.textContent = "Musterantwort anzeigen";
-      revealButton.onclick = function () {
-        revealOralMistakeCardV2335(revealButton);
-      };
-
-      actions.appendChild(revealButton);
-
-      if (resolveButton) {
-        resolveButton.style.display = "none";
-        actions.appendChild(resolveButton);
-      }
-
-      const questionTitle = card.querySelector("h3");
-
-      if (questionTitle) {
-        questionTitle.insertAdjacentElement("afterend", hint);
-      }
-
-      if (noteBox) {
-        noteBox.insertAdjacentElement("afterend", actions);
-      } else if (answerBox) {
-        answerBox.insertAdjacentElement("afterend", actions);
-      }
-    });
-  }
-
-  function scheduleNormalizeOralMistakeCardsV2335() {
-    setTimeout(normalizeOralMistakeCardsV2335, 50);
-    setTimeout(normalizeOralMistakeCardsV2335, 200);
-    setTimeout(normalizeOralMistakeCardsV2335, 600);
-  }
-
-  const observerV2335 = new MutationObserver(() => {
-    scheduleNormalizeOralMistakeCardsV2335();
-  });
-
-  if (document.body) {
-    observerV2335.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  }
-
-  window.accaouiPreviousShowOralMistakeTrainingV2335 =
-    window.showOralMistakeTrainingV2324 ||
-    window.showOralMistakeTrainingV2325 ||
-    window.showOralMistakeTrainingV2326;
-
-  if (typeof window.accaouiPreviousShowOralMistakeTrainingV2335 === "function") {
-    window.showOralMistakeTrainingV2324 = function patchedShowOralMistakeTrainingV2335() {
-      const result = window.accaouiPreviousShowOralMistakeTrainingV2335();
-      scheduleNormalizeOralMistakeCardsV2335();
-      return result;
-    };
-  }
-
-  window.normalizeOralMistakeCardsV2335 = normalizeOralMistakeCardsV2335;
-  window.revealOralMistakeCardV2335 = revealOralMistakeCardV2335;
-
-  scheduleNormalizeOralMistakeCardsV2335();
 }

@@ -3616,7 +3616,18 @@ if (!window.ACCAOUI_V2320_ORAL_EXAM_SHEET_A_PATCH) {
       closeOralModeSheetV2314();
     }
 
-    const questions = getOralExamSheetAQuestionsV2320();
+    let questions = [];
+
+    if (
+      window.AccaouiOralSheets &&
+      typeof window.AccaouiOralSheets.getSheetAQuestions === "function"
+    ) {
+      questions = window.AccaouiOralSheets.getSheetAQuestions();
+    }
+
+    if (!Array.isArray(questions) || questions.length !== 15) {
+      questions = getOralExamSheetAQuestionsV2320();
+    }
 
     window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
 
