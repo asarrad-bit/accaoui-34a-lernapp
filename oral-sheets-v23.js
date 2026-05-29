@@ -116,9 +116,9 @@ const ACCAOUI_ORAL_SHEETS_V23 = {
           topic: "Gewerberecht",
           subtopic: "§ 34a GewO / Bewachungsgewerbe",
           examinerQuestion: "Sie möchten als Unternehmer Wach- und Sicherheitsdienste anbieten. Was regelt § 34a GewO für dieses Gewerbe – und welche grundlegenden Pflichten ergeben sich daraus für den Betrieb?",
-          modelAnswer: "§ 34a GewO regelt die Zulassung und Ausübung des Bewachungsgewerbes. Wer beaufsichtigende oder kontrollierende Tätigkeiten gewerbsmäßig erbringt, braucht in der Regel eine Erlaubnis nach § 34a. Voraussetzungen sind unter anderem Zuverlässigkeit, geordnete wirtschaftliche Verhältnisse und fachliche Eignung. Der Betrieb muss die gesetzlichen Anforderungen einhalten, Mitarbeiter entsprechend qualifizieren und die Tätigkeit nur im erlaubten Rahmen ausüben.",
+          modelAnswer: "§ 34a GewO regelt das Bewachungsgewerbe. Wer gewerbsmäßig Leben oder Eigentum fremder Personen bewachen will, braucht eine Erlaubnis der zuständigen Behörde. Dafür werden unter anderem Zuverlässigkeit, geordnete wirtschaftliche Verhältnisse und fachliche Voraussetzungen geprüft. Der Betrieb muss nur geeignete und entsprechend qualifizierte Wachpersonen einsetzen und die gesetzlichen Vorgaben einhalten.",
           followUpQuestions: [
-            "Braucht jede Türsteher-Tätigkeit eine §-34a-Erlaubnis?",
+            "Wer braucht die Erlaubnis nach § 34a GewO: der Unternehmer oder die einzelne Wachperson?",
             "Welche Rolle spielt die Zuverlässigkeit bei der Erlaubnis?",
             "Was passiert bei fehlender Erlaubnis?"
           ],
@@ -144,9 +144,9 @@ const ACCAOUI_ORAL_SHEETS_V23 = {
           topic: "Gewerberecht",
           subtopic: "Sachkunde / Unterrichtung / Einsatzbereiche",
           examinerQuestion: "In Ihrem Team arbeiten Mitarbeiter in unterschiedlichen Bereichen: Revierdienst, Einzelhandel und Veranstaltungsschutz. Erklären Sie den Unterschied zwischen Sachkundeprüfung und Unterrichtung – und welche Qualifikation für welchen Einsatzbereich typischerweise nötig ist.",
-          modelAnswer: "Die Sachkundeprüfung nach § 34a ist der höhere Qualifikationsnachweis und wird für die meisten beaufsichtigenden Tätigkeiten verlangt, etwa Revier- oder Objektschutz. Die Unterrichtung ist die kürzere Qualifikation für einfachere Einsätze, z. B. in bestimmten Ladenschutz- oder Veranstaltungsbereichen mit geringerer Gefährdung. Entscheidend ist der konkrete Einsatzbereich und die Gefährdungslage nach Recht und Auftrag.",
+          modelAnswer: "Die Unterrichtung vermittelt grundlegende Rechte, Pflichten und Befugnisse für Bewachungsaufgaben. Die Sachkundeprüfung ist der strengere Nachweis und wird für bestimmte Tätigkeiten verlangt, zum Beispiel Kontrollgänge im öffentlichen Verkehrsraum oder in Hausrechtsbereichen mit tatsächlich öffentlichem Verkehr, Schutz vor Ladendieben, Eingangskontrollen bei gastgewerblichen Diskotheken sowie bestimmte leitende Tätigkeiten. Entscheidend ist immer der konkrete Einsatzbereich.",
           followUpQuestions: [
-            "Darf ein nur Unterrichteter im Revier allein patrouillieren?",
+            "Welche Tätigkeiten verlangen zwingend die Sachkundeprüfung statt nur Unterrichtung?",
             "Wer entscheidet, welche Qualifikation im Objekt nötig ist?",
             "Was ist der Zweck der Sachkundeprüfung?"
           ],
@@ -423,8 +423,8 @@ const ACCAOUI_ORAL_SHEETS_V23 = {
           examinerRole: "Prüfer 3",
           topic: "Grundzüge des Waffenrechts",
           subtopic: "Verbotene Gegenstände / Waffenfund",
-          examinerQuestion: "Bei der Einlasskontrolle entdecken Sie ein Klappmesser mit feststellbarer Klinge in der Tasche eines Gastes. Wie gehen Sie rechtlich und praktisch vor?",
-          modelAnswer: "Ein verbotener Gegenstand darf nicht mit in den Veranstaltungsbereich genommen werden. Ich weise den Gast sachlich darauf hin und verweigere den Zutritt mit dem Gegenstand. Eigenmächtig beschlagnahmen oder durchsuchen darf ich nicht. Bei Straftatverdacht oder Gefahr informiere ich die Polizei und sichere den Bereich. Den Fund dokumentiere ich und informiere die Einsatzleitung.",
+          examinerQuestion: "Bei der Einlasskontrolle entdecken Sie ein Klappmesser mit feststellbarer Klinge in der Tasche eines Gastes. Wie gehen Sie rechtlich und praktisch vor, ohne Ihre Befugnisse zu überschreiten?",
+          modelAnswer: "Ich behandle den Gegenstand zunächst als sicherheitsrelevant und beachte Hausordnung, Veranstaltungsregeln und Gefahrenlage. Ich weise den Gast sachlich darauf hin, dass der Zutritt mit diesem Gegenstand verweigert werden kann. Eigenmächtig beschlagnahmen oder weiter durchsuchen darf ich nicht. Bei konkreter Gefahr oder Verdacht auf einen verbotenen Gegenstand informiere ich Einsatzleitung und Polizei. Den Vorgang dokumentiere ich.",
           followUpQuestions: [
             "Darf das Messer einbehalten werden?",
             "Was ist der Unterschied zu erlaubten Gebrauchsmessern?",
@@ -433,7 +433,7 @@ const ACCAOUI_ORAL_SHEETS_V23 = {
           examinerNotes: "Zutrittsverweigerung ja – eigenmächtige Beschlagnahme nein.",
           criticalMistakes: [
             "Eigenmächtige Beschlagnahme des Messers",
-            "Zutritt trotz Verbotsgegenstand erlauben",
+            "Zutritt trotz sicherheitsrelevantem oder laut Hausordnung untersagtem Gegenstand erlauben",
             "Gegenstand ohne Dokumentation behalten",
             "Unnötige Körperkontrolle über Hausrecht hinaus"
           ],
