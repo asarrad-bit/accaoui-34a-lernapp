@@ -5238,7 +5238,6 @@ if (!window.ACCAOUI_V232_ORAL_SHEET_B_PATCH) {
   function isOralSheetBSessionV232() {
     try {
       return (
-        window.ACCAOUI_V2317_ORAL_SIMULATION_MODE === "15" &&
         Array.isArray(oralExamQuestionsV220) &&
         oralExamQuestionsV220.some(question => question && question.sheetId === ORAL_SHEET_B_ID_V232)
       );
@@ -5385,7 +5384,10 @@ if (!window.ACCAOUI_V232_ORAL_SHEET_B_PATCH) {
       return;
     }
 
-    const root = document.querySelector(".main-content");
+    const root =
+      document.querySelector(".oral-block-result-wrapper-v2322") ||
+      document.querySelector(".oral-block-result-wrapper-v2321") ||
+      document.querySelector(".main-content");
 
     if (!root) {
       return;
@@ -5401,8 +5403,8 @@ if (!window.ACCAOUI_V232_ORAL_SHEET_B_PATCH) {
       replacements.forEach(([from, to]) => {
         const text = (element.textContent || "").replace(/\s+/g, " ").trim();
 
-        if (text === from) {
-          element.textContent = to;
+        if (text === from || text.indexOf(from) !== -1) {
+          element.textContent = text.split(from).join(to);
         }
       });
     });
