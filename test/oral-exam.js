@@ -143,22 +143,9 @@ if (!window.ACCAOUI_V2336_ORAL_SCROLL_STABILITY) {
     scrollToOralElementV2336(element, behavior || "smooth");
   }
 
-  function scrollToCurrentOralMistakeCardV2336(button, behavior) {
-    const card = button
-      ? button.closest(".oral-mistake-card-v2324")
-      : document.querySelector(".oral-mistake-card-v2324");
-
-    scrollToOralElementV2336(card, behavior || "smooth");
-  }
-
   function scheduleOralQuestionScrollV2336() {
     setTimeout(() => scrollToCurrentOralQuestionV2336("auto"), 40);
     setTimeout(() => scrollToCurrentOralQuestionV2336("smooth"), 160);
-  }
-
-  function scheduleOralMistakeScrollV2336(button) {
-    setTimeout(() => scrollToCurrentOralMistakeCardV2336(button, "auto"), 40);
-    setTimeout(() => scrollToCurrentOralMistakeCardV2336(button, "smooth"), 160);
   }
 
   window.accaouiPreviousRateOralExamQuestionV2336 =
@@ -185,38 +172,9 @@ if (!window.ACCAOUI_V2336_ORAL_SCROLL_STABILITY) {
     };
   }
 
-  window.accaouiPreviousShowOralExamAnswerV2336 =
-    window.accaouiPreviousShowOralExamAnswerV2336 ||
-    window.showOralExamAnswerV220;
-
-  if (typeof window.accaouiPreviousShowOralExamAnswerV2336 === "function") {
-    window.showOralExamAnswerV220 = function patchedShowOralExamAnswerV2336() {
-      const result = window.accaouiPreviousShowOralExamAnswerV2336();
-
-      const card = document.querySelector(".oral-question-card");
-      setTimeout(() => scrollToOralElementV2336(card, "smooth"), 120);
-
-      return result;
-    };
-  }
-
-  window.accaouiPreviousRevealOralMistakeCardV2336 =
-    window.accaouiPreviousRevealOralMistakeCardV2336 ||
-    window.revealOralMistakeCardV2335;
-
-  if (typeof window.accaouiPreviousRevealOralMistakeCardV2336 === "function") {
-    window.revealOralMistakeCardV2335 = function patchedRevealOralMistakeCardV2336(button) {
-      const result = window.accaouiPreviousRevealOralMistakeCardV2336(button);
-      scheduleOralMistakeScrollV2336(button);
-      return result;
-    };
-  }
-
   try {
     rateOralExamQuestionV220 = window.rateOralExamQuestionV220;
     previousOralExamQuestionV220 = window.previousOralExamQuestionV220;
-    showOralExamAnswerV220 = window.showOralExamAnswerV220;
-    revealOralMistakeCardV2335 = window.revealOralMistakeCardV2335;
   } catch (error) {
     /* Rebinding je nach Browser nicht notwendig */
   }
