@@ -5166,3 +5166,435 @@ if (!window.ACCAOUI_V2333_FORCE_ORAL_SESSION_ANSWER_HIDDEN) {
     /* Rebinding je nach Browser nicht notwendig */
   }
 }
+
+/* =====================================================
+   v23.2 MÜNDLICHE PRÜFUNG – PRÜFUNGSBOGEN B
+   Ziel:
+   - Prüfungsbogen B aus oral-sheets-v23.js in 15-Min-Simulation
+   - Prüfungsbogen A bleibt unverändert
+===================================================== */
+
+if (!window.ACCAOUI_V232_ORAL_SHEET_B_PATCH) {
+  window.ACCAOUI_V232_ORAL_SHEET_B_PATCH = true;
+
+  const ORAL_SHEET_B_ID_V232 = "oral_sheet_b_v23";
+  let oralSheetBRatingsV232 = [];
+
+  function getOralSheetBBlockTitleV232(examinerBlock) {
+    const block = Number(examinerBlock);
+
+    if (block === 1) {
+      return "Öffentliches Recht / Gewerberecht";
+    }
+
+    if (block === 2) {
+      return "Umgang mit Menschen";
+    }
+
+    if (block === 3) {
+      return "Mischblock";
+    }
+
+    return "Prüferblock";
+  }
+
+  function mapOralSheetBQuestionV232(question) {
+    if (!question) {
+      return null;
+    }
+
+    return {
+      id: question.id,
+      question: question.examinerQuestion,
+      answer: question.modelAnswer,
+      examinerNote: question.examinerNotes,
+      category: question.topic,
+      examinerIndex: Number(question.examinerBlock) - 1,
+      examinerName: question.examinerRole,
+      examinerBlockTitle: getOralSheetBBlockTitleV232(question.examinerBlock),
+      sheetId: ORAL_SHEET_B_ID_V232,
+      sheetTitle: "Prüfungsbogen B"
+    };
+  }
+
+  function getOralExamSheetBQuestionsV232() {
+    const sheetsData = window.ACCAOUI_ORAL_SHEETS_V23;
+
+    if (!sheetsData || !Array.isArray(sheetsData.sheets)) {
+      return [];
+    }
+
+    const sheet = sheetsData.sheets.find(item => item && item.id === ORAL_SHEET_B_ID_V232);
+
+    if (!sheet || !Array.isArray(sheet.questions)) {
+      return [];
+    }
+
+    return sheet.questions
+      .map(mapOralSheetBQuestionV232)
+      .filter(Boolean);
+  }
+
+  function isOralSheetBSessionV232() {
+    try {
+      return (
+        window.ACCAOUI_V2317_ORAL_SIMULATION_MODE === "15" &&
+        Array.isArray(oralExamQuestionsV220) &&
+        oralExamQuestionsV220.some(question => question && question.sheetId === ORAL_SHEET_B_ID_V232)
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function isOralSheet15BlockSessionV232() {
+    try {
+      if (window.ACCAOUI_V2317_ORAL_SIMULATION_MODE !== "15") {
+        return false;
+      }
+
+      if (!Array.isArray(oralExamQuestionsV220)) {
+        return false;
+      }
+
+      return oralExamQuestionsV220.some(question => {
+        if (!question || !question.sheetId) {
+          return false;
+        }
+
+        return (
+          question.sheetId === "oral_sheet_a_v2320" ||
+          question.sheetId === "oral_sheet_a_v2340" ||
+          question.sheetId === ORAL_SHEET_B_ID_V232
+        );
+      });
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function getOralSheetBQuestionIndexV232() {
+    try {
+      return Number(oralExamIndexV220 || 0);
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  function getOralSheetBCurrentQuestionV232() {
+    try {
+      if (Array.isArray(oralExamQuestionsV220)) {
+        return oralExamQuestionsV220[getOralSheetBQuestionIndexV232()];
+      }
+    } catch (error) {
+      return null;
+    }
+
+    return null;
+  }
+
+  function getOralSheetBExaminerIndexV232(question, fallbackIndex) {
+    if (question && Number.isInteger(question.examinerIndex)) {
+      return question.examinerIndex;
+    }
+
+    if (fallbackIndex < 5) return 0;
+    if (fallbackIndex < 10) return 1;
+    return 2;
+  }
+
+  function resetOralSheetBRatingsV232() {
+    oralSheetBRatingsV232 = [];
+  }
+
+  function saveOralSheetBRatingV232(status) {
+    if (!isOralSheetBSessionV232()) {
+      return;
+    }
+
+    const questionIndex = getOralSheetBQuestionIndexV232();
+    const question = getOralSheetBCurrentQuestionV232();
+
+    oralSheetBRatingsV232[questionIndex] = {
+      index: questionIndex,
+      status: status === "known" ? "known" : "practice",
+      questionId: question && question.id ? question.id : "oral_question_" + questionIndex,
+      category: question && question.category ? question.category : "Ohne Kategorie",
+      examinerIndex: getOralSheetBExaminerIndexV232(question, questionIndex),
+      examinerName: question && question.examinerName ? question.examinerName : "",
+      blockTitle: question && question.examinerBlockTitle ? question.examinerBlockTitle : ""
+    };
+  }
+
+  function getOralSheetBBlockResultStatsV232() {
+    const questions = Array.isArray(oralExamQuestionsV220)
+      ? oralExamQuestionsV220
+      : [];
+
+    const blocks = [
+      {
+        examinerIndex: 0,
+        examinerName: "Prüfer 1",
+        title: "Öffentliches Recht / Gewerberecht",
+        range: "Frage 1–5"
+      },
+      {
+        examinerIndex: 1,
+        examinerName: "Vorsitz",
+        title: "Umgang mit Menschen",
+        range: "Frage 6–10"
+      },
+      {
+        examinerIndex: 2,
+        examinerName: "Prüfer 3",
+        title: "Mischblock",
+        range: "Frage 11–15"
+      }
+    ];
+
+    return blocks.map(block => {
+      const blockQuestions = questions.filter((question, index) => {
+        return getOralSheetBExaminerIndexV232(question, index) === block.examinerIndex;
+      });
+
+      const blockRatings = oralSheetBRatingsV232.filter(rating => {
+        return rating && rating.examinerIndex === block.examinerIndex;
+      });
+
+      const known = blockRatings.filter(rating => rating.status === "known").length;
+      const practice = blockRatings.filter(rating => rating.status === "practice").length;
+      const answered = known + practice;
+      const total = blockQuestions.length || 5;
+      const open = Math.max(0, total - answered);
+      const percent = answered > 0 ? Math.round((known / answered) * 100) : 0;
+
+      return {
+        ...block,
+        total,
+        answered,
+        known,
+        practice,
+        open,
+        percent
+      };
+    });
+  }
+
+  function applyOralSheetBResultTextsV232() {
+    if (!isOralSheetBSessionV232()) {
+      return;
+    }
+
+    const root = document.querySelector(".main-content");
+
+    if (!root) {
+      return;
+    }
+
+    const replacements = [
+      ["Prüfungsbogen A abgeschlossen", "Prüfungsbogen B abgeschlossen"],
+      ["Prüfungsbogen A wurde abgeschlossen", "Prüfungsbogen B wurde abgeschlossen"],
+      ["Prüfungsbogen A wiederholen", "Prüfungsbogen B wiederholen"]
+    ];
+
+    root.querySelectorAll("h1, h2, h3, p, span, strong, button").forEach(element => {
+      replacements.forEach(([from, to]) => {
+        const text = (element.textContent || "").replace(/\s+/g, " ").trim();
+
+        if (text === from) {
+          element.textContent = to;
+        }
+      });
+    });
+
+    root.querySelectorAll("button").forEach(button => {
+      const label = (button.textContent || "").replace(/\s+/g, " ").trim();
+
+      if (label === "Prüfungsbogen B wiederholen" || label === "Prüfungsbogen A wiederholen") {
+        button.textContent = "Prüfungsbogen B wiederholen";
+        button.setAttribute("onclick", "startOralSimulationSheetBV232()");
+      }
+    });
+  }
+
+  function renderOralSheetBBlockFinishV232() {
+    if (typeof window.renderOralExamBlockFinishV2322 === "function") {
+      window.accaouiPreviousGetOralBlockResultStatsV232 =
+        window.accaouiPreviousGetOralBlockResultStatsV232 ||
+        window.getOralBlockResultStatsV2321;
+
+      window.getOralBlockResultStatsV2321 = function patchedGetOralBlockResultStatsForSheetBV232() {
+        if (isOralSheetBSessionV232()) {
+          return getOralSheetBBlockResultStatsV232();
+        }
+
+        if (typeof window.accaouiPreviousGetOralBlockResultStatsV232 === "function") {
+          return window.accaouiPreviousGetOralBlockResultStatsV232();
+        }
+
+        return [];
+      };
+
+      window.renderOralExamBlockFinishV2322();
+
+      window.getOralBlockResultStatsV2321 = window.accaouiPreviousGetOralBlockResultStatsV232;
+
+      applyOralSheetBResultTextsV232();
+
+      return;
+    }
+
+    if (typeof window.renderOralExamBlockFinishV2321 === "function") {
+      window.renderOralExamBlockFinishV2321();
+      applyOralSheetBResultTextsV232();
+    }
+  }
+
+  function scheduleOralSheetBLabelsV232() {
+    if (typeof scheduleOralSheetLabelsV2320 === "function") {
+      scheduleOralSheetLabelsV2320();
+    }
+  }
+
+  window.startOralSimulationSheetBV232 = function startOralSimulationSheetBV232() {
+    if (typeof closeOralModeSheetV2314 === "function") {
+      closeOralModeSheetV2314();
+    }
+
+    const questions = getOralExamSheetBQuestionsV232();
+
+    if (questions.length !== 15) {
+      showSmallNotice("Prüfungsbogen B konnte nicht geladen werden.");
+      return;
+    }
+
+    resetOralSheetBRatingsV232();
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
+    window.ACCAOUI_V2317_ORAL_SIMULATION_MODE = "15";
+
+    startOralExamSessionV220(
+      questions,
+      "15-Minuten-Simulation · Prüfungsbogen B"
+    );
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = false;
+
+    if (typeof startOralSimulationTimerV2317 === "function") {
+      startOralSimulationTimerV2317();
+    }
+
+    if (typeof updateActiveExaminerV2317 === "function") {
+      updateActiveExaminerV2317();
+    }
+
+    scheduleOralSheetBLabelsV232();
+  };
+
+  window.getOralExamSheetBQuestionsV232 = getOralExamSheetBQuestionsV232;
+
+  window.accaouiPreviousShowOralExamModeSelectV232 =
+    window.showOralExamModeSelectV2314;
+
+  window.showOralExamModeSelectV2314 = function patchedShowOralExamModeSelectV232() {
+    if (typeof window.accaouiPreviousShowOralExamModeSelectV232 === "function") {
+      window.accaouiPreviousShowOralExamModeSelectV232();
+    }
+
+    const grid = document.querySelector(".oral-mode-grid-v2314");
+
+    if (!grid || document.getElementById("oralModeSheetBBtnV232")) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = "oralModeSheetBBtnV232";
+    button.className = "oral-mode-card-v2314";
+    button.setAttribute("onclick", "startOralSimulationSheetBV232()");
+    button.innerHTML = `
+      <span>⏱️</span>
+      <strong>15-Minuten-Simulation B</strong>
+      <small>Neuer Accaoui-Trainingsbogen · 3 Prüfer · 15 Fragen</small>
+    `;
+
+    const primaryButton = grid.querySelector(".oral-mode-card-v2314.is-primary");
+
+    if (primaryButton && primaryButton.nextElementSibling) {
+      grid.insertBefore(button, primaryButton.nextElementSibling);
+    } else if (primaryButton) {
+      primaryButton.insertAdjacentElement("afterend", button);
+    } else {
+      grid.appendChild(button);
+    }
+  };
+
+  window.accaouiPreviousStartOralExamSessionV232 =
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV232(questions, title) {
+    const isSheetB =
+      Array.isArray(questions) &&
+      questions.some(question => question && question.sheetId === ORAL_SHEET_B_ID_V232);
+
+    if (isSheetB) {
+      resetOralSheetBRatingsV232();
+    }
+
+    if (typeof window.accaouiPreviousStartOralExamSessionV232 === "function") {
+      return window.accaouiPreviousStartOralExamSessionV232(questions, title);
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  window.accaouiPreviousRateOralExamQuestionV232 =
+    window.rateOralExamQuestionV220;
+
+  window.rateOralExamQuestionV220 = function patchedRateOralExamQuestionV232(status) {
+    saveOralSheetBRatingV232(status);
+
+    if (typeof window.accaouiPreviousRateOralExamQuestionV232 === "function") {
+      const result = window.accaouiPreviousRateOralExamQuestionV232(status);
+
+      if (isOralSheetBSessionV232()) {
+        scheduleOralSheetBLabelsV232();
+      }
+
+      return result;
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.accaouiPreviousShowOralExamFinishScreenV232 =
+    window.showOralExamFinishScreenV220;
+
+  window.showOralExamFinishScreenV220 = function patchedShowOralExamFinishScreenV232() {
+    if (isOralSheetBSessionV232()) {
+      renderOralSheetBBlockFinishV232();
+      return;
+    }
+
+    if (isOralSheet15BlockSessionV232()) {
+      if (typeof window.accaouiPreviousShowOralExamFinishScreenV232 === "function") {
+        return window.accaouiPreviousShowOralExamFinishScreenV232();
+      }
+
+      return;
+    }
+
+    if (typeof window.accaouiPreviousShowOralExamFinishScreenV232 === "function") {
+      return window.accaouiPreviousShowOralExamFinishScreenV232();
+    }
+  };
+
+  try {
+    showOralExamModeSelectV2314 = window.showOralExamModeSelectV2314;
+    startOralExamSessionV220 = window.startOralExamSessionV220;
+    rateOralExamQuestionV220 = window.rateOralExamQuestionV220;
+    showOralExamFinishScreenV220 = window.showOralExamFinishScreenV220;
+  } catch (error) {
+    /* Rebinding je nach Browser nicht notwendig */
+  }
+}
