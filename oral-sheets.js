@@ -142,6 +142,34 @@ const ORAL_EXAM_SHEET_A_V2340 = {
 };
 
 function getOralSheetAQuestionsV2340() {
+  if (
+    window.AccaouiOralSheetBank &&
+    typeof window.AccaouiOralSheetBank.getSheetQuestions === "function"
+  ) {
+    const bankQuestions = window.AccaouiOralSheetBank.getSheetQuestions("oral_sheet_a_v2340");
+
+    if (Array.isArray(bankQuestions) && bankQuestions.length === 15) {
+      const blockMetaByQuestionId = {};
+
+      ORAL_EXAM_SHEET_A_V2340.blocks.forEach(block => {
+        block.questions.forEach(question => {
+          blockMetaByQuestionId[question.id] = {
+            sheetId: ORAL_EXAM_SHEET_A_V2340.id,
+            sheetTitle: ORAL_EXAM_SHEET_A_V2340.title,
+            examinerIndex: block.examinerIndex,
+            examinerName: block.examinerName,
+            examinerBlockTitle: block.title
+          };
+        });
+      });
+
+      return bankQuestions.map(question => ({
+        ...question,
+        ...(blockMetaByQuestionId[question.id] || {})
+      }));
+    }
+  }
+
   return ORAL_EXAM_SHEET_A_V2340.blocks.flatMap(block => {
     return block.questions.map(question => ({
       ...question,
