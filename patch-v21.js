@@ -1380,7 +1380,7 @@ if (!window.ACCAOUI_V221_ORAL_ROOM_SCENE_PATCH) {
         <div class="oral-room-header-v221">
           <div>
             <span>Prüfungsraum-Simulation</span>
-            <strong>${isSession ? "Aktive mündliche Prüfung" : "Realistische IHK-Prüfungssituation"}</strong>
+            <strong>${isSession ? "Aktive mündliche Prüfung" : "Realistische Prüfungssituation"}</strong>
           </div>
 
           <div class="oral-room-status-v221">
@@ -2716,7 +2716,7 @@ if (!window.ACCAOUI_V2312_ORAL_COMPACT_OVERVIEW_PATCH) {
 
     sceneHtml = sceneHtml
       .replace(
-        "Realistische IHK-Prüfungssituation",
+        "Realistische Prüfungssituation",
         "Mündliche Prüfungssimulation § 34a"
       )
       .replace(
@@ -2940,7 +2940,7 @@ if (!window.ACCAOUI_V2314_ORAL_MODE_SELECTION_PATCH) {
         <button type="button" class="oral-mode-card-v2314" onclick="startOralFullTrainingV2314()">
           <span>📚</span>
           <strong>Volltraining</strong>
-          <small>Alle mündlichen Fragen · IHK-Themenreihenfolge · ohne Zeitdruck</small>
+          <small>Alle mündlichen Fragen · Themenreihenfolge · ohne Zeitdruck</small>
         </button>
 
       </div>

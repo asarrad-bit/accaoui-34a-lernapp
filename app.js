@@ -3235,7 +3235,7 @@ function buildTopicStatsHtml() {
 
       <div class="section-head">
         <h2>Themenstatistik</h2>
-        <p>Kompakte Übersicht nach IHK-Themen: Quote, Fortschritt und aktive Fehler.</p>
+        <p>Kompakte Übersicht nach Sachgebieten: Quote, Fortschritt und aktive Fehler.</p>
       </div>
 
       <div class="topic-stats-list">
