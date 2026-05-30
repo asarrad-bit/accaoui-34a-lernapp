@@ -73,3 +73,65 @@
     scroll-margin-top: 76px !important;
   }
 }
+
+/* =====================================================
+   v23.2.3 hide duplicate oral external question card
+   Ziel:
+   - alte doppelte Fragenkarte unter der Prüfungsraum-Szene ausblenden
+   - Prüfungsraum-Szene bleibt sichtbar
+===================================================== */
+
+body.oral-scene-controls-active-v226 .oral-question-card,
+body:has(.oral-room-scene-v221.is-session) .oral-question-card {
+  display: none !important;
+}
+
+body.oral-scene-controls-active-v226 .oral-room-scene-v221.is-session,
+body:has(.oral-room-scene-v221.is-session) .oral-room-scene-v221.is-session,
+body.oral-scene-controls-active-v226 .oral-room-controls-v226,
+body:has(.oral-room-scene-v221.is-session) .oral-room-controls-v226 {
+  display: block !important;
+}
+
+/* =====================================================
+   v23.2.3 oral display viewport fix
+   Ziel:
+   - mündliche Prüfung sauber im sichtbaren Bildschirm halten
+   - Browser-Scroll außen beruhigen
+   - Buttons in der Prüfung sichtbar halten
+===================================================== */
+
+body.oral-scene-controls-active-v226 {
+  overflow: hidden !important;
+}
+
+body.oral-scene-controls-active-v226 .main-content {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  scroll-behavior: auto !important;
+  padding-bottom: 110px !important;
+  box-sizing: border-box !important;
+}
+
+body.oral-scene-controls-active-v226 .oral-exam-wrapper {
+  min-height: 0 !important;
+  padding-bottom: 80px !important;
+  box-sizing: border-box !important;
+}
+
+body.oral-scene-controls-active-v226 .oral-room-scene-v221.is-session {
+  margin-bottom: 18px !important;
+}
+
+body.oral-scene-controls-active-v226 .oral-room-controls-v226 {
+  position: sticky !important;
+  bottom: 14px !important;
+  z-index: 50 !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  border-radius: 18px !important;
+  padding: 12px !important;
+  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.14) !important;
+}
