@@ -1289,7 +1289,7 @@ function showMistakeOverview() {
     const mistakeCount = getTopicMistakeCount(categoryName);
     const icon = categoryIcons[categoryName] || "📘";
 
-    let statusText = "Keine Fehler";
+    let statusText = "OK";
     let statusClass = "topic-neutral";
 
     if (mistakeCount >= 5) {
@@ -1313,7 +1313,7 @@ function showMistakeOverview() {
 
         <div>
           <span>Fehler</span>
-          <strong>${mistakeCount}</strong>
+          <strong>${mistakeCount > 0 ? mistakeCount : "keine"}</strong>
         </div>
 
         <div>
@@ -1325,7 +1325,7 @@ function showMistakeOverview() {
           ${
             mistakeCount > 0
               ? `<button class="next-btn danger-training-btn" onclick='startTopicMistakeTraining(${JSON.stringify(categoryName)})'>Trainieren</button>`
-              : `<button class="next-btn secondary-btn" disabled>Keine Fehler</button>`
+              : ""
           }
         </div>
 
