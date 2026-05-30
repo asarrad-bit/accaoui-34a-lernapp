@@ -7824,3 +7824,15 @@ body.oral-mode-sheet-open-v2314 {
 .oral-mistake-resolve-btn-v2326 {
   justify-content: center !important;
 }
+
+/* =====================================================
+   v23.2.2 hide redundant oral scene progress line
+   Ziel:
+   - redundante Fortschrittszeile unter den Buttons ausblenden
+   - Frage-Anzeige oben rechts (score-box) bleibt sichtbar
+===================================================== */
+
+body.oral-scene-controls-active-v226 .oral-room-progress-v226,
+body:has(.oral-room-scene-v221.is-session) .oral-room-progress-v226 {
+  display: none !important;
+}
