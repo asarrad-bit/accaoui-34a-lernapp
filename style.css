@@ -7836,3 +7836,25 @@ body.oral-scene-controls-active-v226 .oral-room-progress-v226,
 body:has(.oral-room-scene-v221.is-session) .oral-room-progress-v226 {
   display: none !important;
 }
+
+/* =====================================================
+   v23.2.3 hide duplicate oral external question card
+   Ziel:
+   - Single-View: doppelte externe Fragenkarte unter der Szene ausblenden
+   - Prüfungsraum-Szene und Szenen-Buttons bleiben sichtbar
+===================================================== */
+
+body.oral-scene-controls-active-v226 .oral-question-area,
+body:has(.oral-room-scene-v221.is-session) .oral-question-area {
+  display: none !important;
+}
+
+body.oral-scene-controls-active-v226 .oral-question-area > .oral-question-card,
+body:has(.oral-room-scene-v221.is-session) .oral-question-area > .oral-question-card {
+  display: none !important;
+}
+
+body.oral-scene-controls-active-v226 .oral-exam-wrapper > .oral-question-card,
+body:has(.oral-room-scene-v221.is-session) .oral-exam-wrapper > .oral-question-card {
+  display: none !important;
+}
