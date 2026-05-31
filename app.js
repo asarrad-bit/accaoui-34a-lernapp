@@ -64,9 +64,9 @@ const categories = [
   "Gewerberecht",
   "Datenschutzrecht",
   "Bürgerliches Gesetzbuch",
-  "Straf- und Strafverfahrensrecht",
+  "Strafgesetzbuch und Strafverfahrensrecht",
   "Umgang mit Waffen",
-  "Unfallverhütungsvorschrift",
+  "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
   "Umgang mit Menschen",
   "Grundzüge der Sicherheitstechnik"
 ];
@@ -76,9 +76,9 @@ const categoryIcons = {
   "Gewerberecht": "🏢",
   "Datenschutzrecht": "🔐",
   "Bürgerliches Gesetzbuch": "📄",
-  "Straf- und Strafverfahrensrecht": "🚨",
+  "Strafgesetzbuch und Strafverfahrensrecht": "🚨",
   "Umgang mit Waffen": "🛡️",
-  "Unfallverhütungsvorschrift": "🦺",
+  "Unfallverhütungsvorschriften Wach- und Sicherungsdienste": "🦺",
   "Umgang mit Menschen": "🗣️",
   "Grundzüge der Sicherheitstechnik": "📹"
 };
@@ -215,12 +215,16 @@ function normalizeCategoryName(categoryName) {
     "Bürgerliches Recht": "Bürgerliches Gesetzbuch",
     "Bürgerliches Gesetzbuch": "Bürgerliches Gesetzbuch",
 
+    "Straf- und Strafverfahrensrecht": "Strafgesetzbuch und Strafverfahrensrecht",
+    "Strafgesetzbuch und Strafverfahrensrecht": "Strafgesetzbuch und Strafverfahrensrecht",
+
     "Grundzüge des Waffenrechts": "Umgang mit Waffen",
     "Waffenrecht": "Umgang mit Waffen",
     "Umgang mit Waffen": "Umgang mit Waffen",
 
-    "Unfallverhütungsvorschrift Wach- und Sicherungsdienste": "Unfallverhütungsvorschrift",
-    "Unfallverhütungsvorschrift": "Unfallverhütungsvorschrift"
+    "Unfallverhütungsvorschrift": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "Unfallverhütungsvorschrift Wach- und Sicherungsdienste": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "Unfallverhütungsvorschriften Wach- und Sicherungsdienste": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste"
   };
 
   return categoryMap[value] || value;

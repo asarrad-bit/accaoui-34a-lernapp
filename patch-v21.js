@@ -14,9 +14,9 @@ const ACCAOUI_CATEGORY_LIST = [
   "Gewerberecht",
   "Datenschutzrecht",
   "Bürgerliches Gesetzbuch",
-  "Straf- und Strafverfahrensrecht",
+  "Strafgesetzbuch und Strafverfahrensrecht",
   "Umgang mit Waffen",
-  "Unfallverhütungsvorschrift",
+  "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
   "Umgang mit Menschen",
   "Grundzüge der Sicherheitstechnik"
 ];
@@ -35,9 +35,9 @@ function getCategoryThemeClass(categoryName) {
     "Gewerberecht": "theme-trade-law",
     "Datenschutzrecht": "theme-data-protection",
     "Bürgerliches Gesetzbuch": "theme-civil-law",
-    "Straf- und Strafverfahrensrecht": "theme-criminal-law",
+    "Strafgesetzbuch und Strafverfahrensrecht": "theme-criminal-law",
     "Umgang mit Waffen": "theme-weapons",
-    "Unfallverhütungsvorschrift": "theme-safety",
+    "Unfallverhütungsvorschriften Wach- und Sicherungsdienste": "theme-safety",
     "Umgang mit Menschen": "theme-people",
     "Grundzüge der Sicherheitstechnik": "theme-security-tech"
   };
