@@ -905,7 +905,7 @@ const ORAL_EXAM_QUESTIONS_V220 = [
     examinerNote: "Der Prüfling muss klar zwischen Staat/Polizei und privatem Sicherheitsdienst unterscheiden."
   },
   {
-    category: "Straf- und Strafverfahrensrecht",
+    category: "Strafgesetzbuch und Strafverfahrensrecht",
     question: "Was bedeutet vorläufige Festnahme nach §127 Absatz 1 StPO?",
     sampleAnswer: "Nach §127 Absatz 1 StPO darf jedermann eine Person vorläufig festnehmen, wenn sie auf frischer Tat betroffen oder verfolgt wird und Fluchtverdacht besteht oder die Identität nicht sofort festgestellt werden kann.",
     examinerNote: "Wichtig sind die Voraussetzungen: frische Tat, Fluchtverdacht oder Identität nicht feststellbar."
@@ -929,7 +929,7 @@ const ORAL_EXAM_QUESTIONS_V220 = [
     examinerNote: "Wichtig: keine private Weitergabe, keine Neugier-Abfragen, Zweckbindung beachten."
   },
   {
-    category: "Unfallverhütungsvorschrift",
+    category: "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     question: "Warum ist Eigenschutz im Sicherheitsdienst besonders wichtig?",
     sampleAnswer: "Eigenschutz ist wichtig, weil Sicherheitsmitarbeiter Gefahren erkennen und vermeiden müssen. Sie sollen sich nicht unnötig selbst gefährden, müssen auf sichere Arbeitsweise achten und bei Gefahr Unterstützung holen.",
     examinerNote: "Gute Antwort verbindet UVV, Gefährdungsbeurteilung, Verhalten und praktische Sicherheit."
@@ -3082,8 +3082,8 @@ if (!window.ACCAOUI_V2317_ORAL_THREE_EXAMINER_SIM_PATCH) {
     "Gewerberecht",
     "Datenschutzrecht",
     "Bürgerliches Gesetzbuch",
-    "Straf- und Strafverfahrensrecht",
-    "Unfallverhütungsvorschrift",
+    "Strafgesetzbuch und Strafverfahrensrecht",
+    "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "Umgang mit Waffen",
     "Umgang mit Menschen",
     "Grundzüge der Sicherheitstechnik"
@@ -3120,7 +3120,7 @@ if (!window.ACCAOUI_V2317_ORAL_THREE_EXAMINER_SIM_PATCH) {
     },
     {
       id: "oral_v2317_straf_002",
-      category: "Straf- und Strafverfahrensrecht",
+      category: "Strafgesetzbuch und Strafverfahrensrecht",
       question: "Welche Voraussetzungen müssen bei einer vorläufigen Festnahme durch Jedermann besonders geprüft werden?",
       sampleAnswer: "Es muss eine Person auf frischer Tat betroffen oder verfolgt sein. Zusätzlich muss Fluchtverdacht bestehen oder die Identität darf nicht sofort feststellbar sein. Die Polizei ist unverzüglich zu informieren und die Maßnahme muss verhältnismäßig bleiben.",
       examinerNote: "Prüfer achten auf frische Tat, Fluchtverdacht oder Identitätsfeststellung und sofortige Polizei."
