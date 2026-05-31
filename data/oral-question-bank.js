@@ -165,7 +165,7 @@ const ORAL_QUESTION_BANK_V2350 = [
   {
     id: "oral_a_013",
     examType: "oral",
-    category: "Straf- und Strafverfahrensrecht",
+    category: "Strafgesetzbuch und Strafverfahrensrecht",
     topic: "Strafrecht",
     difficulty: "mittel",
     question: "Wann kann eine vorläufige Festnahme durch Jedermann in Betracht kommen?",
@@ -178,7 +178,7 @@ const ORAL_QUESTION_BANK_V2350 = [
   {
     id: "oral_a_014",
     examType: "oral",
-    category: "Unfallverhütungsvorschrift",
+    category: "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     topic: "Arbeitssicherheit",
     difficulty: "grundlegend",
     question: "Warum ist Eigenschutz im Sicherheitsdienst so wichtig?",
