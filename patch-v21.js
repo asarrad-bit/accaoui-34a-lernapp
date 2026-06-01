@@ -14,9 +14,9 @@ const ACCAOUI_CATEGORY_LIST = [
   "Gewerberecht",
   "Datenschutzrecht",
   "Bürgerliches Gesetzbuch",
-  "Straf- und Strafverfahrensrecht",
+  "Strafgesetzbuch und Strafverfahrensrecht",
   "Umgang mit Waffen",
-  "Unfallverhütungsvorschrift",
+  "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
   "Umgang mit Menschen",
   "Grundzüge der Sicherheitstechnik"
 ];
@@ -35,9 +35,9 @@ function getCategoryThemeClass(categoryName) {
     "Gewerberecht": "theme-trade-law",
     "Datenschutzrecht": "theme-data-protection",
     "Bürgerliches Gesetzbuch": "theme-civil-law",
-    "Straf- und Strafverfahrensrecht": "theme-criminal-law",
+    "Strafgesetzbuch und Strafverfahrensrecht": "theme-criminal-law",
     "Umgang mit Waffen": "theme-weapons",
-    "Unfallverhütungsvorschrift": "theme-safety",
+    "Unfallverhütungsvorschriften Wach- und Sicherungsdienste": "theme-safety",
     "Umgang mit Menschen": "theme-people",
     "Grundzüge der Sicherheitstechnik": "theme-security-tech"
   };
@@ -905,7 +905,7 @@ const ORAL_EXAM_QUESTIONS_V220 = [
     examinerNote: "Der Prüfling muss klar zwischen Staat/Polizei und privatem Sicherheitsdienst unterscheiden."
   },
   {
-    category: "Straf- und Strafverfahrensrecht",
+    category: "Strafgesetzbuch und Strafverfahrensrecht",
     question: "Was bedeutet vorläufige Festnahme nach §127 Absatz 1 StPO?",
     sampleAnswer: "Nach §127 Absatz 1 StPO darf jedermann eine Person vorläufig festnehmen, wenn sie auf frischer Tat betroffen oder verfolgt wird und Fluchtverdacht besteht oder die Identität nicht sofort festgestellt werden kann.",
     examinerNote: "Wichtig sind die Voraussetzungen: frische Tat, Fluchtverdacht oder Identität nicht feststellbar."
@@ -929,7 +929,7 @@ const ORAL_EXAM_QUESTIONS_V220 = [
     examinerNote: "Wichtig: keine private Weitergabe, keine Neugier-Abfragen, Zweckbindung beachten."
   },
   {
-    category: "Unfallverhütungsvorschrift",
+    category: "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     question: "Warum ist Eigenschutz im Sicherheitsdienst besonders wichtig?",
     sampleAnswer: "Eigenschutz ist wichtig, weil Sicherheitsmitarbeiter Gefahren erkennen und vermeiden müssen. Sie sollen sich nicht unnötig selbst gefährden, müssen auf sichere Arbeitsweise achten und bei Gefahr Unterstützung holen.",
     examinerNote: "Gute Antwort verbindet UVV, Gefährdungsbeurteilung, Verhalten und praktische Sicherheit."
@@ -1380,7 +1380,7 @@ if (!window.ACCAOUI_V221_ORAL_ROOM_SCENE_PATCH) {
         <div class="oral-room-header-v221">
           <div>
             <span>Prüfungsraum-Simulation</span>
-            <strong>${isSession ? "Aktive mündliche Prüfung" : "Realistische IHK-Prüfungssituation"}</strong>
+            <strong>${isSession ? "Aktive mündliche Prüfung" : "Realistische Prüfungssituation"}</strong>
           </div>
 
           <div class="oral-room-status-v221">
@@ -2716,7 +2716,7 @@ if (!window.ACCAOUI_V2312_ORAL_COMPACT_OVERVIEW_PATCH) {
 
     sceneHtml = sceneHtml
       .replace(
-        "Realistische IHK-Prüfungssituation",
+        "Realistische Prüfungssituation",
         "Mündliche Prüfungssimulation § 34a"
       )
       .replace(
@@ -2940,7 +2940,7 @@ if (!window.ACCAOUI_V2314_ORAL_MODE_SELECTION_PATCH) {
         <button type="button" class="oral-mode-card-v2314" onclick="startOralFullTrainingV2314()">
           <span>📚</span>
           <strong>Volltraining</strong>
-          <small>Alle mündlichen Fragen · IHK-Themenreihenfolge · ohne Zeitdruck</small>
+          <small>Alle mündlichen Fragen · Themenreihenfolge · ohne Zeitdruck</small>
         </button>
 
       </div>
@@ -3082,8 +3082,8 @@ if (!window.ACCAOUI_V2317_ORAL_THREE_EXAMINER_SIM_PATCH) {
     "Gewerberecht",
     "Datenschutzrecht",
     "Bürgerliches Gesetzbuch",
-    "Straf- und Strafverfahrensrecht",
-    "Unfallverhütungsvorschrift",
+    "Strafgesetzbuch und Strafverfahrensrecht",
+    "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "Umgang mit Waffen",
     "Umgang mit Menschen",
     "Grundzüge der Sicherheitstechnik"
@@ -3120,7 +3120,7 @@ if (!window.ACCAOUI_V2317_ORAL_THREE_EXAMINER_SIM_PATCH) {
     },
     {
       id: "oral_v2317_straf_002",
-      category: "Straf- und Strafverfahrensrecht",
+      category: "Strafgesetzbuch und Strafverfahrensrecht",
       question: "Welche Voraussetzungen müssen bei einer vorläufigen Festnahme durch Jedermann besonders geprüft werden?",
       sampleAnswer: "Es muss eine Person auf frischer Tat betroffen oder verfolgt sein. Zusätzlich muss Fluchtverdacht bestehen oder die Identität darf nicht sofort feststellbar sein. Die Polizei ist unverzüglich zu informieren und die Maßnahme muss verhältnismäßig bleiben.",
       examinerNote: "Prüfer achten auf frische Tat, Fluchtverdacht oder Identitätsfeststellung und sofortige Polizei."
@@ -3424,152 +3424,21 @@ if (!window.ACCAOUI_V2317_ORAL_THREE_EXAMINER_SIM_PATCH) {
 if (!window.ACCAOUI_V2320_ORAL_EXAM_SHEET_A_PATCH) {
   window.ACCAOUI_V2320_ORAL_EXAM_SHEET_A_PATCH = true;
 
-  const ORAL_EXAM_SHEET_A_V2320 = {
-    id: "oral_sheet_a_v2320",
-    title: "Prüfungsbogen A",
-    durationMinutes: 15,
-    note: "Trainingsbogen. Keine offizielle IHK-Prüfung.",
-    blocks: [
-      {
-        examinerIndex: 0,
-        examinerName: "Prüfer 1",
-        title: "Öffentliches Recht / Gewerberecht",
-        questions: [
-          {
-            id: "oral_a_001",
-            category: "Recht der öffentlichen Sicherheit und Ordnung",
-            question: "Welche Rechte hat ein privater Sicherheitsmitarbeiter im Vergleich zur Polizei grundsätzlich nicht?",
-            sampleAnswer: "Ein privater Sicherheitsmitarbeiter hat grundsätzlich keine hoheitlichen Polizeibefugnisse. Er darf nicht wie ein Polizeibeamter Platzverweise im öffentlichen Raum aussprechen, Personen ohne Rechtsgrund durchsuchen oder staatliche Zwangsmaßnahmen durchführen. Er handelt vor allem auf Grundlage von Hausrecht, Jedermannsrechten und privatrechtlichen Befugnissen.",
-            examinerNote: "Wichtig ist die klare Trennung zwischen staatlicher Hoheitsgewalt und privatem Sicherheitsdienst."
-          },
-          {
-            id: "oral_a_002",
-            category: "Recht der öffentlichen Sicherheit und Ordnung",
-            question: "Was versteht man unter öffentlicher Sicherheit?",
-            sampleAnswer: "Öffentliche Sicherheit umfasst den Schutz der Rechtsordnung, des Staates und seiner Einrichtungen sowie den Schutz individueller Rechtsgüter wie Leben, Gesundheit, Freiheit und Eigentum.",
-            examinerNote: "Gute Antwort nennt Rechtsordnung, Staat und Individualrechtsgüter."
-          },
-          {
-            id: "oral_a_003",
-            category: "Gewerberecht",
-            question: "Warum ist § 34a GewO für das Bewachungsgewerbe wichtig?",
-            sampleAnswer: "§ 34a GewO regelt den gewerberechtlichen Zugang zum Bewachungsgewerbe. Er betrifft insbesondere die Erlaubnis, die Zuverlässigkeit und die erforderlichen Nachweise wie Unterrichtung oder Sachkundeprüfung je nach Tätigkeit.",
-            examinerNote: "Wichtig: § 34a GewO ist keine Polizeibefugnis, sondern eine gewerberechtliche Vorschrift."
-          },
-          {
-            id: "oral_a_004",
-            category: "Gewerberecht",
-            question: "Welche Bedeutung hat die Zuverlässigkeit im Bewachungsgewerbe?",
-            sampleAnswer: "Zuverlässigkeit ist eine zentrale Voraussetzung. Wer unzuverlässig ist, kann von der Tätigkeit ausgeschlossen werden oder eine Erlaubnis kann versagt beziehungsweise widerrufen werden. Hintergrund ist, dass Sicherheitsmitarbeiter mit fremden Rechtsgütern und sensiblen Situationen umgehen.",
-            examinerNote: "Gute Antwort verbindet Zuverlässigkeit mit Vertrauen, Gefahrennähe und behördlicher Kontrolle."
-          },
-          {
-            id: "oral_a_005",
-            category: "Gewerberecht",
-            question: "Welche Pflichten bestehen beim Dienstausweis im Bewachungsgewerbe?",
-            sampleAnswer: "Der Dienstausweis dient der Legitimation im Dienst. Je nach Tätigkeit muss er mitgeführt und zuständigen Personen oder Behörden auf Verlangen vorgezeigt werden. Er darf nicht den Eindruck eines amtlichen oder hoheitlichen Ausweises erwecken.",
-            examinerNote: "Wichtig ist: Dienstausweis ja, aber keine Verwechslung mit Polizei oder Behörde."
-          }
-        ]
-      },
-      {
-        examinerIndex: 1,
-        examinerName: "Vorsitz",
-        title: "Umgang mit Menschen",
-        questions: [
-          {
-            id: "oral_a_006",
-            category: "Umgang mit Menschen",
-            question: "Warum ist professioneller Umgang mit Menschen im Sicherheitsdienst besonders wichtig?",
-            sampleAnswer: "Sicherheitsmitarbeiter haben häufig Kontakt mit Menschen in angespannten Situationen. Professionelles Verhalten hilft, Konflikte zu vermeiden, deeskalierend zu handeln, den Auftrag sicher zu erfüllen und das Ansehen des Auftraggebers zu schützen.",
-            examinerNote: "Gute Antwort nennt Professionalität, Deeskalation, Auftraggeber und Eigenschutz."
-          },
-          {
-            id: "oral_a_007",
-            category: "Umgang mit Menschen",
-            question: "Wie reagieren Sie, wenn eine Person Sie provoziert oder beleidigt?",
-            sampleAnswer: "Ich bleibe ruhig, lasse mich nicht provozieren, halte Sicherheitsabstand, spreche sachlich und klar. Ich setze Grenzen, hole bei Bedarf Unterstützung und handle nach Dienstanweisung. Ich antworte nicht mit Beleidigungen.",
-            examinerNote: "Prüfer achten auf Ruhe, Distanz, klare Kommunikation und keine Gegenprovokation."
-          },
-          {
-            id: "oral_a_008",
-            category: "Umgang mit Menschen",
-            question: "Was bedeutet Deeskalation in der Praxis?",
-            sampleAnswer: "Deeskalation bedeutet, eine angespannte Situation durch ruhiges, kontrolliertes und respektvolles Verhalten zu beruhigen. Dazu gehören Abstand, klare Sprache, aktives Zuhören, keine Provokation und rechtzeitiges Hinzuziehen von Unterstützung.",
-            examinerNote: "Wichtig ist praktisches Verhalten, nicht nur das Wort Deeskalation."
-          },
-          {
-            id: "oral_a_009",
-            category: "Umgang mit Menschen",
-            question: "Welche Rolle spielt Körpersprache im Sicherheitsdienst?",
-            sampleAnswer: "Körpersprache wirkt auf andere Menschen oft stärker als Worte. Eine offene, ruhige und sichere Haltung kann deeskalierend wirken. Drohende Gesten, zu nahes Herantreten oder hektische Bewegungen können dagegen eskalieren.",
-            examinerNote: "Gute Antwort nennt Wirkung, Distanz, Haltung und Eskalationsgefahr."
-          },
-          {
-            id: "oral_a_010",
-            category: "Umgang mit Menschen",
-            question: "Was beachten Sie bei Jugendlichen in Konfliktsituationen?",
-            sampleAnswer: "Ich bleibe sachlich, respektvoll und klar. Ich vermeide Bloßstellung, behandle Jugendliche nicht herablassend und achte auf Gruppendynamik. Gleichzeitig setze ich klare Grenzen und sichere mich ab.",
-            examinerNote: "Wichtig sind Gruppendynamik, Respekt, klare Grenzen und Eigensicherung."
-          }
-        ]
-      },
-      {
-        examinerIndex: 2,
-        examinerName: "Prüfer 3",
-        title: "Mischblock Datenschutz / BGB / Strafrecht / UVV / Waffen / Technik",
-        questions: [
-          {
-            id: "oral_a_011",
-            category: "Datenschutzrecht",
-            question: "Was sind personenbezogene Daten?",
-            sampleAnswer: "Personenbezogene Daten sind Informationen, die sich auf eine identifizierte oder identifizierbare natürliche Person beziehen. Beispiele sind Name, Anschrift, Telefonnummer, Ausweisnummer, Bildaufnahmen oder Besucherdaten.",
-            examinerNote: "Gute Antwort nennt die identifizierte oder identifizierbare Person und Beispiele."
-          },
-          {
-            id: "oral_a_012",
-            category: "Bürgerliches Gesetzbuch",
-            question: "Was kann ein Sicherheitsmitarbeiter auf Grundlage des Hausrechts tun?",
-            sampleAnswer: "Er kann im Auftrag des Hausrechtsinhabers Personen ansprechen, auf Regeln hinweisen, zum Verlassen auffordern oder ein Hausverbot durchsetzen, soweit dies rechtlich zulässig und verhältnismäßig ist.",
-            examinerNote: "Wichtig: Hausrecht ist nicht grenzenlos und ersetzt keine Polizeibefugnisse."
-          },
-          {
-            id: "oral_a_013",
-            category: "Straf- und Strafverfahrensrecht",
-            question: "Wann kann eine vorläufige Festnahme durch Jedermann in Betracht kommen?",
-            sampleAnswer: "Sie kann in Betracht kommen, wenn jemand auf frischer Tat betroffen oder verfolgt wird und Fluchtverdacht besteht oder die Identität nicht sofort festgestellt werden kann. Die Polizei muss unverzüglich hinzugezogen werden.",
-            examinerNote: "Wichtig sind frische Tat, Fluchtverdacht oder Identitätsfeststellung und unverzügliche Polizei."
-          },
-          {
-            id: "oral_a_014",
-            category: "Unfallverhütungsvorschrift",
-            question: "Warum ist Eigenschutz im Sicherheitsdienst so wichtig?",
-            sampleAnswer: "Eigenschutz ist wichtig, weil Sicherheitsmitarbeiter Gefahren erkennen, vermeiden und kontrolliert handeln müssen. Sie sollen sich nicht unnötig selbst gefährden und bei Bedarf Unterstützung anfordern.",
-            examinerNote: "Gute Antwort verbindet Eigenschutz, Gefährdung, Unterstützung und professionelles Verhalten."
-          },
-          {
-            id: "oral_a_015",
-            category: "Grundzüge der Sicherheitstechnik",
-            question: "Was prüfen Sie bei einem Funkgerät vor Dienstbeginn?",
-            sampleAnswer: "Ich prüfe den äußeren Zustand, Akku oder Stromversorgung, Antenne, Kanal beziehungsweise Einstellung, Lautstärke, Funktionstest und Erreichbarkeit. Störungen melde ich nach Dienstanweisung.",
-            examinerNote: "Praktische Antwort: Akku, Antenne, Kanal, Funktionstest, Meldung bei Störung."
-          }
-        ]
-      }
-    ]
-  };
-
   function getOralExamSheetAQuestionsV2320() {
-    return ORAL_EXAM_SHEET_A_V2320.blocks.flatMap(block => {
-      return block.questions.map(question => ({
-        ...question,
-        sheetId: ORAL_EXAM_SHEET_A_V2320.id,
-        sheetTitle: ORAL_EXAM_SHEET_A_V2320.title,
-        examinerIndex: block.examinerIndex,
-        examinerName: block.examinerName,
-        examinerBlockTitle: block.title
-      }));
-    });
+    if (
+      !window.AccaouiOralSheets ||
+      typeof window.AccaouiOralSheets.getSheetAQuestions !== "function"
+    ) {
+      return [];
+    }
+
+    const questions = window.AccaouiOralSheets.getSheetAQuestions();
+
+    if (!Array.isArray(questions) || questions.length !== 15) {
+      return [];
+    }
+
+    return questions;
   }
 
   function getCurrentOralSheetQuestionV2320() {
@@ -3617,6 +3486,11 @@ if (!window.ACCAOUI_V2320_ORAL_EXAM_SHEET_A_PATCH) {
     }
 
     const questions = getOralExamSheetAQuestionsV2320();
+
+    if (questions.length !== 15) {
+      showSmallNotice("Prüfungsbogen A konnte nicht geladen werden.");
+      return;
+    }
 
     window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
 
@@ -3670,7 +3544,6 @@ if (!window.ACCAOUI_V2320_ORAL_EXAM_SHEET_A_PATCH) {
     showSmallNotice("Zurück nicht möglich.");
   };
 
-  window.ORAL_EXAM_SHEET_A_V2320 = ORAL_EXAM_SHEET_A_V2320;
   window.getOralExamSheetAQuestionsV2320 = getOralExamSheetAQuestionsV2320;
 }
 
@@ -5289,6 +5162,440 @@ if (!window.ACCAOUI_V2333_FORCE_ORAL_SESSION_ANSWER_HIDDEN) {
   try {
     renderOralExamQuestionV220 = window.renderOralExamQuestionV220;
     showOralExamAnswerV220 = window.showOralExamAnswerV220;
+  } catch (error) {
+    /* Rebinding je nach Browser nicht notwendig */
+  }
+}
+
+/* =====================================================
+   v23.2 MÜNDLICHE PRÜFUNG – PRÜFUNGSBOGEN B
+   Ziel:
+   - Prüfungsbogen B aus oral-sheets-v23.js in 15-Min-Simulation
+   - Prüfungsbogen A bleibt unverändert
+===================================================== */
+
+if (!window.ACCAOUI_V232_ORAL_SHEET_B_PATCH) {
+  window.ACCAOUI_V232_ORAL_SHEET_B_PATCH = true;
+
+  const ORAL_SHEET_B_ID_V232 = "oral_sheet_b_v23";
+  let oralSheetBRatingsV232 = [];
+
+  function getOralSheetBBlockTitleV232(examinerBlock) {
+    const block = Number(examinerBlock);
+
+    if (block === 1) {
+      return "Öffentliches Recht / Gewerberecht";
+    }
+
+    if (block === 2) {
+      return "Umgang mit Menschen";
+    }
+
+    if (block === 3) {
+      return "Mischblock";
+    }
+
+    return "Prüferblock";
+  }
+
+  function mapOralSheetBQuestionV232(question) {
+    if (!question) {
+      return null;
+    }
+
+    return {
+      id: question.id,
+      question: question.examinerQuestion,
+      answer: question.modelAnswer,
+      examinerNote: question.examinerNotes,
+      category: question.topic,
+      examinerIndex: Number(question.examinerBlock) - 1,
+      examinerName: question.examinerRole,
+      examinerBlockTitle: getOralSheetBBlockTitleV232(question.examinerBlock),
+      sheetId: ORAL_SHEET_B_ID_V232,
+      sheetTitle: "Prüfungsbogen B"
+    };
+  }
+
+  function getOralExamSheetBQuestionsV232() {
+    const sheetsData = window.ACCAOUI_ORAL_SHEETS_V23;
+
+    if (!sheetsData || !Array.isArray(sheetsData.sheets)) {
+      return [];
+    }
+
+    const sheet = sheetsData.sheets.find(item => item && item.id === ORAL_SHEET_B_ID_V232);
+
+    if (!sheet || !Array.isArray(sheet.questions)) {
+      return [];
+    }
+
+    return sheet.questions
+      .map(mapOralSheetBQuestionV232)
+      .filter(Boolean);
+  }
+
+  function isOralSheetBSessionV232() {
+    try {
+      return (
+        Array.isArray(oralExamQuestionsV220) &&
+        oralExamQuestionsV220.some(question => question && question.sheetId === ORAL_SHEET_B_ID_V232)
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function isOralSheet15BlockSessionV232() {
+    try {
+      if (window.ACCAOUI_V2317_ORAL_SIMULATION_MODE !== "15") {
+        return false;
+      }
+
+      if (!Array.isArray(oralExamQuestionsV220)) {
+        return false;
+      }
+
+      return oralExamQuestionsV220.some(question => {
+        if (!question || !question.sheetId) {
+          return false;
+        }
+
+        return (
+          question.sheetId === "oral_sheet_a_v2320" ||
+          question.sheetId === "oral_sheet_a_v2340" ||
+          question.sheetId === ORAL_SHEET_B_ID_V232
+        );
+      });
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function getOralSheetBQuestionIndexV232() {
+    try {
+      return Number(oralExamIndexV220 || 0);
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  function getOralSheetBCurrentQuestionV232() {
+    try {
+      if (Array.isArray(oralExamQuestionsV220)) {
+        return oralExamQuestionsV220[getOralSheetBQuestionIndexV232()];
+      }
+    } catch (error) {
+      return null;
+    }
+
+    return null;
+  }
+
+  function getOralSheetBExaminerIndexV232(question, fallbackIndex) {
+    if (question && Number.isInteger(question.examinerIndex)) {
+      return question.examinerIndex;
+    }
+
+    if (fallbackIndex < 5) return 0;
+    if (fallbackIndex < 10) return 1;
+    return 2;
+  }
+
+  function resetOralSheetBRatingsV232() {
+    oralSheetBRatingsV232 = [];
+  }
+
+  function saveOralSheetBRatingV232(status) {
+    if (!isOralSheetBSessionV232()) {
+      return;
+    }
+
+    const questionIndex = getOralSheetBQuestionIndexV232();
+    const question = getOralSheetBCurrentQuestionV232();
+
+    oralSheetBRatingsV232[questionIndex] = {
+      index: questionIndex,
+      status: status === "known" ? "known" : "practice",
+      questionId: question && question.id ? question.id : "oral_question_" + questionIndex,
+      category: question && question.category ? question.category : "Ohne Kategorie",
+      examinerIndex: getOralSheetBExaminerIndexV232(question, questionIndex),
+      examinerName: question && question.examinerName ? question.examinerName : "",
+      blockTitle: question && question.examinerBlockTitle ? question.examinerBlockTitle : ""
+    };
+  }
+
+  function getOralSheetBBlockResultStatsV232() {
+    const questions = Array.isArray(oralExamQuestionsV220)
+      ? oralExamQuestionsV220
+      : [];
+
+    const blocks = [
+      {
+        examinerIndex: 0,
+        examinerName: "Prüfer 1",
+        title: "Öffentliches Recht / Gewerberecht",
+        range: "Frage 1–5"
+      },
+      {
+        examinerIndex: 1,
+        examinerName: "Vorsitz",
+        title: "Umgang mit Menschen",
+        range: "Frage 6–10"
+      },
+      {
+        examinerIndex: 2,
+        examinerName: "Prüfer 3",
+        title: "Mischblock",
+        range: "Frage 11–15"
+      }
+    ];
+
+    return blocks.map(block => {
+      const blockQuestions = questions.filter((question, index) => {
+        return getOralSheetBExaminerIndexV232(question, index) === block.examinerIndex;
+      });
+
+      const blockRatings = oralSheetBRatingsV232.filter(rating => {
+        return rating && rating.examinerIndex === block.examinerIndex;
+      });
+
+      const known = blockRatings.filter(rating => rating.status === "known").length;
+      const practice = blockRatings.filter(rating => rating.status === "practice").length;
+      const answered = known + practice;
+      const total = blockQuestions.length || 5;
+      const open = Math.max(0, total - answered);
+      const percent = answered > 0 ? Math.round((known / answered) * 100) : 0;
+
+      return {
+        ...block,
+        total,
+        answered,
+        known,
+        practice,
+        open,
+        percent
+      };
+    });
+  }
+
+  function applyOralSheetBResultTextsV232() {
+    if (!isOralSheetBSessionV232()) {
+      return;
+    }
+
+    const root =
+      document.querySelector(".oral-block-result-wrapper-v2322") ||
+      document.querySelector(".oral-block-result-wrapper-v2321") ||
+      document.querySelector(".main-content");
+
+    if (!root) {
+      return;
+    }
+
+    const replacements = [
+      ["Prüfungsbogen A abgeschlossen", "Prüfungsbogen B abgeschlossen"],
+      ["Prüfungsbogen A wurde abgeschlossen", "Prüfungsbogen B wurde abgeschlossen"],
+      ["Prüfungsbogen A wiederholen", "Prüfungsbogen B wiederholen"]
+    ];
+
+    root.querySelectorAll("h1, h2, h3, p, span, strong, button").forEach(element => {
+      replacements.forEach(([from, to]) => {
+        const text = (element.textContent || "").replace(/\s+/g, " ").trim();
+
+        if (text === from || text.indexOf(from) !== -1) {
+          element.textContent = text.split(from).join(to);
+        }
+      });
+    });
+
+    root.querySelectorAll("button").forEach(button => {
+      const label = (button.textContent || "").replace(/\s+/g, " ").trim();
+
+      if (label === "Prüfungsbogen B wiederholen" || label === "Prüfungsbogen A wiederholen") {
+        button.textContent = "Prüfungsbogen B wiederholen";
+        button.setAttribute("onclick", "startOralSimulationSheetBV232()");
+      }
+    });
+  }
+
+  function renderOralSheetBBlockFinishV232() {
+    if (typeof window.renderOralExamBlockFinishV2322 === "function") {
+      window.accaouiPreviousGetOralBlockResultStatsV232 =
+        window.accaouiPreviousGetOralBlockResultStatsV232 ||
+        window.getOralBlockResultStatsV2321;
+
+      window.getOralBlockResultStatsV2321 = function patchedGetOralBlockResultStatsForSheetBV232() {
+        if (isOralSheetBSessionV232()) {
+          return getOralSheetBBlockResultStatsV232();
+        }
+
+        if (typeof window.accaouiPreviousGetOralBlockResultStatsV232 === "function") {
+          return window.accaouiPreviousGetOralBlockResultStatsV232();
+        }
+
+        return [];
+      };
+
+      window.renderOralExamBlockFinishV2322();
+
+      window.getOralBlockResultStatsV2321 = window.accaouiPreviousGetOralBlockResultStatsV232;
+
+      applyOralSheetBResultTextsV232();
+
+      return;
+    }
+
+    if (typeof window.renderOralExamBlockFinishV2321 === "function") {
+      window.renderOralExamBlockFinishV2321();
+      applyOralSheetBResultTextsV232();
+    }
+  }
+
+  function scheduleOralSheetBLabelsV232() {
+    if (typeof scheduleOralSheetLabelsV2320 === "function") {
+      scheduleOralSheetLabelsV2320();
+    }
+  }
+
+  window.startOralSimulationSheetBV232 = function startOralSimulationSheetBV232() {
+    if (typeof closeOralModeSheetV2314 === "function") {
+      closeOralModeSheetV2314();
+    }
+
+    const questions = getOralExamSheetBQuestionsV232();
+
+    if (questions.length !== 15) {
+      showSmallNotice("Prüfungsbogen B konnte nicht geladen werden.");
+      return;
+    }
+
+    resetOralSheetBRatingsV232();
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
+    window.ACCAOUI_V2317_ORAL_SIMULATION_MODE = "15";
+
+    startOralExamSessionV220(
+      questions,
+      "15-Minuten-Simulation · Prüfungsbogen B"
+    );
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = false;
+
+    if (typeof startOralSimulationTimerV2317 === "function") {
+      startOralSimulationTimerV2317();
+    }
+
+    if (typeof updateActiveExaminerV2317 === "function") {
+      updateActiveExaminerV2317();
+    }
+
+    scheduleOralSheetBLabelsV232();
+  };
+
+  window.getOralExamSheetBQuestionsV232 = getOralExamSheetBQuestionsV232;
+
+  window.accaouiPreviousShowOralExamModeSelectV232 =
+    window.showOralExamModeSelectV2314;
+
+  window.showOralExamModeSelectV2314 = function patchedShowOralExamModeSelectV232() {
+    if (typeof window.accaouiPreviousShowOralExamModeSelectV232 === "function") {
+      window.accaouiPreviousShowOralExamModeSelectV232();
+    }
+
+    const grid = document.querySelector(".oral-mode-grid-v2314");
+
+    if (!grid || document.getElementById("oralModeSheetBBtnV232")) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = "oralModeSheetBBtnV232";
+    button.className = "oral-mode-card-v2314";
+    button.setAttribute("onclick", "startOralSimulationSheetBV232()");
+    button.innerHTML = `
+      <span>⏱️</span>
+      <strong>15-Minuten-Simulation B</strong>
+      <small>Neuer Accaoui-Trainingsbogen · 3 Prüfer · 15 Fragen</small>
+    `;
+
+    const primaryButton = grid.querySelector(".oral-mode-card-v2314.is-primary");
+
+    if (primaryButton && primaryButton.nextElementSibling) {
+      grid.insertBefore(button, primaryButton.nextElementSibling);
+    } else if (primaryButton) {
+      primaryButton.insertAdjacentElement("afterend", button);
+    } else {
+      grid.appendChild(button);
+    }
+  };
+
+  window.accaouiPreviousStartOralExamSessionV232 =
+    window.startOralExamSessionV220;
+
+  window.startOralExamSessionV220 = function patchedStartOralExamSessionV232(questions, title) {
+    const isSheetB =
+      Array.isArray(questions) &&
+      questions.some(question => question && question.sheetId === ORAL_SHEET_B_ID_V232);
+
+    if (isSheetB) {
+      resetOralSheetBRatingsV232();
+    }
+
+    if (typeof window.accaouiPreviousStartOralExamSessionV232 === "function") {
+      return window.accaouiPreviousStartOralExamSessionV232(questions, title);
+    }
+
+    showSmallNotice("Mündliche Prüfungsrunde konnte nicht gestartet werden.");
+  };
+
+  window.accaouiPreviousRateOralExamQuestionV232 =
+    window.rateOralExamQuestionV220;
+
+  window.rateOralExamQuestionV220 = function patchedRateOralExamQuestionV232(status) {
+    saveOralSheetBRatingV232(status);
+
+    if (typeof window.accaouiPreviousRateOralExamQuestionV232 === "function") {
+      const result = window.accaouiPreviousRateOralExamQuestionV232(status);
+
+      if (isOralSheetBSessionV232()) {
+        scheduleOralSheetBLabelsV232();
+      }
+
+      return result;
+    }
+
+    showSmallNotice("Bewertung konnte nicht gespeichert werden.");
+  };
+
+  window.accaouiPreviousShowOralExamFinishScreenV232 =
+    window.showOralExamFinishScreenV220;
+
+  window.showOralExamFinishScreenV220 = function patchedShowOralExamFinishScreenV232() {
+    if (isOralSheetBSessionV232()) {
+      renderOralSheetBBlockFinishV232();
+      return;
+    }
+
+    if (isOralSheet15BlockSessionV232()) {
+      if (typeof window.accaouiPreviousShowOralExamFinishScreenV232 === "function") {
+        return window.accaouiPreviousShowOralExamFinishScreenV232();
+      }
+
+      return;
+    }
+
+    if (typeof window.accaouiPreviousShowOralExamFinishScreenV232 === "function") {
+      return window.accaouiPreviousShowOralExamFinishScreenV232();
+    }
+  };
+
+  try {
+    showOralExamModeSelectV2314 = window.showOralExamModeSelectV2314;
+    startOralExamSessionV220 = window.startOralExamSessionV220;
+    rateOralExamQuestionV220 = window.rateOralExamQuestionV220;
+    showOralExamFinishScreenV220 = window.showOralExamFinishScreenV220;
   } catch (error) {
     /* Rebinding je nach Browser nicht notwendig */
   }

@@ -55,3 +55,21 @@
   opacity: 0.72 !important;
   cursor: not-allowed !important;
 }
+
+/* =====================================================
+   v23.3.6 MÜNDLICHE PRÜFUNG – SCROLL STABILISIEREN
+===================================================== */
+
+.oral-question-card,
+.oral-mistake-card-v2324,
+.oral-session-header {
+  scroll-margin-top: 96px !important;
+}
+
+@media (max-width: 640px) {
+  .oral-question-card,
+  .oral-mistake-card-v2324,
+  .oral-session-header {
+    scroll-margin-top: 76px !important;
+  }
+}

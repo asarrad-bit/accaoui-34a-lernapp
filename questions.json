@@ -295,7 +295,7 @@
   },
   {
     "id": "bgb_001",
-    "category": "Bürgerliches Recht",
+    "category": "Bürgerliches Gesetzbuch",
     "type": "single",
     "question": "Was regelt das Bürgerliche Gesetzbuch hauptsächlich?",
     "answers": [
@@ -309,7 +309,7 @@
   },
   {
     "id": "bgb_002",
-    "category": "Bürgerliches Recht",
+    "category": "Bürgerliches Gesetzbuch",
     "type": "multiple",
     "question": "Welche Rechte können für Sicherheitsmitarbeiter im Objekt besonders wichtig sein?",
     "answers": [
@@ -323,7 +323,7 @@
   },
   {
     "id": "bgb_003",
-    "category": "Bürgerliches Recht",
+    "category": "Bürgerliches Gesetzbuch",
     "type": "praxisfall",
     "question": "Ein Besucher weigert sich trotz Aufforderung, ein Privatgelände zu verlassen. Was ist grundsätzlich richtig?",
     "answers": [
@@ -337,7 +337,7 @@
   },
   {
     "id": "bgb_004",
-    "category": "Bürgerliches Recht",
+    "category": "Bürgerliches Gesetzbuch",
     "type": "combination",
     "question": "Welche Aussagen zum Hausrecht sind richtig?\n\n1. Der Hausrechtsinhaber kann bestimmen, wer seine Räume betreten darf.\n2. Ein Sicherheitsmitarbeiter kann vom Hausrechtsinhaber beauftragt werden.\n3. Hausrecht erlaubt immer Freiheitsentziehung.\n4. Hausrecht ersetzt das Strafrecht vollständig.",
     "answers": [
@@ -351,7 +351,7 @@
   },
   {
     "id": "bgb_005",
-    "category": "Bürgerliches Recht",
+    "category": "Bürgerliches Gesetzbuch",
     "type": "single",
     "question": "Wann kann Schadensersatz nach dem BGB grundsätzlich eine Rolle spielen?",
     "answers": [
@@ -365,7 +365,7 @@
   },
   {
     "id": "straf_001",
-    "category": "Straf- und Strafverfahrensrecht",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
     "type": "single",
     "question": "Was ist eine Straftat?",
     "answers": [
@@ -379,7 +379,7 @@
   },
   {
     "id": "straf_002",
-    "category": "Straf- und Strafverfahrensrecht",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
     "type": "multiple",
     "question": "Was bedeutet Notwehr grundsätzlich?",
     "answers": [
@@ -393,7 +393,7 @@
   },
   {
     "id": "straf_003",
-    "category": "Straf- und Strafverfahrensrecht",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
     "type": "praxisfall",
     "question": "Ein Ladendieb wird auf frischer Tat betroffen und will flüchten. Was kann für Sicherheitsmitarbeiter rechtlich relevant sein?",
     "answers": [
@@ -407,7 +407,7 @@
   },
   {
     "id": "straf_004",
-    "category": "Straf- und Strafverfahrensrecht",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
     "type": "combination",
     "question": "Welche Aussagen zur Notwehr sind richtig?\n\n1. Es muss ein gegenwärtiger Angriff vorliegen.\n2. Der Angriff muss rechtswidrig sein.\n3. Notwehr ist immer Rache.\n4. Notwehr darf nur von Polizeibeamten ausgeübt werden.",
     "answers": [
@@ -421,7 +421,7 @@
   },
   {
     "id": "straf_005",
-    "category": "Straf- und Strafverfahrensrecht",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
     "type": "single",
     "question": "Welche Handlung kann grundsätzlich eine Körperverletzung sein?",
     "answers": [
@@ -505,7 +505,7 @@
   },
   {
     "id": "uvv_001",
-    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
     "question": "Wozu dienen Dienstanweisungen im Wach- und Sicherheitsdienst?",
     "answers": [
@@ -519,7 +519,7 @@
   },
   {
     "id": "uvv_002",
-    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "multiple",
     "question": "Was ist bei Dienstantritt besonders wichtig?",
     "answers": [
@@ -533,7 +533,7 @@
   },
   {
     "id": "uvv_003",
-    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "praxisfall",
     "question": "Während eines Rundgangs entdeckt ein Sicherheitsmitarbeiter eine defekte Notbeleuchtung. Was ist richtig?",
     "answers": [
@@ -547,7 +547,7 @@
   },
   {
     "id": "uvv_004",
-    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "combination",
     "question": "Welche Aussagen zum Eigenschutz sind richtig?\n\n1. Eigenschutz hat im Sicherheitsdienst hohe Priorität.\n2. Unnötige Eigengefährdung ist zu vermeiden.\n3. Sicherheitsmitarbeiter müssen sich immer körperlich durchsetzen.\n4. Unterstützung darf niemals angefordert werden.",
     "answers": [
@@ -561,7 +561,7 @@
   },
   {
     "id": "uvv_005",
-    "category": "Unfallverhütungsvorschrift Wach- und Sicherungsdienste",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
     "question": "Welche Aussage zu Schreckschuss-, Reizstoff- oder Signalwaffen im Bewachungsdienst ist richtig?",
     "answers": [
@@ -645,7 +645,7 @@
   },
   {
     "id": "waffen_001",
-    "category": "Grundzüge des Waffenrechts",
+    "category": "Umgang mit Waffen",
     "type": "single",
     "question": "Welche Aussage zu Anscheinswaffen ist richtig?",
     "answers": [
@@ -659,7 +659,7 @@
   },
   {
     "id": "waffen_002",
-    "category": "Grundzüge des Waffenrechts",
+    "category": "Umgang mit Waffen",
     "type": "multiple",
     "question": "Was ist im Waffenrecht für Sicherheitsmitarbeiter besonders wichtig?",
     "answers": [
@@ -673,7 +673,7 @@
   },
   {
     "id": "waffen_003",
-    "category": "Grundzüge des Waffenrechts",
+    "category": "Umgang mit Waffen",
     "type": "praxisfall",
     "question": "Ein Sicherheitsmitarbeiter möchte im Dienst eine erlaubnispflichtige Schusswaffe führen. Was ist grundsätzlich richtig?",
     "answers": [
@@ -687,7 +687,7 @@
   },
   {
     "id": "waffen_004",
-    "category": "Grundzüge des Waffenrechts",
+    "category": "Umgang mit Waffen",
     "type": "combination",
     "question": "Welche Aussagen zum kleinen Waffenschein sind richtig?\n\n1. Er betrifft das Führen bestimmter Schreckschuss-, Reizstoff- und Signalwaffen.\n2. Er erlaubt automatisch das Führen scharfer Schusswaffen.\n3. Er ersetzt nicht alle sonstigen waffenrechtlichen Grenzen.\n4. Er macht jede Verwendung im Bewachungsdienst automatisch zulässig.",
     "answers": [
@@ -701,7 +701,7 @@
   },
   {
     "id": "waffen_005",
-    "category": "Grundzüge des Waffenrechts",
+    "category": "Umgang mit Waffen",
     "type": "single",
     "question": "Welche Aussage zum Führen von Waffen ist richtig?",
     "answers": [
