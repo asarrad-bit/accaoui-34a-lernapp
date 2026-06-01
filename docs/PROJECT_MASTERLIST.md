@@ -187,3 +187,5 @@ Dann ausführen:
 git status
 git log -1 --oneline
 python tools/preflight.py
+
+7. Mündliche Prüfung: skalierbare Prüfungsbogen-Auswahl bauen. Ziel: nicht jeden Prüfungsbogen als großen Button anzeigen, sondern Hauptmodus „Prüfungssimulation“ mit Auswahl A, B, C, D ...
