@@ -189,3 +189,6 @@ git log -1 --oneline
 python tools/preflight.py
 
 7. Mündliche Prüfung: skalierbare Prüfungsbogen-Auswahl bauen. Ziel: nicht jeden Prüfungsbogen als großen Button anzeigen, sondern Hauptmodus „Prüfungssimulation“ mit Auswahl A, B, C, D ...
+
+v23.5.2
+Mündliche Prüfung funktional getestet. Simulation A, Simulation B, Musterantworten, Bewertungslogik, Fehlertraining und Online-Anzeige funktionieren.
