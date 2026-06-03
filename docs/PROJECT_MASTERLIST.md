@@ -291,3 +291,6 @@ python tools/preflight.py
 ```
 
 Keine Änderung ohne sauberen Arbeitsstand.
+
+v23.5.12
+Lernkarten funktional getestet und Layout-Fix umgesetzt. Lange Fragen, Antwortansicht, Erklärungen, Buttons, Gewusst/Nicht gewusst und Wiederholen-Karten werden sauber dargestellt.
