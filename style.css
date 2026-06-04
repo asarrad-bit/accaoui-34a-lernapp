@@ -8096,3 +8096,78 @@ body:has(.oral-room-scene-v221.is-session) .oral-exam-wrapper > .oral-question-c
     margin-top: 24px !important;
   }
 }
+
+/* =====================================================
+   v23.5.21 Eleganter Lernkarten-Flip
+   Ziel: 3D-Flip wieder aktiv, v23.5.11 Layout beibehalten
+===================================================== */
+
+.flashcard-scene {
+  perspective: 1400px !important;
+  overflow: visible !important;
+  min-height: auto !important;
+  height: auto !important;
+}
+
+.flashcard-inner {
+  display: grid !important;
+  position: relative !important;
+  width: 100% !important;
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  transform-style: preserve-3d !important;
+  transform: rotateY(0deg) !important;
+  transition: transform 0.55s ease !important;
+}
+
+.flashcard-inner.flipped {
+  transform: rotateY(180deg) !important;
+}
+
+.flashcard-side {
+  grid-area: 1 / 1 !important;
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  justify-content: flex-start !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flashcard-front-side {
+  display: flex !important;
+  flex-direction: column !important;
+  transform: rotateY(0deg) !important;
+}
+
+.flashcard-back-side {
+  display: flex !important;
+  flex-direction: column !important;
+  transform: rotateY(180deg) !important;
+}
+
+.flashcard-inner.flipped .flashcard-front-side,
+.flashcard-inner.flipped .flashcard-back-side {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
+  .flashcard-scene {
+    perspective: 1200px !important;
+  }
+
+  .flashcard-inner {
+    transition: transform 0.5s ease !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flashcard-inner {
+    transition: none !important;
+  }
+}
