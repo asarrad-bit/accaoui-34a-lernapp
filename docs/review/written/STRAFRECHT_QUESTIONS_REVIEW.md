@@ -1,10 +1,10 @@
 # Accaoui §34a – Review: Strafgesetzbuch und Strafverfahrensrecht (+8 Fragen)
 
-Stand: v23.5.25 (Freigabe approved)
+Stand: v23.5.26 (Dublettenprüfung dokumentiert)
 Block: B (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `approved`
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
+**Status aller Fragen:** `ready_for_import`
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Block ist importbereit; Import erfolgt erst im separaten Import-Task.
 
 ---
 
@@ -12,14 +12,14 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-STGB-01 | straf_006 | Straftat und Ordnungswidrigkeit | 1 | approved |
-| 02 | REV-STGB-02 | straf_007 | Vorsatz und Fahrlässigkeit | 1 | approved |
-| 03 | REV-STGB-03 | straf_008 | Notwehr (§ 32 StGB) | 2 | approved |
-| 04 | REV-STGB-04 | straf_009 | Rechtfertigender Notstand (§ 34 StGB) | 1 | approved |
-| 05 | REV-STGB-05 | straf_010 | Jedermann-Festnahme (§ 127 Abs. 1 StPO) | 2 | approved |
-| 06 | REV-STGB-06 | straf_011 | Körperverletzung (§ 223 StGB) | 1 | approved |
-| 07 | REV-STGB-07 | straf_012 | Nötigung (§ 240 StGB) | 1 | approved |
-| 08 | REV-STGB-08 | straf_013 | Diebstahl / Hausfriedensbruch (§§ 242, 123 StGB) | 2 | approved |
+| 01 | REV-STGB-01 | straf_006 | Straftat und Ordnungswidrigkeit | 1 | ready_for_import |
+| 02 | REV-STGB-02 | straf_007 | Vorsatz und Fahrlässigkeit | 1 | ready_for_import |
+| 03 | REV-STGB-03 | straf_008 | Notwehr (§ 32 StGB) | 2 | ready_for_import |
+| 04 | REV-STGB-04 | straf_009 | Rechtfertigender Notstand (§ 34 StGB) | 1 | ready_for_import |
+| 05 | REV-STGB-05 | straf_010 | Jedermann-Festnahme (§ 127 Abs. 1 StPO) | 2 | ready_for_import |
+| 06 | REV-STGB-06 | straf_011 | Körperverletzung (§ 223 StGB) | 1 | ready_for_import |
+| 07 | REV-STGB-07 | straf_012 | Nötigung (§ 240 StGB) | 1 | ready_for_import |
+| 08 | REV-STGB-08 | straf_013 | Diebstahl / Hausfriedensbruch (§§ 242, 123 StGB) | 2 | ready_for_import |
 
 **Summe Punkte (wenn alle richtig):** 11
 
@@ -39,7 +39,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -61,7 +61,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24 |
-| Dublettenprüfung | Thematisch nah zu straf_001; inhaltlich vertieft (OWiG) – Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Accaoui-Fall Baustelle / Zutritt |
 
 ---
@@ -80,7 +80,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -102,7 +102,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24 |
-| Dublettenprüfung | Keine direkte Dublette im Review-Set; Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Verknüpfung zu Körperverletzung ohne Vorsatz |
 
 ---
@@ -121,7 +121,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -144,7 +144,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24, Antwortlogik a + c |
-| Dublettenprüfung | Thematische Nähe zu straf_002/straf_004; Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Sicherheitskontext; Abgrenzung BGB § 227 |
 
 ---
@@ -163,7 +163,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -185,7 +185,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24 |
-| Dublettenprüfung | Abgrenzung zu BGB-Notstand in anderen Blöcken; Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Abgrenzung zu entschuldigendem Notstand § 35 StGB und BGB-Notständen |
 
 ---
@@ -204,7 +204,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -227,7 +227,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24 |
-| Dublettenprüfung | Thematische Nähe zu straf_003; vertieft § 127 Abs. 1 – Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Praxis Ladendiebstahl; StPO nicht StGB |
 
 ---
@@ -246,7 +246,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -268,7 +268,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24 |
-| Dublettenprüfung | Thematische Nähe zu straf_005; Fallbezug vertieft – Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Abgrenzung Notwehr / Verhältnismäßigkeit |
 
 ---
@@ -287,7 +287,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -309,7 +309,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24 |
-| Dublettenprüfung | Keine direkte Dublette im Review-Set; Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Praxis Ausgangssperre / Entschuldigung |
 
 ---
@@ -328,7 +328,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -356,8 +356,41 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.24 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.26, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Kombinationsfrage; 2 Punkte |
+
+---
+
+## Dublettenprüfung gegen questions.json (v23.5.26)
+
+Geprüft wurden die 8 Review-Fragen (Ziel-IDs `straf_006`–`straf_013`) gegen die **5 bestehenden** Strafrecht-Fragen in `questions.json`.
+
+### Bestehende Strafrecht-Fragen in questions.json
+
+| ID | Kurzinhalt |
+|----|------------|
+| straf_001 | Straftat allgemein |
+| straf_002 | Notwehr allgemein |
+| straf_003 | Jedermann-Festnahme allgemein |
+| straf_004 | Notwehr Aussagen |
+| straf_005 | Körperverletzung allgemein |
+
+### Prüfergebnis
+
+| Review-ID | Ergebnis |
+|-----------|----------|
+| REV-STGB-01 | Keine direkte Dublette; **thematische Nähe** zu straf_001 (Straftat), aber **Vertiefung** (OWiG-Abgrenzung, Fall Baustelle) |
+| REV-STGB-02 | Keine direkte Dublette |
+| REV-STGB-03 | Keine direkte Dublette; **thematische Nähe** zu straf_002/straf_004 (Notwehr), aber **Vertiefung** (§ 32 StGB, 2-Punkte, Nothilfe) |
+| REV-STGB-04 | Keine direkte Dublette |
+| REV-STGB-05 | Keine direkte Dublette; **thematische Nähe** zu straf_003 (Jedermann-Festnahme), aber **Vertiefung** (§ 127 Abs. 1 StPO, Fluchtverdacht/Identität) |
+| REV-STGB-06 | Keine direkte Dublette; **thematische Nähe** zu straf_005 (Körperverletzung), aber **Vertiefung** (§ 223 StGB, Fallbezug) |
+| REV-STGB-07 | Keine direkte Dublette |
+| REV-STGB-08 | Keine direkte Dublette |
+
+**Gesamt:** Keine direkte Dublette. Thematische Nähe bei Notwehr, Jedermann-Festnahme und Körperverletzung; die neuen Fragen sind **Vertiefungen**, keine Wiederholungen. Der Block darf auf **`ready_for_import`** gesetzt werden.
+
+**Prüfdatum / Task:** v23.5.26
 
 ---
 
@@ -367,15 +400,15 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 8 |
 | Ziel-IDs | straf_006 … straf_013 |
-| Status | alle `approved` |
+| Status | alle `ready_for_import` |
 
-## Review-Zusammenfassung (v23.5.25)
+## Review-Zusammenfassung (v23.5.26)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
 | **reviewed** | 0 | — |
-| **approved** | 8 | REV-STGB-01 … REV-STGB-08 |
-| **ready_for_import** | 0 | — |
+| **approved** | 0 | — |
+| **ready_for_import** | 8 | REV-STGB-01 … REV-STGB-08 |
 | **rewrite_required** | 0 | — |
 
 ### Fachliche Prüfung (v23.5.24) – abgeschlossen
@@ -386,19 +419,31 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 - **REV-STGB-07:** § 240 StGB inkl. Abs. 2 (Verwerflichkeit)
 - **REV-STGB-08:** Diebstahl als Wegnahme in Zueignungsabsicht
 
-### Freigabe (v23.5.25)
+### Freigabe (v23.5.25) – abgeschlossen
 
-- Alle 8 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
-- Die **Dublettenprüfung** gegen `questions.json` steht noch aus.
-- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
+- Alle 8 Fragen fachlich **approved**
 
-### Nächste Schritte
+### Dublettenprüfung (v23.5.26) – abgeschlossen
 
-- Dublettenprüfung gegen `questions.json` (straf_001–straf_005)
-- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
-- Import erst über separaten Import-Task
+- Abgleich mit 5 bestehenden Strafrecht-Fragen in `questions.json` (straf_001–straf_005) durchgeführt
+- Keine direkte Dublette; thematische Nähe bei Notwehr, Jedermann-Festnahme, Körperverletzung – jeweils **Vertiefung**, kein Ersatz
+- Alle 8 Fragen: **`ready_for_import`**
 
-**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits straf_001–straf_005. Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
+### Kennzahlen
+
+| Kennzahl | Wert |
+|----------|------|
+| Fragen in dieser Datei | 8 |
+| Summe Punkte (wenn alle richtig) | 11 |
+| Nächster Schritt | **Separater Import-Task** → `questions.json` (`straf_006`–`straf_013`) |
+
+### Import-Regel
+
+**Hinweis:** Der Block ist **`ready_for_import`**, aber **noch nicht importiert**. Der Import in `questions.json` erfolgt **erst in einem eigenen Import-Task** (mit Preflight, `audit-categories.py`, Browser-Test).
+
+**Nicht in dieser Aufgabe:** Keine Einträge in `questions.json` – Import bleibt bis zum Import-Task ausstehend.
+
+**Hinweis zu bestehenden Fragen:** straf_001–straf_005 bleiben unverändert; straf_006–straf_013 **ergänzen** und **vertiefen**.
 
 ---
 
