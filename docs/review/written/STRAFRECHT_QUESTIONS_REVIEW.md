@@ -1,10 +1,10 @@
 # Accaoui §34a – Review: Strafgesetzbuch und Strafverfahrensrecht (+8 Fragen)
 
-Stand: v23.5.24 (fachliche Nachschärfung)
-Block: B (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
-Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `reviewed`
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
+Stand: v23.5.25 (Freigabe approved)  
+Block: B (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)  
+Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`  
+**Status aller Fragen:** `approved`  
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
 
 ---
 
@@ -12,14 +12,14 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-STGB-01 | straf_006 | Straftat und Ordnungswidrigkeit | 1 | reviewed |
-| 02 | REV-STGB-02 | straf_007 | Vorsatz und Fahrlässigkeit | 1 | reviewed |
-| 03 | REV-STGB-03 | straf_008 | Notwehr (§ 32 StGB) | 2 | reviewed |
-| 04 | REV-STGB-04 | straf_009 | Rechtfertigender Notstand (§ 34 StGB) | 1 | reviewed |
-| 05 | REV-STGB-05 | straf_010 | Jedermann-Festnahme (§ 127 Abs. 1 StPO) | 2 | reviewed |
-| 06 | REV-STGB-06 | straf_011 | Körperverletzung (§ 223 StGB) | 1 | reviewed |
-| 07 | REV-STGB-07 | straf_012 | Nötigung (§ 240 StGB) | 1 | reviewed |
-| 08 | REV-STGB-08 | straf_013 | Diebstahl / Hausfriedensbruch (§§ 242, 123 StGB) | 2 | reviewed |
+| 01 | REV-STGB-01 | straf_006 | Straftat und Ordnungswidrigkeit | 1 | approved |
+| 02 | REV-STGB-02 | straf_007 | Vorsatz und Fahrlässigkeit | 1 | approved |
+| 03 | REV-STGB-03 | straf_008 | Notwehr (§ 32 StGB) | 2 | approved |
+| 04 | REV-STGB-04 | straf_009 | Rechtfertigender Notstand (§ 34 StGB) | 1 | approved |
+| 05 | REV-STGB-05 | straf_010 | Jedermann-Festnahme (§ 127 Abs. 1 StPO) | 2 | approved |
+| 06 | REV-STGB-06 | straf_011 | Körperverletzung (§ 223 StGB) | 1 | approved |
+| 07 | REV-STGB-07 | straf_012 | Nötigung (§ 240 StGB) | 1 | approved |
+| 08 | REV-STGB-08 | straf_013 | Diebstahl / Hausfriedensbruch (§§ 242, 123 StGB) | 2 | approved |
 
 **Summe Punkte (wenn alle richtig):** 11
 
@@ -39,7 +39,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -80,7 +80,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -121,7 +121,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -163,7 +163,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -204,7 +204,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -246,7 +246,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -287,7 +287,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -328,7 +328,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -367,31 +367,36 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 8 |
 | Ziel-IDs | straf_006 … straf_013 |
-| Status | alle `reviewed` |
+| Status | alle `approved` |
 
-## Review-Zusammenfassung (v23.5.24)
+## Review-Zusammenfassung (v23.5.25)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
-| **reviewed** | 8 | REV-STGB-01 … REV-STGB-08 |
-| **approved** | 0 | — |
+| **reviewed** | 0 | — |
+| **approved** | 8 | REV-STGB-01 … REV-STGB-08 |
 | **ready_for_import** | 0 | — |
 | **rewrite_required** | 0 | — |
 
 ### Fachliche Prüfung (v23.5.24) – abgeschlossen
 
-- **REV-STGB-03:** Notwehr § 32 – richtige Antworten a + c (Nothilfe), ohne unsaubere Notwehrexzess-Kernaussage
-- **REV-STGB-04:** Notiz zu § 35 StGB / BGB-Notstand korrigiert
-- **REV-STGB-05:** § 127 Abs. 1 StPO – Fluchtverdacht und Identität präzisiert
-- **REV-STGB-07:** § 240 StGB inkl. Abs. 2 (Verwerflichkeit)
-- **REV-STGB-08:** Diebstahl als Wegnahme in Zueignungsabsicht
+- **REV-STGB-03:** Notwehr § 32 – richtige Antworten a + c (Nothilfe), ohne unsaubere Notwehrexzess-Kernaussage  
+- **REV-STGB-04:** Notiz zu § 35 StGB / BGB-Notstand korrigiert  
+- **REV-STGB-05:** § 127 Abs. 1 StPO – Fluchtverdacht und Identität präzisiert  
+- **REV-STGB-07:** § 240 StGB inkl. Abs. 2 (Verwerflichkeit)  
+- **REV-STGB-08:** Diebstahl als Wegnahme in Zueignungsabsicht  
+
+### Freigabe (v23.5.25)
+
+- Alle 8 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.  
+- Die **Dublettenprüfung** gegen `questions.json` steht noch aus.  
+- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.  
 
 ### Nächste Schritte
 
-- **Noch nicht** `approved`
-- **Noch nicht** `ready_for_import`
-- **Dublettenprüfung** gegen `questions.json` steht noch aus
-- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task
+- Dublettenprüfung gegen `questions.json` (straf_001–straf_005)  
+- Bei Ergebnis ohne Konflikt: Status `ready_for_import`  
+- Import erst über separaten Import-Task  
 
 **Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits straf_001–straf_005. Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
 
