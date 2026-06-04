@@ -11,14 +11,14 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-BGB-01 | q_052 | Besitz und Eigentum | 1 | reviewed |
-| 02 | REV-BGB-02 | q_053 | Verbotene Eigenmacht (§ 858 BGB) | 1 | reviewed |
-| 03 | REV-BGB-03 | q_054 | Selbsthilfe des Besitzers (§ 859 BGB) | 2 | reviewed |
-| 04 | REV-BGB-04 | q_055 | Besitzdiener (§ 860 BGB) | 1 | reviewed |
-| 05 | REV-BGB-05 | q_056 | Allgemeine Selbsthilfe (§ 229 BGB) | 1 | reviewed |
-| 06 | REV-BGB-06 | q_057 | Notwehr (§ 227 BGB) | 2 | reviewed |
-| 07 | REV-BGB-07 | q_058 | Notstand (§§ 228, 904 BGB) | 1 | reviewed |
-| 08 | REV-BGB-08 | q_059 | Schadensersatz / Minderjährigenhaftung | 1 | reviewed |
+| 01 | REV-BGB-01 | q_052 | Besitz und Eigentum | 1 | approved |
+| 02 | REV-BGB-02 | q_053 | Verbotene Eigenmacht (§ 858 BGB) | 1 | approved |
+| 03 | REV-BGB-03 | q_054 | Selbsthilfe des Besitzers (§ 859 BGB) | 2 | approved |
+| 04 | REV-BGB-04 | q_055 | Besitzdiener (§ 860 BGB) | 1 | approved |
+| 05 | REV-BGB-05 | q_056 | Allgemeine Selbsthilfe (§ 229 BGB) | 1 | approved |
+| 06 | REV-BGB-06 | q_057 | Notwehr (§ 227 BGB) | 2 | approved |
+| 07 | REV-BGB-07 | q_058 | Notstand (§§ 228, 904 BGB) | 1 | approved |
+| 08 | REV-BGB-08 | q_059 | Schadensersatz / Minderjährigenhaftung | 1 | approved |
 
 ---
 
@@ -36,7 +36,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -79,7 +79,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -120,7 +120,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -166,7 +166,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | mittel |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -207,7 +207,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -253,7 +253,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -299,7 +299,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -348,7 +348,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -381,10 +381,10 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
-| **reviewed** | 8 | REV-BGB-01 … REV-BGB-08 |
+| **reviewed** | 0 | — |
 | **rewrite_required** | 0 | — |
+| **approved** | 8 | REV-BGB-01 … REV-BGB-08 |
 | **ready_for_import** | 0 | — |
-| **approved** | 0 | — |
 
 ### Kennzahlen
 
@@ -392,13 +392,13 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 8 |
 | Summe Punkte (wenn alle richtig) | 10 |
-| Nächster Schritt | Endfreigabe `approved` → danach `ready_for_import` → Import-Task |
+| Nächster Schritt | Dublettenprüfung gegen `questions.json` → danach `ready_for_import` → Import-Task |
 
 ### Import-Regel
 
-**Nicht in `questions.json` importieren**, solange nicht **alle** Fragen dieses Blocks den Status **`approved`** oder **`ready_for_import`** haben und die Dublettenprüfung gegen `questions.json` ohne Treffer ist.
+**Nicht in `questions.json` importieren**, solange nicht **alle** Fragen dieses Blocks den Status **`ready_for_import`** haben und die Dublettenprüfung gegen `questions.json` ohne Treffer ist.
 
-Aktuell: fachlich **reviewed**, aber noch **ohne** `approved` / `ready_for_import` – Import bleibt gesperrt.
+**Hinweis:** Die Fragen sind fachlich **approved**, aber noch **nicht** `ready_for_import`, weil die **Dublettenprüfung gegen `questions.json` noch aussteht**. Import bleibt gesperrt.
 
 ---
 
