@@ -1,6 +1,6 @@
 # Accaoui §34a – Review: Bürgerliches Gesetzbuch (+8 Fragen)
 
-Stand: v23.5.18 (Finalkorrektur vor Dublettenprüfung)
+Stand: v23.5.19 (Dublettenprüfung dokumentiert)
 Block: A (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 **Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
@@ -11,14 +11,14 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-BGB-01 | q_052 | Besitz und Eigentum | 1 | approved |
-| 02 | REV-BGB-02 | q_053 | Verbotene Eigenmacht (§ 858 BGB) | 1 | approved |
-| 03 | REV-BGB-03 | q_054 | Selbsthilfe des Besitzers (§ 859 BGB) | 2 | approved |
-| 04 | REV-BGB-04 | q_055 | Besitzdiener (§ 860 BGB) | 1 | approved |
-| 05 | REV-BGB-05 | q_056 | Allgemeine Selbsthilfe (§ 229 BGB) | 1 | approved |
-| 06 | REV-BGB-06 | q_057 | Notwehr (§ 227 BGB) | 2 | approved |
-| 07 | REV-BGB-07 | q_058 | Notstand (§§ 228, 904 BGB) | 1 | approved |
-| 08 | REV-BGB-08 | q_059 | Schadensersatz / Minderjährigenhaftung | 1 | approved |
+| 01 | REV-BGB-01 | q_052 | Besitz und Eigentum | 1 | ready_for_import |
+| 02 | REV-BGB-02 | q_053 | Verbotene Eigenmacht (§ 858 BGB) | 1 | ready_for_import |
+| 03 | REV-BGB-03 | q_054 | Selbsthilfe des Besitzers (§ 859 BGB) | 2 | ready_for_import |
+| 04 | REV-BGB-04 | q_055 | Besitzdiener (§ 860 BGB) | 1 | ready_for_import |
+| 05 | REV-BGB-05 | q_056 | Allgemeine Selbsthilfe (§ 229 BGB) | 1 | ready_for_import |
+| 06 | REV-BGB-06 | q_057 | Notwehr (§ 227 BGB) | 2 | ready_for_import |
+| 07 | REV-BGB-07 | q_058 | Notstand (§§ 228, 904 BGB) | 1 | ready_for_import |
+| 08 | REV-BGB-08 | q_059 | Schadensersatz / Minderjährigenhaftung | 1 | ready_for_import |
 
 ---
 
@@ -36,7 +36,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -60,7 +60,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.16, Antwort eindeutig |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Accaoui-eigener Anwendungsfall Objektschutz / Lagerhalle |
 
 ---
@@ -79,7 +79,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -101,7 +101,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.16, sprachlich geglättet |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Praxis: keine Forderungssicherung durch Besitzverletzung |
 
 ---
@@ -120,7 +120,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -147,7 +147,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.18, Fall zu § 859 Abs. 2 angepasst |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Finalkorrektur v23.5.18; Antwortlogik eindeutig |
 
 ---
@@ -166,7 +166,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | mittel |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -188,7 +188,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.16 |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Abgrenzung zu eigenem Besitz des Wachpersonals |
 
 ---
@@ -207,7 +207,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -234,7 +234,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.16, „Befriedigung“ korrigiert |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Abgrenzung zu § 859 BGB und § 858 BGB |
 
 ---
@@ -253,7 +253,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -280,7 +280,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.16, „Notwehrhandlung“ / Gebotenheit |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | BGB-Deliktsschutz; StGB bei Prüfung gesondert erwähnbar |
 
 ---
@@ -299,7 +299,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -329,7 +329,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.18, § 228/904 präzisiert |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Finalkorrektur v23.5.18; Antwort a eindeutig |
 
 ---
@@ -348,7 +348,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -374,29 +374,64 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.18, § 828 Abs. 1–4 differenziert |
-| Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
+| Dublettenprüfung | OK – v23.5.19, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Finalkorrektur v23.5.18; Abs. 3 für 17-Jährigen maßgeblich |
 
 ---
 
-## Review-Zusammenfassung (v23.5.18)
+## Dublettenprüfung gegen questions.json (v23.5.19)
+
+Geprüft wurden die 8 Review-Fragen (Ziel-IDs `q_052`–`q_059`) gegen die **5 bestehenden** BGB-Fragen in `questions.json`.
+
+### Bestehende BGB-Fragen in questions.json
+
+| ID | Kurzinhalt |
+|----|------------|
+| bgb_001 | Was regelt das Bürgerliche Gesetzbuch hauptsächlich? |
+| bgb_002 | Welche Rechte können für Sicherheitsmitarbeiter im Objekt besonders wichtig sein? |
+| bgb_003 | Besucher weigert sich, Privatgelände zu verlassen |
+| bgb_004 | Hausrecht – Aussagen |
+| bgb_005 | Schadensersatz allgemein |
+
+### Prüfergebnis
+
+| Review-ID | Ergebnis |
+|-----------|----------|
+| REV-BGB-01 | Keine direkte Dublette |
+| REV-BGB-02 | Keine direkte Dublette |
+| REV-BGB-03 | Keine direkte Dublette |
+| REV-BGB-04 | Keine direkte Dublette |
+| REV-BGB-05 | Keine direkte Dublette |
+| REV-BGB-06 | Keine direkte Dublette |
+| REV-BGB-07 | Keine direkte Dublette |
+| REV-BGB-08 | Keine direkte Dublette; **thematische Überschneidung** mit bgb_005 (Schadensersatz allgemein), aber **spezieller** (Minderjährigenhaftung § 828 BGB, 17-jähriger Auszubildender) – **kein Ersatz**, Ergänzung |
+
+**Gesamt:** Keine direkte Dublette. Der Block darf auf **`ready_for_import`** gesetzt werden.
+
+**Prüfdatum / Task:** v23.5.19
+
+---
+
+## Review-Zusammenfassung (v23.5.19)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
 | **reviewed** | 0 | — |
 | **rewrite_required** | 0 | — |
-| **approved** | 8 | REV-BGB-01 … REV-BGB-08 |
-| **ready_for_import** | 0 | — |
+| **approved** | 0 | — |
+| **ready_for_import** | 8 | REV-BGB-01 … REV-BGB-08 |
 
-### Finalkorrektur (v23.5.18)
+### Finalkorrektur (v23.5.18) – abgeschlossen
 
 - **REV-BGB-03** final korrigiert (Fall Werkzeugkoffer, § 859 Abs. 1–2–3)
 - **REV-BGB-07** final korrigiert (§ 228 defensiv / § 904 aggressiv, Einwirkung auf fremde Sache)
 - **REV-BGB-08** final korrigiert (§ 828 Abs. 1–4, 17-Jähriger → Abs. 3 maßgeblich)
-- **BGB-Block bleibt** `approved` (alle 8 Fragen)
-- **Noch nicht** `ready_for_import`
-- **Dublettenprüfung** gegen `questions.json` steht weiterhin aus
-- **Import bleibt gesperrt**
+
+### Dublettenprüfung (v23.5.19) – abgeschlossen
+
+- Abgleich mit 5 bestehenden BGB-Fragen in `questions.json` durchgeführt
+- Keine direkte Dublette; REV-BGB-08 thematisch ergänzend zu bgb_005
+- Alle 8 Fragen: **`ready_for_import`**
 
 ### Kennzahlen
 
@@ -404,13 +439,13 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 8 |
 | Summe Punkte (wenn alle richtig) | 10 |
-| Nächster Schritt | Dublettenprüfung gegen `questions.json` → danach `ready_for_import` → Import-Task |
+| Nächster Schritt | **Separater Import-Task** → `questions.json` (`q_052`–`q_059`) |
 
 ### Import-Regel
 
-**Nicht in `questions.json` importieren**, solange nicht **alle** Fragen dieses Blocks den Status **`ready_for_import`** haben und die Dublettenprüfung gegen `questions.json` ohne Treffer ist.
+**Hinweis:** Der Block ist **`ready_for_import`**, aber **noch nicht importiert**. Der Import in `questions.json` erfolgt **erst in einem eigenen Import-Task** (mit Preflight, `audit-categories.py`, Browser-Test).
 
-**Hinweis:** Die Fragen sind fachlich **approved**, aber noch **nicht** `ready_for_import`, weil die **Dublettenprüfung gegen `questions.json` noch aussteht**. Import bleibt gesperrt.
+**Nicht in dieser Aufgabe:** Keine Einträge in `questions.json` – Import bleibt bis zum Import-Task ausstehend.
 
 ---
 
