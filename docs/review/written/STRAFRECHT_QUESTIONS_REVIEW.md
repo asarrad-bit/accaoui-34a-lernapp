@@ -1,25 +1,25 @@
 # Accaoui §34a – Review: Strafgesetzbuch und Strafverfahrensrecht (+8 Fragen)
 
-Stand: v23.5.23  
-Block: B (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)  
-Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`  
-**Status aller Fragen:** `needs_review`  
+Stand: v23.5.24 (fachliche Nachschärfung)
+Block: B (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
+Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
+**Status aller Fragen:** `reviewed`
 **Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
 
 ---
 
 ## Block-Übersicht
 
-| Nr | Review-ID | Ziel-ID | Unterthema | Punkte | IHK-Risiko |
-|----|-----------|---------|------------|-------:|------------|
-| 01 | REV-STGB-01 | straf_006 | Straftat und Ordnungswidrigkeit | 1 | low |
-| 02 | REV-STGB-02 | straf_007 | Vorsatz und Fahrlässigkeit | 1 | low |
-| 03 | REV-STGB-03 | straf_008 | Notwehr (§ 32 StGB) | 2 | medium |
-| 04 | REV-STGB-04 | straf_009 | Rechtfertigender Notstand (§ 34 StGB) | 1 | medium |
-| 05 | REV-STGB-05 | straf_010 | Jedermann-Festnahme (§ 127 Abs. 1 StPO) | 2 | medium |
-| 06 | REV-STGB-06 | straf_011 | Körperverletzung (§ 223 StGB) | 1 | low |
-| 07 | REV-STGB-07 | straf_012 | Nötigung (§ 240 StGB) | 1 | medium |
-| 08 | REV-STGB-08 | straf_013 | Diebstahl / Hausfriedensbruch (§§ 242, 123 StGB) | 2 | low |
+| Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
+|----|-----------|---------|------------|-------:|--------|
+| 01 | REV-STGB-01 | straf_006 | Straftat und Ordnungswidrigkeit | 1 | reviewed |
+| 02 | REV-STGB-02 | straf_007 | Vorsatz und Fahrlässigkeit | 1 | reviewed |
+| 03 | REV-STGB-03 | straf_008 | Notwehr (§ 32 StGB) | 2 | reviewed |
+| 04 | REV-STGB-04 | straf_009 | Rechtfertigender Notstand (§ 34 StGB) | 1 | reviewed |
+| 05 | REV-STGB-05 | straf_010 | Jedermann-Festnahme (§ 127 Abs. 1 StPO) | 2 | reviewed |
+| 06 | REV-STGB-06 | straf_011 | Körperverletzung (§ 223 StGB) | 1 | reviewed |
+| 07 | REV-STGB-07 | straf_012 | Nötigung (§ 240 StGB) | 1 | reviewed |
+| 08 | REV-STGB-08 | straf_013 | Diebstahl / Hausfriedensbruch (§§ 242, 123 StGB) | 2 | reviewed |
 
 **Summe Punkte (wenn alle richtig):** 11
 
@@ -39,7 +39,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -47,10 +47,10 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Jede rechtswidrige Handlung ist automatisch eine Straftat  
-- b) Eine **Straftat** setzt einen im Strafgesetzbuch mit Strafe bedrohten Tatbestand voraus; eine **Ordnungswidrigkeit** wird im OWiG mit Geldbuße bedroht und ist rechtlich etwas anderes  
-- c) Ordnungswidrigkeiten werden immer mit Freiheitsstrafe geahndet  
-- d) Sicherheitsmitarbeiter dürfen bei Ordnungswidrigkeiten stets dauerhaft festhalten  
+- a) Jede rechtswidrige Handlung ist automatisch eine Straftat
+- b) Eine **Straftat** setzt einen im Strafgesetzbuch mit Strafe bedrohten Tatbestand voraus; eine **Ordnungswidrigkeit** wird im OWiG mit Geldbuße bedroht und ist rechtlich etwas anderes
+- c) Ordnungswidrigkeiten werden immer mit Freiheitsstrafe geahndet
+- d) Sicherheitsmitarbeiter dürfen bei Ordnungswidrigkeiten stets dauerhaft festhalten
 
 **Richtige Antwort(en):** b
 
@@ -60,7 +60,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
+| Fachliche Prüfung | OK – Review v23.5.24 |
 | Dublettenprüfung | Thematisch nah zu straf_001; inhaltlich vertieft (OWiG) – Abgleich `questions.json` vor Import |
 | Notizen | Accaoui-Fall Baustelle / Zutritt |
 
@@ -80,7 +80,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -88,10 +88,10 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Vorsatz bedeutet, dass der Täter den Erfolg zumindest billigend in Kauf nimmt oder ihn will; Fahrlässigkeit liegt vor, wenn er die im Verkehr erforderliche Sorgfalt außer Acht lässt  
-- b) Fahrlässigkeit bedeutet immer, dass der Täter den Erfolg gewollt hat  
-- c) Ohne Vorsatz kann niemals eine Straftat vorliegen, auch nicht bei fahrlässiger Begehung  
-- d) Vorsatz und Fahrlässigkeit sind im Strafrecht dasselbe  
+- a) Vorsatz bedeutet, dass der Täter den Erfolg zumindest billigend in Kauf nimmt oder ihn will; Fahrlässigkeit liegt vor, wenn er die im Verkehr erforderliche Sorgfalt außer Acht lässt
+- b) Fahrlässigkeit bedeutet immer, dass der Täter den Erfolg gewollt hat
+- c) Ohne Vorsatz kann niemals eine Straftat vorliegen, auch nicht bei fahrlässiger Begehung
+- d) Vorsatz und Fahrlässigkeit sind im Strafrecht dasselbe
 
 **Richtige Antwort(en):** a
 
@@ -101,7 +101,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
+| Fachliche Prüfung | OK – Review v23.5.24 |
 | Dublettenprüfung | Keine direkte Dublette im Review-Set; Abgleich `questions.json` vor Import |
 | Notizen | Verknüpfung zu Körperverletzung ohne Vorsatz |
 
@@ -121,7 +121,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -129,22 +129,22 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Notwehr ist die Verteidigung, die erforderlich ist, um einen **gegenwärtigen rechtswidrigen Angriff** von sich oder einem anderen abzuwenden  
-- b) Notwehr darf auch Wochen später als **Vergeltung** ausgeübt werden  
-- c) Die Notwehr darf nicht **offensichtlich** die Grenzen der Notwendigkeit überschreiten (**Notwehrexzess** unvermeidbar)  
-- d) Notwehr steht nur **Polizeibeamten** zu, nicht Sicherheitsmitarbeitern  
-- e) Jede Verteidigungshandlung ist immer notwendig, unabhängig vom Angriff  
+- a) Notwehr ist die **erforderliche** Verteidigung gegen einen **gegenwärtigen rechtswidrigen Angriff**
+- b) Notwehr darf auch Wochen später als **Vergeltung** ausgeübt werden
+- c) Notwehr kann auch **zugunsten eines anderen** ausgeübt werden, also **Nothilfe**
+- d) Notwehr steht nur **Polizeibeamten** zu, nicht Sicherheitsmitarbeitern
+- e) Jede Verteidigungshandlung ist immer notwendig, unabhängig vom Angriff
 
 **Richtige Antwort(en):** a, c
 
 **Erklärung:**
 
-> **§ 32 StGB:** Notwehr erfordert einen **gegenwärtigen, rechtswidrigen Angriff** und eine **erforderliche** Verteidigung (Notwendigkeit, Gebotenheit). **Überschreitet** der Verteidiger **offensichtlich** die Grenzen, liegt **unvermeidbarer Notwehrexzess** vor (mit Rechtsfolgen nach § 33 StGB). Notwehr kann auch **fremde** Rechtsgüter schützen. **Vergeltung** ist keine Notwehr.
+> **§ 32 StGB** verlangt einen **gegenwärtigen rechtswidrigen Angriff** und eine **erforderliche** Verteidigung. Die Verteidigung muss **geboten** sein. **Vergeltung** nach beendetem Angriff ist keine Notwehr. Notwehr kann auch **Nothilfe** zugunsten eines anderen sein. **§ 33 StGB** betrifft nur die **Überschreitung** der Notwehr (Notwehrexzess) und ist hier keine Kernaussage der richtigen Antworten.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
-| Dublettenprüfung | Thematische Nähe zu straf_002/straf_004; vertieft § 32/Exzess – Abgleich vor Import |
+| Fachliche Prüfung | OK – Review v23.5.24, Antwortlogik a + c |
+| Dublettenprüfung | Thematische Nähe zu straf_002/straf_004; Abgleich `questions.json` vor Import |
 | Notizen | Sicherheitskontext; Abgrenzung BGB § 227 |
 
 ---
@@ -163,7 +163,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -171,10 +171,10 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Notstand erlaubt stets die Zerstörung fremden Eigentums ohne jede Gefahrenlage  
-- b) Wer in **Not** handelt, um eine **gegenwärtige, nicht anders abwendbare Gefahr** für ein **Rechtsgut** abzuwenden, handelt nicht rechtswidrig, wenn die Tat angemessen ist  
-- c) Rechtfertigender Notstand setzt immer eine richterliche Genehmigung vorher voraus  
-- d) § 34 StGB gilt nur für Polizeibeamte  
+- a) Notstand erlaubt stets die Zerstörung fremden Eigentums ohne jede Gefahrenlage
+- b) Wer in **Not** handelt, um eine **gegenwärtige, nicht anders abwendbare Gefahr** für ein **Rechtsgut** abzuwenden, handelt nicht rechtswidrig, wenn die Tat angemessen ist
+- c) Rechtfertigender Notstand setzt immer eine richterliche Genehmigung vorher voraus
+- d) § 34 StGB gilt nur für Polizeibeamte
 
 **Richtige Antwort(en):** b
 
@@ -184,9 +184,9 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
+| Fachliche Prüfung | OK – Review v23.5.24 |
 | Dublettenprüfung | Abgrenzung zu BGB-Notstand in anderen Blöcken; Abgleich `questions.json` vor Import |
-| Notizen | Abgrenzung aggressiver Notstand § 35 StGB (nicht Gegenstand dieser Frage) |
+| Notizen | Abgrenzung zu entschuldigendem Notstand § 35 StGB und BGB-Notständen |
 
 ---
 
@@ -204,7 +204,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -212,21 +212,21 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Jeder kann einen Täter **auf frischer Tat** vorläufig festnehmen, wenn er flüchtig ist oder der Verdacht der Flucht besteht  
-- b) Jeder kann jeden beliebigen Besucher dauerhaft festhalten, auch ohne Straftatverdacht  
-- c) Auch wer **verfolgt** wird, weil er auf frischer Tat betroffen wurde, kann vorläufig festgenommen werden  
-- d) Die Festnahme ersetzt die Anzeige bei der Polizei – die Behörden müssen nicht informiert werden  
-- e) Der Festnehmende darf den Täter beliebig lange ohne Übergabe an die Polizei festhalten  
+- a) Eine **vorläufige Festnahme** ist möglich, wenn jemand **auf frischer Tat betroffen** oder **verfolgt** wird und **fluchtverdächtig** ist
+- b) Jeder kann jeden beliebigen Besucher dauerhaft festhalten, auch ohne Straftatverdacht
+- c) Eine **vorläufige Festnahme** ist auch möglich, wenn die **Identität** des Täters **nicht sofort festgestellt** werden kann
+- d) Die Festnahme ersetzt die Anzeige bei der Polizei – die Behörden müssen nicht informiert werden
+- e) Der Festnehmende darf den Täter beliebig lange ohne Übergabe an die Polizei festhalten
 
 **Richtige Antwort(en):** a, c
 
 **Erklärung:**
 
-> **§ 127 Abs. 1 StPO:** Vorläufige Festnahme durch **Jedermann** u. a. bei **frischer Tat**, bei **Flucht** oder **Fluchtverdacht**, sowie bei **Verfolgung** (unmittelbar nach frischer Tat). **Unverzüglich** ist die **Polizei/Staatsanwaltschaft** einzuschalten; die Festnahme ist **vorläufig**, keine private Strafe. Keine Festnahme ohne hinreichenden Verdacht.
+> **§ 127 Abs. 1 StPO:** Vorläufige Festnahme durch Jedermann, wenn der Täter **auf frischer Tat betroffen** oder **verfolgt** wird und **flüchtig** ist oder **Fluchtverdacht** besteht, oder wenn seine **Identität nicht sofort feststellbar** ist. Die Festnahme ist nur **vorläufig**; **Polizei/Staatsanwaltschaft** sind **unverzüglich** einzuschalten. Keine private Strafe, keine beliebig lange Festhaltung.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
+| Fachliche Prüfung | OK – Review v23.5.24 |
 | Dublettenprüfung | Thematische Nähe zu straf_003; vertieft § 127 Abs. 1 – Abgleich vor Import |
 | Notizen | Praxis Ladendiebstahl; StPO nicht StGB |
 
@@ -246,7 +246,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -254,10 +254,10 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Körperverletzung liegt vor bei **körperlicher Misshandlung** oder **Gesundheitsschädigung** einer anderen Person  
-- b) Körperverletzung liegt nur vor, wenn ein Knochenbruch nachgewiesen wird  
-- c) Festhalten im Rahmen des Hausrechts kann niemals strafrechtlich relevant sein  
-- d) Leichte Schmerzen ohne sichtbare Spur sind immer strafrechtlich irrelevant  
+- a) Körperverletzung liegt vor bei **körperlicher Misshandlung** oder **Gesundheitsschädigung** einer anderen Person
+- b) Körperverletzung liegt nur vor, wenn ein Knochenbruch nachgewiesen wird
+- c) Festhalten im Rahmen des Hausrechts kann niemals strafrechtlich relevant sein
+- d) Leichte Schmerzen ohne sichtbare Spur sind immer strafrechtlich irrelevant
 
 **Richtige Antwort(en):** a
 
@@ -267,7 +267,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
+| Fachliche Prüfung | OK – Review v23.5.24 |
 | Dublettenprüfung | Thematische Nähe zu straf_005; Fallbezug vertieft – Abgleich vor Import |
 | Notizen | Abgrenzung Notwehr / Verhältnismäßigkeit |
 
@@ -287,7 +287,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -295,20 +295,20 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Nötigung liegt vor, wenn ein Mensch durch **Gewalt** oder **drohende Gewalt** oder durch **drohende** oder **widerrechtliche** Freiheitsentziehung zu einer Handlung, Duldung oder Unterlassung **gezwungen** wird  
-- b) Eine höfliche Bitte ist immer Nötigung  
-- c) Nötigung setzt immer körperliche Verletzung voraus  
-- d) Hausrecht berechtigt immer zur beliebigen Ausgangssperre ohne Grund  
+- a) Nötigung liegt vor, wenn jemand **rechtswidrig** mit **Gewalt** oder durch **Drohung mit einem empfindlichen Übel** zu einer Handlung, Duldung oder Unterlassung **genötigt** wird
+- b) Eine höfliche Bitte ist immer Nötigung
+- c) Nötigung setzt immer körperliche Verletzung voraus
+- d) Hausrecht berechtigt immer zur beliebigen Ausgangssperre ohne Grund
 
 **Richtige Antwort(en):** a
 
 **Erklärung:**
 
-> **§ 240 StGB:** **Nötigung** schützt die **Willensentscheidungsfreiheit**. Relevant sind **Gewalt**, **Gewaltandrohung** oder **(drohende) widerrechtliche** Freiheitsentziehung. **Hausrecht** erlaubt kein beliebiges „Einsperren“ ohne Rechtsgrundlage – Abgrenzung zu erlaubter Durchsuchung/Festhaltung nach anderen Normen.
+> **§ 240 StGB:** Nötigung schützt die **Willensentscheidungsfreiheit**. Nach **§ 240 Abs. 2 StGB** ist die Tat **rechtswidrig**, wenn die Anwendung der Gewalt oder die Androhung des Übels zum angestrebten Zweck als **verwerflich** anzusehen ist. **Hausrecht** erlaubt keine beliebige Ausgangssperre ohne Rechtsgrundlage.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
+| Fachliche Prüfung | OK – Review v23.5.24 |
 | Dublettenprüfung | Keine direkte Dublette im Review-Set; Abgleich `questions.json` vor Import |
 | Notizen | Praxis Ausgangssperre / Entschuldigung |
 
@@ -328,34 +328,34 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
 > Welche Aussagen zu **Diebstahl** und **Hausfriedensbruch** sind im Grundsatz zutreffend?
 
-1. **Diebstahl (§ 242 StGB):** Zueignung einer **fremden beweglichen Sache** mit Absicht, sich oder einem Dritten **rechtswidrig** zuzueignen.  
-2. **Hausfriedensbruch (§ 123 StGB):** Unbefugtes Eindringen in eine **Wohnung**, Geschäftsräume o. Ä. oder unbefugtes Verweilen trotz Aufforderung, den Ort zu verlassen.  
-3. Wer mit Erlaubnis des Berechtigten ein Gelände betritt, begeht immer Hausfriedensbruch.  
+1. **Diebstahl (§ 242 StGB):** **Wegnahme** einer **fremden beweglichen Sache** in **Zueignungsabsicht** mit der Absicht, sich oder einem Dritten die Sache **rechtswidrig** zuzueignen.
+2. **Hausfriedensbruch (§ 123 StGB):** Unbefugtes Eindringen in eine **Wohnung**, Geschäftsräume o. Ä. oder unbefugtes Verweilen trotz Aufforderung, den Ort zu verlassen.
+3. Wer mit Erlaubnis des Berechtigten ein Gelände betritt, begeht immer Hausfriedensbruch.
 4. Diebstahl liegt auch vor, wenn man die eigene Sache mitnimmt.
 
 **Antwortoptionen:**
 
-- a) Nur die Aussagen 1 und 2 sind richtig.  
-- b) Nur die Aussagen 1 und 3 sind richtig.  
-- c) Nur die Aussagen 2 und 4 sind richtig.  
-- d) Nur die Aussagen 3 und 4 sind richtig.  
-- e) Alle Aussagen sind richtig.  
+- a) Nur die Aussagen 1 und 2 sind richtig.
+- b) Nur die Aussagen 1 und 3 sind richtig.
+- c) Nur die Aussagen 2 und 4 sind richtig.
+- d) Nur die Aussagen 3 und 4 sind richtig.
+- e) Alle Aussagen sind richtig.
 
 **Richtige Antwort(en):** a
 
 **Erklärung:**
 
-> **§ 242 StGB:** **Fremde** bewegliche Sache, **Zueignungsabsicht**, **Rechtswidrigkeit**. **§ 123 StGB:** Schutz des **Hausfriedens** – unbefugtes **Betreten** oder **Verweilen** trotz Wegweisung. Mit **Erlaubnis** kein Hausfriedensbruch; **eigene** Sache ist kein Diebstahl. Für Sicherheitskräfte relevant: **Zutrittsregelungen** und **Wegweisung** dokumentieren.
+> **§ 242 StGB:** **Wegnahme** einer **fremden beweglichen Sache** in **Zueignungsabsicht**, **rechtswidrig** zuzueignen. **§ 123 StGB:** Schutz des **Hausfriedens** – unbefugtes **Betreten** oder **Verweilen** trotz Wegweisung. Mit **Erlaubnis** kein Hausfriedensbruch; **eigene** Sache ist kein Diebstahl. Für Sicherheitskräfte relevant: **Zutrittsregelungen** und **Wegweisung** dokumentieren.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.23 |
+| Fachliche Prüfung | OK – Review v23.5.24 |
 | Dublettenprüfung | Keine direkte Dublette; Abgleich `questions.json` vor Import |
 | Notizen | Kombinationsfrage; 2 Punkte |
 
@@ -367,10 +367,33 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 8 |
 | Ziel-IDs | straf_006 … straf_013 |
-| Status | alle `needs_review` |
-| Nächster Schritt | Fachliche Prüfung → `approved` → Dublettenprüfung → `ready_for_import` → Import-Task |
+| Status | alle `reviewed` |
 
-**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits straf_001–straf_005 (Straftat, Notwehr, Jedermann-Festnahme, Körperverletzung). Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
+## Review-Zusammenfassung (v23.5.24)
+
+| Status | Anzahl | Review-IDs |
+|--------|-------:|------------|
+| **reviewed** | 8 | REV-STGB-01 … REV-STGB-08 |
+| **approved** | 0 | — |
+| **ready_for_import** | 0 | — |
+| **rewrite_required** | 0 | — |
+
+### Fachliche Prüfung (v23.5.24) – abgeschlossen
+
+- **REV-STGB-03:** Notwehr § 32 – richtige Antworten a + c (Nothilfe), ohne unsaubere Notwehrexzess-Kernaussage
+- **REV-STGB-04:** Notiz zu § 35 StGB / BGB-Notstand korrigiert
+- **REV-STGB-05:** § 127 Abs. 1 StPO – Fluchtverdacht und Identität präzisiert
+- **REV-STGB-07:** § 240 StGB inkl. Abs. 2 (Verwerflichkeit)
+- **REV-STGB-08:** Diebstahl als Wegnahme in Zueignungsabsicht
+
+### Nächste Schritte
+
+- **Noch nicht** `approved`
+- **Noch nicht** `ready_for_import`
+- **Dublettenprüfung** gegen `questions.json` steht noch aus
+- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task
+
+**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits straf_001–straf_005. Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
 
 ---
 
