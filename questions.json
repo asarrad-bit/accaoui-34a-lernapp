@@ -549,6 +549,121 @@
     "explanation": "Körperverletzung umfasst körperliche Misshandlung oder Gesundheitsschädigung. Höfliche oder sachliche Kommunikation ist keine Körperverletzung."
   },
   {
+    "id": "straf_006",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Ein Sicherheitsmitarbeiter hält einen Besucher fest, weil dieser ohne Erlaubnis eine Baustelle betreten hat. Später stellt sich heraus: Es liegt nur eine Ordnungswidrigkeit vor, keine Straftat. Welche Aussage trifft im Grundsatz zu?",
+    "answers": [
+      "Jede rechtswidrige Handlung ist automatisch eine Straftat",
+      "Eine Straftat setzt einen im Strafgesetzbuch mit Strafe bedrohten Tatbestand voraus; eine Ordnungswidrigkeit wird im OWiG mit Geldbuße bedroht und ist rechtlich etwas anderes",
+      "Ordnungswidrigkeiten werden immer mit Freiheitsstrafe geahndet",
+      "Sicherheitsmitarbeiter dürfen bei Ordnungswidrigkeiten stets dauerhaft festhalten"
+    ],
+    "correct": [1],
+    "explanation": "Straftaten sind im StGB mit Strafe bedroht; Ordnungswidrigkeiten im OWiG mit Geldbuße. Die Abgrenzung ist wichtig, auch für die Frage einer Jedermann-Festnahme bei Straftatverdacht."
+  },
+  {
+    "id": "straf_007",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Ein Wachmitarbeiter stolpert im Einsatz über ein Kabel und reißt dabei versehentlich einen Besucher zu Boden, der sich leicht verletzt. Der Staatsanwalt prüft Körperverletzung. Welche Aussage zu Vorsatz und Fahrlässigkeit trifft zu?",
+    "answers": [
+      "Vorsatz bedeutet, dass der Täter den Erfolg zumindest billigend in Kauf nimmt oder ihn will; Fahrlässigkeit liegt vor, wenn er die im Verkehr erforderliche Sorgfalt außer Acht lässt",
+      "Fahrlässigkeit bedeutet immer, dass der Täter den Erfolg gewollt hat",
+      "Ohne Vorsatz kann niemals eine Straftat vorliegen, auch nicht bei fahrlässiger Begehung",
+      "Vorsatz und Fahrlässigkeit sind im Strafrecht dasselbe"
+    ],
+    "correct": [0],
+    "explanation": "Vorsatz umfasst Wissen und Wollen bzw. Billigen des Tatbestands. Fahrlässigkeit liegt vor bei Verletzung der im Verkehr erforderlichen Sorgfalt. Viele Delikte sind auch fahrlässig strafbar, wenn das Gesetz es vorsieht (z. B. § 229 StGB)."
+  },
+  {
+    "id": "straf_008",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "multiple",
+    "question": "In einem Geschäft schlägt ein Betrunkener mit einer Flasche nach einem Sicherheitsmitarbeiter. Der Mitarbeiter wehrt sich mit einem Schlagstock und verletzt den Angreifer leicht. Welche zwei Aussagen zur Notwehr nach § 32 StGB sind im Grundsatz zutreffend?",
+    "answers": [
+      "Notwehr ist die erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff",
+      "Notwehr darf auch Wochen später als Vergeltung ausgeübt werden",
+      "Notwehr kann auch zugunsten eines anderen ausgeübt werden, also Nothilfe",
+      "Notwehr steht nur Polizeibeamten zu, nicht Sicherheitsmitarbeitern",
+      "Jede Verteidigungshandlung ist immer notwendig, unabhängig vom Angriff"
+    ],
+    "correct": [0, 2],
+    "explanation": "§ 32 StGB: gegenwärtiger rechtswidriger Angriff und erforderliche, gebotene Verteidigung. Vergeltung ist keine Notwehr. Notwehr kann auch als Nothilfe zugunsten eines anderen ausgeübt werden."
+  },
+  {
+    "id": "straf_009",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Bei einem Brand in einem Lagerhaus droht eine Gasflasche zu explodieren. Ein Sicherheitsmitarbeiter zerstört ohne Auftrag des Eigentümers eine Nachbarwand, um die Flasche ins Freie zu bringen. Welche Aussage zum rechtfertigenden Notstand nach § 34 StGB trifft im Grundsatz zu?",
+    "answers": [
+      "Notstand erlaubt stets die Zerstörung fremden Eigentums ohne jede Gefahrenlage",
+      "Wer in Not handelt, um eine gegenwärtige, nicht anders abwendbare Gefahr für ein Rechtsgut abzuwenden, handelt nicht rechtswidrig, wenn die Tat angemessen ist",
+      "Rechtfertigender Notstand setzt immer eine richterliche Genehmigung vorher voraus",
+      "§ 34 StGB gilt nur für Polizeibeamte"
+    ],
+    "correct": [1],
+    "explanation": "§ 34 StGB: Abwendung einer gegenwärtigen Gefahr für ein Rechtsgut, die nicht anders abwendbar ist; die Handlung muss angemessen sein. Keine pauschale Genehmigungspflicht; auch Zivilpersonen können sich im Einzelfall darauf berufen."
+  },
+  {
+    "id": "straf_010",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "multiple",
+    "question": "Ein Sicherheitsmitarbeiter betritt auf frischer Tat einen Ladendieb, der mit unbezahlter Ware zur Ausgangstür rennt. Welche zwei Aussagen zur vorläufigen Festnahme durch Jedermann nach § 127 Abs. 1 StPO sind im Grundsatz zutreffend?",
+    "answers": [
+      "Eine vorläufige Festnahme ist möglich, wenn jemand auf frischer Tat betroffen oder verfolgt wird und fluchtverdächtig ist",
+      "Jeder kann jeden beliebigen Besucher dauerhaft festhalten, auch ohne Straftatverdacht",
+      "Eine vorläufige Festnahme ist auch möglich, wenn die Identität des Täters nicht sofort festgestellt werden kann",
+      "Die Festnahme ersetzt die Anzeige bei der Polizei – die Behörden müssen nicht informiert werden",
+      "Der Festnehmende darf den Täter beliebig lange ohne Übergabe an die Polizei festhalten"
+    ],
+    "correct": [0, 2],
+    "explanation": "§ 127 Abs. 1 StPO: auf frischer Tat betroffen oder verfolgt plus Flucht/Fluchtverdacht, oder Identität nicht sofort feststellbar. Festnahme nur vorläufig; Polizei/Staatsanwaltschaft unverzüglich einschalten."
+  },
+  {
+    "id": "straf_011",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Nach einer Rangelei im Objektbereich hat ein Besucher einen blauen Fleck am Arm. Ein Zeuge sagt, der Sicherheitsmitarbeiter habe ihn festgehalten und am Arm gedrückt. Welche Aussage zur Körperverletzung nach § 223 StGB trifft im Grundsatz zu?",
+    "answers": [
+      "Körperverletzung liegt vor bei körperlicher Misshandlung oder Gesundheitsschädigung einer anderen Person",
+      "Körperverletzung liegt nur vor, wenn ein Knochenbruch nachgewiesen wird",
+      "Festhalten im Rahmen des Hausrechts kann niemals strafrechtlich relevant sein",
+      "Leichte Schmerzen ohne sichtbare Spur sind immer strafrechtlich irrelevant"
+    ],
+    "correct": [0],
+    "explanation": "§ 223 StGB: körperliche Misshandlung oder Gesundheitsschädigung – ein blauer Fleck kann ausreichen. Notwehr, rechtfertigender Notstand oder andere Rechtfertigung sind gesondert zu prüfen."
+  },
+  {
+    "id": "straf_012",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Ein Sicherheitsmitarbeiter blockiert einen Ausgang und sagt: „Du gehst hier nicht raus, bis du dich entschuldigt hast“, obwohl keine rechtliche Grundlage für eine Freiheitsentziehung besteht. Welche Aussage zur Nötigung nach § 240 StGB trifft im Grundsatz zu?",
+    "answers": [
+      "Nötigung liegt vor, wenn jemand rechtswidrig mit Gewalt oder durch Drohung mit einem empfindlichen Übel zu einer Handlung, Duldung oder Unterlassung genötigt wird",
+      "Eine höfliche Bitte ist immer Nötigung",
+      "Nötigung setzt immer körperliche Verletzung voraus",
+      "Hausrecht berechtigt immer zur beliebigen Ausgangssperre ohne Grund"
+    ],
+    "correct": [0],
+    "explanation": "§ 240 StGB schützt die Willensentscheidungsfreiheit. Nach Abs. 2 ist die Tat rechtswidrig, wenn Gewalt oder Übelandrohung zum Zweck als verwerflich gilt. Hausrecht erlaubt keine beliebige Ausgangssperre ohne Rechtsgrundlage."
+  },
+  {
+    "id": "straf_013",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "combination",
+    "question": "Welche Aussagen zu Diebstahl und Hausfriedensbruch sind im Grundsatz zutreffend?\n\n1. Diebstahl (§ 242 StGB): Wegnahme einer fremden beweglichen Sache in Zueignungsabsicht mit der Absicht, sich oder einem Dritten die Sache rechtswidrig zuzueignen.\n2. Hausfriedensbruch (§ 123 StGB): Unbefugtes Eindringen in eine Wohnung, Geschäftsräume o. Ä. oder unbefugtes Verweilen trotz Aufforderung, den Ort zu verlassen.\n3. Wer mit Erlaubnis des Berechtigten ein Gelände betritt, begeht immer Hausfriedensbruch.\n4. Diebstahl liegt auch vor, wenn man die eigene Sache mitnimmt.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Nur die Aussagen 3 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "§ 242 StGB: Wegnahme fremder beweglicher Sache in Zueignungsabsicht. § 123 StGB: unbefugtes Betreten oder Verweilen trotz Wegweisung. Mit Erlaubnis kein Hausfriedensbruch; die eigene Sache ist kein Diebstahl."
+  },
+  {
     "id": "umgang_001",
     "category": "Umgang mit Menschen",
     "type": "single",
