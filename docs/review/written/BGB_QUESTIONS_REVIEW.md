@@ -1,6 +1,6 @@
 # Accaoui §34a – Review: Bürgerliches Gesetzbuch (+8 Fragen)
 
-Stand: v23.5.16 (fachliche Nachschärfung)
+Stand: v23.5.18 (Finalkorrektur vor Dublettenprüfung)
 Block: A (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 **Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
@@ -124,31 +124,31 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Frage:**
 
-> Der Besitzer eines abgesperrten Firmengeländes trifft gegen Abend auf Unbekannte, die gerade zwei Fahrzeuge auf das Gelände fahren (**auf frischer Tat**). Die Personen fliehen zu Fuß; die Fahrzeuge bleiben stehen. Welche **zwei** Aussagen zur **Selbsthilfe des Besitzers** nach § 859 BGB treffen im Grundsatz zu?
+> Ein Besitzer eines Sicherheitslagers sieht, wie ein Unbekannter ihm einen **Werkzeugkoffer** wegnimmt. Er trifft den Täter **auf frischer Tat** und verfolgt ihn **unmittelbar**. Welche **zwei** Aussagen zur **Selbsthilfe des Besitzers** nach § 859 BGB treffen im Grundsatz zu?
 
 **Antwortoptionen:**
 
-- a) Der Besitzer darf die Fahrzeuge eigenmächtig dauerhaft für sich behalten, ohne weitere Voraussetzungen
+- a) Der Besitzer darf die Sache eigenmächtig **dauerhaft** für sich behalten, auch Tage später ohne weiteren Anlass
 - b) Bei **beweglichen Sachen** ist **Besitzkehr** auf **frischer Tat** oder in **Verfolgung** möglich (§ 859 Abs. 2 BGB)
 - c) Die Selbsthilfe setzt voraus, dass der **Besitzer** selbst besessen hat oder durch einen **Besitzdiener** (§ 860 BGB)
-- d) **Besitzwehr** (§ 859 Abs. 1) erlaubt stets die Zurückweisung, auch ohne jede Besitzstörung oder Gefahr des Wiederbesitzes
-- e) Bei **Grundstücken** kann der Besitzer das Grundstück auch Wochen nach der Entziehung durch bloße Räumung wieder in Besitz nehmen (§ 859 Abs. 3 BGB)
+- d) **Besitzwehr** (§ 859 Abs. 1) erlaubt stets die Zurückweisung, auch ohne aktuelle Besitzstörung und ohne Gefahr des Wiederbesitzes
+- e) Bei **Grundstücken** kann der Besitzer das Grundstück auch **Wochen** nach der Entziehung durch bloße Räumung wieder in Besitz nehmen (§ 859 Abs. 3 BGB)
 
 **Richtige Antwort(en):** b, c
 
 **Erklärung:**
 
-> § 859 BGB unterscheidet drei Konstellationen:
+> § 859 BGB unterscheidet drei Konstellationen; die Maßnahme muss **situationsbezogen** und **unverzüglich** sein, nicht beliebig später:
 > **(1) Besitzwehr (Abs. 1):** gegen eine **aktuelle Besitzstörung** kann der Besitzer die Störung durch **Zurückweisung** der Sache beseitigen, soweit dies zur Verhinderung eines **unmittelbar drohenden** Wiederbesitzes erforderlich ist.
-> **(2) Besitzkehr (Abs. 2):** bei **beweglichen Sachen** kann der Besitzer den Besitz auf **frischer Tat** oder in **Verfolgung** zurückerobern – zum Fall passt die Feststellung auf frischer Tat.
-> **(3) Grundstück (Abs. 3):** der frühere Besitzer kann das Grundstück nur **unmittelbar nach Entziehung** durch **Entsetzung** wieder in Besitz nehmen – nicht beliebig später.
-> Voraussetzung für alle Formen: eigener Besitz (ggf. über Besitzdiener).
+> **(2) Besitzkehr (Abs. 2):** bei **beweglichen Sachen** (z. B. Werkzeugkoffer, Funkgerät) kann der Besitzer den Besitz auf **frischer Tat** oder in **Verfolgung** zurückerobern – zum Fall passen Wegnahme und unmittelbare Verfolgung.
+> **(3) Grundstück (Abs. 3):** ein Grundstück darf nur **unmittelbar nach Entziehung** durch **Entsetzung** wieder in Besitz genommen werden – nicht wochenlang später.
+> Voraussetzung für alle Formen: der **Besitzer** muss selbst besessen haben oder durch einen **Besitzdiener** (§ 860 BGB).
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | OK – Review v23.5.16, § 859 Abs. 1–3 in Erklärung differenziert |
+| Fachliche Prüfung | OK – Review v23.5.18, Fall zu § 859 Abs. 2 angepasst |
 | Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
-| Notizen | Fallszenario auf frischer Tat angepasst; Antwortlogik eindeutig |
+| Notizen | Finalkorrektur v23.5.18; Antwortlogik eindeutig |
 
 ---
 
@@ -305,8 +305,8 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 > Welche Aussagen zum **Notstand** im BGB-System sind im Grundsatz zutreffend?
 
-1. **§ 228 BGB (defensiver / rechtfertigender Notstand):** Wer in Not handelt, um eine **gegenwärtige Gefahr** von sich oder einem anderen abzuwenden, handelt nicht rechtswidrig, wenn die Handlung nach den Umständen, insbesondere nach Art der Gefahr und der Bedrohung, **angemessen** ist.
-2. **§ 904 BGB (aggressiver Notstand):** In Not kann **Besitz an einer fremden Sache** zum Zweck der **Gefahrenabwehr** entzogen werden, wenn die Entziehung zur Abwendung einer gegenwärtigen Gefahr für ein rechtlich geschütztes Gut **erforderlich** ist.
+1. **§ 228 BGB (defensiver Notstand):** Zur Abwendung einer **gegenwärtigen Gefahr** darf eine **Einwirkung auf eine fremde Sache**, **von der die Gefahr ausgeht**, vorgenommen werden; die Handlung darf nicht rechtswidrig sein, wenn sie nach den Umständen **angemessen** ist.
+2. **§ 904 BGB (aggressiver Notstand):** Zur Abwendung einer **gegenwärtigen Gefahr** darf eine **Einwirkung auf eine fremde Sache** vorgenommen werden, **obwohl die Gefahr nicht von dieser Sache ausgeht**; der Eigentümer muss die Einwirkung **dulden**, wenn der von der Gefahr drohende Schaden gegenüber dem aus der Einwirkung entstehenden Schaden **unverhältnismäßig groß** ist.
 3. Notstand erlaubt ohne jede Gefahrenlage die willkürliche Zerstörung fremden Eigentums.
 4. Notstand im BGB setzt für jede Maßnahme stets eine vorherige richterliche Genehmigung voraus.
 
@@ -322,15 +322,15 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Erklärung:**
 
-> **§ 228 BGB** betrifft den **defensiven** (rechtfertigenden) Notstand: Eingriff in **eigene** Rechtsgüter oder Handlung zur Abwendung von Gefahr – ohne Rechtswidrigkeit bei Angemessenheit.
-> **§ 904 BGB** betrifft den **aggressiven** Notstand: **Entziehung von Besitz an einer fremden Sache** zur Gefahrenabwehr unter engen Voraussetzungen.
-> **§ 906 BGB** (Gefahrerhöhung im Nachbarrecht) ist **kein** Notstandstatut und gehört nicht in diese Frage. Willkürliche Zerstörung ohne Gefahr oder pauschale Genehmigungspflicht sind falsch.
+> **§ 228 BGB (defensiver Notstand):** **Einwirkung auf die fremde Sache, von der die Gefahr ausgeht**, zur Abwendung der Gefahr – Voraussetzung ist u. a. Gegenwärtigkeit und Angemessenheit.
+> **§ 904 BGB (aggressiver Notstand):** **Einwirkung auf eine fremde Sache**, obwohl die Gefahr **nicht von dieser Sache** ausgeht; der Eigentümer muss die Einwirkung **dulden**, wenn der drohende Schaden **unverhältnismäßig** größer ist als der Schaden aus der Einwirkung.
+> **Abgrenzung:** **§ 906 BGB** (Gefahrerhöhung im Nachbarrecht) ist **kein** Notstandstatut. Willkürliche Zerstörung ohne Gefahr oder pauschale Genehmigungspflicht sind falsch.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | OK – Review v23.5.16, Frage neu aufgebaut |
+| Fachliche Prüfung | OK – Review v23.5.18, § 228/904 präzisiert |
 | Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
-| Notizen | § 906 entfernt; Antwort a eindeutig |
+| Notizen | Finalkorrektur v23.5.18; Antwort a eindeutig |
 
 ---
 
@@ -357,27 +357,29 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 **Antwortoptionen:**
 
 - a) Minderjährige haften immer wie voll Geschäftsfähige, unabhängig vom Alter
-- b) Ein 17-Jähriger kann nach § 828 Abs. 2 BGB **selbst haften**, wenn ihm die zur **Einsicht erforderliche Reife** zuzubilligen ist; ein bewusster Verstoß gegen eine klare Anweisung kann dafür sprechen – fehlt die Einsicht, haftet ggf. der **Aufsichtspflichtige** nach § 828 Abs. 3 BGB
-- c) Deliktischer Schadensersatz nach § 823 BGB kommt bei Sachbeschädigung grundsätzlich nie in Betracht
-- d) Der Auftraggeber trägt den Schaden stets allein, weil er das Betriebsrisiko trägt
+- b) Ein **17-Jähriger** kann nach § 828 **Abs. 3** BGB **selbst haften**, wenn er die zur **Verantwortlichkeit** erforderliche **Einsicht** hatte; ein bewusster Verstoß gegen eine klare Anweisung spricht dafür – fehlte die Einsicht, haftet ggf. der **Aufsichtspflichtige** nach § 828 **Abs. 4** BGB
+- c) Für einen 17-Jährigen bei Sachbeschädigung im Dienst gilt stets die Sonderregel des § 828 **Abs. 2** BGB (Kraftfahrzeug-/Bahnunfall)
+- d) Deliktischer Schadensersatz nach § 823 BGB kommt bei Sachbeschädigung grundsätzlich nie in Betracht
 
 **Richtige Antwort(en):** b
 
 **Erklärung:**
 
 > **§ 823 BGB** setzt eine rechtswidrige vorsätzliche oder fahrlässige Schädigung voraus.
-> **§ 828 BGB:** Kinder **unter 7 Jahren** haften nicht (Abs. 1). Wer das **7. Lebensjahr vollendet** und noch nicht **18** ist, haftet nach Abs. 2 **selbst**, wenn er bei der Entstehung des Schadens die **erforderliche Einsicht** hatte. Ein **17-Jähriger** kann daher **persönlich** haften, wenn ihm Einsicht zuzubilligen ist (häufig bei bewusstem Regelverstoß, Einzelfallprüfung).
-> Hatte er **keine Einsicht**, kann der **Aufsichtspflichtige** nach Abs. 3 haften, wenn er seine Pflicht verletzt hat. Zusätzlich können **Arbeitgeber-/Ausbildungs**- und vertragliche Haftungspfaden gesondert prüfbar sein.
+> **§ 828 Abs. 1 BGB:** Kinder **unter 7 Jahren** haften nicht.
+> **§ 828 Abs. 2 BGB:** Sonderregel für **7- bis 10-Jährige** bei Unfällen mit **Kraftfahrzeug, Schienenbahn oder Schwebebahn** – für einen **17-Jährigen** bei Sachbeschädigung im Objektschutz **nicht** einschlägig.
+> **§ 828 Abs. 3 BGB:** Wer das **7. Lebensjahr vollendet** und noch nicht **18** ist, haftet **grundsätzlich nur**, wenn er bei der Entstehung des Schadens die zur **Verantwortlichkeit** erforderliche **Einsicht** hatte – für den **17-jährigen** Auszubildenden ist dies die **maßgebliche** Regel.
+> **§ 828 Abs. 4 BGB:** Hatte er **keine Einsicht**, kann der **Aufsichtspflichtige** haften, wenn er seine Aufsichtspflicht verletzt hat. Zusätzlich können Arbeitgeber-/Ausbildungs- und vertragliche Haftung gesondert prüfbar sein.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | OK – Review v23.5.16, Fall und § 828 Abs. 2/3 angeglichen |
+| Fachliche Prüfung | OK – Review v23.5.18, § 828 Abs. 1–4 differenziert |
 | Dublettenprüfung | Abgleich `questions.json` vor Import ausstehend |
-| Notizen | 7–17 Jahre: Haftung bei Einsicht, nicht pauschal „keine Haftung“ |
+| Notizen | Finalkorrektur v23.5.18; Abs. 3 für 17-Jährigen maßgeblich |
 
 ---
 
-## Review-Zusammenfassung (v23.5.16)
+## Review-Zusammenfassung (v23.5.18)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
@@ -385,6 +387,16 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | **rewrite_required** | 0 | — |
 | **approved** | 8 | REV-BGB-01 … REV-BGB-08 |
 | **ready_for_import** | 0 | — |
+
+### Finalkorrektur (v23.5.18)
+
+- **REV-BGB-03** final korrigiert (Fall Werkzeugkoffer, § 859 Abs. 1–2–3)
+- **REV-BGB-07** final korrigiert (§ 228 defensiv / § 904 aggressiv, Einwirkung auf fremde Sache)
+- **REV-BGB-08** final korrigiert (§ 828 Abs. 1–4, 17-Jähriger → Abs. 3 maßgeblich)
+- **BGB-Block bleibt** `approved` (alle 8 Fragen)
+- **Noch nicht** `ready_for_import`
+- **Dublettenprüfung** gegen `questions.json` steht weiterhin aus
+- **Import bleibt gesperrt**
 
 ### Kennzahlen
 
