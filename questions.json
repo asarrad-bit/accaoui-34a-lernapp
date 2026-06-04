@@ -364,6 +364,121 @@
     "explanation": "Schadensersatz kann entstehen, wenn jemand rechtswidrig und schuldhaft einen Schaden verursacht oder vertragliche Pflichten verletzt."
   },
   {
+    "id": "bgb_006",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Der Eigentümer einer Lagerhalle vermietet sie an ein Sicherheitsunternehmen. Das Unternehmen nutzt die Halle und lagert dort Werkzeuge; ein Mitarbeiter verwahrt den Schlüssel im Auftrag des Unternehmens. Wer hat nach den Grundbegriffen des BGB in dieser Situation in der Regel Besitz an der Halle?",
+    "answers": [
+      "Nur der Eigentümer, weil er Eigentümer bleibt",
+      "Der Mieter (das Sicherheitsunternehmen), weil er die tatsächliche Sachherrschaft ausübt",
+      "Der Mitarbeiter mit dem Schlüssel allein, unabhängig vom Unternehmen",
+      "Niemand, solange nur ein Mietvertrag besteht"
+    ],
+    "correct": [1],
+    "explanation": "Besitz ist tatsächliche Sachherrschaft (§ 854 BGB), Eigentum das umfassende Herrschaftsrecht (§ 903 BGB). Der nutzende Mieter ist in der Regel Besitzer, der Vermieter kann weiterhin Eigentümer sein."
+  },
+  {
+    "id": "bgb_007",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein Sicherheitsdienst versiegelt ohne richterliche Anordnung und ohne Zustimmung des Mieters dessen Bürotür, weil offene Forderungen bestehen. Wie ist diese eigenmächtige Maßnahme am fremden Besitz in der Regel einzuordnen?",
+    "answers": [
+      "Zulässige Besitzstörung, weil eine Geldforderung offen ist",
+      "Verbotene Eigenmacht nach § 858 BGB; der Besitzer kann u. a. Beseitigung und Unterlassung verlangen",
+      "Zulässige Selbsthilfe nach § 229 BGB, weil Forderungen offen sind",
+      "Zulässig, weil der Sicherheitsdienst für den Vermieter tätig wird"
+    ],
+    "correct": [1],
+    "explanation": "Verbotene Eigenmacht liegt vor, wenn am Besitz eines anderen ohne Erlaubnis des Besitzers eingegriffen wird (§ 858 BGB). Offene Forderungen berechtigen nicht zur eigenmächtigen Beschränkung fremden Besitzes."
+  },
+  {
+    "id": "bgb_008",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "multiple",
+    "question": "Ein Besitzer eines Sicherheitslagers sieht, wie ein Unbekannter ihm einen Werkzeugkoffer wegnimmt. Er trifft den Täter auf frischer Tat und verfolgt ihn unmittelbar. Welche zwei Aussagen zur Selbsthilfe des Besitzers nach § 859 BGB treffen im Grundsatz zu?",
+    "answers": [
+      "Der Besitzer darf die Sache eigenmächtig dauerhaft für sich behalten, auch Tage später ohne weiteren Anlass",
+      "Bei beweglichen Sachen ist Besitzkehr auf frischer Tat oder in Verfolgung möglich (§ 859 Abs. 2 BGB)",
+      "Die Selbsthilfe setzt voraus, dass der Besitzer selbst besessen hat oder durch einen Besitzdiener (§ 860 BGB)",
+      "Besitzwehr (§ 859 Abs. 1) erlaubt stets die Zurückweisung, auch ohne aktuelle Besitzstörung und ohne Gefahr des Wiederbesitzes",
+      "Bei Grundstücken kann der Besitzer das Grundstück auch Wochen nach der Entziehung durch bloße Räumung wieder in Besitz nehmen (§ 859 Abs. 3 BGB)"
+    ],
+    "correct": [1, 2],
+    "explanation": "§ 859 Abs. 2: Besitzkehr bei beweglichen Sachen auf frischer Tat oder in Verfolgung. Voraussetzung: eigener Besitz oder Besitz durch Besitzdiener (§ 860 BGB). Maßnahme muss unverzüglich und situationsbezogen sein."
+  },
+  {
+    "id": "bgb_009",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein Wachmitarbeiter bewacht tagsüber ein Kaufhaus auf Anweisung des Hausbetriebs und will die Sachen nicht für sich selbst beherrschen. Wie ordnet § 860 BGB ihn in der Regel ein?",
+    "answers": [
+      "Als mittelbarer Besitzer",
+      "Als Besitzdiener des Besitzers (Hausbetrieb)",
+      "Als Eigentümerstellvertreter",
+      "Als eigenständiger Besitzer unabhängig vom Hausbetrieb"
+    ],
+    "correct": [1],
+    "explanation": "Der Besitzdiener (§ 860 BGB) übt Sachherrschaft für den Besitzer aus, ohne selbst Besitz erlangen zu wollen. Der Hausbetrieb bleibt Besitzer."
+  },
+  {
+    "id": "bgb_010",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein Sicherheitsunternehmen blockiert ohne Mahnung und ohne gerichtlichen Titel Fahrzeuge des Auftraggebers wegen offener Rechnungen. Welche Aussage zur Selbsthilfe nach § 229 BGB trifft im Grundsatz zu?",
+    "answers": [
+      "Die Maßnahme ist zulässig, weil eine Geldforderung besteht",
+      "Selbsthilfe ist unzulässig, wenn obrigkeitliche Hilfe rechtzeitig möglich wäre oder die Maßnahme nicht erforderlich und verhältnismäßig ist – das bloße Blockieren wegen offener Rechnungen genügt typischerweise nicht",
+      "Selbsthilfe ist nur bei Körperverletzungsansprüchen möglich",
+      "Selbsthilfe ersetzt die polizeiliche Gefahrenabwehr generell"
+    ],
+    "correct": [1],
+    "explanation": "§ 229 BGB: Anspruch dem Gläubiger gegenüber, keine rechtzeitige obrigkeitliche Hilfe, Gefahr der Verwirklichungsvereitelung, erforderliche und verhältnismäßige Maßnahme. Bloßes Blockieren wegen Rechnungen genügt in der Regel nicht."
+  },
+  {
+    "id": "bgb_011",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "multiple",
+    "question": "In einem Einkaufszentrum greift eine Person einen Sicherheitsmitarbeiter mit der Faust an. Der Mitarbeiter wehrt sich unmittelbar. Welche zwei Aussagen zur Notwehr nach § 227 BGB sind im Grundsatz zutreffend?",
+    "answers": [
+      "Notwehr ist die Verteidigung, die wegen gegenwärtiger rechtswidriger Angriffe erforderlich ist",
+      "Notwehr darf gegen jeden harmlosen Passanten ausgeübt werden, wenn man sich unsicher fühlt",
+      "Die Notwehrhandlung muss dem Angriff nach Art und Wirkung geboten sein (Gebot der Gebotenheit)",
+      "Notwehr nach § 227 BGB steht nur Polizeibeamten zu",
+      "Handlungen aus Rache nach beendetem Angriff sind noch Notwehr"
+    ],
+    "correct": [0, 2],
+    "explanation": "Notwehr (§ 227 BGB) setzt einen gegenwärtigen rechtswidrigen Angriff, eine erforderliche Verteidigung und die Gebotenheit der Notwehrhandlung voraus. Rache nach beendetem Angriff ist keine Notwehr."
+  },
+  {
+    "id": "bgb_012",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "combination",
+    "question": "Welche Aussagen zum Notstand im BGB-System sind im Grundsatz zutreffend?\n\n1. § 228 BGB (defensiver Notstand): Zur Abwendung einer gegenwärtigen Gefahr darf eine Einwirkung auf eine fremde Sache, von der die Gefahr ausgeht, vorgenommen werden; die Handlung ist nicht rechtswidrig, wenn sie angemessen ist.\n2. § 904 BGB (aggressiver Notstand): Zur Abwendung einer gegenwärtigen Gefahr darf eine Einwirkung auf eine fremde Sache vorgenommen werden, obwohl die Gefahr nicht von dieser Sache ausgeht; der Eigentümer muss die Einwirkung dulden, wenn der drohende Schaden unverhältnismäßig größer ist als der Schaden aus der Einwirkung.\n3. Notstand erlaubt ohne jede Gefahrenlage die willkürliche Zerstörung fremden Eigentums.\n4. Notstand im BGB setzt für jede Maßnahme stets eine vorherige richterliche Genehmigung voraus.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Nur die Aussagen 3 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "§ 228 BGB: defensiver Notstand – Einwirkung auf die Sache, von der die Gefahr ausgeht. § 904 BGB: aggressiver Notstand – Einwirkung auf eine andere fremde Sache bei unverhältnismäßig größerem drohendem Schaden."
+  },
+  {
+    "id": "bgb_013",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein 17-jähriger Auszubildender im Objektschutz beschädigt im Dienst ein teures Gerät des Auftraggebers, weil er gegen eine klare Anweisung verstoßen hat. Der Auftraggeber verlangt Schadensersatz vom Auszubildenden persönlich. Welche Aussage trifft im Grundsatz zu?",
+    "answers": [
+      "Minderjährige haften immer wie voll Geschäftsfähige, unabhängig vom Alter",
+      "Ein 17-Jähriger kann nach § 828 Abs. 3 BGB selbst haften, wenn er die zur Verantwortlichkeit erforderliche Einsicht hatte; fehlte die Einsicht, haftet ggf. der Aufsichtspflichtige nach § 828 Abs. 4 BGB",
+      "Für einen 17-Jährigen bei Sachbeschädigung im Dienst gilt stets die Sonderregel des § 828 Abs. 2 BGB (Kraftfahrzeug-/Bahnunfall)",
+      "Deliktischer Schadensersatz nach § 823 BGB kommt bei Sachbeschädigung grundsätzlich nie in Betracht"
+    ],
+    "correct": [1],
+    "explanation": "§ 828 Abs. 3 BGB: Minderjährige ab 7 bis unter 18 haften nur bei erforderlicher Einsicht. § 828 Abs. 2 gilt nur für 7–10-Jährige bei Kfz-/Bahnunfällen. Ohne Einsicht kann der Aufsichtspflichtige nach Abs. 4 haften."
+  },
+  {
     "id": "straf_001",
     "category": "Strafgesetzbuch und Strafverfahrensrecht",
     "type": "single",
