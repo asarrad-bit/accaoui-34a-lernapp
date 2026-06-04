@@ -1,9 +1,9 @@
 # Accaoui §34a – Review: Strafgesetzbuch und Strafverfahrensrecht (+8 Fragen)
 
-Stand: v23.5.25 (Freigabe approved)  
-Block: B (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)  
-Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`  
-**Status aller Fragen:** `approved`  
+Stand: v23.5.25 (Freigabe approved)
+Block: B (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
+Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
+**Status aller Fragen:** `approved`
 **Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
 
 ---
@@ -380,23 +380,23 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ### Fachliche Prüfung (v23.5.24) – abgeschlossen
 
-- **REV-STGB-03:** Notwehr § 32 – richtige Antworten a + c (Nothilfe), ohne unsaubere Notwehrexzess-Kernaussage  
-- **REV-STGB-04:** Notiz zu § 35 StGB / BGB-Notstand korrigiert  
-- **REV-STGB-05:** § 127 Abs. 1 StPO – Fluchtverdacht und Identität präzisiert  
-- **REV-STGB-07:** § 240 StGB inkl. Abs. 2 (Verwerflichkeit)  
-- **REV-STGB-08:** Diebstahl als Wegnahme in Zueignungsabsicht  
+- **REV-STGB-03:** Notwehr § 32 – richtige Antworten a + c (Nothilfe), ohne unsaubere Notwehrexzess-Kernaussage
+- **REV-STGB-04:** Notiz zu § 35 StGB / BGB-Notstand korrigiert
+- **REV-STGB-05:** § 127 Abs. 1 StPO – Fluchtverdacht und Identität präzisiert
+- **REV-STGB-07:** § 240 StGB inkl. Abs. 2 (Verwerflichkeit)
+- **REV-STGB-08:** Diebstahl als Wegnahme in Zueignungsabsicht
 
 ### Freigabe (v23.5.25)
 
-- Alle 8 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.  
-- Die **Dublettenprüfung** gegen `questions.json` steht noch aus.  
-- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.  
+- Alle 8 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
+- Die **Dublettenprüfung** gegen `questions.json` steht noch aus.
+- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
 
 ### Nächste Schritte
 
-- Dublettenprüfung gegen `questions.json` (straf_001–straf_005)  
-- Bei Ergebnis ohne Konflikt: Status `ready_for_import`  
-- Import erst über separaten Import-Task  
+- Dublettenprüfung gegen `questions.json` (straf_001–straf_005)
+- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
+- Import erst über separaten Import-Task
 
 **Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits straf_001–straf_005. Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
 
