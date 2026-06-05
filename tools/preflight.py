@@ -173,9 +173,11 @@ def main():
         print("\nPRE-FLIGHT FEHLER:")
         for error in errors:
             print(f"- {error}")
+        print("\nSTOPP: NICHT COMMITTEN UND NICHT PUSHEN.")
         sys.exit(1)
 
     print("\nOK: Preflight bestanden.")
+    print("FREIGABE: JETZT COMMITTEN UND PUSHEN.")
 
 if __name__ == "__main__":
     main()
