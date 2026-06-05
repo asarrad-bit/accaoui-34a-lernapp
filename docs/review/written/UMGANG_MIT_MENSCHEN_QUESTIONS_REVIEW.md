@@ -1,6 +1,6 @@
 # Accaoui §34a – Review: Umgang mit Menschen (+14 Fragen)
 
-Stand: v23.5.45 (Freigabe approved)
+Stand: v23.5.46 (Ziel-IDs korrigiert)
 Block: D (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 **Status aller Fragen:** `approved`
@@ -13,31 +13,31 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-MENSCH-01 | menschen_006 | Deeskalation bei aggressiven Personen | 1 | approved |
-| 02 | REV-MENSCH-02 | menschen_007 | Professionelle Kommunikation | 1 | approved |
-| 03 | REV-MENSCH-03 | menschen_008 | Aktives Zuhören / Gesprächsführung | 1 | approved |
-| 04 | REV-MENSCH-04 | menschen_009 | Konfliktvermeidung und Eigenschutz | 1 | approved |
-| 05 | REV-MENSCH-05 | menschen_010 | Umgang mit alkoholisierten Personen | 1 | approved |
-| 06 | REV-MENSCH-06 | menschen_011 | Gruppen / Menschenmengen | 1 | approved |
-| 07 | REV-MENSCH-07 | menschen_012 | Interkulturelles Verhalten | 1 | approved |
-| 08 | REV-MENSCH-08 | menschen_013 | Vorurteile / respektvolle Ansprache | 1 | approved |
-| 09 | REV-MENSCH-09 | menschen_014 | Stressverhalten / Selbstkontrolle | 1 | approved |
-| 10 | REV-MENSCH-10 | menschen_015 | Nähe, Distanz, Körpersprache | 1 | approved |
-| 11 | REV-MENSCH-11 | menschen_016 | Beschwerdemanagement | 1 | approved |
-| 12 | REV-MENSCH-12 | menschen_017 | Verhalten bei Provokationen | 1 | approved |
-| 13 | REV-MENSCH-13 | menschen_018 | Teamkommunikation / Informationsweitergabe | 1 | approved |
-| 14 | REV-MENSCH-14 | menschen_019 | Dokumentation besonderer Vorkommnisse | 1 | approved |
+| 01 | REV-MENSCH-01 | umgang_006 | Deeskalation bei aggressiven Personen | 1 | approved |
+| 02 | REV-MENSCH-02 | umgang_007 | Professionelle Kommunikation | 1 | approved |
+| 03 | REV-MENSCH-03 | umgang_008 | Aktives Zuhören / Gesprächsführung | 1 | approved |
+| 04 | REV-MENSCH-04 | umgang_009 | Konfliktvermeidung und Eigenschutz | 1 | approved |
+| 05 | REV-MENSCH-05 | umgang_010 | Umgang mit alkoholisierten Personen | 1 | approved |
+| 06 | REV-MENSCH-06 | umgang_011 | Gruppen / Menschenmengen | 1 | approved |
+| 07 | REV-MENSCH-07 | umgang_012 | Interkulturelles Verhalten | 1 | approved |
+| 08 | REV-MENSCH-08 | umgang_013 | Vorurteile / respektvolle Ansprache | 1 | approved |
+| 09 | REV-MENSCH-09 | umgang_014 | Stressverhalten / Selbstkontrolle | 1 | approved |
+| 10 | REV-MENSCH-10 | umgang_015 | Nähe, Distanz, Körpersprache | 1 | approved |
+| 11 | REV-MENSCH-11 | umgang_016 | Beschwerdemanagement | 1 | approved |
+| 12 | REV-MENSCH-12 | umgang_017 | Verhalten bei Provokationen | 1 | approved |
+| 13 | REV-MENSCH-13 | umgang_018 | Teamkommunikation / Informationsweitergabe | 1 | approved |
+| 14 | REV-MENSCH-14 | umgang_019 | Dokumentation besonderer Vorkommnisse | 1 | approved |
 
 **Summe Punkte (wenn alle richtig):** 14
 
 ---
 
-## Frage REV-MENSCH-01 → Ziel menschen_006
+## Frage REV-MENSCH-01 → Ziel umgang_006
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-01 |
-| Ziel-ID (`questions.json`) | menschen_006 |
+| Ziel-ID (`questions.json`) | umgang_006 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Deeskalation bei aggressiven Personen |
 | Fragetyp | single |
@@ -73,12 +73,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-02 → Ziel menschen_007
+## Frage REV-MENSCH-02 → Ziel umgang_007
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-02 |
-| Ziel-ID (`questions.json`) | menschen_007 |
+| Ziel-ID (`questions.json`) | umgang_007 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Professionelle Kommunikation im Sicherheitsdienst |
 | Fragetyp | single |
@@ -114,12 +114,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-03 → Ziel menschen_008
+## Frage REV-MENSCH-03 → Ziel umgang_008
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-03 |
-| Ziel-ID (`questions.json`) | menschen_008 |
+| Ziel-ID (`questions.json`) | umgang_008 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Aktives Zuhören und ruhige Gesprächsführung |
 | Fragetyp | single |
@@ -155,12 +155,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-04 → Ziel menschen_009
+## Frage REV-MENSCH-04 → Ziel umgang_009
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-04 |
-| Ziel-ID (`questions.json`) | menschen_009 |
+| Ziel-ID (`questions.json`) | umgang_009 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Konfliktvermeidung und Eigenschutz |
 | Fragetyp | single |
@@ -196,12 +196,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-05 → Ziel menschen_010
+## Frage REV-MENSCH-05 → Ziel umgang_010
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-05 |
-| Ziel-ID (`questions.json`) | menschen_010 |
+| Ziel-ID (`questions.json`) | umgang_010 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Umgang mit alkoholisierten Personen |
 | Fragetyp | single |
@@ -237,12 +237,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-06 → Ziel menschen_011
+## Frage REV-MENSCH-06 → Ziel umgang_011
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-06 |
-| Ziel-ID (`questions.json`) | menschen_011 |
+| Ziel-ID (`questions.json`) | umgang_011 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Umgang mit Gruppen / Menschenmengen |
 | Fragetyp | single |
@@ -278,12 +278,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-07 → Ziel menschen_012
+## Frage REV-MENSCH-07 → Ziel umgang_012
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-07 |
-| Ziel-ID (`questions.json`) | menschen_012 |
+| Ziel-ID (`questions.json`) | umgang_012 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Interkulturelles Verhalten |
 | Fragetyp | single |
@@ -319,12 +319,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-08 → Ziel menschen_013
+## Frage REV-MENSCH-08 → Ziel umgang_013
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-08 |
-| Ziel-ID (`questions.json`) | menschen_013 |
+| Ziel-ID (`questions.json`) | umgang_013 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Vorurteile und respektvolle Ansprache |
 | Fragetyp | single |
@@ -360,12 +360,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-09 → Ziel menschen_014
+## Frage REV-MENSCH-09 → Ziel umgang_014
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-09 |
-| Ziel-ID (`questions.json`) | menschen_014 |
+| Ziel-ID (`questions.json`) | umgang_014 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Stressverhalten und Selbstkontrolle |
 | Fragetyp | single |
@@ -401,12 +401,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-10 → Ziel menschen_015
+## Frage REV-MENSCH-10 → Ziel umgang_015
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-10 |
-| Ziel-ID (`questions.json`) | menschen_015 |
+| Ziel-ID (`questions.json`) | umgang_015 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Nähe, Distanz und Körpersprache |
 | Fragetyp | single |
@@ -442,12 +442,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-11 → Ziel menschen_016
+## Frage REV-MENSCH-11 → Ziel umgang_016
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-11 |
-| Ziel-ID (`questions.json`) | menschen_016 |
+| Ziel-ID (`questions.json`) | umgang_016 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Beschwerdemanagement |
 | Fragetyp | single |
@@ -483,12 +483,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-12 → Ziel menschen_017
+## Frage REV-MENSCH-12 → Ziel umgang_017
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-12 |
-| Ziel-ID (`questions.json`) | menschen_017 |
+| Ziel-ID (`questions.json`) | umgang_017 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Verhalten bei Provokationen |
 | Fragetyp | single |
@@ -524,12 +524,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-13 → Ziel menschen_018
+## Frage REV-MENSCH-13 → Ziel umgang_018
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-13 |
-| Ziel-ID (`questions.json`) | menschen_018 |
+| Ziel-ID (`questions.json`) | umgang_018 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Teamkommunikation und Weitergabe wichtiger Informationen |
 | Fragetyp | single |
@@ -565,12 +565,12 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ---
 
-## Frage REV-MENSCH-14 → Ziel menschen_019
+## Frage REV-MENSCH-14 → Ziel umgang_019
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-MENSCH-14 |
-| Ziel-ID (`questions.json`) | menschen_019 |
+| Ziel-ID (`questions.json`) | umgang_019 |
 | Kategorie | Umgang mit Menschen |
 | Unterthema | Dokumentation besonderer Vorkommnisse im Umgang mit Menschen |
 | Fragetyp | single |
@@ -611,7 +611,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Kennzahl | Wert |
 |----------|------|
 | Fragen in dieser Datei | 14 |
-| Ziel-IDs | menschen_006 … menschen_019 |
+| Ziel-IDs | umgang_006 … umgang_019 |
 | Status | alle `approved` |
 | Summe Punkte (Block) | 14 |
 
@@ -636,7 +636,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 - Bei Ergebnis ohne Konflikt: Status `ready_for_import`
 - Import erst über separaten Import-Task
 
-**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits **umgang_001–umgang_005**. Die neuen Fragen **vertiefen** das Sachgebiet auf **19 Fragen** gesamt (5 + 14). Ziel-IDs **`menschen_006`–`menschen_019`** (Präfix-Hinweis: bestehend `umgang_` – beim Import Eindeutigkeit prüfen).
+**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits **umgang_001–umgang_005**. Die neuen Fragen verwenden daher einheitlich **umgang_006–umgang_019** (Sachgebiet gesamt: 19 Fragen / 19 Punkte).
 
 ---
 
