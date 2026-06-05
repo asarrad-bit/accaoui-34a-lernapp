@@ -1,10 +1,10 @@
 # Accaoui §34a – Review: Grundzüge der Sicherheitstechnik (+2 Fragen)
 
-Stand: v23.5.39 (Freigabe approved)
+Stand: v23.5.40 (Dublettenprüfung dokumentiert)
 Block: E (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `approved`
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
+**Status aller Fragen:** `ready_for_import`
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Block ist importbereit; Import erfolgt erst im separaten Import-Task.
 
 ---
 
@@ -12,8 +12,8 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-TECH-01 | technik_006 | Einbruchmeldeanlage / Alarmmeldung / Verhalten bei Alarm | 1 | approved |
-| 02 | REV-TECH-02 | technik_007 | Videoüberwachung / Zutrittskontrolle / technische Sicherung | 2 | approved |
+| 01 | REV-TECH-01 | technik_006 | Einbruchmeldeanlage / Alarmmeldung / Verhalten bei Alarm | 1 | ready_for_import |
+| 02 | REV-TECH-02 | technik_007 | Videoüberwachung / Zutrittskontrolle / technische Sicherung | 2 | ready_for_import |
 
 **Summe Punkte (wenn alle richtig):** 3
 
@@ -33,7 +33,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -55,7 +55,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.38 |
-| Dublettenprüfung | Thematische Nähe zu technik_001/technik_005 (EMA allgemein); vertieft **Verhalten bei Alarm** – Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.40, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Accaoui-Fall Nachtdienst Lager; Abgrenzung technik_003 (BMA) |
 
 ---
@@ -74,7 +74,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -97,8 +97,35 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.38, Antwortlogik b + e |
-| Dublettenprüfung | Thematische Nähe zu technik_004 (Zutrittskontrolle allgemein); vertieft **Video + Datenschutz** – Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.40, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | 2-Punkte-Frage; Verknüpfung Datenschutzrecht (Sachgebiet 3) nur als Kontext |
+
+---
+
+## Dublettenprüfung gegen questions.json (v23.5.40)
+
+Geprüft wurden die 2 Review-Fragen (Ziel-IDs `technik_006`–`technik_007`) gegen die **5 bestehenden** Sicherheitstechnik-Fragen in `questions.json`.
+
+### Bestehende Sicherheitstechnik-Fragen in questions.json
+
+| ID | Kurzinhalt |
+|----|------------|
+| technik_001 | Einbruchmeldeanlagen allgemein |
+| technik_002 | Funktionsprüfung / Bedienung / Störungen |
+| technik_003 | Brandmeldeanlage Alarm |
+| technik_004 | Zutrittskontrolle allgemein |
+| technik_005 | Aufgabe einer Einbruchmeldeanlage |
+
+### Prüfergebnis
+
+| Review-ID | Ergebnis |
+|-----------|----------|
+| REV-TECH-01 | Keine direkte Dublette; **thematische Nähe** zu technik_001/technik_005 (EMA), aber **Vertiefung** – **technik_006** vertieft konkretes **Verhalten bei EMA-Alarm** |
+| REV-TECH-02 | Keine direkte Dublette; **thematische Nähe** zu technik_004 (Zutrittskontrolle), aber **Vertiefung** – **technik_007** ergänzt **Videoüberwachung**, Zutrittskontrolle und **Datenschutz** |
+
+**Gesamt:** Keine direkte Dublette. Thematische Nähe bei Einbruchmeldeanlage und Zutrittskontrolle; die neuen Fragen sind **Vertiefungen**, keine Wiederholungen. Der Block darf auf **`ready_for_import`** gesetzt werden.
+
+**Prüfdatum / Task:** v23.5.40
 
 ---
 
@@ -108,15 +135,15 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 2 |
 | Ziel-IDs | technik_006 … technik_007 |
-| Status | alle `approved` |
+| Status | alle `ready_for_import` |
 
-## Review-Zusammenfassung (v23.5.39)
+## Review-Zusammenfassung (v23.5.40)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
 | **reviewed** | 0 | — |
-| **approved** | 2 | REV-TECH-01 … REV-TECH-02 |
-| **ready_for_import** | 0 | — |
+| **approved** | 0 | — |
+| **ready_for_import** | 2 | REV-TECH-01 … REV-TECH-02 |
 | **rewrite_required** | 0 | — |
 
 ### Fachliche Prüfung (v23.5.38) – abgeschlossen
@@ -125,17 +152,29 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 - **REV-TECH-02:** Zutrittskontrolle + Videoüberwachung mit Datenschutz – Antworten **b + e**
 - **Ziel-IDs:** `technik_006`/`technik_007` (einheitlicher Präfix zu technik_001–technik_005)
 
-### Freigabe (v23.5.39)
+### Freigabe (v23.5.39) – abgeschlossen
 
-- Beide Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
-- Die **Dublettenprüfung** gegen `questions.json` (technik_001–technik_005) steht noch aus.
-- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
+- Beide Fragen fachlich **approved**
 
-### Nächste Schritte
+### Dublettenprüfung (v23.5.40) – abgeschlossen
 
-- Dublettenprüfung gegen `questions.json`
-- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
-- Import erst über separaten Import-Task
+- Abgleich mit 5 bestehenden Sicherheitstechnik-Fragen in `questions.json` (technik_001–technik_005) durchgeführt
+- Keine direkte Dublette; technik_006 vertieft EMA-Alarmverhalten, technik_007 ergänzt Video/Datenschutz
+- Beide Fragen: **`ready_for_import`**
+
+### Kennzahlen
+
+| Kennzahl | Wert |
+|----------|------|
+| Fragen in dieser Datei | 2 |
+| Summe Punkte (wenn alle richtig) | 3 |
+| Nächster Schritt | **Separater Import-Task** → `questions.json` (`technik_006`–`technik_007`) |
+
+### Import-Regel
+
+**Hinweis:** Der Block ist **`ready_for_import`**, aber **noch nicht importiert**. Der Import in `questions.json` erfolgt **erst in einem eigenen Import-Task** (mit Preflight, `audit-categories.py`, Browser-Test).
+
+**Nicht in dieser Aufgabe:** Keine Einträge in `questions.json` – Import bleibt bis zum Import-Task ausstehend.
 
 **Hinweis zu bestehenden Fragen:** technik_001–technik_005 bleiben unverändert; technik_006–technik_007 **ergänzen** und **vertiefen**.
 
