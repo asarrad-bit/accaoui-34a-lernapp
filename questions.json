@@ -917,6 +917,35 @@
     "explanation": "Eine Einbruchmeldeanlage kann Einbruchversuche erkennen oder melden. Sie ersetzt keine Polizei, kein Gericht und keine rechtliche Bewertung."
   },
   {
+    "id": "technik_006",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "single",
+    "question": "Gegen 2:00 Uhr meldet die Einbruchmeldeanlage (EMA) einen Alarm in einem abgesperrten Lagerbereich. Der Sicherheitsmitarbeiter sieht auf dem Monitor zunächst niemanden. Welche Verhaltensweise ist im Grundsatz richtig?",
+    "answers": [
+      "Den Alarm ignorieren, weil niemand sichtbar ist – vermutlich Fehlalarm",
+      "Den Alarm ernst nehmen, nach Dienstanweisung den Bereich prüfen/absichern, die Meldung an Leitstelle/Auftraggeber weitergeben und die Anlage nicht eigenmächtig dauerhaft zurückstellen",
+      "Die EMA dauerhaft abschalten, um weitere Störungen zu vermeiden",
+      "Eigenmächtig in jeden Bereich eindringen, auch ohne Schlüssel oder Freigabe"
+    ],
+    "correct": [1],
+    "explanation": "Ein EMA-Alarm ist auch ohne sichtbare Person ernst zu nehmen. Nach Dienstanweisung Bereich prüfen/absichern und Meldung weitergeben. Rückstellung oder Abschaltung nur im befugten Rahmen, nicht eigenmächtig dauerhaft."
+  },
+  {
+    "id": "technik_007",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "multiple",
+    "question": "Ein Einkaufszentrum nutzt Videoüberwachung und ein elektronisches Zutrittskontrollsystem für Nebenräume. Welche zwei Aussagen zu technischer Sicherung im Sicherheitsdienst sind im Grundsatz zutreffend?",
+    "answers": [
+      "Videoüberwachung darf ohne Kennzeichnung und ohne rechtliche Grundlage beliebig in Umkleiden aufgenommen werden",
+      "Zutrittskontrollsysteme können den Zutritt nur berechtigten Personen ermöglichen und Zutrittsversuche dokumentieren",
+      "Sicherheitsmitarbeiter dürfen Videoaufzeichnungen beliebig privat weitergeben oder in sozialen Medien veröffentlichen",
+      "Technische Sicherung ersetzt vollständig Datenschutz, Hausrecht und menschliche Kontrolle",
+      "Videoüberwachung unterliegt u. a. Kennzeichnungs- und Zweckbindungspflichten; der Einsatz muss rechtlich zulässig sein (z. B. DS-GVO, Betriebsvereinbarung, Auftraggebervorgaben)"
+    ],
+    "correct": [1, 4],
+    "explanation": "Zutrittskontrollsysteme steuern berechtigten Zutritt und dokumentieren Versuche. Videoüberwachung braucht rechtliche Grundlage, Zweckbindung, Kennzeichnung und Zugriffsbeschränkung. Technik ergänzt Hausrecht und Datenschutz, ersetzt sie nicht. Keine private Weitergabe von Aufnahmen."
+  },
+  {
     "id": "waffen_001",
     "category": "Umgang mit Waffen",
     "type": "single",
