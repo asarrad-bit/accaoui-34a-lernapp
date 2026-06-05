@@ -1,9 +1,9 @@
 # Accaoui §34a – Review: Unfallverhütungsvorschriften Wach- und Sicherungsdienste (+3 Fragen)
 
-Stand: v23.5.31 (Freigabe approved)  
-Block: C (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)  
-Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`  
-**Status aller Fragen:** `approved`  
+Stand: v23.5.31 (Freigabe approved)
+Block: C (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
+Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
+**Status aller Fragen:** `approved`
 **Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
 
 ---
@@ -42,10 +42,10 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Nur die Wachperson ist für Arbeitssicherheit verantwortlich; der Unternehmer hat keine Pflichten  
-- b) Der **Unternehmer** muss u. a. Gefährdungen beurteilen, geeignete Schutzmaßnahmen festlegen und Beschäftigte **unterweisen**; die **Wachperson** muss Anweisungen befolgen, Schutzmaßnahmen nutzen und **Gefahren sowie Mängel melden**  
-- c) Eine Gefährdungsbeurteilung ist nur bei Industrieanlagen, nicht bei Bewachungsdiensten, erforderlich  
-- d) Unterweisungen sind entbehrlich, wenn Mitarbeitende bereits eine §-34a-Unterrichtung absolviert haben  
+- a) Nur die Wachperson ist für Arbeitssicherheit verantwortlich; der Unternehmer hat keine Pflichten
+- b) Der **Unternehmer** muss u. a. Gefährdungen beurteilen, geeignete Schutzmaßnahmen festlegen und Beschäftigte **unterweisen**; die **Wachperson** muss Anweisungen befolgen, Schutzmaßnahmen nutzen und **Gefahren sowie Mängel melden**
+- c) Eine Gefährdungsbeurteilung ist nur bei Industrieanlagen, nicht bei Bewachungsdiensten, erforderlich
+- d) Unterweisungen sind entbehrlich, wenn Mitarbeitende bereits eine §-34a-Unterrichtung absolviert haben
 
 **Richtige Antwort(en):** b
 
@@ -83,11 +83,11 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Vor Dienstbeginn ist eine **Einweisung** zu Dienstanweisung, Einsatzort, Kommunikation, Notfall und objektbezogenen Besonderheiten erforderlich  
-- b) Ein Dienst darf angetreten werden, wenn berauschende Mittel die Dienstfähigkeit nur „leicht“ beeinträchtigen  
-- c) **Alkohol** und andere **berauschende Mittel** sind **während der Dienstzeit verboten** – auch für einen **angemessenen Zeitraum vor dem Einsatz**; bei Dienstantritt muss **Nüchternheit** gegeben sein  
-- d) Die Prüfung von Funkgerät, Taschenlampe und Schutzausrüstung entfällt, wenn der Mitarbeiter gestern am selben Objekt war  
-- e) Eine erkennbare Dienstunfähigkeit muss nicht gemeldet werden, solange keine Vorfälle passieren  
+- a) Vor Dienstbeginn ist eine **Einweisung** zu Dienstanweisung, Einsatzort, Kommunikation, Notfall und objektbezogenen Besonderheiten erforderlich
+- b) Ein Dienst darf angetreten werden, wenn berauschende Mittel die Dienstfähigkeit nur „leicht“ beeinträchtigen
+- c) **Alkohol** und andere **berauschende Mittel** sind **während der Dienstzeit verboten** – auch für einen **angemessenen Zeitraum vor dem Einsatz**; bei Dienstantritt muss **Nüchternheit** gegeben sein
+- d) Die Prüfung von Funkgerät, Taschenlampe und Schutzausrüstung entfällt, wenn der Mitarbeiter gestern am selben Objekt war
+- e) Eine erkennbare Dienstunfähigkeit muss nicht gemeldet werden, solange keine Vorfälle passieren
 
 **Richtige Antwort(en):** a, c
 
@@ -125,10 +125,10 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Antwortoptionen:**
 
-- a) Sofort allein in den Rauchbereich eindringen, um die Ursache ohne Schutzausrüstung zu klären  
-- b) **Eigenschutz** beachten, die Gefahr **unverzüglich melden/alarmieren** (Leitstelle, Auftraggeber, ggf. Feuerwehr nach Dienstanweisung), **Notfallabläufe** einleiten und bei Bedarf **Unterstützung** anfordern  
-- c) Abwarten, bis die Schicht endet, und den Vorgang nicht dokumentieren  
-- d) Nur einen internen Zettel ausfüllen, ohne Meldung an die zuständige Stelle  
+- a) Sofort allein in den Rauchbereich eindringen, um die Ursache ohne Schutzausrüstung zu klären
+- b) **Eigenschutz** beachten, die Gefahr **unverzüglich melden/alarmieren** (Leitstelle, Auftraggeber, ggf. Feuerwehr nach Dienstanweisung), **Notfallabläufe** einleiten und bei Bedarf **Unterstützung** anfordern
+- c) Abwarten, bis die Schicht endet, und den Vorgang nicht dokumentieren
+- d) Nur einen internen Zettel ausfüllen, ohne Meldung an die zuständige Stelle
 
 **Richtige Antwort(en):** b
 
@@ -163,21 +163,21 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 ### Fachliche Prüfung (v23.5.30) – abgeschlossen
 
-- **REV-UVV-01:** Pflichten nach DGUV Vorschrift 23 – Dienstanweisungen, Unterweisung, Eignung, Meldepflicht  
-- **REV-UVV-02:** Alkohol/berauschende Mittel strenger (Verbot, Vorlaufzeit, Nüchternheit, keine Dienstunfähigkeit) – Antworten **a + c**  
-- **REV-UVV-03:** Eigenschutz, Meldung, Notfallabläufe – Erklärung geglättet  
+- **REV-UVV-01:** Pflichten nach DGUV Vorschrift 23 – Dienstanweisungen, Unterweisung, Eignung, Meldepflicht
+- **REV-UVV-02:** Alkohol/berauschende Mittel strenger (Verbot, Vorlaufzeit, Nüchternheit, keine Dienstunfähigkeit) – Antworten **a + c**
+- **REV-UVV-03:** Eigenschutz, Meldung, Notfallabläufe – Erklärung geglättet
 
 ### Freigabe (v23.5.31)
 
-- Alle 3 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.  
-- Die **Dublettenprüfung** gegen `questions.json` (uvv_001–uvv_005) steht noch aus.  
-- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.  
+- Alle 3 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
+- Die **Dublettenprüfung** gegen `questions.json` (uvv_001–uvv_005) steht noch aus.
+- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
 
 ### Nächste Schritte
 
-- Dublettenprüfung gegen `questions.json`  
-- Bei Ergebnis ohne Konflikt: Status `ready_for_import`  
-- Import erst über separaten Import-Task  
+- Dublettenprüfung gegen `questions.json`
+- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
+- Import erst über separaten Import-Task
 
 **Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits uvv_001–uvv_005. Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
 
