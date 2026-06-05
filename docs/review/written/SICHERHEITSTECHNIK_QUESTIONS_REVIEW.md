@@ -1,30 +1,30 @@
 # Accaoui §34a – Review: Grundzüge der Sicherheitstechnik (+2 Fragen)
 
-Stand: v23.5.37
+Stand: v23.5.38 (fachliche Nachschärfung)
 Block: E (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `needs_review`
+**Status aller Fragen:** `reviewed`
 **Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
 
 ---
 
 ## Block-Übersicht
 
-| Nr | Review-ID | Ziel-ID | Unterthema | Punkte | IHK-Risiko |
-|----|-----------|---------|------------|-------:|------------|
-| 01 | REV-TECH-01 | sicherheit_006 | Einbruchmeldeanlage / Alarmmeldung / Verhalten bei Alarm | 1 | low |
-| 02 | REV-TECH-02 | sicherheit_007 | Videoüberwachung / Zutrittskontrolle / technische Sicherung | 2 | medium |
+| Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
+|----|-----------|---------|------------|-------:|--------|
+| 01 | REV-TECH-01 | technik_006 | Einbruchmeldeanlage / Alarmmeldung / Verhalten bei Alarm | 1 | reviewed |
+| 02 | REV-TECH-02 | technik_007 | Videoüberwachung / Zutrittskontrolle / technische Sicherung | 2 | reviewed |
 
 **Summe Punkte (wenn alle richtig):** 3
 
 ---
 
-## Frage REV-TECH-01 → Ziel sicherheit_006
+## Frage REV-TECH-01 → Ziel technik_006
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-TECH-01 |
-| Ziel-ID (`questions.json`) | sicherheit_006 |
+| Ziel-ID (`questions.json`) | technik_006 |
 | Kategorie | Grundzüge der Sicherheitstechnik |
 | Unterthema | Einbruchmeldeanlage / Alarmmeldung / Verhalten bei Alarm |
 | Fragetyp | single |
@@ -33,7 +33,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -50,22 +50,22 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Erklärung:**
 
-> **Einbruchmeldeanlagen** dienen der **Erkennung und Meldung** von Einbruchversuchen. Ein Alarm ist **auch ohne sichtbare Person** ernst zu nehmen (Fehlalarm erst nach **geordneter Prüfung**). Der Sicherheitsmitarbeiter handelt nach **Dienstanweisung**: Ort prüfen/absichern, **Meldung weitergeben**, ggf. Polizei/Technik einbinden. **Rückstellung** oder Abschaltung nur im **befugten Rahmen**, nicht eigenmächtig.
+> **Einbruchmeldeanlagen** dienen der **Erkennung und Meldung** von Einbruchversuchen. Ein **EMA-Alarm** ist **auch ohne sichtbare Person** ernst zu nehmen. Der Sicherheitsmitarbeiter handelt nach **Dienstanweisung**: Bereich **prüfen/absichern**, **Meldung an Leitstelle/Auftraggeber** weitergeben. **Rückstellung** oder **Abschaltung** nur im **befugten Rahmen** – **kein eigenmächtiges dauerhaftes Abschalten**.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.37 |
+| Fachliche Prüfung | OK – Review v23.5.38 |
 | Dublettenprüfung | Thematische Nähe zu technik_001/technik_005 (EMA allgemein); vertieft **Verhalten bei Alarm** – Abgleich `questions.json` vor Import |
 | Notizen | Accaoui-Fall Nachtdienst Lager; Abgrenzung technik_003 (BMA) |
 
 ---
 
-## Frage REV-TECH-02 → Ziel sicherheit_007
+## Frage REV-TECH-02 → Ziel technik_007
 
 | Meta | Wert |
 |------|------|
 | Review-ID | REV-TECH-02 |
-| Ziel-ID (`questions.json`) | sicherheit_007 |
+| Ziel-ID (`questions.json`) | technik_007 |
 | Kategorie | Grundzüge der Sicherheitstechnik |
 | Unterthema | Videoüberwachung / Zutrittskontrolle / technische Sicherung |
 | Fragetyp | multiple |
@@ -74,7 +74,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | reviewed |
 
 **Frage:**
 
@@ -92,11 +92,11 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 **Erklärung:**
 
-> **Zutrittskontrolle:** Technische Systeme (Karten, Codes, Schleusen) steuern **berechtigten Zutritt** und können **Versuche** protokollieren – ergänzend zu **menschlicher Kontrolle**, nicht als Ersatz für alle Pflichten. **Videoüberwachung:** Nur bei **rechtlicher Grundlage** und unter Beachtung von **Datenschutz** (u. a. Kennzeichnung, Zweckbindung, Zugriffsbeschränkung). Keine Weitergabe oder Veröffentlichung von Aufnahmen ohne Befugnis.
+> **Zutrittskontrollsysteme** steuern **berechtigten Zutritt** und können **Zutrittsversuche dokumentieren**. **Videoüberwachung** braucht eine **rechtliche Grundlage**, **Zweckbindung**, **Kennzeichnung** und **Zugriffsbeschränkung**. Technische Sicherung **ergänzt** Hausrecht, Datenschutz und menschliche Kontrolle, **ersetzt** sie aber **nicht**. **Keine private Weitergabe** oder **Veröffentlichung** von Aufnahmen.
 
 | Prüfung | Ergebnis |
 |---------|----------|
-| Fachliche Prüfung | Ausstehend – Review v23.5.37 |
+| Fachliche Prüfung | OK – Review v23.5.38, Antwortlogik b + e |
 | Dublettenprüfung | Thematische Nähe zu technik_004 (Zutrittskontrolle allgemein); vertieft **Video + Datenschutz** – Abgleich `questions.json` vor Import |
 | Notizen | 2-Punkte-Frage; Verknüpfung Datenschutzrecht (Sachgebiet 3) nur als Kontext |
 
@@ -107,11 +107,32 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Kennzahl | Wert |
 |----------|------|
 | Fragen in dieser Datei | 2 |
-| Ziel-IDs | sicherheit_006 … sicherheit_007 |
-| Status | alle `needs_review` |
-| Nächster Schritt | Fachliche Prüfung → `approved` → Dublettenprüfung → `ready_for_import` → Import-Task |
+| Ziel-IDs | technik_006 … technik_007 |
+| Status | alle `reviewed` |
 
-**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits technik_001–technik_005 (EMA, Funktionsprüfung, BMA, Zutrittskontrolle, EMA-Aufgabe). Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht. Ziel-IDs `sicherheit_006`/`sicherheit_007` sind bewusst vom Präfix `technik_` abweichend (Import-Task prüft Eindeutigkeit).
+## Review-Zusammenfassung (v23.5.38)
+
+| Status | Anzahl | Review-IDs |
+|--------|-------:|------------|
+| **reviewed** | 2 | REV-TECH-01 … REV-TECH-02 |
+| **approved** | 0 | — |
+| **ready_for_import** | 0 | — |
+| **rewrite_required** | 0 | — |
+
+### Fachliche Prüfung (v23.5.38) – abgeschlossen
+
+- **REV-TECH-01:** EMA-Alarm ernst nehmen, Dienstanweisung, Meldung, keine eigenmächtige Dauer-Rückstellung
+- **REV-TECH-02:** Zutrittskontrolle + Videoüberwachung mit Datenschutz – Antworten **b + e**
+- **Ziel-IDs:** `technik_006`/`technik_007` (einheitlicher Präfix zu technik_001–technik_005)
+
+### Nächste Schritte
+
+- **Noch nicht** `approved`
+- **Noch nicht** `ready_for_import`
+- **Dublettenprüfung** gegen `questions.json` (technik_001–technik_005) steht noch aus
+- **Kein Import** in dieser Phase
+
+**Hinweis zu bestehenden Fragen:** technik_001–technik_005 bleiben unverändert; technik_006–technik_007 **ergänzen** und **vertiefen**.
 
 ---
 
