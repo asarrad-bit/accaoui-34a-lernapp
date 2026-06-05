@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v23.5.29
+Stand: v24.0
 Branch: `refactor/oral-exam-module`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -135,7 +135,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v23.5.29)
+## 5. Aktueller Versionsstand (bis v24.0)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -163,6 +163,8 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v23.5.9 | `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md` |
 | v23.5.10 | `docs/PROJECT_MASTERLIST.md` und `README.md` aktualisiert |
 | v23.5.29 | `docs/LEARNING_STRATEGY_MODULE.md` (Vergessenskurve, Lernprinzipien); Prüfungsaufbau § 34a in `PROJECT_MASTERLIST.md` §7 |
+| v23.5.48 | Fragenbank-Ausbau abgeschlossen: **86 Fragen** in `questions.json` (inkl. Umgang mit Menschen `umgang_006`–`umgang_019`) |
+| v24.0 | `docs/EXAM_SIMULATION_AUDIT.md` – Prüfungssimulation 82/120 auditiert; **kein Code-Task** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -221,6 +223,8 @@ Die **Fragenbank** in `questions.json` darf **größer als 82 Fragen** sein (Zie
 
 Die **spätere Vollsimulation** der schriftlichen Prüfung soll jedoch **exakt 82 Fragen** nach **Sachgebiet** und **Punktegewichtung** der Tabelle oben ziehen (Zufallsauswahl pro Kategorie aus dem verfügbaren Pool).
 
+**Audit v24.0:** Ist-Stand und Lücken siehe `docs/EXAM_SIMULATION_AUDIT.md`. Aktuell: **86 Fragen**, **keine `points`-Felder** in `questions.json`; Vollsimulation zieht per `shuffleArray` + `slice` – Umsetzung der echten 82/120-Logik erst in **v24.1 ff.**
+
 ### Mündliche Prüfung
 
 | Merkmal | Vorgabe |
@@ -278,6 +282,29 @@ Kernbotschaft für die App (Beispieltext):
 
 ---
 
+## 8.2 Prüfungssimulation 82/120 (Audit v24.0)
+
+| Aspekt | Stand v24.0 |
+|--------|-------------|
+| Dokument | `docs/EXAM_SIMULATION_AUDIT.md` – **vorhanden** |
+| Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht) |
+| `points`-Felder | **nicht vorhanden** – faktisch 1 Punkt pro Frage (`DEFAULT_QUESTION_POINTS`) |
+| Vollsimulation (Ist) | 82 Fragen per Zufall aus Gesamtpool – **ohne** Sachgebiets- und Punktegewichtung |
+| Vollsimulation (Soll) | **82 Fragen / 120 Punkte** nach Sachgebietstabelle §7 |
+| App-Status | Timer (120 min) und Bestehen (50 %) vorhanden; **Auswahl- und Punkte-Logik** folgen in v24.1 ff. |
+
+### Empfohlene Folge-Tasks
+
+- **v24.1** – `points`-Felder fachlich geplant in `questions.json`
+- **v24.2** – Auswahl nach Sachgebiet
+- **v24.3** – 82/120-Auswertung testen
+- **v24.4** – Browser-Test Vollsimulation
+- **v24.5** – Dokumentation und Online-Test
+
+**Hinweis:** v24.0 = **nur Dokumentation**, kein Code, keine `questions.json`-Änderung.
+
+---
+
 ## 9. Prüfskripte
 
 Kategorie-Audit:
@@ -294,13 +321,14 @@ python tools/preflight.py
 
 ---
 
-## 10. Planungsdokumente (Stand v23.5.29)
+## 10. Planungsdokumente (Stand v24.0)
 
 | Dokument | Status |
 |----------|--------|
 | `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` | Master-Kontext, Roadmap v24–v28, Prüfungsaufbau §4 |
 | `docs/WRITTEN_QUESTION_STANDARD.md` | Schriftlicher Fragenstandard – **vorhanden** |
-| `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md` | Ausbau 51 → 86 Fragen, Prüfungsziel 82 – **vorhanden** |
+| `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md` | Ausbau 51 → 86 Fragen, Prüfungsziel 82 – **vorhanden** (Pool **86** erreicht) |
+| `docs/EXAM_SIMULATION_AUDIT.md` | Prüfungssimulation 82/120 – **vorhanden** (Audit v24.0, kein Code) |
 | `docs/QUESTION_DATABASE_PLAN.md` | Fragen-Datenbank, Review, Export – **vorhanden** |
 | `docs/LEARNING_STRATEGY_MODULE.md` | Lernstrategie, Vergessenskurve – **vorhanden** (Konzept, kein Code) |
 | `docs/SUPABASE_QUESTION_SCHEMA.md` | Supabase-Fragenmodell – **vorhanden** |
@@ -319,9 +347,10 @@ python tools/preflight.py
 | Simulation A | **vorhanden** (15-Minuten-Bogen) |
 | Simulation B | **vorhanden** (Prüfungsbogen B) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
-| Schriftliche Fragenbank | Pool in `questions.json` wächst Richtung **86** (Prüfung zieht **82** nach Gewichtung) |
+| Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Prüfung zieht **82** nach Gewichtung – **noch nicht umgesetzt** |
+| Prüfungssimulation 82/120 | **auditiert** (v24.0) – siehe `docs/EXAM_SIMULATION_AUDIT.md`; Umsetzung v24.1 ff. |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
-| UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x, nach Fragenbank-Ausbau) |
+| UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
 
 Langfristiges Ziel mündlich: skalierbare Bogen-Auswahl A/B/C/D unter einem Hauptmodus „Prüfungssimulation“ (siehe v24 Oral Exam Cleanup).
 
@@ -355,15 +384,16 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-1. **Fragenbank-Ausbau** – Review-Blöcke (BGB, Strafrecht, UVV, Menschen, Technik) nach `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`
-2. **Spätere Vollsimulation 82/120** – exakte Ziehung nach Sachgebiet und Punktegewichtung (v25)
-3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
-4. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**, erst nach Fragenbank-Ausbau
-5. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
-6. **Später v24 Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C
-7. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
-8. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
-9. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
+1. **Prüfungssimulation 82/120** – `points`-Felder (v24.1), Sachgebietsauswahl (v24.2), Auswertung und Browser-Test (v24.3–v24.5); siehe `docs/EXAM_SIMULATION_AUDIT.md` und §8.2
+2. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
+3. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**
+4. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
+5. **Später v24 Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C
+6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
+7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
+8. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
+
+**Erledigt:** Fragenbank-Ausbau auf **86 Fragen** (v23.5.48, Umgang mit Menschen komplett importiert).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
@@ -379,6 +409,7 @@ docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
 docs/WRITTEN_QUESTION_STANDARD.md
 docs/WRITTEN_QUESTION_EXPANSION_PLAN.md
 docs/LEARNING_STRATEGY_MODULE.md
+docs/EXAM_SIMULATION_AUDIT.md
 docs/QUESTION_DATABASE_PLAN.md
 docs/SUPABASE_IMPLEMENTATION_ROADMAP.md
 ```
