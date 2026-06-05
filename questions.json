@@ -734,6 +734,62 @@
     "explanation": "Gute Kommunikation im Sicherheitsdienst ist klar, kurz, respektvoll und kontrolliert. Einschüchterung oder Schreien wirken unprofessionell."
   },
   {
+    "id": "umgang_006",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "An einem Objekteingang schreit ein Besucher, schlägt mit der Faust auf den Tresen und fordert sofortigen Zutritt ohne Ausweis. Welche erste Reaktion unterstützt Deeskalation am ehesten?",
+    "answers": [
+      "Mit gleicher Lautstärke antworten und die Person vor anderen bloßstellen",
+      "Ruhe bewahren, Sicherheitsabstand halten, kurz und klar sprechen und auf die Zutrittsregel hinweisen",
+      "Sofort körperlich festhalten, ohne rechtliche Grundlage",
+      "Die Situation ignorieren und weggehen"
+    ],
+    "correct": [1],
+    "explanation": "Bei aggressiven Personen hilft Deeskalation: ruhige Stimme, klare Sprache, Abstand, keine Provokation. Grenzen sachlich benennen (Ausweis/Zutritt). Körperliche Maßnahmen nur bei eigener Befugnis und Verhältnismäßigkeit – nicht als erste Reaktion ohne Grundlage."
+  },
+  {
+    "id": "umgang_007",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Ein Lieferant ohne gültige Zutrittsfreigabe besteht auf sofortigen Zugang zum Lager. Welche professionelle Kommunikation ist im Grundsatz angemessen?",
+    "answers": [
+      "Du kommst hier nicht rein, verzieh dich.",
+      "Sachlich die fehlende Freigabe benennen, die nächsten Schritte erklären (z. B. Anmeldung, Vorgesetzter) und höflich an der Regel festhalten",
+      "Zutritt gewähren, um Konflikt zu vermeiden, ohne Rücksprache",
+      "Den Lieferanten öffentlich als „Betrüger“ bezeichnen"
+    ],
+    "correct": [1],
+    "explanation": "Professionelle Kommunikation ist sachlich, respektvoll und regelorientiert. Klare Information statt Beleidigung oder Drohung. Grenzen setzen ohne Herabwürdigung – auch bei Druck durch Dritte."
+  },
+  {
+    "id": "umgang_008",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Eine Besucherin beschwert sich aufgeregt über lange Wartezeiten an der Pforte. Sie unterbricht häufig. Welche Verhaltensweise entspricht aktivem Zuhören und ruhiger Gesprächsführung?",
+    "answers": [
+      "Sofort unterbrechen und die Beschwerde als „unberechtigt“ abtun",
+      "Zuhören, zusammenfassen, was verstanden wurde, ruhig nachfragen und Lösungsweg anbieten (z. B. Weiterleitung an zuständige Stelle)",
+      "Wegschauen und gleichzeitig am Handy weiterarbeiten",
+      "Die Person laut zur Seite schieben, um den Durchgang freizumachen"
+    ],
+    "correct": [1],
+    "explanation": "Aktives Zuhören bedeutet aufmerksam zuhören, Paraphrasieren („Habe ich richtig verstanden, dass …?“) und ruhig zu führen. So sinkt oft die Erregung. Abtun oder Ignorieren eskaliert. Körperliche Maßnahmen nur bei Notwendigkeit."
+  },
+  {
+    "id": "umgang_009",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Zwei Personen streiten lautstark in einem Flur; eine droht mit der Faust. Andere Mitarbeiter sind in der Nähe. Welche Kombination aus Konfliktvermeidung und Eigenschutz ist im Grundsatz richtig?",
+    "answers": [
+      "Unmittelbar zwischen die Streitenden springen und selbst Faustschläge riskieren",
+      "Sicherheitsabstand halten, Unterstützung anfordern, deeskalierend sprechen und nach Dienstanweisung trennend eingreifen – Eigenschutz nicht außer Acht lassen",
+      "Die Situation filmen und erst eingreifen, wenn jemand verletzt ist",
+      "Beide Parteien gleichermaßen öffentlich beschimpfen"
+    ],
+    "correct": [1],
+    "explanation": "Konfliktvermeidung heißt nicht Wegsehen, sondern früh handeln: Abstand, Backup, ruhige Ansprache, Trennung wenn nötig und erlaubt. Eigenschutz hat Vorrang – kein unnötiges Risiko ohne Unterstützung."
+  },
+  {
     "id": "uvv_001",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
