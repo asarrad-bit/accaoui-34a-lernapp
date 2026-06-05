@@ -1,10 +1,10 @@
 # Accaoui §34a – Review: Umgang mit Menschen (+14 Fragen)
 
-Stand: v23.5.46 (Ziel-IDs korrigiert)
+Stand: v23.5.47 (Dublettenprüfung dokumentiert)
 Block: D (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `approved`
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
+**Status aller Fragen:** `ready_for_import`
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Block **`ready_for_import`**, Import erst im separaten Import-Task.
 **Prüfungslogik:** Sachgebiet „Umgang mit Menschen“ = **19 Fragen / 19 Punkte** im 82-Fragen-Aufbau → alle neuen Fragen je **1 Punkt**.
 
 ---
@@ -13,20 +13,20 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-MENSCH-01 | umgang_006 | Deeskalation bei aggressiven Personen | 1 | approved |
-| 02 | REV-MENSCH-02 | umgang_007 | Professionelle Kommunikation | 1 | approved |
-| 03 | REV-MENSCH-03 | umgang_008 | Aktives Zuhören / Gesprächsführung | 1 | approved |
-| 04 | REV-MENSCH-04 | umgang_009 | Konfliktvermeidung und Eigenschutz | 1 | approved |
-| 05 | REV-MENSCH-05 | umgang_010 | Umgang mit alkoholisierten Personen | 1 | approved |
-| 06 | REV-MENSCH-06 | umgang_011 | Gruppen / Menschenmengen | 1 | approved |
-| 07 | REV-MENSCH-07 | umgang_012 | Interkulturelles Verhalten | 1 | approved |
-| 08 | REV-MENSCH-08 | umgang_013 | Vorurteile / respektvolle Ansprache | 1 | approved |
-| 09 | REV-MENSCH-09 | umgang_014 | Stressverhalten / Selbstkontrolle | 1 | approved |
-| 10 | REV-MENSCH-10 | umgang_015 | Nähe, Distanz, Körpersprache | 1 | approved |
-| 11 | REV-MENSCH-11 | umgang_016 | Beschwerdemanagement | 1 | approved |
-| 12 | REV-MENSCH-12 | umgang_017 | Verhalten bei Provokationen | 1 | approved |
-| 13 | REV-MENSCH-13 | umgang_018 | Teamkommunikation / Informationsweitergabe | 1 | approved |
-| 14 | REV-MENSCH-14 | umgang_019 | Dokumentation besonderer Vorkommnisse | 1 | approved |
+| 01 | REV-MENSCH-01 | umgang_006 | Deeskalation bei aggressiven Personen | 1 | ready_for_import |
+| 02 | REV-MENSCH-02 | umgang_007 | Professionelle Kommunikation | 1 | ready_for_import |
+| 03 | REV-MENSCH-03 | umgang_008 | Aktives Zuhören / Gesprächsführung | 1 | ready_for_import |
+| 04 | REV-MENSCH-04 | umgang_009 | Konfliktvermeidung und Eigenschutz | 1 | ready_for_import |
+| 05 | REV-MENSCH-05 | umgang_010 | Umgang mit alkoholisierten Personen | 1 | ready_for_import |
+| 06 | REV-MENSCH-06 | umgang_011 | Gruppen / Menschenmengen | 1 | ready_for_import |
+| 07 | REV-MENSCH-07 | umgang_012 | Interkulturelles Verhalten | 1 | ready_for_import |
+| 08 | REV-MENSCH-08 | umgang_013 | Vorurteile / respektvolle Ansprache | 1 | ready_for_import |
+| 09 | REV-MENSCH-09 | umgang_014 | Stressverhalten / Selbstkontrolle | 1 | ready_for_import |
+| 10 | REV-MENSCH-10 | umgang_015 | Nähe, Distanz, Körpersprache | 1 | ready_for_import |
+| 11 | REV-MENSCH-11 | umgang_016 | Beschwerdemanagement | 1 | ready_for_import |
+| 12 | REV-MENSCH-12 | umgang_017 | Verhalten bei Provokationen | 1 | ready_for_import |
+| 13 | REV-MENSCH-13 | umgang_018 | Teamkommunikation / Informationsweitergabe | 1 | ready_for_import |
+| 14 | REV-MENSCH-14 | umgang_019 | Dokumentation besonderer Vorkommnisse | 1 | ready_for_import |
 
 **Summe Punkte (wenn alle richtig):** 14
 
@@ -46,7 +46,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -68,7 +68,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Thematische Nähe zu umgang_001/umgang_004 (Deeskalation); vertieft **aggressiver Besucher** – Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette; thematische Nähe zu umgang_001/umgang_004 (siehe Abschnitt unten) |
 | Notizen | Accaoui-Fall Objekteingang |
 
 ---
@@ -87,7 +87,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -109,7 +109,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Thematische Nähe zu umgang_002/umgang_005; vertieft **Zutrittsverweigerung** – Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette; thematische Nähe zu umgang_002/umgang_005 (siehe Abschnitt unten) |
 | Notizen | Praxis Lieferant / Lager |
 
 ---
@@ -128,7 +128,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -150,7 +150,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette im Review-Set; Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Verknüpfung zu Beschwerdemanagement (REV-MENSCH-11) |
 
 ---
@@ -169,7 +169,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -191,7 +191,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Thematische Nähe zu umgang_004; vertieft **Zweierkonflikt** – Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette; thematische Nähe zu umgang_004 (siehe Abschnitt unten) |
 | Notizen | Abgrenzung UVV Eigenschutz |
 
 ---
@@ -210,7 +210,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -232,7 +232,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Thematische Nähe zu umgang_003; vertieft **Foyer/Ausgang** – Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette; thematische Nähe zu umgang_003 (siehe Abschnitt unten) |
 | Notizen | Accaoui-Fall Firmenfeier |
 
 ---
@@ -251,7 +251,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -273,7 +273,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Verknüpfung Teamkommunikation (REV-MENSCH-13) |
 
 ---
@@ -292,7 +292,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -314,7 +314,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Abgrenzung REV-MENSCH-08 (Vorurteile) |
 
 ---
@@ -333,7 +333,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -355,7 +355,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Funkgespräch / Teamkultur |
 
 ---
@@ -374,7 +374,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -396,7 +396,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Thematische Nähe zu umgang_001; vertieft **Beleidigung/Selbstkontrolle** – Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette; thematische Nähe zu umgang_001 (siehe Abschnitt unten) |
 | Notizen | Verknüpfung REV-MENSCH-12 (Provokation) |
 
 ---
@@ -415,7 +415,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -437,7 +437,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Körpersprache im Konfliktgespräch |
 
 ---
@@ -456,7 +456,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -478,7 +478,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Verknüpfung REV-MENSCH-03; Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Accaoui-Fall Mieterbeschwerde |
 
 ---
@@ -497,7 +497,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -519,7 +519,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Social-Media-/Jugendkontext |
 
 ---
@@ -538,7 +538,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -560,7 +560,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Schichtübergabe / Funkdisziplin |
 
 ---
@@ -579,7 +579,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -601,8 +601,47 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | Ausstehend – Review v23.5.43 |
-| Dublettenprüfung | Keine direkte Dublette; Abgleich vor Import |
+| Dublettenprüfung | OK – v23.5.47, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Verknüpfung Beschwerde- und Provokationsfälle |
+
+---
+
+## Dublettenprüfung gegen questions.json (v23.5.47)
+
+Geprüft wurden die 14 Review-Fragen (Ziel-IDs `umgang_006`–`umgang_019`) gegen die **5 bestehenden** Umgang-mit-Menschen-Fragen in `questions.json`.
+
+### Bestehende Umgang-mit-Menschen-Fragen in questions.json
+
+| ID | Kurzinhalt |
+|----|------------|
+| umgang_001 | Verbale Konfliktsituation / ruhige Ansprache |
+| umgang_002 | Professionelles Verhalten / sachlich bleiben / Distanz |
+| umgang_003 | Alkoholisierte aggressive Person |
+| umgang_004 | Deeskalation / ruhige Stimme / Abstand |
+| umgang_005 | Gute Kommunikation |
+
+### Prüfergebnis
+
+| Review-ID | Ergebnis |
+|-----------|----------|
+| REV-MENSCH-01 | Keine direkte Dublette; **thematische Nähe** zu umgang_001/umgang_004 (Deeskalation), aber **Vertiefung** – aggressiver Besucher am Objekteingang |
+| REV-MENSCH-02 | Keine direkte Dublette; **thematische Nähe** zu umgang_002/umgang_005 (Kommunikation), aber **Vertiefung** – Zutrittsverweigerung |
+| REV-MENSCH-03 | Keine direkte Dublette |
+| REV-MENSCH-04 | Keine direkte Dublette; **thematische Nähe** zu umgang_004 (Deeskalation), aber **Vertiefung** – Zweierkonflikt |
+| REV-MENSCH-05 | Keine direkte Dublette; **thematische Nähe** zu umgang_003 (alkoholisierte Person), aber **Vertiefung** – Foyer/Ausgang |
+| REV-MENSCH-06 | Keine direkte Dublette |
+| REV-MENSCH-07 | Keine direkte Dublette |
+| REV-MENSCH-08 | Keine direkte Dublette |
+| REV-MENSCH-09 | Keine direkte Dublette; **thematische Nähe** zu umgang_001 (verbale Konfliktsituation), aber **Vertiefung** – Beleidigung/Selbstkontrolle |
+| REV-MENSCH-10 | Keine direkte Dublette |
+| REV-MENSCH-11 | Keine direkte Dublette |
+| REV-MENSCH-12 | Keine direkte Dublette |
+| REV-MENSCH-13 | Keine direkte Dublette |
+| REV-MENSCH-14 | Keine direkte Dublette |
+
+**Gesamt:** Keine direkte Dublette. Thematische Nähe besteht bei Deeskalation, Kommunikation und alkoholisierten Personen; die neuen Fragen sind **Vertiefungen und Fallvarianten**, keine Wiederholungen. Der Block darf auf **`ready_for_import`** gesetzt werden.
+
+**Prüfdatum / Task:** v23.5.47
 
 ---
 
@@ -612,29 +651,41 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 14 |
 | Ziel-IDs | umgang_006 … umgang_019 |
-| Status | alle `approved` |
+| Status | alle `ready_for_import` |
 | Summe Punkte (Block) | 14 |
 
-## Review-Zusammenfassung (v23.5.45)
+## Review-Zusammenfassung (v23.5.47)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
 | **reviewed** | 0 | — |
-| **approved** | 14 | REV-MENSCH-01 … REV-MENSCH-14 |
-| **ready_for_import** | 0 | — |
+| **approved** | 0 | — |
+| **ready_for_import** | 14 | REV-MENSCH-01 … REV-MENSCH-14 |
 | **rewrite_required** | 0 | — |
 
-### Freigabe (v23.5.45)
+### Freigabe (v23.5.45) – abgeschlossen
 
-- Alle 14 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
-- Die **Dublettenprüfung** gegen `questions.json` (umgang_001–umgang_005) steht noch aus.
-- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
+- Alle 14 Fragen fachlich **approved**
 
-### Nächste Schritte
+### Dublettenprüfung (v23.5.47) – abgeschlossen
 
-- Dublettenprüfung gegen `questions.json`
-- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
-- Import erst über separaten Import-Task
+- Abgleich mit 5 bestehenden Umgang-mit-Menschen-Fragen in `questions.json` (umgang_001–umgang_005) durchgeführt
+- Keine direkte Dublette; thematische Nähe bei Deeskalation, Kommunikation und alkoholisierten Personen – jeweils **Vertiefung/Fallvariante**, keine Wiederholung
+- Alle 14 Fragen: **`ready_for_import`**
+
+### Kennzahlen
+
+| Kennzahl | Wert |
+|----------|------|
+| Fragen in dieser Datei | 14 |
+| Summe Punkte (wenn alle richtig) | 14 |
+| Nächster Schritt | **Separater Import-Task** → `questions.json` (`umgang_006`–`umgang_019`) |
+
+### Import-Regel
+
+**Hinweis:** Der Block ist **`ready_for_import`**, aber **noch nicht importiert**. Der Import in `questions.json` erfolgt **erst in einem eigenen Import-Task** (mit Preflight, `audit-categories.py`, Browser-Test).
+
+**Nicht in dieser Aufgabe:** Keine Einträge in `questions.json` – Import bleibt bis zum Import-Task ausstehend.
 
 **Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits **umgang_001–umgang_005**. Die neuen Fragen verwenden daher einheitlich **umgang_006–umgang_019** (Sachgebiet gesamt: 19 Fragen / 19 Punkte).
 
