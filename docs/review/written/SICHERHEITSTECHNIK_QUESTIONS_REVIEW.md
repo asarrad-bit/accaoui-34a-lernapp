@@ -1,10 +1,10 @@
 # Accaoui §34a – Review: Grundzüge der Sicherheitstechnik (+2 Fragen)
 
-Stand: v23.5.38 (fachliche Nachschärfung)
+Stand: v23.5.39 (Freigabe approved)
 Block: E (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `reviewed`
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
+**Status aller Fragen:** `approved`
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
 
 ---
 
@@ -12,8 +12,8 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-TECH-01 | technik_006 | Einbruchmeldeanlage / Alarmmeldung / Verhalten bei Alarm | 1 | reviewed |
-| 02 | REV-TECH-02 | technik_007 | Videoüberwachung / Zutrittskontrolle / technische Sicherung | 2 | reviewed |
+| 01 | REV-TECH-01 | technik_006 | Einbruchmeldeanlage / Alarmmeldung / Verhalten bei Alarm | 1 | approved |
+| 02 | REV-TECH-02 | technik_007 | Videoüberwachung / Zutrittskontrolle / technische Sicherung | 2 | approved |
 
 **Summe Punkte (wenn alle richtig):** 3
 
@@ -33,7 +33,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -74,7 +74,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -108,14 +108,14 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 2 |
 | Ziel-IDs | technik_006 … technik_007 |
-| Status | alle `reviewed` |
+| Status | alle `approved` |
 
-## Review-Zusammenfassung (v23.5.38)
+## Review-Zusammenfassung (v23.5.39)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
-| **reviewed** | 2 | REV-TECH-01 … REV-TECH-02 |
-| **approved** | 0 | — |
+| **reviewed** | 0 | — |
+| **approved** | 2 | REV-TECH-01 … REV-TECH-02 |
 | **ready_for_import** | 0 | — |
 | **rewrite_required** | 0 | — |
 
@@ -125,12 +125,17 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 - **REV-TECH-02:** Zutrittskontrolle + Videoüberwachung mit Datenschutz – Antworten **b + e**
 - **Ziel-IDs:** `technik_006`/`technik_007` (einheitlicher Präfix zu technik_001–technik_005)
 
+### Freigabe (v23.5.39)
+
+- Beide Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
+- Die **Dublettenprüfung** gegen `questions.json` (technik_001–technik_005) steht noch aus.
+- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
+
 ### Nächste Schritte
 
-- **Noch nicht** `approved`
-- **Noch nicht** `ready_for_import`
-- **Dublettenprüfung** gegen `questions.json` (technik_001–technik_005) steht noch aus
-- **Kein Import** in dieser Phase
+- Dublettenprüfung gegen `questions.json`
+- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
+- Import erst über separaten Import-Task
 
 **Hinweis zu bestehenden Fragen:** technik_001–technik_005 bleiben unverändert; technik_006–technik_007 **ergänzen** und **vertiefen**.
 
