@@ -364,6 +364,121 @@
     "explanation": "Schadensersatz kann entstehen, wenn jemand rechtswidrig und schuldhaft einen Schaden verursacht oder vertragliche Pflichten verletzt."
   },
   {
+    "id": "bgb_006",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Der Eigentümer einer Lagerhalle vermietet sie an ein Sicherheitsunternehmen. Das Unternehmen nutzt die Halle und lagert dort Werkzeuge; ein Mitarbeiter verwahrt den Schlüssel im Auftrag des Unternehmens. Wer hat nach den Grundbegriffen des BGB in dieser Situation in der Regel Besitz an der Halle?",
+    "answers": [
+      "Nur der Eigentümer, weil er Eigentümer bleibt",
+      "Der Mieter (das Sicherheitsunternehmen), weil er die tatsächliche Sachherrschaft ausübt",
+      "Der Mitarbeiter mit dem Schlüssel allein, unabhängig vom Unternehmen",
+      "Niemand, solange nur ein Mietvertrag besteht"
+    ],
+    "correct": [1],
+    "explanation": "Besitz ist tatsächliche Sachherrschaft (§ 854 BGB), Eigentum das umfassende Herrschaftsrecht (§ 903 BGB). Der nutzende Mieter ist in der Regel Besitzer, der Vermieter kann weiterhin Eigentümer sein."
+  },
+  {
+    "id": "bgb_007",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein Sicherheitsdienst versiegelt ohne richterliche Anordnung und ohne Zustimmung des Mieters dessen Bürotür, weil offene Forderungen bestehen. Wie ist diese eigenmächtige Maßnahme am fremden Besitz in der Regel einzuordnen?",
+    "answers": [
+      "Zulässige Besitzstörung, weil eine Geldforderung offen ist",
+      "Verbotene Eigenmacht nach § 858 BGB; der Besitzer kann u. a. Beseitigung und Unterlassung verlangen",
+      "Zulässige Selbsthilfe nach § 229 BGB, weil Forderungen offen sind",
+      "Zulässig, weil der Sicherheitsdienst für den Vermieter tätig wird"
+    ],
+    "correct": [1],
+    "explanation": "Verbotene Eigenmacht liegt vor, wenn am Besitz eines anderen ohne Erlaubnis des Besitzers eingegriffen wird (§ 858 BGB). Offene Forderungen berechtigen nicht zur eigenmächtigen Beschränkung fremden Besitzes."
+  },
+  {
+    "id": "bgb_008",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "multiple",
+    "question": "Ein Besitzer eines Sicherheitslagers sieht, wie ein Unbekannter ihm einen Werkzeugkoffer wegnimmt. Er trifft den Täter auf frischer Tat und verfolgt ihn unmittelbar. Welche zwei Aussagen zur Selbsthilfe des Besitzers nach § 859 BGB treffen im Grundsatz zu?",
+    "answers": [
+      "Der Besitzer darf die Sache eigenmächtig dauerhaft für sich behalten, auch Tage später ohne weiteren Anlass",
+      "Bei beweglichen Sachen ist Besitzkehr auf frischer Tat oder in Verfolgung möglich (§ 859 Abs. 2 BGB)",
+      "Die Selbsthilfe setzt voraus, dass der Besitzer selbst besessen hat oder durch einen Besitzdiener (§ 860 BGB)",
+      "Besitzwehr (§ 859 Abs. 1) erlaubt stets die Zurückweisung, auch ohne aktuelle Besitzstörung und ohne Gefahr des Wiederbesitzes",
+      "Bei Grundstücken kann der Besitzer das Grundstück auch Wochen nach der Entziehung durch bloße Räumung wieder in Besitz nehmen (§ 859 Abs. 3 BGB)"
+    ],
+    "correct": [1, 2],
+    "explanation": "§ 859 Abs. 2: Besitzkehr bei beweglichen Sachen auf frischer Tat oder in Verfolgung. Voraussetzung: eigener Besitz oder Besitz durch Besitzdiener (§ 860 BGB). Maßnahme muss unverzüglich und situationsbezogen sein."
+  },
+  {
+    "id": "bgb_009",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein Wachmitarbeiter bewacht tagsüber ein Kaufhaus auf Anweisung des Hausbetriebs und will die Sachen nicht für sich selbst beherrschen. Wie ordnet § 860 BGB ihn in der Regel ein?",
+    "answers": [
+      "Als mittelbarer Besitzer",
+      "Als Besitzdiener des Besitzers (Hausbetrieb)",
+      "Als Eigentümerstellvertreter",
+      "Als eigenständiger Besitzer unabhängig vom Hausbetrieb"
+    ],
+    "correct": [1],
+    "explanation": "Der Besitzdiener (§ 860 BGB) übt Sachherrschaft für den Besitzer aus, ohne selbst Besitz erlangen zu wollen. Der Hausbetrieb bleibt Besitzer."
+  },
+  {
+    "id": "bgb_010",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein Sicherheitsunternehmen blockiert ohne Mahnung und ohne gerichtlichen Titel Fahrzeuge des Auftraggebers wegen offener Rechnungen. Welche Aussage zur Selbsthilfe nach § 229 BGB trifft im Grundsatz zu?",
+    "answers": [
+      "Die Maßnahme ist zulässig, weil eine Geldforderung besteht",
+      "Selbsthilfe ist unzulässig, wenn obrigkeitliche Hilfe rechtzeitig möglich wäre oder die Maßnahme nicht erforderlich und verhältnismäßig ist – das bloße Blockieren wegen offener Rechnungen genügt typischerweise nicht",
+      "Selbsthilfe ist nur bei Körperverletzungsansprüchen möglich",
+      "Selbsthilfe ersetzt die polizeiliche Gefahrenabwehr generell"
+    ],
+    "correct": [1],
+    "explanation": "§ 229 BGB: Anspruch dem Gläubiger gegenüber, keine rechtzeitige obrigkeitliche Hilfe, Gefahr der Verwirklichungsvereitelung, erforderliche und verhältnismäßige Maßnahme. Bloßes Blockieren wegen Rechnungen genügt in der Regel nicht."
+  },
+  {
+    "id": "bgb_011",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "multiple",
+    "question": "In einem Einkaufszentrum greift eine Person einen Sicherheitsmitarbeiter mit der Faust an. Der Mitarbeiter wehrt sich unmittelbar. Welche zwei Aussagen zur Notwehr nach § 227 BGB sind im Grundsatz zutreffend?",
+    "answers": [
+      "Notwehr ist die Verteidigung, die wegen gegenwärtiger rechtswidriger Angriffe erforderlich ist",
+      "Notwehr darf gegen jeden harmlosen Passanten ausgeübt werden, wenn man sich unsicher fühlt",
+      "Die Notwehrhandlung muss dem Angriff nach Art und Wirkung geboten sein (Gebot der Gebotenheit)",
+      "Notwehr nach § 227 BGB steht nur Polizeibeamten zu",
+      "Handlungen aus Rache nach beendetem Angriff sind noch Notwehr"
+    ],
+    "correct": [0, 2],
+    "explanation": "Notwehr (§ 227 BGB) setzt einen gegenwärtigen rechtswidrigen Angriff, eine erforderliche Verteidigung und die Gebotenheit der Notwehrhandlung voraus. Rache nach beendetem Angriff ist keine Notwehr."
+  },
+  {
+    "id": "bgb_012",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "combination",
+    "question": "Welche Aussagen zum Notstand im BGB-System sind im Grundsatz zutreffend?\n\n1. § 228 BGB (defensiver Notstand): Zur Abwendung einer gegenwärtigen Gefahr darf eine Einwirkung auf eine fremde Sache, von der die Gefahr ausgeht, vorgenommen werden; die Handlung ist nicht rechtswidrig, wenn sie angemessen ist.\n2. § 904 BGB (aggressiver Notstand): Zur Abwendung einer gegenwärtigen Gefahr darf eine Einwirkung auf eine fremde Sache vorgenommen werden, obwohl die Gefahr nicht von dieser Sache ausgeht; der Eigentümer muss die Einwirkung dulden, wenn der drohende Schaden unverhältnismäßig größer ist als der Schaden aus der Einwirkung.\n3. Notstand erlaubt ohne jede Gefahrenlage die willkürliche Zerstörung fremden Eigentums.\n4. Notstand im BGB setzt für jede Maßnahme stets eine vorherige richterliche Genehmigung voraus.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Nur die Aussagen 3 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "§ 228 BGB: defensiver Notstand – Einwirkung auf die Sache, von der die Gefahr ausgeht. § 904 BGB: aggressiver Notstand – Einwirkung auf eine andere fremde Sache bei unverhältnismäßig größerem drohendem Schaden."
+  },
+  {
+    "id": "bgb_013",
+    "category": "Bürgerliches Gesetzbuch",
+    "type": "single",
+    "question": "Ein 17-jähriger Auszubildender im Objektschutz beschädigt im Dienst ein teures Gerät des Auftraggebers, weil er gegen eine klare Anweisung verstoßen hat. Der Auftraggeber verlangt Schadensersatz vom Auszubildenden persönlich. Welche Aussage trifft im Grundsatz zu?",
+    "answers": [
+      "Minderjährige haften immer wie voll Geschäftsfähige, unabhängig vom Alter",
+      "Ein 17-Jähriger kann nach § 828 Abs. 3 BGB selbst haften, wenn er die zur Verantwortlichkeit erforderliche Einsicht hatte; fehlte die Einsicht, haftet ggf. der Aufsichtspflichtige nach § 828 Abs. 4 BGB",
+      "Für einen 17-Jährigen bei Sachbeschädigung im Dienst gilt stets die Sonderregel des § 828 Abs. 2 BGB (Kraftfahrzeug-/Bahnunfall)",
+      "Deliktischer Schadensersatz nach § 823 BGB kommt bei Sachbeschädigung grundsätzlich nie in Betracht"
+    ],
+    "correct": [1],
+    "explanation": "§ 828 Abs. 3 BGB: Minderjährige ab 7 bis unter 18 haften nur bei erforderlicher Einsicht. § 828 Abs. 2 gilt nur für 7–10-Jährige bei Kfz-/Bahnunfällen. Ohne Einsicht kann der Aufsichtspflichtige nach Abs. 4 haften."
+  },
+  {
     "id": "straf_001",
     "category": "Strafgesetzbuch und Strafverfahrensrecht",
     "type": "single",
@@ -432,6 +547,121 @@
     ],
     "correct": [0],
     "explanation": "Körperverletzung umfasst körperliche Misshandlung oder Gesundheitsschädigung. Höfliche oder sachliche Kommunikation ist keine Körperverletzung."
+  },
+  {
+    "id": "straf_006",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Ein Sicherheitsmitarbeiter hält einen Besucher fest, weil dieser ohne Erlaubnis eine Baustelle betreten hat. Später stellt sich heraus: Es liegt nur eine Ordnungswidrigkeit vor, keine Straftat. Welche Aussage trifft im Grundsatz zu?",
+    "answers": [
+      "Jede rechtswidrige Handlung ist automatisch eine Straftat",
+      "Eine Straftat setzt einen im Strafgesetzbuch mit Strafe bedrohten Tatbestand voraus; eine Ordnungswidrigkeit wird im OWiG mit Geldbuße bedroht und ist rechtlich etwas anderes",
+      "Ordnungswidrigkeiten werden immer mit Freiheitsstrafe geahndet",
+      "Sicherheitsmitarbeiter dürfen bei Ordnungswidrigkeiten stets dauerhaft festhalten"
+    ],
+    "correct": [1],
+    "explanation": "Straftaten sind im StGB mit Strafe bedroht; Ordnungswidrigkeiten im OWiG mit Geldbuße. Die Abgrenzung ist wichtig, auch für die Frage einer Jedermann-Festnahme bei Straftatverdacht."
+  },
+  {
+    "id": "straf_007",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Ein Wachmitarbeiter stolpert im Einsatz über ein Kabel und reißt dabei versehentlich einen Besucher zu Boden, der sich leicht verletzt. Der Staatsanwalt prüft Körperverletzung. Welche Aussage zu Vorsatz und Fahrlässigkeit trifft zu?",
+    "answers": [
+      "Vorsatz bedeutet, dass der Täter den Erfolg zumindest billigend in Kauf nimmt oder ihn will; Fahrlässigkeit liegt vor, wenn er die im Verkehr erforderliche Sorgfalt außer Acht lässt",
+      "Fahrlässigkeit bedeutet immer, dass der Täter den Erfolg gewollt hat",
+      "Ohne Vorsatz kann niemals eine Straftat vorliegen, auch nicht bei fahrlässiger Begehung",
+      "Vorsatz und Fahrlässigkeit sind im Strafrecht dasselbe"
+    ],
+    "correct": [0],
+    "explanation": "Vorsatz umfasst Wissen und Wollen bzw. Billigen des Tatbestands. Fahrlässigkeit liegt vor bei Verletzung der im Verkehr erforderlichen Sorgfalt. Viele Delikte sind auch fahrlässig strafbar, wenn das Gesetz es vorsieht (z. B. § 229 StGB)."
+  },
+  {
+    "id": "straf_008",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "multiple",
+    "question": "In einem Geschäft schlägt ein Betrunkener mit einer Flasche nach einem Sicherheitsmitarbeiter. Der Mitarbeiter wehrt sich mit einem Schlagstock und verletzt den Angreifer leicht. Welche zwei Aussagen zur Notwehr nach § 32 StGB sind im Grundsatz zutreffend?",
+    "answers": [
+      "Notwehr ist die erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff",
+      "Notwehr darf auch Wochen später als Vergeltung ausgeübt werden",
+      "Notwehr kann auch zugunsten eines anderen ausgeübt werden, also Nothilfe",
+      "Notwehr steht nur Polizeibeamten zu, nicht Sicherheitsmitarbeitern",
+      "Jede Verteidigungshandlung ist immer notwendig, unabhängig vom Angriff"
+    ],
+    "correct": [0, 2],
+    "explanation": "§ 32 StGB: gegenwärtiger rechtswidriger Angriff und erforderliche, gebotene Verteidigung. Vergeltung ist keine Notwehr. Notwehr kann auch als Nothilfe zugunsten eines anderen ausgeübt werden."
+  },
+  {
+    "id": "straf_009",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Bei einem Brand in einem Lagerhaus droht eine Gasflasche zu explodieren. Ein Sicherheitsmitarbeiter zerstört ohne Auftrag des Eigentümers eine Nachbarwand, um die Flasche ins Freie zu bringen. Welche Aussage zum rechtfertigenden Notstand nach § 34 StGB trifft im Grundsatz zu?",
+    "answers": [
+      "Notstand erlaubt stets die Zerstörung fremden Eigentums ohne jede Gefahrenlage",
+      "Wer in Not handelt, um eine gegenwärtige, nicht anders abwendbare Gefahr für ein Rechtsgut abzuwenden, handelt nicht rechtswidrig, wenn die Tat angemessen ist",
+      "Rechtfertigender Notstand setzt immer eine richterliche Genehmigung vorher voraus",
+      "§ 34 StGB gilt nur für Polizeibeamte"
+    ],
+    "correct": [1],
+    "explanation": "§ 34 StGB: Abwendung einer gegenwärtigen Gefahr für ein Rechtsgut, die nicht anders abwendbar ist; die Handlung muss angemessen sein. Keine pauschale Genehmigungspflicht; auch Zivilpersonen können sich im Einzelfall darauf berufen."
+  },
+  {
+    "id": "straf_010",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "multiple",
+    "question": "Ein Sicherheitsmitarbeiter betritt auf frischer Tat einen Ladendieb, der mit unbezahlter Ware zur Ausgangstür rennt. Welche zwei Aussagen zur vorläufigen Festnahme durch Jedermann nach § 127 Abs. 1 StPO sind im Grundsatz zutreffend?",
+    "answers": [
+      "Eine vorläufige Festnahme ist möglich, wenn jemand auf frischer Tat betroffen oder verfolgt wird und fluchtverdächtig ist",
+      "Jeder kann jeden beliebigen Besucher dauerhaft festhalten, auch ohne Straftatverdacht",
+      "Eine vorläufige Festnahme ist auch möglich, wenn die Identität des Täters nicht sofort festgestellt werden kann",
+      "Die Festnahme ersetzt die Anzeige bei der Polizei – die Behörden müssen nicht informiert werden",
+      "Der Festnehmende darf den Täter beliebig lange ohne Übergabe an die Polizei festhalten"
+    ],
+    "correct": [0, 2],
+    "explanation": "§ 127 Abs. 1 StPO: auf frischer Tat betroffen oder verfolgt plus Flucht/Fluchtverdacht, oder Identität nicht sofort feststellbar. Festnahme nur vorläufig; Polizei/Staatsanwaltschaft unverzüglich einschalten."
+  },
+  {
+    "id": "straf_011",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Nach einer Rangelei im Objektbereich hat ein Besucher einen blauen Fleck am Arm. Ein Zeuge sagt, der Sicherheitsmitarbeiter habe ihn festgehalten und am Arm gedrückt. Welche Aussage zur Körperverletzung nach § 223 StGB trifft im Grundsatz zu?",
+    "answers": [
+      "Körperverletzung liegt vor bei körperlicher Misshandlung oder Gesundheitsschädigung einer anderen Person",
+      "Körperverletzung liegt nur vor, wenn ein Knochenbruch nachgewiesen wird",
+      "Festhalten im Rahmen des Hausrechts kann niemals strafrechtlich relevant sein",
+      "Leichte Schmerzen ohne sichtbare Spur sind immer strafrechtlich irrelevant"
+    ],
+    "correct": [0],
+    "explanation": "§ 223 StGB: körperliche Misshandlung oder Gesundheitsschädigung – ein blauer Fleck kann ausreichen. Notwehr, rechtfertigender Notstand oder andere Rechtfertigung sind gesondert zu prüfen."
+  },
+  {
+    "id": "straf_012",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "single",
+    "question": "Ein Sicherheitsmitarbeiter blockiert einen Ausgang und sagt: „Du gehst hier nicht raus, bis du dich entschuldigt hast“, obwohl keine rechtliche Grundlage für eine Freiheitsentziehung besteht. Welche Aussage zur Nötigung nach § 240 StGB trifft im Grundsatz zu?",
+    "answers": [
+      "Nötigung liegt vor, wenn jemand rechtswidrig mit Gewalt oder durch Drohung mit einem empfindlichen Übel zu einer Handlung, Duldung oder Unterlassung genötigt wird",
+      "Eine höfliche Bitte ist immer Nötigung",
+      "Nötigung setzt immer körperliche Verletzung voraus",
+      "Hausrecht berechtigt immer zur beliebigen Ausgangssperre ohne Grund"
+    ],
+    "correct": [0],
+    "explanation": "§ 240 StGB schützt die Willensentscheidungsfreiheit. Nach Abs. 2 ist die Tat rechtswidrig, wenn Gewalt oder Übelandrohung zum Zweck als verwerflich gilt. Hausrecht erlaubt keine beliebige Ausgangssperre ohne Rechtsgrundlage."
+  },
+  {
+    "id": "straf_013",
+    "category": "Strafgesetzbuch und Strafverfahrensrecht",
+    "type": "combination",
+    "question": "Welche Aussagen zu Diebstahl und Hausfriedensbruch sind im Grundsatz zutreffend?\n\n1. Diebstahl (§ 242 StGB): Wegnahme einer fremden beweglichen Sache in Zueignungsabsicht mit der Absicht, sich oder einem Dritten die Sache rechtswidrig zuzueignen.\n2. Hausfriedensbruch (§ 123 StGB): Unbefugtes Eindringen in eine Wohnung, Geschäftsräume o. Ä. oder unbefugtes Verweilen trotz Aufforderung, den Ort zu verlassen.\n3. Wer mit Erlaubnis des Berechtigten ein Gelände betritt, begeht immer Hausfriedensbruch.\n4. Diebstahl liegt auch vor, wenn man die eigene Sache mitnimmt.",
+    "answers": [
+      "Nur die Aussagen 1 und 2 sind richtig.",
+      "Nur die Aussagen 1 und 3 sind richtig.",
+      "Nur die Aussagen 2 und 4 sind richtig.",
+      "Nur die Aussagen 3 und 4 sind richtig.",
+      "Alle Aussagen sind richtig."
+    ],
+    "correct": [0],
+    "explanation": "§ 242 StGB: Wegnahme fremder beweglicher Sache in Zueignungsabsicht. § 123 StGB: unbefugtes Betreten oder Verweilen trotz Wegweisung. Mit Erlaubnis kein Hausfriedensbruch; die eigene Sache ist kein Diebstahl."
   },
   {
     "id": "umgang_001",
@@ -574,6 +804,49 @@
     "explanation": "SRS-Waffen können gefährliche Gegenreaktionen provozieren und ein falsches Sicherheitsgefühl erzeugen. Sie ersetzen keine professionelle Gefahreneinschätzung."
   },
   {
+    "id": "uvv_006",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "type": "single",
+    "question": "Ein Wach- und Sicherheitsdienst übernimmt einen neuen Objektauftrag. Die Geschäftsführung fragt, welche Pflichten nach der DGUV Vorschrift 23 (Regelwerk für Wach- und Sicherungsdienste) im Grundsatz gelten. Welche Aussage trifft zu?",
+    "answers": [
+      "Nur die Wachperson ist für Arbeitssicherheit verantwortlich; der Unternehmer hat keine Pflichten",
+      "Der Unternehmer muss u. a. Gefährdungen beurteilen, geeignete Schutzmaßnahmen festlegen und Beschäftigte unterweisen; die Wachperson muss Anweisungen befolgen, Schutzmaßnahmen nutzen und Gefahren sowie Mängel melden",
+      "Eine Gefährdungsbeurteilung ist nur bei Industrieanlagen, nicht bei Bewachungsdiensten, erforderlich",
+      "Unterweisungen sind entbehrlich, wenn Mitarbeitende bereits eine §-34a-Unterrichtung absolviert haben"
+    ],
+    "correct": [1],
+    "explanation": "DGUV Vorschrift 23: Der Unternehmer regelt durch Dienstanweisungen, unterweist vor Aufnahme und regelmäßig und achtet auf Eignung. Wachpersonen befolgen Anweisungen und melden Mängel sowie besondere Gefahren. Die §-34a-Unterrichtung ersetzt die UVV-Unterweisung nicht."
+  },
+  {
+    "id": "uvv_007",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "type": "multiple",
+    "question": "Ein Schichtleiter bemerkt vor Dienstbeginn, dass ein Mitarbeiter nach einer Feier noch müde wirkt und leicht nach Alkohol riecht. Er weist den Mitarbeiter auf die Regeln hin. Welche zwei Aussagen zu Dienstbeginn, Dienstfähigkeit und berauschenden Mitteln nach DGUV Vorschrift 23 sind im Grundsatz zutreffend?",
+    "answers": [
+      "Vor Dienstbeginn ist eine Einweisung zu Dienstanweisung, Einsatzort, Kommunikation, Notfall und objektbezogenen Besonderheiten erforderlich",
+      "Ein Dienst darf angetreten werden, wenn berauschende Mittel die Dienstfähigkeit nur „leicht“ beeinträchtigen",
+      "Alkohol und andere berauschende Mittel sind während der Dienstzeit verboten – auch für einen angemessenen Zeitraum vor dem Einsatz; bei Dienstantritt muss Nüchternheit gegeben sein",
+      "Die Prüfung von Funkgerät, Taschenlampe und Schutzausrüstung entfällt, wenn der Mitarbeiter gestern am selben Objekt war",
+      "Eine erkennbare Dienstunfähigkeit muss nicht gemeldet werden, solange keine Vorfälle passieren"
+    ],
+    "correct": [0, 2],
+    "explanation": "Dienstbeginn: Einweisung zu Anweisungen, Objekt, Kommunikation und Notfall. Alkohol/berauschende Mittel: während der Dienstzeit verboten, auch angemessen vor dem Einsatz; Nüchternheit bei Dienstantritt. Bei erkennbarer Dienstunfähigkeit kein Einsatz."
+  },
+  {
+    "id": "uvv_008",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "type": "single",
+    "question": "Während eines Nachtdienstes hört ein Sicherheitsmitarbeiter einen lauten Knall, sieht Rauch aus einem Technikraum und bemerkt ausgeschaltete Flurbeleuchtung. Es besteht Brandverdacht, die Lage ist unübersichtlich. Welche Verhaltensweise entspricht im Grundsatz den Anforderungen an Eigenschutz, Gefahrenmeldung und besondere Vorkommnisse?",
+    "answers": [
+      "Sofort allein in den Rauchbereich eindringen, um die Ursache ohne Schutzausrüstung zu klären",
+      "Eigenschutz beachten, die Gefahr unverzüglich melden/alarmieren (Leitstelle, Auftraggeber, ggf. Feuerwehr nach Dienstanweisung), Notfallabläufe einleiten und bei Bedarf Unterstützung anfordern",
+      "Abwarten, bis die Schicht endet, und den Vorgang nicht dokumentieren",
+      "Nur einen internen Zettel ausfüllen, ohne Meldung an die zuständige Stelle"
+    ],
+    "correct": [1],
+    "explanation": "Eigenschutz hat Vorrang. Gefahr unverzüglich melden/alarmieren, Dienstanweisung und Notfallabläufe beachten, Unterstützung anfordern. Dokumentation ergänzt die Meldung, ersetzt sie aber nicht."
+  },
+  {
     "id": "technik_001",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "single",
@@ -642,6 +915,35 @@
     ],
     "correct": [0],
     "explanation": "Eine Einbruchmeldeanlage kann Einbruchversuche erkennen oder melden. Sie ersetzt keine Polizei, kein Gericht und keine rechtliche Bewertung."
+  },
+  {
+    "id": "technik_006",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "single",
+    "question": "Gegen 2:00 Uhr meldet die Einbruchmeldeanlage (EMA) einen Alarm in einem abgesperrten Lagerbereich. Der Sicherheitsmitarbeiter sieht auf dem Monitor zunächst niemanden. Welche Verhaltensweise ist im Grundsatz richtig?",
+    "answers": [
+      "Den Alarm ignorieren, weil niemand sichtbar ist – vermutlich Fehlalarm",
+      "Den Alarm ernst nehmen, nach Dienstanweisung den Bereich prüfen/absichern, die Meldung an Leitstelle/Auftraggeber weitergeben und die Anlage nicht eigenmächtig dauerhaft zurückstellen",
+      "Die EMA dauerhaft abschalten, um weitere Störungen zu vermeiden",
+      "Eigenmächtig in jeden Bereich eindringen, auch ohne Schlüssel oder Freigabe"
+    ],
+    "correct": [1],
+    "explanation": "Ein EMA-Alarm ist auch ohne sichtbare Person ernst zu nehmen. Nach Dienstanweisung Bereich prüfen/absichern und Meldung weitergeben. Rückstellung oder Abschaltung nur im befugten Rahmen, nicht eigenmächtig dauerhaft."
+  },
+  {
+    "id": "technik_007",
+    "category": "Grundzüge der Sicherheitstechnik",
+    "type": "multiple",
+    "question": "Ein Einkaufszentrum nutzt Videoüberwachung und ein elektronisches Zutrittskontrollsystem für Nebenräume. Welche zwei Aussagen zu technischer Sicherung im Sicherheitsdienst sind im Grundsatz zutreffend?",
+    "answers": [
+      "Videoüberwachung darf ohne Kennzeichnung und ohne rechtliche Grundlage beliebig in Umkleiden aufgenommen werden",
+      "Zutrittskontrollsysteme können den Zutritt nur berechtigten Personen ermöglichen und Zutrittsversuche dokumentieren",
+      "Sicherheitsmitarbeiter dürfen Videoaufzeichnungen beliebig privat weitergeben oder in sozialen Medien veröffentlichen",
+      "Technische Sicherung ersetzt vollständig Datenschutz, Hausrecht und menschliche Kontrolle",
+      "Videoüberwachung unterliegt u. a. Kennzeichnungs- und Zweckbindungspflichten; der Einsatz muss rechtlich zulässig sein (z. B. DS-GVO, Betriebsvereinbarung, Auftraggebervorgaben)"
+    ],
+    "correct": [1, 4],
+    "explanation": "Zutrittskontrollsysteme steuern berechtigten Zutritt und dokumentieren Versuche. Videoüberwachung braucht rechtliche Grundlage, Zweckbindung, Kennzeichnung und Zugriffsbeschränkung. Technik ergänzt Hausrecht und Datenschutz, ersetzt sie nicht. Keine private Weitergabe von Aufnahmen."
   },
   {
     "id": "waffen_001",

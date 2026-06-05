@@ -7886,3 +7886,288 @@ body:has(.oral-room-scene-v221.is-session) .oral-exam-wrapper > .oral-question-c
   text-shadow: none !important;
   box-shadow: 0 6px 14px rgba(180, 35, 24, 0.14) !important;
 }
+
+/* =====================================================
+   v23.5.11 Lernkarten Layout-Fix
+   Ziel: lange Fragen/Antworten ohne Abschnitt, Überlappung
+===================================================== */
+
+.flashcard-study-box {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+.flashcard-scene {
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  margin: 16px 0 8px 0 !important;
+}
+
+.flashcard-inner {
+  position: relative !important;
+  display: block !important;
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  transform: none !important;
+  transform-style: flat !important;
+}
+
+.flashcard-inner.flipped {
+  transform: none !important;
+}
+
+.flashcard-side {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 220px !important;
+  overflow: visible !important;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+  justify-content: flex-start !important;
+  gap: 14px !important;
+}
+
+.flashcard-front-side {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flashcard-back-side {
+  display: none !important;
+  transform: none !important;
+}
+
+.flashcard-inner.flipped .flashcard-front-side {
+  display: none !important;
+}
+
+.flashcard-inner.flipped .flashcard-back-side {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flashcard-question-content {
+  display: block !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: left !important;
+  padding: 4px 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.flashcard-question-content .question-title,
+.flashcard-question-content h2,
+.flashcard-question-content h3 {
+  max-width: 100% !important;
+  font-size: clamp(17px, 2.2vw, 22px) !important;
+  line-height: 1.45 !important;
+  letter-spacing: -0.02em !important;
+  font-weight: 800 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+.flashcard-question-content p {
+  max-width: 100% !important;
+  font-size: clamp(16px, 2vw, 20px) !important;
+  line-height: 1.5 !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 700 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+.flashcard-hint {
+  margin-top: 12px !important;
+  margin-bottom: 4px !important;
+  padding-top: 8px !important;
+  flex-shrink: 0 !important;
+  text-align: left !important;
+  line-height: 1.55 !important;
+  font-size: 14px !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.flashcard-answer-block,
+.flashcard-explanation-block {
+  flex: 0 1 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  margin-top: 0 !important;
+}
+
+.flashcard-answer-block {
+  margin-top: 4px !important;
+}
+
+.flashcard-explanation-block {
+  margin-top: 12px !important;
+}
+
+.flashcard-answer-block strong {
+  font-size: clamp(16px, 2.1vw, 20px) !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+.flashcard-explanation-block p {
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+.flashcard-actions,
+.flashcard-rating {
+  margin-top: 28px !important;
+  padding-top: 8px !important;
+  clear: both !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.flashcard-shared-back {
+  margin-top: 20px !important;
+  padding-top: 4px !important;
+  clear: both !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+@media (max-width: 768px) {
+  .flashcard-study-box {
+    padding: 16px !important;
+  }
+
+  .flashcard-scene {
+    margin: 12px 0 6px 0 !important;
+  }
+
+  .flashcard-side {
+    min-height: 0 !important;
+    padding: 20px 16px !important;
+    gap: 12px !important;
+  }
+
+  .flashcard-question-content .question-title,
+  .flashcard-question-content h2,
+  .flashcard-question-content h3 {
+    font-size: 17px !important;
+    line-height: 1.48 !important;
+  }
+
+  .flashcard-question-content p {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .flashcard-hint {
+    margin-top: 10px !important;
+    margin-bottom: 6px !important;
+    font-size: 13px !important;
+  }
+
+  .flashcard-answer-block,
+  .flashcard-explanation-block {
+    padding: 16px !important;
+  }
+
+  .flashcard-answer-block strong {
+    font-size: 17px !important;
+  }
+
+  .flashcard-explanation-block p {
+    font-size: 14px !important;
+  }
+
+  .flashcard-actions,
+  .flashcard-rating,
+  .flashcard-shared-back {
+    margin-top: 24px !important;
+  }
+}
+
+/* =====================================================
+   v23.5.21 Eleganter Lernkarten-Flip
+   Ziel: 3D-Flip wieder aktiv, v23.5.11 Layout beibehalten
+===================================================== */
+
+.flashcard-scene {
+  perspective: 1400px !important;
+  overflow: visible !important;
+  min-height: auto !important;
+  height: auto !important;
+}
+
+.flashcard-inner {
+  display: grid !important;
+  position: relative !important;
+  width: 100% !important;
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  transform-style: preserve-3d !important;
+  transform: rotateY(0deg) !important;
+  transition: transform 0.55s ease !important;
+}
+
+.flashcard-inner.flipped {
+  transform: rotateY(180deg) !important;
+}
+
+.flashcard-side {
+  grid-area: 1 / 1 !important;
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  justify-content: flex-start !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flashcard-front-side {
+  display: flex !important;
+  flex-direction: column !important;
+  transform: rotateY(0deg) !important;
+}
+
+.flashcard-back-side {
+  display: flex !important;
+  flex-direction: column !important;
+  transform: rotateY(180deg) !important;
+}
+
+.flashcard-inner.flipped .flashcard-front-side,
+.flashcard-inner.flipped .flashcard-back-side {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
+  .flashcard-scene {
+    perspective: 1200px !important;
+  }
+
+  .flashcard-inner {
+    transition: transform 0.5s ease !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flashcard-inner {
+    transition: none !important;
+  }
+}
