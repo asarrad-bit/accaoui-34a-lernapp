@@ -1,9 +1,9 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: 02.06.2026  
-Projekt: Accaoui §34a Lern-App  
-Lokaler Pfad: `C:\xampp\htdocs\accaoui\v4-dashboard`  
-Branch: `refactor/oral-exam-module`  
+Stand: 02.06.2026
+Projekt: Accaoui §34a Lern-App
+Lokaler Pfad: `C:\xampp\htdocs\accaoui\v4-dashboard`
+Branch: `refactor/oral-exam-module`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 
 ## 1. Sofort-Regel

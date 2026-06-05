@@ -1,7 +1,7 @@
 # Accaoui §34a Lern-App – Supabase Umsetzungsreihenfolge (Roadmap)
 
-Stand: v23.5.9  
-Zweck: Klare, risikoarme Reihenfolge für die spätere Einführung von Supabase – ohne die aktuell funktionierende Root-App zu destabilisieren.  
+Stand: v23.5.9
+Zweck: Klare, risikoarme Reihenfolge für die spätere Einführung von Supabase – ohne die aktuell funktionierende Root-App zu destabilisieren.
 Bezug: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/QUESTION_DATABASE_PLAN.md`, `docs/SUPABASE_QUESTION_SCHEMA.md`, `docs/SUPABASE_USER_PROGRESS_SCHEMA.md`
 
 ---
@@ -311,10 +311,10 @@ Folgendes gehört **nicht** zu v23.5.9 und soll erst in der genannten Phase star
 
 **Bewusst parallel möglich (ohne Supabase):**
 
-- v24 Oral Exam Cleanup  
-- v25 Schriftliche Prüfung / 82-Fragen-Logik in JSON  
-- Fragen-Review in `docs/` (Markdown-Blöcke)  
-- Preflight- und Kategorie-Audit  
+- v24 Oral Exam Cleanup
+- v25 Schriftliche Prüfung / 82-Fragen-Logik in JSON
+- Fragen-Review in `docs/` (Markdown-Blöcke)
+- Preflight- und Kategorie-Audit
 
 ---
 

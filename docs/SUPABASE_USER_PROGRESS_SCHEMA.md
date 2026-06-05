@@ -1,7 +1,7 @@
 # Accaoui §34a Lern-App – Supabase Nutzer-, Kurs- und Fortschrittsdatenmodell (Planung)
 
-Stand: v23.5.8  
-Zweck: Technische Planungsgrundlage für Auth, Profile, Kurse und alle lernbezogenen Nutzerdaten in Supabase.  
+Stand: v23.5.8
+Zweck: Technische Planungsgrundlage für Auth, Profile, Kurse und alle lernbezogenen Nutzerdaten in Supabase.
 Bezug: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/QUESTION_DATABASE_PLAN.md`, `docs/SUPABASE_QUESTION_SCHEMA.md`
 
 ---
@@ -449,12 +449,12 @@ Für **v28 (PWA / App Store)** müssen die gespeicherten Datenarten in Datenschu
 
 **Empfohlene Reihenfolge (Roadmap-Referenz):**
 
-1. v27 – Supabase Auth + `profiles` + `course_enrollments` + Basis-RLS  
-2. Schriftlicher Fortschritt (`written_question_progress`, `written_exam_*`)  
-3. Lernkarten + Fehlertraining  
-4. Mündliche Tabellen + Anbindung Oral-Module (v24 Cleanup hilft)  
-5. v26 – Datenschutzerklärung mit Tabellen aus §19  
-6. v28 – PWA / Store mit Data-Safety-Mapping  
+1. v27 – Supabase Auth + `profiles` + `course_enrollments` + Basis-RLS
+2. Schriftlicher Fortschritt (`written_question_progress`, `written_exam_*`)
+3. Lernkarten + Fehlertraining
+4. Mündliche Tabellen + Anbindung Oral-Module (v24 Cleanup hilft)
+5. v26 – Datenschutzerklärung mit Tabellen aus §19
+6. v28 – PWA / Store mit Data-Safety-Mapping
 
 ---
 

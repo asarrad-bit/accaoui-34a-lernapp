@@ -1,7 +1,7 @@
 # Accaoui §34a Lern-App – Ausbauplan schriftliche Fragenbank
 
-Stand: v23.5.13  
-Zweck: Plan für den kontrollierten Ausbau der schriftlichen Fragenbank von **51** auf **86** Fragen – ohne bestehende Inhalte zu löschen.  
+Stand: v23.5.13
+Zweck: Plan für den kontrollierten Ausbau der schriftlichen Fragenbank von **51** auf **86** Fragen – ohne bestehende Inhalte zu löschen.
 Bezug: `docs/WRITTEN_QUESTION_STANDARD.md`, `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/QUESTION_DATABASE_PLAN.md`
 
 ---
@@ -142,15 +142,15 @@ Jedes Sachgebiet hat damit mindestens so viele Fragen wie in der 82er-Prüfung v
 
 Jede der **35 neuen Fragen** muss vor Aufnahme in `questions.json` geprüft werden:
 
-1. **Kategorie** – exakt eines der 9 kanonischen Sachgebiete  
-2. **Eindeutigkeit** – klare Fragestellung, keine doppelte richtige Lösung  
-3. **Punktzahl** – 1 oder 2 Punkte; Anzahl richtiger Antworten passend (1 bzw. 2)  
-4. **Antwortoptionen** – a–d oder a–e bei Kombinationsfragen  
-5. **Erklärung** – fachlich korrekt, verständlich, Lernwert  
-6. **Dubletten** – keine inhaltliche Duplikate zu bestehenden 51 Fragen  
-7. **Formulierung** – prüfungsnah, aber **eigene Accaoui-Sprache**  
-8. **IDs** – eindeutige neue `id` (z. B. fortlaufend `q_052` … `q_086`)  
-9. **Metadaten** – `difficulty`, `examRelevance` sinnvoll setzen  
+1. **Kategorie** – exakt eines der 9 kanonischen Sachgebiete
+2. **Eindeutigkeit** – klare Fragestellung, keine doppelte richtige Lösung
+3. **Punktzahl** – 1 oder 2 Punkte; Anzahl richtiger Antworten passend (1 bzw. 2)
+4. **Antwortoptionen** – a–d oder a–e bei Kombinationsfragen
+5. **Erklärung** – fachlich korrekt, verständlich, Lernwert
+6. **Dubletten** – keine inhaltliche Duplikate zu bestehenden 51 Fragen
+7. **Formulierung** – prüfungsnah, aber **eigene Accaoui-Sprache**
+8. **IDs** – eindeutige neue `id` (z. B. fortlaufend `q_052` … `q_086`)
+9. **Metadaten** – `difficulty`, `examRelevance` sinnvoll setzen
 10. **Review** – Status in Review-Datei vor Merge (siehe §11)
 
 Checkliste vor Merge: `python tools/audit-categories.py`, `python tools/preflight.py`, Browser-Test (Alle Fragen, Prüfung, Lernkarten).
@@ -163,14 +163,14 @@ Entsprechend Master Context und Fragen-Datenbank-Plan:
 
 **Nicht erlaubt:**
 
-- offizielle IHK-Fragen oder Musterprüfungen **1:1** übernehmen  
-- gleiche Antwortoptionen oder Reihenfolge kopieren  
-- App als offizielle IHK-Prüfung darstellen  
+- offizielle IHK-Fragen oder Musterprüfungen **1:1** übernehmen
+- gleiche Antwortoptionen oder Reihenfolge kopieren
+- App als offizielle IHK-Prüfung darstellen
 
 **Erlaubt:**
 
-- Sachgebiete und Prüfungsstruktur als **Orientierung**  
-- Lernziele aus Mustern ableiten und **neu formulieren**  
+- Sachgebiete und Prüfungsstruktur als **Orientierung**
+- Lernziele aus Mustern ableiten und **neu formulieren**
 - `sourceStyle: accaoui_original` (langfristig auch in Supabase)
 
 Musterprüfungen sind **Analysequelle**, nicht Veröffentlichungsquelle.
@@ -181,9 +181,9 @@ Musterprüfungen sind **Analysequelle**, nicht Veröffentlichungsquelle.
 
 Alle neuen Fragen folgen dem verbindlichen Standard:
 
-- Pflichtfelder: `id`, `category`, `question`, `points`, `answers`, `correctAnswers`, `explanation`, `difficulty`, `examRelevance`  
-- Kanonische Kategorienamen (keine alten Kurzbezeichnungen)  
-- Fragetypen: einfache Auswahl oder Kombinationsfrage (siehe Standard §4–§5)  
+- Pflichtfelder: `id`, `category`, `question`, `points`, `answers`, `correctAnswers`, `explanation`, `difficulty`, `examRelevance`
+- Kanonische Kategorienamen (keine alten Kurzbezeichnungen)
+- Fragetypen: einfache Auswahl oder Kombinationsfrage (siehe Standard §4–§5)
 - App-Format wie in Standard §7 (Beispiel-JSON)
 
 Abweichungen nur nach dokumentierter Ausnahme im Review.
@@ -224,19 +224,19 @@ Umsetzung geplant in **v25 – Schriftliche Prüfung ausbauen** (siehe `docs/CUR
 
 **Stattdessen:**
 
-1. **Review-Dateien** anlegen (z. B. `docs/review/WRITTEN_EXPANSION_BLOCK_BGB.md` mit 8 Fragenentwürfen) – pro Sachgebiet oder in Blöcken à 10–15 Fragen  
-2. Pro Frage: Kategorie, Entwurf, Antworten, Lösung, Erklärung, Dubletten-Check  
-3. Fachliche Freigabe (Accaoui / Dozent)  
-4. Erst danach kontrollierter Merge in `questions.json` (eigener Cursor-Task mit erlaubter Datei + Preflight)  
-5. `audit-categories.py` und Browser-Test  
+1. **Review-Dateien** anlegen (z. B. `docs/review/WRITTEN_EXPANSION_BLOCK_BGB.md` mit 8 Fragenentwürfen) – pro Sachgebiet oder in Blöcken à 10–15 Fragen
+2. Pro Frage: Kategorie, Entwurf, Antworten, Lösung, Erklärung, Dubletten-Check
+3. Fachliche Freigabe (Accaoui / Dozent)
+4. Erst danach kontrollierter Merge in `questions.json` (eigener Cursor-Task mit erlaubter Datei + Preflight)
+5. `audit-categories.py` und Browser-Test
 
 **Empfohlene Reihenfolge der Blöcke:**
 
-1. Bürgerliches Gesetzbuch (+8)  
-2. Strafgesetzbuch und Strafverfahrensrecht (+8)  
-3. Umgang mit Menschen (+14) – größter Block, ggf. in zwei Review-Dateien  
-4. Unfallverhütungsvorschriften (+3)  
-5. Grundzüge der Sicherheitstechnik (+2)  
+1. Bürgerliches Gesetzbuch (+8)
+2. Strafgesetzbuch und Strafverfahrensrecht (+8)
+3. Umgang mit Menschen (+14) – größter Block, ggf. in zwei Review-Dateien
+4. Unfallverhütungsvorschriften (+3)
+5. Grundzüge der Sicherheitstechnik (+2)
 
 ---
 

@@ -1,7 +1,7 @@
 # Accaoui §34a Lern-App – Supabase-Fragen-Datenmodell (Planung)
 
-Stand: v23.5.7  
-Zweck: Technische Planungsgrundlage für das spätere Supabase/Postgres-Datenmodell der Fragenbank.  
+Stand: v23.5.7
+Zweck: Technische Planungsgrundlage für das spätere Supabase/Postgres-Datenmodell der Fragenbank.
 Bezug: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/QUESTION_DATABASE_PLAN.md`, `docs/WRITTEN_QUESTION_STANDARD.md`
 
 ---
@@ -389,15 +389,15 @@ Explizit **außerhalb** dieses Planungsschritts:
 
 Alle Fragen (roh und veröffentlicht) verwenden exakt eine dieser neun Kategorien:
 
-1. Recht der öffentlichen Sicherheit und Ordnung  
-2. Gewerberecht  
-3. Datenschutzrecht  
-4. Bürgerliches Gesetzbuch  
-5. Strafgesetzbuch und Strafverfahrensrecht  
-6. Unfallverhütungsvorschriften Wach- und Sicherungsdienste  
-7. Umgang mit Waffen  
-8. Umgang mit Menschen  
-9. Grundzüge der Sicherheitstechnik  
+1. Recht der öffentlichen Sicherheit und Ordnung
+2. Gewerberecht
+3. Datenschutzrecht
+4. Bürgerliches Gesetzbuch
+5. Strafgesetzbuch und Strafverfahrensrecht
+6. Unfallverhütungsvorschriften Wach- und Sicherungsdienste
+7. Umgang mit Waffen
+8. Umgang mit Menschen
+9. Grundzüge der Sicherheitstechnik
 
 Alte Bezeichnungen nur in App-Mapping (`normalizeCategoryName()`), nicht in neuen DB-Einträgen.
 

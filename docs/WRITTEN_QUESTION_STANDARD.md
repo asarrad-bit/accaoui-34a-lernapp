@@ -191,4 +191,3 @@ Ablauf:
 Die schriftliche Fragenbank soll prüfungsnah, klar, rechtlich sauber und didaktisch stärker sein als eine reine Sammlung von Musterfragen.
 
 Die App soll nicht nur richtige Antworten abfragen, sondern durch Erklärungen echtes Verständnis aufbauen.
- 

@@ -1,7 +1,7 @@
 # Accaoui §34a Lern-App – Lernstrategie-Modul (Vergessenskurve)
 
-Stand: v23.5.29  
-Status: **Konzept / Dokumentation** – noch **kein** App-Code  
+Stand: v23.5.29
+Status: **Konzept / Dokumentation** – noch **kein** App-Code
 Bezug: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/PROJECT_MASTERLIST.md`, `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`
 
 ---
@@ -12,10 +12,10 @@ Das Lernstrategie-Modul soll Teilnehmern **verständlich erklären**, warum einm
 
 Ziele:
 
-1. **Motivation** – Lernen ist ein Prozess, kein Einmal-Ereignis  
-2. **Orientierung** – sinnvolle Nutzung von Lernkarten, Fehlertraining und Prüfungssimulation  
-3. **Didaktik** – Vergessenskurve als **Lernhilfe**, nicht als Angstbotschaft  
-4. **Premium-Gefühl** – professionelles Lernsystem statt reiner Fragenliste  
+1. **Motivation** – Lernen ist ein Prozess, kein Einmal-Ereignis
+2. **Orientierung** – sinnvolle Nutzung von Lernkarten, Fehlertraining und Prüfungssimulation
+3. **Didaktik** – Vergessenskurve als **Lernhilfe**, nicht als Angstbotschaft
+4. **Premium-Gefühl** – professionelles Lernsystem statt reiner Fragenliste
 
 **Wichtig:** Dieses Dokument beschreibt nur das **geplante** Modul. Umsetzung erfolgt **später** (v24.x oder v25.x), ohne sofortigen Code-Task.
 
@@ -65,16 +65,16 @@ Die genannten Prozentwerte sind **Richtwerte** auf Basis des bekannten Vergessen
 
 Sie sind **keine**:
 
-- festen medizinischen Werte  
-- wissenschaftlich absoluten Messgrößen für jede Person  
-- Garantie für individuelles Lernverhalten  
+- festen medizinischen Werte
+- wissenschaftlich absoluten Messgrößen für jede Person
+- Garantie für individuelles Lernverhalten
 
 Abweichungen sind normal und hängen u. a. ab von:
 
-- Vorwissen und Motivation  
-- Schwierigkeit des Stoffs  
-- Qualität der Erklärung  
-- **Wiederholung**, **Anwendung** und **aktiver Abruf**  
+- Vorwissen und Motivation
+- Schwierigkeit des Stoffs
+- Qualität der Erklärung
+- **Wiederholung**, **Anwendung** und **aktiver Abruf**
 
 In der App soll ein kurzer Hinweis erscheinen: *„Richtwerte – individuell kann es abweichen.“*
 
@@ -86,10 +86,10 @@ Das Modul soll **nicht** als statisches Bild eingebunden werden, sondern als **e
 
 ### UI-Idee
 
-- **Farbige Prozent-Karten** oder **Chips** für jeden Zeitpunkt  
-- **Kurze Erklärung** unter jedem Wert (z. B. „Nach einem Tag ohne Wiederholung …“)  
-- Optional: sanfte Animation beim Einblenden (dezent, nicht ablenkend)  
-- Verknüpfung mit **Call-to-Action**: „Jetzt Lernkarten starten“ / „Fehler wiederholen“  
+- **Farbige Prozent-Karten** oder **Chips** für jeden Zeitpunkt
+- **Kurze Erklärung** unter jedem Wert (z. B. „Nach einem Tag ohne Wiederholung …“)
+- Optional: sanfte Animation beim Einblenden (dezent, nicht ablenkend)
+- Verknüpfung mit **Call-to-Action**: „Jetzt Lernkarten starten“ / „Fehler wiederholen“
 
 ### Beispieltext für die App
 
@@ -97,8 +97,8 @@ Das Modul soll **nicht** als statisches Bild eingebunden werden, sondern als **e
 
 Ergänzende Kurztexte (optional):
 
-- „Deshalb: kurze Einheiten, regelmäßig wiederholen.“  
-- „Fehler sind Lernchancen – nutze das Fehlertraining.“  
+- „Deshalb: kurze Einheiten, regelmäßig wiederholen.“
+- „Fehler sind Lernchancen – nutze das Fehlertraining.“
 
 ---
 
@@ -122,17 +122,17 @@ Das Modul verknüpft die Vergessenskurve mit drei Prinzipien, die die App bereit
 
 ### Active Recall (aktiver Abruf)
 
-Wissen wird durch **aktives Beantworten** gefestigt – nicht durch passives Lesen.  
+Wissen wird durch **aktives Beantworten** gefestigt – nicht durch passives Lesen.
 **App-Bezug:** Lernkarten, Prüfungsmodus, Fehlertraining.
 
 ### Spaced Repetition (verteilte Wiederholung)
 
-Wiederholung in **Abständen** ist effektiver als einmaliges Pauken.  
+Wiederholung in **Abständen** ist effektiver als einmaliges Pauken.
 **App-Bezug:** Wiederholen-Karten, Fehlertraining, erneute Prüfungssimulation.
 
 ### Praxisbezug
 
-Recht und Sicherheitspraxis müssen **anwendbar** sein – Fallbezug und Begründung wie in der mündlichen Prüfung.  
+Recht und Sicherheitspraxis müssen **anwendbar** sein – Fallbezug und Begründung wie in der mündlichen Prüfung.
 **App-Bezug:** Praxisfälle, Erklärungen, mündliche Prüfungssimulation.
 
 ---
@@ -162,10 +162,10 @@ Priorität für erste Umsetzung: **Dashboard** oder **Lernkarten-Übersicht** (g
 
 ### Umsetzungsschritte (Grobraster)
 
-1. UI-Komponente: Vergessenskurve als Karten/Chips  
-2. Einbindung an einem Pilot-Ort (z. B. Dashboard)  
-3. Browser-Test (Mobile + Desktop, Dark Mode)  
-4. Optional: Verknüpfung mit Statistik / Wiederholungsempfehlung  
+1. UI-Komponente: Vergessenskurve als Karten/Chips
+2. Einbindung an einem Pilot-Ort (z. B. Dashboard)
+3. Browser-Test (Mobile + Desktop, Dark Mode)
+4. Optional: Verknüpfung mit Statistik / Wiederholungsempfehlung
 
 ---
 

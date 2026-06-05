@@ -1,7 +1,7 @@
 # Accaoui §34a Lern-App – Review-Vorlage für neue schriftliche Fragen
 
-Stand: v23.5.14  
-Zweck: Einheitliche **Arbeits- und Prüfvorlage** für den Ausbau der schriftlichen Fragenbank von **51** auf **86** Fragen.  
+Stand: v23.5.14
+Zweck: Einheitliche **Arbeits- und Prüfvorlage** für den Ausbau der schriftlichen Fragenbank von **51** auf **86** Fragen.
 Bezug: `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`, `docs/WRITTEN_QUESTION_STANDARD.md`, `docs/QUESTION_DATABASE_PLAN.md`, `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
 
 ---
@@ -12,10 +12,10 @@ Diese Vorlage dient dazu, **neue Accaoui-Trainingsfragen** vor dem Einbau in `qu
 
 Ziele:
 
-1. **Qualität** – einheitliches Format, klare Antwortlogik, verständliche Erklärungen  
-2. **Rechtssicherheit** – keine 1:1-Übernahme von IHK- oder Musterprüfungsfragen  
-3. **Nachvollziehbarkeit** – Review-ID, Prüfer, Status, Notizen pro Frage  
-4. **Planbarer Ausbau** – 35 neue Fragen in fünf Sachgebieten kontrolliert freigeben  
+1. **Qualität** – einheitliches Format, klare Antwortlogik, verständliche Erklärungen
+2. **Rechtssicherheit** – keine 1:1-Übernahme von IHK- oder Musterprüfungsfragen
+3. **Nachvollziehbarkeit** – Review-ID, Prüfer, Status, Notizen pro Frage
+4. **Planbarer Ausbau** – 35 neue Fragen in fünf Sachgebieten kontrolliert freigeben
 
 **Verwendung:** Kopie dieser Datei oder Abschnitt in eine Block-Datei (z. B. `docs/review/WRITTEN_EXPANSION_BLOCK_BGB.md`) und pro Frage ausfüllen.
 
@@ -143,23 +143,23 @@ Kopieren und pro Frage ausfüllen:
 
 **Frage:**
 
-> 
+>
 
 **Antwortoptionen:**
 
-- a) 
-- b) 
-- c) 
-- d) 
+- a)
+- b)
+- c)
+- d)
 - e) *(nur bei Kombinationsfrage)*
 
 **Richtige Antwort(en):**
 
-> 
+>
 
 **Erklärung:**
 
-> 
+>
 
 **Qualitätscheckliste (§6):** ☐ alle 9 Punkte
 
@@ -173,7 +173,7 @@ Kopieren und pro Frage ausfüllen:
 
 ## 8. Geplante 35 Fragen – Platzhalter
 
-Ausbau laut `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`.  
+Ausbau laut `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`.
 Status initial: `draft`. Ziel-IDs fortlaufend ab `q_052` (anpassen, falls beim Import andere IDs nötig).
 
 ### Block A – Bürgerliches Gesetzbuch (+8)
@@ -299,11 +299,11 @@ Status initial: `draft`. Ziel-IDs fortlaufend ab `q_052` (anpassen, falls beim I
 
 Eine Frage darf **erst** in `questions.json` übertragen werden, wenn:
 
-1. **Freigabestatus** = `ready_for_import`  
-2. **sourceStyle** = `accaoui_original`  
-3. **Qualitätscheckliste** §6 vollständig erfüllt  
-4. **Ziel-ID** eindeutig und noch nicht in `questions.json` vergeben  
-5. **Kategorie** kanonisch (Audit-kompatibel)  
+1. **Freigabestatus** = `ready_for_import`
+2. **sourceStyle** = `accaoui_original`
+3. **Qualitätscheckliste** §6 vollständig erfüllt
+4. **Ziel-ID** eindeutig und noch nicht in `questions.json` vergeben
+5. **Kategorie** kanonisch (Audit-kompatibel)
 
 **Nach Import (separater Task):**
 
@@ -322,9 +322,9 @@ Dann Browser-Test: Alle Fragen, Prüfung, Lernkarten, Fehlertraining.
 
 > **Diese Datei ist nur eine Review- und Arbeitsvorlage – nicht die endgültige Fragenbank.**
 
-- Die **produktive** Quelle für die App bleibt `questions.json` (bis Supabase-Export live ist).  
-- Inhaltliche Wahrheit nach Import: `questions.json` + Audit.  
-- Review-Dateien können Duplikate, Entwürfe und `rejected` Einträge enthalten – das ist gewollt.  
+- Die **produktive** Quelle für die App bleibt `questions.json` (bis Supabase-Export live ist).
+- Inhaltliche Wahrheit nach Import: `questions.json` + Audit.
+- Review-Dateien können Duplikate, Entwürfe und `rejected` Einträge enthalten – das ist gewollt.
 - Keine IHK-/Muster- oder Rohfragen als „fertige“ Aufgaben in dieser Vorlage ablegen.
 
 ---
@@ -333,15 +333,15 @@ Dann Browser-Test: Alle Fragen, Prüfung, Lernkarten, Fehlertraining.
 
 Nur diese Namen in **Kategorie** verwenden:
 
-1. Recht der öffentlichen Sicherheit und Ordnung  
-2. Gewerberecht  
-3. Datenschutzrecht  
-4. Bürgerliches Gesetzbuch  
-5. Strafgesetzbuch und Strafverfahrensrecht  
-6. Unfallverhütungsvorschriften Wach- und Sicherungsdienste  
-7. Umgang mit Waffen  
-8. Umgang mit Menschen  
-9. Grundzüge der Sicherheitstechnik  
+1. Recht der öffentlichen Sicherheit und Ordnung
+2. Gewerberecht
+3. Datenschutzrecht
+4. Bürgerliches Gesetzbuch
+5. Strafgesetzbuch und Strafverfahrensrecht
+6. Unfallverhütungsvorschriften Wach- und Sicherungsdienste
+7. Umgang mit Waffen
+8. Umgang mit Menschen
+9. Grundzüge der Sicherheitstechnik
 
 ---
 
