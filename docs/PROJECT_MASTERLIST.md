@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v24.1
+Stand: v24.2
 Branch: `refactor/oral-exam-module`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -135,7 +135,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v24.1)
+## 5. Aktueller Versionsstand (bis v24.2)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -166,6 +166,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v23.5.48 | Fragenbank-Ausbau abgeschlossen: **86 Fragen** in `questions.json` (inkl. Umgang mit Menschen `umgang_006`–`umgang_019`) |
 | v24.0 | `docs/EXAM_SIMULATION_AUDIT.md` – Prüfungssimulation 82/120 auditiert; **kein Code-Task** |
 | v24.1 | `docs/EXAM_POINTS_PLAN.md` – Punktefelder fachlich geplant (86 Fragen, Simulationskern 82/120); **keine** `questions.json`-Änderung |
+| v24.2 | `docs/EXAM_CORE_SELECTION_PLAN.md` – **Option A:** feste 82 Core-IDs; 4 Reserve-IDs; **keine** `questions.json`-Änderung |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -293,17 +294,18 @@ Kernbotschaft für die App (Beispieltext):
 | Vollsimulation (Ist) | 82 Fragen per Zufall aus Gesamtpool – **ohne** Sachgebiets- und Punktegewichtung |
 | Vollsimulation (Soll) | **82 Fragen / 120 Punkte** nach Sachgebietstabelle §7 |
 | Punkteplan | `docs/EXAM_POINTS_PLAN.md` – **vorhanden** (v24.1, fachliche Zuordnung 1/2 Punkte) |
-| `points`-Felder in JSON | **noch nicht** – Umsetzung erst **v24.2** nach Prüfung des Plans |
-| App-Status | Timer (120 min) und Bestehen (50 %) vorhanden; **Auswahl- und Punkte-Logik** folgen in v24.2 ff. |
+| Core-ID-Plan | `docs/EXAM_CORE_SELECTION_PLAN.md` – **vorhanden** (v24.2, **Option A:** feste 82 Kern-IDs) |
+| `points`-Felder in JSON | **noch nicht** – Umsetzung erst **v24.3** nach Core-ID-Planung |
+| App-Status | Timer (120 min) und Bestehen (50 %) vorhanden; **Core-Auswahl** und **Punkte-Logik** folgen in v24.4 ff. |
 
 ### Empfohlene Folge-Tasks
 
-- **v24.2** – `points`-Felder kontrolliert in `questions.json` ergänzen (nach `EXAM_POINTS_PLAN.md`)
-- **v24.3** – Auswahl nach Sachgebiet und Punktegewichtung
-- **v24.4** – 82/120-Auswertung testen
-- **v24.5** – Browser-Test und Online-Dokumentation
+- **v24.3** – `points`-Felder kontrolliert in `questions.json` ergänzen (nach `EXAM_POINTS_PLAN.md`)
+- **v24.4** – Core-ID-Auswahlfunktion in der App (nach `EXAM_CORE_SELECTION_PLAN.md`)
+- **v24.5** – Vollsimulation 82/120 testen
+- **v24.6** – Browser-Test und Online-Dokumentation
 
-**Hinweis:** v24.0/v24.1 = **nur Dokumentation**, kein Code, keine `questions.json`-Änderung.
+**Hinweis:** v24.0–v24.2 = **nur Dokumentation**, kein Code, keine `questions.json`-Änderung.
 
 ---
 
@@ -323,7 +325,7 @@ python tools/preflight.py
 
 ---
 
-## 10. Planungsdokumente (Stand v24.1)
+## 10. Planungsdokumente (Stand v24.2)
 
 | Dokument | Status |
 |----------|--------|
@@ -332,6 +334,7 @@ python tools/preflight.py
 | `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md` | Ausbau 51 → 86 Fragen, Prüfungsziel 82 – **vorhanden** (Pool **86** erreicht) |
 | `docs/EXAM_SIMULATION_AUDIT.md` | Prüfungssimulation 82/120 – **vorhanden** (Audit v24.0, kein Code) |
 | `docs/EXAM_POINTS_PLAN.md` | Punktevergabe 1/2 pro Frage, Simulationskern 82/120 – **vorhanden** (Plan v24.1, kein JSON) |
+| `docs/EXAM_CORE_SELECTION_PLAN.md` | Feste 82 Core-IDs, 4 Reserve – **vorhanden** (Plan v24.2, Option A, kein Code) |
 | `docs/QUESTION_DATABASE_PLAN.md` | Fragen-Datenbank, Review, Export – **vorhanden** |
 | `docs/LEARNING_STRATEGY_MODULE.md` | Lernstrategie, Vergessenskurve – **vorhanden** (Konzept, kein Code) |
 | `docs/SUPABASE_QUESTION_SCHEMA.md` | Supabase-Fragenmodell – **vorhanden** |
@@ -351,7 +354,7 @@ python tools/preflight.py
 | Simulation B | **vorhanden** (Prüfungsbogen B) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Prüfung zieht **82** nach Gewichtung – **noch nicht umgesetzt** |
-| Prüfungssimulation 82/120 | **auditiert** (v24.0), **Punkte geplant** (v24.1) – siehe `docs/EXAM_SIMULATION_AUDIT.md`, `docs/EXAM_POINTS_PLAN.md`; JSON-Umsetzung v24.2 |
+| Prüfungssimulation 82/120 | **auditiert** (v24.0), **Punkte geplant** (v24.1), **Core-IDs fest** (v24.2, Option A) – siehe `docs/EXAM_*`; App/JSON-Umsetzung v24.3 ff. |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
 | UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
 
@@ -387,7 +390,7 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-1. **Prüfungssimulation 82/120** – Punkteplan **erledigt** (v24.1); als Nächstes: `points` in JSON (v24.2), Sachgebietsauswahl (v24.3), Tests (v24.4–v24.5); siehe `docs/EXAM_POINTS_PLAN.md`, §8.2
+1. **Prüfungssimulation 82/120** – Punkteplan (v24.1) und Core-ID-Liste (v24.2) **erledigt**; als Nächstes: `points` in JSON (v24.3), Core-Auswahl in App (v24.4), Tests (v24.5–v24.6); siehe `docs/EXAM_CORE_SELECTION_PLAN.md`, §8.2
 2. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
 3. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**
 4. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
@@ -414,6 +417,7 @@ docs/WRITTEN_QUESTION_EXPANSION_PLAN.md
 docs/LEARNING_STRATEGY_MODULE.md
 docs/EXAM_SIMULATION_AUDIT.md
 docs/EXAM_POINTS_PLAN.md
+docs/EXAM_CORE_SELECTION_PLAN.md
 docs/QUESTION_DATABASE_PLAN.md
 docs/SUPABASE_IMPLEMENTATION_ROADMAP.md
 ```
