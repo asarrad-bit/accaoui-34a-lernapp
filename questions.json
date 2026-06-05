@@ -846,6 +846,62 @@
     "explanation": "Vorurteile (Herkunft, Kleidung, Alter) sind kein Sicherheitskriterium. Professionell ist Verhalten beobachten, respektvoll kommunizieren und diskriminierende Aussagen nicht mittragen."
   },
   {
+    "id": "umgang_014",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Ein Besucher beleidigt Sie persönlich nach einer Zutrittsverweigerung. Sie spüren starken Ärger. Was ist im Sinne von Selbstkontrolle und Stressverhalten richtig?",
+    "answers": [
+      "Mit gleichen Beleidigungen antworten",
+      "Kurz pausieren, ruhig bleiben, sachlich an der Regel festhalten und bei Bedarf Vorgesetzten einschalten – keine Gefühlseskalation",
+      "Den Besucher sofort schubsen",
+      "Den Dienst ohne Meldung abbrechen und gehen"
+    ],
+    "correct": [1],
+    "explanation": "Stress und Provokation gehören zum Einsatz. Selbstkontrolle schützt vor Fehlreaktionen: Atempause, professionelle Distanz, Regel wiederholen, Unterstützung holen. Persönliche Gegenattacken sind unprofessionell und riskant."
+  },
+  {
+    "id": "umgang_015",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Eine aufgebrachte Person tritt beim Gespräch sehr nah an Sie heran. Welche Körpersprache und Distanz sind im Grundsatz angemessen?",
+    "answers": [
+      "Nähe zulassen und selbst die Stirn an die der Person legen",
+      "Offene, ruhige Haltung, angemessenen Sicherheitsabstand halten oder vorsichtig vergrößern, Blickkontakt ohne Fixieren – nicht bedrohlich wirken",
+      "Sofort die Person wegschubsen, ohne Ankündigung",
+      "Abwenden und weglaufen, ohne Information an Team"
+    ],
+    "correct": [1],
+    "explanation": "Nähe/Distanz beeinflusst Eskalation. Sicherheitsabstand schützt und signalisiert Professionalität. Ruhige, offene Körpersprache (keine bedrohlichen Gesten). Distanz vergrößern darf deeskalierend sein – ohne provozierend zu wirken."
+  },
+  {
+    "id": "umgang_016",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Ein Mieter beschwert sich schriftlich und mündlich über „unhöfliches“ Verhalten eines Sicherheitsmitarbeiters. Welches Vorgehen entspricht Beschwerdemanagement im Grundsatz?",
+    "answers": [
+      "Beschwerde ignorieren, weil Sicherheit wichtiger ist",
+      "Ernst nehmen, sachlich aufnehmen, Vorgesetzten/Auftraggeber informieren und intern klären – keine öffentliche Diskussion mit dem Beschwerdeführer vor Ort eskalieren",
+      "Den Mieter des Hauses verweisen",
+      "Gegenbeschwerde ohne Prüfung erheben"
+    ],
+    "correct": [1],
+    "explanation": "Beschwerden ernst nehmen, dokumentieren und weiterleiten. Vor Ort: ruhig, sachlich, keine Schuldzuweisung im Streit. Klärung über zuständige Stelle – nicht allein im Konflikt „gewinnen“ wollen."
+  },
+  {
+    "id": "umgang_017",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Jugendliche filmen Sie und rufen: „Mach was, Security!“ um eine Reaktion zu bekommen. Welche Reaktion ist bei Provokation am ehesten professionell?",
+    "answers": [
+      "In die Kamera schreien und drohen",
+      "Nicht auf Provokation einsteigen, sachlich an Hausrecht/Regeln erinnern und bei anhaltender Störung nach Dienstanweisung weitergehen (Meldung, Team)",
+      "Das Handy wegreißen",
+      "Die Gruppe körperlich verjagen ohne Ansage"
+    ],
+    "correct": [1],
+    "explanation": "Provokationen zielen auf emotionale Reaktion. Nicht mitspielen: ruhig bleiben, Regel nennen, dokumentieren/melden bei Fortsetzung. Keine Eigentumsdelikte (Handy) oder unnötige Gewalt."
+  },
+  {
     "id": "uvv_001",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
