@@ -250,6 +250,34 @@ Kernbotschaft für die App (Beispieltext):
 
 ---
 
+## 8.1 UX- und Lernlogik-Audit (geplant, v24.x)
+
+| Aspekt | Stand |
+|--------|--------|
+| App-Status | **vorgemerkt**, noch **kein Code** |
+| Geplante Version | **v24.x** |
+| Voraussetzung | Abschluss des **Fragenbank-Ausbaus** (86-Fragen-Pool) |
+
+### Inhalt des Audits
+
+1. **Ergebnisdarstellung** prüfen und vereinheitlichen.
+2. **Unterschied zwischen Lernmodus und Lernkarten** klar erklären:
+   - **Lernmodus** = echte Wissensabfrage mit richtig/falsch.
+   - **Lernkarten** = Selbsteinschätzung mit gewusst/wiederholen/offen.
+3. In der App später einen kurzen Hinweis ergänzen:
+   > *Lernmodus prüft Ihre Antworten. Lernkarten bewerten Ihre Selbsteinschätzung.*
+4. **Themenbereich-Üben:** Nächste Frage erst nach Antwort grundsätzlich beibehalten, weil dies **Active Recall** unterstützt.
+5. **Optional später prüfen:**
+   - Button „Frage später beantworten“
+   - Button „Überspringen und später üben“
+   - offene Fragen separat speichern
+   - offene Fragen gezielt nachtrainieren
+6. **Ziel:** Lernlogik verständlicher machen, **ohne** die aktuelle stabile Funktion zu verändern.
+
+**Hinweis:** Kein Sofort-Code-Task. Umsetzung erst nach Abschluss des Fragenbank-Ausbaus.
+
+---
+
 ## 9. Prüfskripte
 
 Kategorie-Audit:
@@ -293,6 +321,7 @@ python tools/preflight.py
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | Pool in `questions.json` wächst Richtung **86** (Prüfung zieht **82** nach Gewichtung) |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
+| UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x, nach Fragenbank-Ausbau) |
 
 Langfristiges Ziel mündlich: skalierbare Bogen-Auswahl A/B/C/D unter einem Hauptmodus „Prüfungssimulation“ (siehe v24 Oral Exam Cleanup).
 
@@ -329,11 +358,12 @@ Installiert (Referenz):
 1. **Fragenbank-Ausbau** – Review-Blöcke (BGB, Strafrecht, UVV, Menschen, Technik) nach `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`
 2. **Spätere Vollsimulation 82/120** – exakte Ziehung nach Sachgebiet und Punktegewichtung (v25)
 3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
-4. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
-5. **Später v24 Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C
-6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
-7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
-8. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
+4. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**, erst nach Fragenbank-Ausbau
+5. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
+6. **Später v24 Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C
+7. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
+8. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
+9. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
