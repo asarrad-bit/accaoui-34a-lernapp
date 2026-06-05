@@ -1,32 +1,32 @@
 # Accaoui §34a – Review: Umgang mit Menschen (+14 Fragen)
 
-Stand: v23.5.43
+Stand: v23.5.45 (Freigabe approved)
 Block: D (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `needs_review`
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
+**Status aller Fragen:** `approved`
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
 **Prüfungslogik:** Sachgebiet „Umgang mit Menschen“ = **19 Fragen / 19 Punkte** im 82-Fragen-Aufbau → alle neuen Fragen je **1 Punkt**.
 
 ---
 
 ## Block-Übersicht
 
-| Nr | Review-ID | Ziel-ID | Unterthema | Punkte | IHK-Risiko |
-|----|-----------|---------|------------|-------:|------------|
-| 01 | REV-MENSCH-01 | menschen_006 | Deeskalation bei aggressiven Personen | 1 | low |
-| 02 | REV-MENSCH-02 | menschen_007 | Professionelle Kommunikation | 1 | low |
-| 03 | REV-MENSCH-03 | menschen_008 | Aktives Zuhören / Gesprächsführung | 1 | low |
-| 04 | REV-MENSCH-04 | menschen_009 | Konfliktvermeidung und Eigenschutz | 1 | medium |
-| 05 | REV-MENSCH-05 | menschen_010 | Umgang mit alkoholisierten Personen | 1 | medium |
-| 06 | REV-MENSCH-06 | menschen_011 | Gruppen / Menschenmengen | 1 | medium |
-| 07 | REV-MENSCH-07 | menschen_012 | Interkulturelles Verhalten | 1 | medium |
-| 08 | REV-MENSCH-08 | menschen_013 | Vorurteile / respektvolle Ansprache | 1 | low |
-| 09 | REV-MENSCH-09 | menschen_014 | Stressverhalten / Selbstkontrolle | 1 | low |
-| 10 | REV-MENSCH-10 | menschen_015 | Nähe, Distanz, Körpersprache | 1 | medium |
-| 11 | REV-MENSCH-11 | menschen_016 | Beschwerdemanagement | 1 | low |
-| 12 | REV-MENSCH-12 | menschen_017 | Verhalten bei Provokationen | 1 | medium |
-| 13 | REV-MENSCH-13 | menschen_018 | Teamkommunikation / Informationsweitergabe | 1 | low |
-| 14 | REV-MENSCH-14 | menschen_019 | Dokumentation besonderer Vorkommnisse | 1 | low |
+| Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
+|----|-----------|---------|------------|-------:|--------|
+| 01 | REV-MENSCH-01 | menschen_006 | Deeskalation bei aggressiven Personen | 1 | approved |
+| 02 | REV-MENSCH-02 | menschen_007 | Professionelle Kommunikation | 1 | approved |
+| 03 | REV-MENSCH-03 | menschen_008 | Aktives Zuhören / Gesprächsführung | 1 | approved |
+| 04 | REV-MENSCH-04 | menschen_009 | Konfliktvermeidung und Eigenschutz | 1 | approved |
+| 05 | REV-MENSCH-05 | menschen_010 | Umgang mit alkoholisierten Personen | 1 | approved |
+| 06 | REV-MENSCH-06 | menschen_011 | Gruppen / Menschenmengen | 1 | approved |
+| 07 | REV-MENSCH-07 | menschen_012 | Interkulturelles Verhalten | 1 | approved |
+| 08 | REV-MENSCH-08 | menschen_013 | Vorurteile / respektvolle Ansprache | 1 | approved |
+| 09 | REV-MENSCH-09 | menschen_014 | Stressverhalten / Selbstkontrolle | 1 | approved |
+| 10 | REV-MENSCH-10 | menschen_015 | Nähe, Distanz, Körpersprache | 1 | approved |
+| 11 | REV-MENSCH-11 | menschen_016 | Beschwerdemanagement | 1 | approved |
+| 12 | REV-MENSCH-12 | menschen_017 | Verhalten bei Provokationen | 1 | approved |
+| 13 | REV-MENSCH-13 | menschen_018 | Teamkommunikation / Informationsweitergabe | 1 | approved |
+| 14 | REV-MENSCH-14 | menschen_019 | Dokumentation besonderer Vorkommnisse | 1 | approved |
 
 **Summe Punkte (wenn alle richtig):** 14
 
@@ -46,7 +46,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -87,7 +87,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -128,7 +128,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -169,7 +169,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -210,7 +210,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -251,7 +251,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -292,7 +292,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -333,7 +333,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -374,7 +374,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -415,7 +415,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -456,7 +456,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -497,7 +497,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -538,7 +538,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -579,7 +579,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | needs_review |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -612,11 +612,31 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 14 |
 | Ziel-IDs | menschen_006 … menschen_019 |
-| Status | alle `needs_review` |
+| Status | alle `approved` |
 | Summe Punkte (Block) | 14 |
-| Nächster Schritt | Fachliche Prüfung → `approved` → Dublettenprüfung → `ready_for_import` → Import-Task |
 
-**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits **umgang_001–umgang_005** (Konflikt, Kommunikation, Alkohol, Deeskalation). Die neuen Fragen **vertiefen** das Sachgebiet auf **19 Fragen** gesamt (5 + 14). Ziel-IDs **`menschen_006`–`menschen_019`** (Präfix-Hinweis: bestehend `umgang_` – beim Import Eindeutigkeit prüfen).
+## Review-Zusammenfassung (v23.5.45)
+
+| Status | Anzahl | Review-IDs |
+|--------|-------:|------------|
+| **reviewed** | 0 | — |
+| **approved** | 14 | REV-MENSCH-01 … REV-MENSCH-14 |
+| **ready_for_import** | 0 | — |
+| **rewrite_required** | 0 | — |
+
+### Freigabe (v23.5.45)
+
+- Alle 14 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
+- Die **Dublettenprüfung** gegen `questions.json` (umgang_001–umgang_005) steht noch aus.
+- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
+
+### Nächste Schritte
+
+- Dublettenprüfung gegen `questions.json`
+- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
+- Import erst über separaten Import-Task
+
+**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits **umgang_001–umgang_005**. Die neuen Fragen **vertiefen** das Sachgebiet auf **19 Fragen** gesamt (5 + 14). Ziel-IDs **`menschen_006`–`menschen_019`** (Präfix-Hinweis: bestehend `umgang_` – beim Import Eindeutigkeit prüfen).
 
 ---
 
