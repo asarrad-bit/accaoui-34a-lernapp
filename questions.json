@@ -804,6 +804,49 @@
     "explanation": "SRS-Waffen können gefährliche Gegenreaktionen provozieren und ein falsches Sicherheitsgefühl erzeugen. Sie ersetzen keine professionelle Gefahreneinschätzung."
   },
   {
+    "id": "uvv_006",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "type": "single",
+    "question": "Ein Wach- und Sicherheitsdienst übernimmt einen neuen Objektauftrag. Die Geschäftsführung fragt, welche Pflichten nach der DGUV Vorschrift 23 (Regelwerk für Wach- und Sicherungsdienste) im Grundsatz gelten. Welche Aussage trifft zu?",
+    "answers": [
+      "Nur die Wachperson ist für Arbeitssicherheit verantwortlich; der Unternehmer hat keine Pflichten",
+      "Der Unternehmer muss u. a. Gefährdungen beurteilen, geeignete Schutzmaßnahmen festlegen und Beschäftigte unterweisen; die Wachperson muss Anweisungen befolgen, Schutzmaßnahmen nutzen und Gefahren sowie Mängel melden",
+      "Eine Gefährdungsbeurteilung ist nur bei Industrieanlagen, nicht bei Bewachungsdiensten, erforderlich",
+      "Unterweisungen sind entbehrlich, wenn Mitarbeitende bereits eine §-34a-Unterrichtung absolviert haben"
+    ],
+    "correct": [1],
+    "explanation": "DGUV Vorschrift 23: Der Unternehmer regelt durch Dienstanweisungen, unterweist vor Aufnahme und regelmäßig und achtet auf Eignung. Wachpersonen befolgen Anweisungen und melden Mängel sowie besondere Gefahren. Die §-34a-Unterrichtung ersetzt die UVV-Unterweisung nicht."
+  },
+  {
+    "id": "uvv_007",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "type": "multiple",
+    "question": "Ein Schichtleiter bemerkt vor Dienstbeginn, dass ein Mitarbeiter nach einer Feier noch müde wirkt und leicht nach Alkohol riecht. Er weist den Mitarbeiter auf die Regeln hin. Welche zwei Aussagen zu Dienstbeginn, Dienstfähigkeit und berauschenden Mitteln nach DGUV Vorschrift 23 sind im Grundsatz zutreffend?",
+    "answers": [
+      "Vor Dienstbeginn ist eine Einweisung zu Dienstanweisung, Einsatzort, Kommunikation, Notfall und objektbezogenen Besonderheiten erforderlich",
+      "Ein Dienst darf angetreten werden, wenn berauschende Mittel die Dienstfähigkeit nur „leicht“ beeinträchtigen",
+      "Alkohol und andere berauschende Mittel sind während der Dienstzeit verboten – auch für einen angemessenen Zeitraum vor dem Einsatz; bei Dienstantritt muss Nüchternheit gegeben sein",
+      "Die Prüfung von Funkgerät, Taschenlampe und Schutzausrüstung entfällt, wenn der Mitarbeiter gestern am selben Objekt war",
+      "Eine erkennbare Dienstunfähigkeit muss nicht gemeldet werden, solange keine Vorfälle passieren"
+    ],
+    "correct": [0, 2],
+    "explanation": "Dienstbeginn: Einweisung zu Anweisungen, Objekt, Kommunikation und Notfall. Alkohol/berauschende Mittel: während der Dienstzeit verboten, auch angemessen vor dem Einsatz; Nüchternheit bei Dienstantritt. Bei erkennbarer Dienstunfähigkeit kein Einsatz."
+  },
+  {
+    "id": "uvv_008",
+    "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+    "type": "single",
+    "question": "Während eines Nachtdienstes hört ein Sicherheitsmitarbeiter einen lauten Knall, sieht Rauch aus einem Technikraum und bemerkt ausgeschaltete Flurbeleuchtung. Es besteht Brandverdacht, die Lage ist unübersichtlich. Welche Verhaltensweise entspricht im Grundsatz den Anforderungen an Eigenschutz, Gefahrenmeldung und besondere Vorkommnisse?",
+    "answers": [
+      "Sofort allein in den Rauchbereich eindringen, um die Ursache ohne Schutzausrüstung zu klären",
+      "Eigenschutz beachten, die Gefahr unverzüglich melden/alarmieren (Leitstelle, Auftraggeber, ggf. Feuerwehr nach Dienstanweisung), Notfallabläufe einleiten und bei Bedarf Unterstützung anfordern",
+      "Abwarten, bis die Schicht endet, und den Vorgang nicht dokumentieren",
+      "Nur einen internen Zettel ausfüllen, ohne Meldung an die zuständige Stelle"
+    ],
+    "correct": [1],
+    "explanation": "Eigenschutz hat Vorrang. Gefahr unverzüglich melden/alarmieren, Dienstanweisung und Notfallabläufe beachten, Unterstützung anfordern. Dokumentation ergänzt die Meldung, ersetzt sie aber nicht."
+  },
+  {
     "id": "technik_001",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "single",
