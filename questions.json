@@ -3,6 +3,7 @@
     "id": "roso_001",
     "category": "Recht der öffentlichen Sicherheit und Ordnung",
     "type": "multiple",
+    "points": 1,
     "question": "Was ist die Polizei im staatsrechtlichen Sinn?",
     "answers": [
       "Exekutive",
@@ -17,6 +18,7 @@
     "id": "roso_002",
     "category": "Recht der öffentlichen Sicherheit und Ordnung",
     "type": "multiple",
+    "points": 2,
     "question": "Welche Aussage beschreibt private Sicherheitsmitarbeiter rechtlich richtig?",
     "answers": [
       "Sie haben grundsätzlich keine polizeilichen Hoheitsrechte.",
@@ -31,6 +33,7 @@
     "id": "roso_003",
     "category": "Recht der öffentlichen Sicherheit und Ordnung",
     "type": "multiple",
+    "points": 1,
     "question": "Was bedeutet Gefahrenabwehr grundsätzlich?",
     "answers": [
       "Maßnahmen zur Verhinderung oder Beseitigung von Gefahren",
@@ -45,6 +48,7 @@
     "id": "roso_004",
     "category": "Recht der öffentlichen Sicherheit und Ordnung",
     "type": "multiple",
+    "points": 1,
     "question": "Welche Aussage zur öffentlichen Sicherheit ist richtig?",
     "answers": [
       "Sie schützt unter anderem die Rechtsordnung.",
@@ -59,6 +63,7 @@
     "id": "roso_005",
     "category": "Recht der öffentlichen Sicherheit und Ordnung",
     "type": "multiple",
+    "points": 2,
     "question": "Was ist bei einer Straftat im Objekt für den Sicherheitsmitarbeiter besonders wichtig?",
     "answers": [
       "Eigene Befugnisse realistisch einschätzen",
@@ -73,6 +78,7 @@
   "id": "v23_roso_006",
   "category": "Recht der öffentlichen Sicherheit und Ordnung",
   "type": "single",
+  "points": 1,
   "question": "Welche Aussage beschreibt die Grenze zwischen privatem Sicherheitsdienst und Polizei am besten?",
   "answers": [
     "Private Sicherheitsmitarbeiter dürfen grundsätzlich keine hoheitlichen Polizeibefugnisse ausüben.",
@@ -87,6 +93,7 @@
   "id": "v23_roso_007",
   "category": "Recht der öffentlichen Sicherheit und Ordnung",
   "type": "single",
+  "points": 2,
   "question": "Welche Antwortkombination ist richtig?\n\n1. Die öffentliche Sicherheit umfasst auch den Schutz der Rechtsordnung.\n2. Die öffentliche Ordnung betrifft ungeschriebene Regeln für ein geordnetes Zusammenleben.\n3. Private Sicherheitsmitarbeiter haben automatisch dieselben Rechte wie die Polizei.\n4. Die Durchsetzung staatlicher Zwangsmaßnahmen ist grundsätzlich Aufgabe der zuständigen Behörden.",
   "answers": [
     "Nur die Aussagen 1 und 3 sind richtig.",
@@ -101,6 +108,7 @@
   "id": "v23_roso_008",
   "category": "Recht der öffentlichen Sicherheit und Ordnung",
   "type": "multiple",
+  "points": 2,
   "question": "Ein Sicherheitsmitarbeiter arbeitet in einem Einkaufszentrum. Eine Person stört wiederholt andere Besucher, beleidigt aber niemanden konkret und begeht keine erkennbare Straftat. Der Betreiber möchte, dass die Person das Einkaufszentrum verlässt. Welche Aussagen sind richtig?",
   "answers": [
     "Der Sicherheitsmitarbeiter kann im Auftrag des Betreibers auf das Hausrecht hinweisen.",
