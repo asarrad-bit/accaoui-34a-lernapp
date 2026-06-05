@@ -790,6 +790,62 @@
     "explanation": "Konfliktvermeidung heißt nicht Wegsehen, sondern früh handeln: Abstand, Backup, ruhige Ansprache, Trennung wenn nötig und erlaubt. Eigenschutz hat Vorrang – kein unnötiges Risiko ohne Unterstützung."
   },
   {
+    "id": "umgang_010",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Nach einer Firmenfeier taumelt ein Gast im Foyer, spricht laut und blockiert den Ausgang. Welche Verhaltensweise ist im Grundsatz angemessen?",
+    "answers": [
+      "Den Gast verspotten, damit er schneller geht",
+      "Abstand halten, kurz und klar kommunizieren, Ausgang freimachen anmahnen und bei Gefahr oder Verweigerung Vorgesetzten/Polizei nach Dienstanweisung einschalten",
+      "Den Gast sofort festhalten und einsperren",
+      "Alkohol nachschenken, um die Stimmung zu beruhigen"
+    ],
+    "correct": [1],
+    "explanation": "Alkoholisierte Personen sind unberechenbar. Abstand, klare Ansagen, keine Provokation. Bei anhaltender Störung oder Gefahr: Unterstützung holen. Festhalten nur bei rechtlicher Grundlage – nicht als Standardreaktion."
+  },
+  {
+    "id": "umgang_011",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Nach einem Konzert strömen Hunderte Besucher gleichzeitig auf einen Ausgang zu. Es entsteht Gedränge. Welche Maßnahme ist im Grundsatz sinnvoll?",
+    "answers": [
+      "Einzelne Besucher körperlich zurückdrängen, ohne Absprache",
+      "Überblick behalten, ruhige Lautsprecher-/Ansagen, Engstellen entlasten, Team koordinieren und Leitung/Auftraggeber informieren",
+      "Alle Türen schließen und die Menge einsperren",
+      "Die Situation ignorieren, bis es ruhiger wird"
+    ],
+    "correct": [1],
+    "explanation": "Bei Menschenmengen zählen Übersicht, Kommunikation, Entlastung von Engstellen und Teamarbeit. Panik vermeiden, nicht eigenmächtig Gewalt anwenden. Eskalation früh an Leitung melden."
+  },
+  {
+    "id": "umgang_012",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Ein internationaler Besucher versteht die Sicherheitsanweisung nur teilweise und reagiert verunsichert. Welches Verhalten ist interkulturell und dienstlich angemessen?",
+    "answers": [
+      "Lauter schreien, bis die Person „versteht“",
+      "Geduldig, einfache Sprache, Gesten wo hilfreich, ggf. Dolmetsch oder Kollegen hinzuziehen – respektvoll bleiben",
+      "Den Besucher wegen „Ungehorsam“ sofort abführen",
+      "Annehmen, dass ausländische Besucher grundsätzlich Regeln ignorieren"
+    ],
+    "correct": [1],
+    "explanation": "Interkultureller Umgang verlangt Respekt, Klärung und Hilfe bei Verständigung – nicht Herabwürdigung oder pauschale Vorurteile. Sicherheitsregeln gelten für alle; die Vermittlung muss verständlich sein."
+  },
+  {
+    "id": "umgang_013",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Ein Kollege sagt im Funk: „Die Gruppe da drüben sieht verdächtig aus – bestimmt wieder Ärger.“ Wie sollten Sie professionell reagieren?",
+    "answers": [
+      "Zustimmen und die Gruppe ohne Anlass kontrollieren",
+      "Sachlich auf beobachtbares Verhalten fokussieren, respektvoll ansprechen und keine pauschalen Vorurteile im Dienst verstärken",
+      "Die Gruppe öffentlich beschuldigen",
+      "Den Kollegen im Funk beleidigen"
+    ],
+    "correct": [1],
+    "explanation": "Vorurteile (Herkunft, Kleidung, Alter) sind kein Sicherheitskriterium. Professionell ist Verhalten beobachten, respektvoll kommunizieren und diskriminierende Aussagen nicht mittragen."
+  },
+  {
     "id": "uvv_001",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
