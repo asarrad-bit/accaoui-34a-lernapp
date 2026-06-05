@@ -902,6 +902,34 @@
     "explanation": "Provokationen zielen auf emotionale Reaktion. Nicht mitspielen: ruhig bleiben, Regel nennen, dokumentieren/melden bei Fortsetzung. Keine Eigentumsdelikte (Handy) oder unnötige Gewalt."
   },
   {
+    "id": "umgang_018",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Sie beobachten eine Person, die wiederholt Fotos von Sicherheitsbereichen macht und auf Nachfrage ausweichend reagiert. Die Schicht endet in 10 Minuten. Was ist bei Teamkommunikation richtig?",
+    "answers": [
+      "Nichts sagen – ist Sache der nächsten Schicht",
+      "Kurz und klar im Funk/Übergabeprotokoll melden: Ort, Beschreibung, Uhrzeit, Verhalten – Nachfolgeschicht informieren",
+      "Nur mündlich im Flur erwähnen, ohne Details",
+      "Die Person selbst im Internet „outen“"
+    ],
+    "correct": [1],
+    "explanation": "Wichtige Informationen müssen strukturiert weitergegeben werden (Wer? Was? Wo? Wann?). Übergabe nicht ohne Meldung beenden. Funk/Protokoll sichert Nachvollziehbarkeit und Sicherheit der nächsten Schicht."
+  },
+  {
+    "id": "umgang_019",
+    "category": "Umgang mit Menschen",
+    "type": "single",
+    "question": "Nach einer verbalen Auseinandersetzung mit einem Besucher (Beleidigungen, keine Körperverletzung) ist der Vorfall beendet. Welche Dokumentation ist im Grundsatz sinnvoll?",
+    "answers": [
+      "Keine Notiz – war ja nichts Schlimmes",
+      "Kurzbericht mit Zeit, Ort, Beteiligten, Verlauf, eigenen Maßnahmen und Meldung an Vorgesetzten nach Dienstanweisung – sachlich, ohne Schimpfwörter im Wortlaut",
+      "Nur subjektive Meinung über den Besucher festhalten",
+      "Fotos des Besuchers ohne rechtliche Grundlage veröffentlichen"
+    ],
+    "correct": [1],
+    "explanation": "Besondere Vorkommnisse im Umgang mit Menschen sollten zeitnah, sachlich und vollständig dokumentiert werden – auch ohne Körperverletzung. Hilft bei Nachfragen, Beschwerden und rechtlicher Bewertung. Keine Datenschutzverletzung."
+  },
+  {
     "id": "uvv_001",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
