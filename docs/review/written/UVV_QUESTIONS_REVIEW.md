@@ -1,10 +1,10 @@
 # Accaoui §34a – Review: Unfallverhütungsvorschriften Wach- und Sicherungsdienste (+3 Fragen)
 
-Stand: v23.5.30 (fachliche Nachschärfung)  
+Stand: v23.5.31 (Freigabe approved)  
 Block: C (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)  
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`  
-**Status aller Fragen:** `reviewed`  
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`.
+**Status aller Fragen:** `approved`  
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
 
 ---
 
@@ -12,9 +12,9 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-UVV-01 | uvv_006 | Pflichten Unternehmer und Wachperson (DGUV Vorschrift 23) | 1 | reviewed |
-| 02 | REV-UVV-02 | uvv_007 | Dienstbeginn, Dienstfähigkeit, berauschende Mittel | 2 | reviewed |
-| 03 | REV-UVV-03 | uvv_008 | Eigenschutz, Gefahrenmeldung, besondere Vorkommnisse | 1 | reviewed |
+| 01 | REV-UVV-01 | uvv_006 | Pflichten Unternehmer und Wachperson (DGUV Vorschrift 23) | 1 | approved |
+| 02 | REV-UVV-02 | uvv_007 | Dienstbeginn, Dienstfähigkeit, berauschende Mittel | 2 | approved |
+| 03 | REV-UVV-03 | uvv_008 | Eigenschutz, Gefahrenmeldung, besondere Vorkommnisse | 1 | approved |
 
 **Summe Punkte (wenn alle richtig):** 4
 
@@ -34,7 +34,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -75,7 +75,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -117,7 +117,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | reviewed |
+| Freigabestatus | approved |
 
 **Frage:**
 
@@ -150,14 +150,14 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 3 |
 | Ziel-IDs | uvv_006 … uvv_008 |
-| Status | alle `reviewed` |
+| Status | alle `approved` |
 
-## Review-Zusammenfassung (v23.5.30)
+## Review-Zusammenfassung (v23.5.31)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
-| **reviewed** | 3 | REV-UVV-01 … REV-UVV-03 |
-| **approved** | 0 | — |
+| **reviewed** | 0 | — |
+| **approved** | 3 | REV-UVV-01 … REV-UVV-03 |
 | **ready_for_import** | 0 | — |
 | **rewrite_required** | 0 | — |
 
@@ -167,12 +167,17 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 - **REV-UVV-02:** Alkohol/berauschende Mittel strenger (Verbot, Vorlaufzeit, Nüchternheit, keine Dienstunfähigkeit) – Antworten **a + c**  
 - **REV-UVV-03:** Eigenschutz, Meldung, Notfallabläufe – Erklärung geglättet  
 
+### Freigabe (v23.5.31)
+
+- Alle 3 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.  
+- Die **Dublettenprüfung** gegen `questions.json` (uvv_001–uvv_005) steht noch aus.  
+- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.  
+
 ### Nächste Schritte
 
-- **Noch nicht** `approved`  
-- **Noch nicht** `ready_for_import`  
-- **Dublettenprüfung** gegen `questions.json` (uvv_001–uvv_005) steht noch aus  
-- **Kein Import** in dieser Phase  
+- Dublettenprüfung gegen `questions.json`  
+- Bei Ergebnis ohne Konflikt: Status `ready_for_import`  
+- Import erst über separaten Import-Task  
 
 **Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits uvv_001–uvv_005. Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
 
