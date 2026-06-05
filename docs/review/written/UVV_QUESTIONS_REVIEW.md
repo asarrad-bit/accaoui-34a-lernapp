@@ -1,10 +1,10 @@
 # Accaoui §34a – Review: Unfallverhütungsvorschriften Wach- und Sicherungsdienste (+3 Fragen)
 
-Stand: v23.5.31 (Freigabe approved)
+Stand: v23.5.33 (Dublettenprüfung dokumentiert)
 Block: C (Ausbauplan `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`)
 Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
-**Status aller Fragen:** `approved`
-**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Fachlich approved, Import noch gesperrt.
+**Status aller Fragen:** `ready_for_import`
+**Hinweis:** Nur Review-Arbeitsdatei – noch **nicht** in `questions.json`. Block ist importbereit; Import erfolgt erst im separaten Import-Task.
 
 ---
 
@@ -12,9 +12,9 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 
 | Nr | Review-ID | Ziel-ID | Unterthema | Punkte | Status |
 |----|-----------|---------|------------|-------:|--------|
-| 01 | REV-UVV-01 | uvv_006 | Pflichten Unternehmer und Wachperson (DGUV Vorschrift 23) | 1 | approved |
-| 02 | REV-UVV-02 | uvv_007 | Dienstbeginn, Dienstfähigkeit, berauschende Mittel | 2 | approved |
-| 03 | REV-UVV-03 | uvv_008 | Eigenschutz, Gefahrenmeldung, besondere Vorkommnisse | 1 | approved |
+| 01 | REV-UVV-01 | uvv_006 | Pflichten Unternehmer und Wachperson (DGUV Vorschrift 23) | 1 | ready_for_import |
+| 02 | REV-UVV-02 | uvv_007 | Dienstbeginn, Dienstfähigkeit, berauschende Mittel | 2 | ready_for_import |
+| 03 | REV-UVV-03 | uvv_008 | Eigenschutz, Gefahrenmeldung, besondere Vorkommnisse | 1 | ready_for_import |
 
 **Summe Punkte (wenn alle richtig):** 4
 
@@ -34,7 +34,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -56,7 +56,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.30 |
-| Dublettenprüfung | Thematische Nähe zu uvv_001 (Dienstanweisungen); vertieft **Unternehmerpflichten** – Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.33, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Accaoui-Fall neuer Objektauftrag; DGUV Regel 100-023 |
 
 ---
@@ -75,7 +75,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | medium |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -98,7 +98,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.30, Antwortlogik a + c |
-| Dublettenprüfung | Thematische Nähe zu uvv_002 (Dienstantritt); vertieft **Dienstfähigkeit/Alkohol** – Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.33, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Praxis Schichtleiter; 2-Punkte-Frage |
 
 ---
@@ -117,7 +117,7 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfungsrelevanz | hoch |
 | IHK-Ähnlichkeitsrisiko | low |
 | sourceStyle | accaoui_original |
-| Freigabestatus | approved |
+| Freigabestatus | ready_for_import |
 
 **Frage:**
 
@@ -139,8 +139,36 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 | Prüfung | Ergebnis |
 |---------|----------|
 | Fachliche Prüfung | OK – Review v23.5.30 |
-| Dublettenprüfung | Thematische Nähe zu uvv_003 (Mängelmeldung) und uvv_004 (Eigenschutz); vertieft **akutes Vorkommnis/Brand** – Abgleich `questions.json` vor Import |
+| Dublettenprüfung | OK – v23.5.33, keine direkte Dublette (siehe Abschnitt unten) |
 | Notizen | Accaoui-Fall Nachtdienst Technikraum; Abgrenzung uvv_005 (SRS-Waffen) |
+
+---
+
+## Dublettenprüfung gegen questions.json (v23.5.33)
+
+Geprüft wurden die 3 Review-Fragen (Ziel-IDs `uvv_006`–`uvv_008`) gegen die **5 bestehenden** UVV-Fragen in `questions.json`.
+
+### Bestehende UVV-Fragen in questions.json
+
+| ID | Kurzinhalt |
+|----|------------|
+| uvv_001 | Dienstanweisungen allgemein |
+| uvv_002 | Dienstantritt allgemein |
+| uvv_003 | Mängel melden / Notbeleuchtung |
+| uvv_004 | Eigenschutz allgemein |
+| uvv_005 | SRS-Waffen |
+
+### Prüfergebnis
+
+| Review-ID | Ergebnis |
+|-----------|----------|
+| REV-UVV-01 | Keine direkte Dublette; **thematische Nähe** zu uvv_001 (Dienstanweisungen), aber **Vertiefung** (Unternehmerpflichten DGUV Vorschrift 23) |
+| REV-UVV-02 | Keine direkte Dublette; **thematische Nähe** zu uvv_002 (Dienstantritt), aber **Vertiefung** – **ergänzt** wichtiges Thema **Dienstfähigkeit, Alkohol und berauschende Mittel** (uvv_007) |
+| REV-UVV-03 | Keine direkte Dublette; **thematische Nähe** zu uvv_003 (Mängelmeldung) und uvv_004 (Eigenschutz), aber **Vertiefung** (akutes Vorkommnis/Brandverdacht) |
+
+**Gesamt:** Keine direkte Dublette. Thematische Nähe bei Dienstanweisung, Dienstantritt, Mängelmeldung und Eigenschutz; die neuen Fragen sind **Vertiefungen**, keine Wiederholungen. Besonders **uvv_007** ergänzt Dienstfähigkeit/Alkohol. Der Block darf auf **`ready_for_import`** gesetzt werden.
+
+**Prüfdatum / Task:** v23.5.33
 
 ---
 
@@ -150,15 +178,15 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 |----------|------|
 | Fragen in dieser Datei | 3 |
 | Ziel-IDs | uvv_006 … uvv_008 |
-| Status | alle `approved` |
+| Status | alle `ready_for_import` |
 
-## Review-Zusammenfassung (v23.5.31)
+## Review-Zusammenfassung (v23.5.33)
 
 | Status | Anzahl | Review-IDs |
 |--------|-------:|------------|
 | **reviewed** | 0 | — |
-| **approved** | 3 | REV-UVV-01 … REV-UVV-03 |
-| **ready_for_import** | 0 | — |
+| **approved** | 0 | — |
+| **ready_for_import** | 3 | REV-UVV-01 … REV-UVV-03 |
 | **rewrite_required** | 0 | — |
 
 ### Fachliche Prüfung (v23.5.30) – abgeschlossen
@@ -167,19 +195,31 @@ Vorlage: `docs/WRITTEN_QUESTION_REVIEW_TEMPLATE.md`
 - **REV-UVV-02:** Alkohol/berauschende Mittel strenger (Verbot, Vorlaufzeit, Nüchternheit, keine Dienstunfähigkeit) – Antworten **a + c**
 - **REV-UVV-03:** Eigenschutz, Meldung, Notfallabläufe – Erklärung geglättet
 
-### Freigabe (v23.5.31)
+### Freigabe (v23.5.31) – abgeschlossen
 
-- Alle 3 Fragen sind **fachlich approved**, aber noch **nicht** `ready_for_import`.
-- Die **Dublettenprüfung** gegen `questions.json` (uvv_001–uvv_005) steht noch aus.
-- **Import bleibt gesperrt** bis `ready_for_import` und separater Import-Task.
+- Alle 3 Fragen fachlich **approved**
 
-### Nächste Schritte
+### Dublettenprüfung (v23.5.33) – abgeschlossen
 
-- Dublettenprüfung gegen `questions.json`
-- Bei Ergebnis ohne Konflikt: Status `ready_for_import`
-- Import erst über separaten Import-Task
+- Abgleich mit 5 bestehenden UVV-Fragen in `questions.json` (uvv_001–uvv_005) durchgeführt
+- Keine direkte Dublette; thematische Nähe – jeweils **Vertiefung**, kein Ersatz; **uvv_007** ergänzt Dienstfähigkeit/Alkohol
+- Alle 3 Fragen: **`ready_for_import`**
 
-**Hinweis zu bestehenden Fragen:** In `questions.json` existieren bereits uvv_001–uvv_005. Die neuen Fragen **vertiefen** und **ergänzen**, ersetzen sie nicht.
+### Kennzahlen
+
+| Kennzahl | Wert |
+|----------|------|
+| Fragen in dieser Datei | 3 |
+| Summe Punkte (wenn alle richtig) | 4 |
+| Nächster Schritt | **Separater Import-Task** → `questions.json` (`uvv_006`–`uvv_008`) |
+
+### Import-Regel
+
+**Hinweis:** Der Block ist **`ready_for_import`**, aber **noch nicht importiert**. Der Import in `questions.json` erfolgt **erst in einem eigenen Import-Task** (mit Preflight, `audit-categories.py`, Browser-Test).
+
+**Nicht in dieser Aufgabe:** Keine Einträge in `questions.json` – Import bleibt bis zum Import-Task ausstehend.
+
+**Hinweis zu bestehenden Fragen:** uvv_001–uvv_005 bleiben unverändert; uvv_006–uvv_008 **ergänzen** und **vertiefen**.
 
 ---
 
