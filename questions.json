@@ -318,6 +318,7 @@
     "id": "bgb_001",
     "category": "Bürgerliches Gesetzbuch",
     "type": "single",
+    "points": 1,
     "question": "Was regelt das Bürgerliche Gesetzbuch hauptsächlich?",
     "answers": [
       "Rechtsbeziehungen zwischen Privatpersonen",
@@ -332,6 +333,7 @@
     "id": "bgb_002",
     "category": "Bürgerliches Gesetzbuch",
     "type": "multiple",
+    "points": 2,
     "question": "Welche Rechte können für Sicherheitsmitarbeiter im Objekt besonders wichtig sein?",
     "answers": [
       "Hausrecht",
@@ -346,6 +348,7 @@
     "id": "bgb_003",
     "category": "Bürgerliches Gesetzbuch",
     "type": "praxisfall",
+    "points": 2,
     "question": "Ein Besucher weigert sich trotz Aufforderung, ein Privatgelände zu verlassen. Was ist grundsätzlich richtig?",
     "answers": [
       "Der Hausrechtsinhaber oder sein Beauftragter kann zum Verlassen auffordern.",
@@ -360,6 +363,7 @@
     "id": "bgb_004",
     "category": "Bürgerliches Gesetzbuch",
     "type": "combination",
+    "points": 2,
     "question": "Welche Aussagen zum Hausrecht sind richtig?\n\n1. Der Hausrechtsinhaber kann bestimmen, wer seine Räume betreten darf.\n2. Ein Sicherheitsmitarbeiter kann vom Hausrechtsinhaber beauftragt werden.\n3. Hausrecht erlaubt immer Freiheitsentziehung.\n4. Hausrecht ersetzt das Strafrecht vollständig.",
     "answers": [
       "Nur die Aussagen 1 und 2 sind richtig.",
@@ -374,6 +378,7 @@
     "id": "bgb_005",
     "category": "Bürgerliches Gesetzbuch",
     "type": "single",
+    "points": 1,
     "question": "Wann kann Schadensersatz nach dem BGB grundsätzlich eine Rolle spielen?",
     "answers": [
       "Wenn jemand rechtswidrig und schuldhaft einen Schaden verursacht",
@@ -388,6 +393,7 @@
     "id": "bgb_006",
     "category": "Bürgerliches Gesetzbuch",
     "type": "single",
+    "points": 2,
     "question": "Der Eigentümer einer Lagerhalle vermietet sie an ein Sicherheitsunternehmen. Das Unternehmen nutzt die Halle und lagert dort Werkzeuge; ein Mitarbeiter verwahrt den Schlüssel im Auftrag des Unternehmens. Wer hat nach den Grundbegriffen des BGB in dieser Situation in der Regel Besitz an der Halle?",
     "answers": [
       "Nur der Eigentümer, weil er Eigentümer bleibt",
@@ -402,6 +408,7 @@
     "id": "bgb_007",
     "category": "Bürgerliches Gesetzbuch",
     "type": "single",
+    "points": 1,
     "question": "Ein Sicherheitsdienst versiegelt ohne richterliche Anordnung und ohne Zustimmung des Mieters dessen Bürotür, weil offene Forderungen bestehen. Wie ist diese eigenmächtige Maßnahme am fremden Besitz in der Regel einzuordnen?",
     "answers": [
       "Zulässige Besitzstörung, weil eine Geldforderung offen ist",
@@ -416,6 +423,7 @@
     "id": "bgb_008",
     "category": "Bürgerliches Gesetzbuch",
     "type": "multiple",
+    "points": 2,
     "question": "Ein Besitzer eines Sicherheitslagers sieht, wie ein Unbekannter ihm einen Werkzeugkoffer wegnimmt. Er trifft den Täter auf frischer Tat und verfolgt ihn unmittelbar. Welche zwei Aussagen zur Selbsthilfe des Besitzers nach § 859 BGB treffen im Grundsatz zu?",
     "answers": [
       "Der Besitzer darf die Sache eigenmächtig dauerhaft für sich behalten, auch Tage später ohne weiteren Anlass",
@@ -431,6 +439,7 @@
     "id": "bgb_009",
     "category": "Bürgerliches Gesetzbuch",
     "type": "single",
+    "points": 2,
     "question": "Ein Wachmitarbeiter bewacht tagsüber ein Kaufhaus auf Anweisung des Hausbetriebs und will die Sachen nicht für sich selbst beherrschen. Wie ordnet § 860 BGB ihn in der Regel ein?",
     "answers": [
       "Als mittelbarer Besitzer",
@@ -445,6 +454,7 @@
     "id": "bgb_010",
     "category": "Bürgerliches Gesetzbuch",
     "type": "single",
+    "points": 1,
     "question": "Ein Sicherheitsunternehmen blockiert ohne Mahnung und ohne gerichtlichen Titel Fahrzeuge des Auftraggebers wegen offener Rechnungen. Welche Aussage zur Selbsthilfe nach § 229 BGB trifft im Grundsatz zu?",
     "answers": [
       "Die Maßnahme ist zulässig, weil eine Geldforderung besteht",
@@ -459,6 +469,7 @@
     "id": "bgb_011",
     "category": "Bürgerliches Gesetzbuch",
     "type": "multiple",
+    "points": 2,
     "question": "In einem Einkaufszentrum greift eine Person einen Sicherheitsmitarbeiter mit der Faust an. Der Mitarbeiter wehrt sich unmittelbar. Welche zwei Aussagen zur Notwehr nach § 227 BGB sind im Grundsatz zutreffend?",
     "answers": [
       "Notwehr ist die Verteidigung, die wegen gegenwärtiger rechtswidriger Angriffe erforderlich ist",
@@ -474,6 +485,7 @@
     "id": "bgb_012",
     "category": "Bürgerliches Gesetzbuch",
     "type": "combination",
+    "points": 2,
     "question": "Welche Aussagen zum Notstand im BGB-System sind im Grundsatz zutreffend?\n\n1. § 228 BGB (defensiver Notstand): Zur Abwendung einer gegenwärtigen Gefahr darf eine Einwirkung auf eine fremde Sache, von der die Gefahr ausgeht, vorgenommen werden; die Handlung ist nicht rechtswidrig, wenn sie angemessen ist.\n2. § 904 BGB (aggressiver Notstand): Zur Abwendung einer gegenwärtigen Gefahr darf eine Einwirkung auf eine fremde Sache vorgenommen werden, obwohl die Gefahr nicht von dieser Sache ausgeht; der Eigentümer muss die Einwirkung dulden, wenn der drohende Schaden unverhältnismäßig größer ist als der Schaden aus der Einwirkung.\n3. Notstand erlaubt ohne jede Gefahrenlage die willkürliche Zerstörung fremden Eigentums.\n4. Notstand im BGB setzt für jede Maßnahme stets eine vorherige richterliche Genehmigung voraus.",
     "answers": [
       "Nur die Aussagen 1 und 2 sind richtig.",
@@ -489,6 +501,7 @@
     "id": "bgb_013",
     "category": "Bürgerliches Gesetzbuch",
     "type": "single",
+    "points": 1,
     "question": "Ein 17-jähriger Auszubildender im Objektschutz beschädigt im Dienst ein teures Gerät des Auftraggebers, weil er gegen eine klare Anweisung verstoßen hat. Der Auftraggeber verlangt Schadensersatz vom Auszubildenden persönlich. Welche Aussage trifft im Grundsatz zu?",
     "answers": [
       "Minderjährige haften immer wie voll Geschäftsfähige, unabhängig vom Alter",
