@@ -243,6 +243,7 @@
     "id": "ds_001",
     "category": "Datenschutzrecht",
     "type": "multiple",
+    "points": 1,
     "question": "Welcher Grundsatz gehört zum Datenschutz?",
     "answers": [
       "Datenminimierung",
@@ -257,6 +258,7 @@
     "id": "ds_002",
     "category": "Datenschutzrecht",
     "type": "multiple",
+    "points": 1,
     "question": "Was sind personenbezogene Daten?",
     "answers": [
       "Informationen, die sich auf eine identifizierte oder identifizierbare Person beziehen",
@@ -271,6 +273,7 @@
     "id": "ds_003",
     "category": "Datenschutzrecht",
     "type": "multiple",
+    "points": 2,
     "question": "Was ist bei Videoüberwachung im Sicherheitsdienst besonders wichtig?",
     "answers": [
       "Sie braucht eine rechtliche Grundlage oder ein berechtigtes Interesse.",
@@ -285,6 +288,7 @@
     "id": "ds_004",
     "category": "Datenschutzrecht",
     "type": "multiple",
+    "points": 2,
     "question": "Ein Besucher fragt, welche Daten über ihn gespeichert wurden. Was ist grundsätzlich richtig?",
     "answers": [
       "Betroffene Personen können Auskunftsrechte haben.",
@@ -299,6 +303,7 @@
     "id": "ds_005",
     "category": "Datenschutzrecht",
     "type": "multiple",
+    "points": 2,
     "question": "Welche Handlung ist im Umgang mit personenbezogenen Daten problematisch?",
     "answers": [
       "Besucherdaten offen herumliegen lassen",
