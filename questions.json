@@ -123,6 +123,7 @@
     "id": "gewo_001",
     "category": "Gewerberecht",
     "type": "single",
+    "points": 1,
     "question": "Welche Vorschrift ist für das Bewachungsgewerbe besonders wichtig?",
     "answers": [
       "§34a GewO",
@@ -137,6 +138,7 @@
     "id": "gewo_002",
     "category": "Gewerberecht",
     "type": "multiple",
+    "points": 1,
     "question": "Was ist für das gewerbsmäßige Bewachen von Leben oder Eigentum fremder Personen grundsätzlich erforderlich?",
     "answers": [
       "Eine Erlaubnis der zuständigen Behörde",
@@ -151,6 +153,7 @@
     "id": "gewo_003",
     "category": "Gewerberecht",
     "type": "multiple",
+    "points": 1,
     "question": "Welche Voraussetzung ist für die Tätigkeit im Bewachungsgewerbe besonders relevant?",
     "answers": [
       "Zuverlässigkeit",
@@ -165,6 +168,7 @@
     "id": "gewo_004",
     "category": "Gewerberecht",
     "type": "multiple",
+    "points": 2,
     "question": "Welche Tätigkeit erfordert typischerweise eine Sachkundeprüfung nach §34a GewO?",
     "answers": [
       "Schutz vor Ladendieben",
@@ -179,6 +183,7 @@
     "id": "gewo_005",
     "category": "Gewerberecht",
     "type": "multiple",
+    "points": 1,
     "question": "Was kann die Behörde bei fehlender Zuverlässigkeit im Bewachungsgewerbe tun?",
     "answers": [
       "Die Erlaubnis versagen",
@@ -193,6 +198,7 @@
   "id": "v23_gewo_006",
   "category": "Gewerberecht",
   "type": "single",
+  "points": 1,
   "question": "Welche Aussage zur Sachkundeprüfung nach § 34a GewO ist richtig?",
   "answers": [
     "Sie kann für bestimmte Tätigkeiten im Bewachungsgewerbe gesetzlich erforderlich sein.",
@@ -207,6 +213,7 @@
   "id": "v23_gewo_007",
   "category": "Gewerberecht",
   "type": "multiple",
+  "points": 2,
   "question": "Welche Aussagen zur Zuverlässigkeit im Bewachungsgewerbe sind richtig?",
   "answers": [
     "Die Zuverlässigkeit ist eine wichtige Voraussetzung im Bewachungsgewerbe.",
@@ -221,6 +228,7 @@
   "id": "v23_gewo_008",
   "category": "Gewerberecht",
   "type": "multiple",
+  "points": 2,
   "question": "Ein Sicherheitsmitarbeiter soll im Eingangsbereich einer Diskothek eingesetzt werden. Welche Aussagen sind grundsätzlich richtig?",
   "answers": [
     "Für bestimmte Tätigkeiten im Einlassbereich von gastgewerblichen Diskotheken kann die Sachkundeprüfung erforderlich sein.",
