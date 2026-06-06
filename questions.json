@@ -980,6 +980,7 @@
     "id": "uvv_001",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
+    "points": 1,
     "question": "Wozu dienen Dienstanweisungen im Wach- und Sicherheitsdienst?",
     "answers": [
       "Sie regeln das Verhalten des Wach- und Sicherungspersonals.",
@@ -994,6 +995,7 @@
     "id": "uvv_002",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "multiple",
+    "points": 2,
     "question": "Was ist bei Dienstantritt besonders wichtig?",
     "answers": [
       "Dienstanweisung kennen",
@@ -1008,6 +1010,7 @@
     "id": "uvv_003",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "praxisfall",
+    "points": 2,
     "question": "Während eines Rundgangs entdeckt ein Sicherheitsmitarbeiter eine defekte Notbeleuchtung. Was ist richtig?",
     "answers": [
       "Den Mangel melden und dokumentieren",
@@ -1022,6 +1025,7 @@
     "id": "uvv_004",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "combination",
+    "points": 2,
     "question": "Welche Aussagen zum Eigenschutz sind richtig?\n\n1. Eigenschutz hat im Sicherheitsdienst hohe Priorität.\n2. Unnötige Eigengefährdung ist zu vermeiden.\n3. Sicherheitsmitarbeiter müssen sich immer körperlich durchsetzen.\n4. Unterstützung darf niemals angefordert werden.",
     "answers": [
       "Nur die Aussagen 1 und 2 sind richtig.",
@@ -1036,6 +1040,7 @@
     "id": "uvv_005",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
+    "points": 1,
     "question": "Welche Aussage zu Schreckschuss-, Reizstoff- oder Signalwaffen im Bewachungsdienst ist richtig?",
     "answers": [
       "Sie können gefährliche Gegenreaktionen provozieren.",
@@ -1050,6 +1055,7 @@
     "id": "uvv_006",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
+    "points": 1,
     "question": "Ein Wach- und Sicherheitsdienst übernimmt einen neuen Objektauftrag. Die Geschäftsführung fragt, welche Pflichten nach der DGUV Vorschrift 23 (Regelwerk für Wach- und Sicherungsdienste) im Grundsatz gelten. Welche Aussage trifft zu?",
     "answers": [
       "Nur die Wachperson ist für Arbeitssicherheit verantwortlich; der Unternehmer hat keine Pflichten",
@@ -1064,6 +1070,7 @@
     "id": "uvv_007",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "multiple",
+    "points": 2,
     "question": "Ein Schichtleiter bemerkt vor Dienstbeginn, dass ein Mitarbeiter nach einer Feier noch müde wirkt und leicht nach Alkohol riecht. Er weist den Mitarbeiter auf die Regeln hin. Welche zwei Aussagen zu Dienstbeginn, Dienstfähigkeit und berauschenden Mitteln nach DGUV Vorschrift 23 sind im Grundsatz zutreffend?",
     "answers": [
       "Vor Dienstbeginn ist eine Einweisung zu Dienstanweisung, Einsatzort, Kommunikation, Notfall und objektbezogenen Besonderheiten erforderlich",
@@ -1079,6 +1086,7 @@
     "id": "uvv_008",
     "category": "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
     "type": "single",
+    "points": 2,
     "question": "Während eines Nachtdienstes hört ein Sicherheitsmitarbeiter einen lauten Knall, sieht Rauch aus einem Technikraum und bemerkt ausgeschaltete Flurbeleuchtung. Es besteht Brandverdacht, die Lage ist unübersichtlich. Welche Verhaltensweise entspricht im Grundsatz den Anforderungen an Eigenschutz, Gefahrenmeldung und besondere Vorkommnisse?",
     "answers": [
       "Sofort allein in den Rauchbereich eindringen, um die Ursache ohne Schutzausrüstung zu klären",
