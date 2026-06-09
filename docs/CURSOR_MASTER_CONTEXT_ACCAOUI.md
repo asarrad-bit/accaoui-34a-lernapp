@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v24.5
+Stand: v24.6b
 Projekt: Accaoui §34a Lern-App
 Lokaler Pfad: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Branch: `main`
@@ -133,8 +133,9 @@ Aktueller funktionaler Stand:
 9. **`points`-Felder vollständig** für alle 9 Sachgebiete (v24.3a–i); globaler Check **82/120/38** (v24.3j)
 10. **Vollsimulation** nutzt feste **82-Core-Fragen** (v24.4b)
 11. **Teilpunkte-Logik** im Prüfungsmodus eingebaut (v24.5)
+12. **Wiederholungslogik offener Prüfungsfragen** + **„Prüfung jetzt abgeben“** (v24.6b, Commit `a169595`)
 
-### Entwicklungsstand Prüfungssimulation (v24.5)
+### Entwicklungsstand Prüfungssimulation (v24.6b)
 
 | Version | Inhalt | Status |
 |---|---|---|
@@ -142,8 +143,8 @@ Aktueller funktionaler Stand:
 | v24.3j | Globaler Check 82 Core / 120 Punkte / 38 Zweipunktfragen | **erledigt** |
 | v24.4b | Vollsimulation mit festen 82-Core-IDs | **erledigt** |
 | v24.5 | Teilpunkte für Mehrfachantworten im Prüfungsmodus | **erledigt** |
+| v24.6b | Gefilterte Fokusliste offener Fragen (34→45→56→60); frühzeitige Abgabe | **erledigt** |
 | v24.6 | Browser-Endtest Vollsimulation mit Teilbewertung | **offen** |
-| v24.6b | Wiederholungslogik: nur gefilterte Fragen (z. B. 34→45→56→60) | **offen** |
 | v24.6x | Prüfungsanalyse nach Themen: UI-Kontraste/Karten | **offen** |
 
 ### UI-Hinweis Prüfungsanalyse
@@ -386,9 +387,9 @@ Cursor darf nicht:
 
 ### v24.6 – Prüfungssimulation testen und nacharbeiten
 
-1. Browser-Endtest 82/120 mit Teilbewertung (v24.6)
-2. Wiederholungslogik korrigieren (v24.6b): nur gefilterte Fragen, z. B. 34→45→56→60, nicht 34→35→36
-3. Prüfungsanalyse UI verbessern (v24.6x)
+1. ~~Wiederholungslogik korrigieren (v24.6b)~~ – **erledigt**: gefilterte Fokusliste (34→45→56→60), Button „Prüfung jetzt abgeben“ (`a169595`)
+2. Browser-Endtest 82/120 mit Teilbewertung (v24.6) – **offen**
+3. Prüfungsanalyse UI verbessern (v24.6x) – **offen**
 
 ### v25 – Schriftliche Fragenbank ausbauen
 
@@ -420,15 +421,14 @@ Cursor darf nicht:
 
 Als Nächstes (Code-Tasks):
 
-1. **v24.6b** – Wiederholungslogik nach Prüfung: eigene gefilterte Fragenliste für unbeantwortete/falsche Fragen
+1. **v24.6x** – Prüfungsanalyse nach Themen optisch überarbeiten
 2. **v24.6** – Browser-Endtest Vollsimulation 82/120 mit Teilbewertung
-3. **v24.6x** – Prüfungsanalyse nach Themen optisch überarbeiten
 
-Fehlerbeschreibung v24.6b:
+v24.6b (erledigt, Commit `a169595`):
 
-- Wenn nur Fragen **34, 45, 56, 60** unbeantwortet sind, darf die Wiederholungsrunde **nur diese vier** enthalten.
-- **Falsch:** 34 → 35 → 36 (volles Prüfungsset)
-- **Richtig:** 34 → 45 → 56 → 60 (gefilterte Liste in fester Reihenfolge)
+- Offene Prüfungsfragen werden als **gefilterte Liste** abgearbeitet (z. B. **34 → 45 → 56 → 60**, nicht 34 → 35 → 36).
+- **„Prüfung jetzt abgeben“** jederzeit verfügbar; im Fokusmodus sofortiges Ergebnis, sonst Warnung mit „Trotzdem abgeben“.
+- Offene Fragen bei Abgabe werden als **unbeantwortet** gezählt (0 Punkte).
 
 ## 15. Wenn ein neuer Chat beginnt
 

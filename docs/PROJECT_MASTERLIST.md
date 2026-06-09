@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v24.5
+Stand: v24.6b
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -178,6 +178,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v24.3x | Teilpunkte-Bewertung ab 01.07.2025 auditiert (`EXAM_SIMULATION_AUDIT.md` §10, `EXAM_POINTS_PLAN.md` §10) – **Dokumentation** |
 | v24.4b | Vollsimulation nutzt feste **82-Core-Fragen** (`EXAM_CORE_QUESTION_IDS_V244` in `app.js`) |
 | v24.5 | Teilpunkte-Logik für Mehrfachantworten im Prüfungsmodus eingebaut (+1 pro richtigem Kreuz) |
+| v24.6b | Wiederholungslogik offener Prüfungsfragen: gefilterte Fokusliste (z. B. 34→45→56→60); Button **„Prüfung jetzt abgeben“** (Commit `a169595`) |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -306,9 +307,9 @@ Späterer UI-Task (kein Sofort-Code):
 
 ---
 
-## 8.2 Prüfungssimulation 82/120 (Stand v24.5)
+## 8.2 Prüfungssimulation 82/120 (Stand v24.6b)
 
-| Aspekt | Stand v24.5 |
+| Aspekt | Stand v24.6b |
 |--------|-------------|
 | Dokument | `docs/EXAM_SIMULATION_AUDIT.md` – **vorhanden** |
 | Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht) |
@@ -318,13 +319,13 @@ Späterer UI-Task (kein Sofort-Code):
 | Punkteplan | `docs/EXAM_POINTS_PLAN.md` – **vorhanden** und in JSON umgesetzt |
 | Core-ID-Plan | `docs/EXAM_CORE_SELECTION_PLAN.md` – **vorhanden** und in App umgesetzt (Option A) |
 | Teilpunkte-Audit | **v24.3x** dokumentiert; **v24.5** Code umgesetzt |
-| App-Status | Timer (120 min), Bestehen (50 %), Core-Auswahl und Teilpunkte im Prüfungsmodus **vorhanden** |
-| Browser-Endtest | **wichtig** – Vollsimulation 82/120 mit Teilbewertung manuell prüfen |
+| App-Status | Timer (120 min), Bestehen (50 %), Core-Auswahl, Teilpunkte und **Fokusnavigation offener Fragen** (v24.6b) **vorhanden** |
+| Frühzeitige Abgabe | Button **„Prüfung jetzt abgeben“** – normal: Warnung bei offenen Fragen; Fokusmodus: direktes Ergebnis (offene = unbeantwortet) |
+| Browser-Endtest | **wichtig** – Vollsimulation 82/120 mit Teilbewertung manuell prüfen (v24.6) |
 
 ### Empfohlene Folge-Tasks
 
 - **v24.6** – Vollsimulation 82/120 mit Teilbewertung im Browser testen und dokumentieren
-- **v24.6b** – Wiederholungslogik nach Prüfung korrigieren (siehe §8.4)
 - **v24.6x** – Prüfungsanalyse nach Themen optisch überarbeiten (siehe §8.1 UI-Hinweis)
 
 ---
@@ -351,19 +352,23 @@ Späterer UI-Task (kein Sofort-Code):
 | **v24.4b** | Core-Auswahl in App **erledigt** |
 | **v24.5** | Teilpunkte-Logik **erledigt** |
 | **v24.6** | Vollsimulation 82/120 **mit Teilbewertung** im Browser testen |
-| **v24.6b** | Wiederholungslogik korrigieren – siehe §8.4 |
+| **v24.6b** | Wiederholungslogik offener Fragen + frühzeitige Abgabe – **erledigt** (siehe §8.4) |
+| **v24.6x** | Prüfungsanalyse nach Themen optisch überarbeiten |
 
 ---
 
-## 8.4 Wiederholungslogik nach Prüfung (offen: v24.6b)
+## 8.4 Wiederholungslogik nach Prüfung (erledigt: v24.6b)
 
 | Aspekt | Stand |
 |--------|--------|
-| Problem | Wiederholungsrunden für unbeantwortete/falsche Fragen dürfen **nicht** das volle Prüfungsset durchlaufen |
-| Beispiel | Nur Fragen **34, 45, 56, 60** unbeantwortet → Wiederholungsrunde nur diese vier Fragen |
-| Falsch | Nach Frage 34 weiter mit **35, 36, 37** aus dem normalen Prüfungsset |
-| Richtig | **34 → 45 → 56 → 60** (eigene gefilterte Fragenliste in fester Reihenfolge) |
-| Status | **offen** – Task **v24.6b** |
+| Problem (behoben) | Wiederholungsrunden für unbeantwortete Fragen dürfen **nicht** das volle Prüfungsset durchlaufen |
+| Beispiel | Nur Fragen **34, 45, 56, 60** unbeantwortet → Nachbearbeitung nur diese vier Fragen |
+| Falsch (vorher) | Nach Frage 34 weiter mit **35, 36, 37** aus dem normalen Prüfungsset |
+| Richtig (jetzt) | **34 → 45 → 56 → 60** – gefilterte Indexliste `examFocusQuestionIndexes` in `app.js` |
+| Frühzeitige Abgabe | **„Prüfung jetzt abgeben“** jederzeit sichtbar; im Fokusmodus direkt `finishExamMode()`, sonst Warnung mit „Trotzdem abgeben“ |
+| Offene bei Abgabe | Unbeantwortete Fragen werden in der Auswertung als **unbeantwortet** gezählt (0 Punkte) |
+| Commit | `a169595` – v24.6b fix unanswered exam navigation and early submit |
+| Status | **erledigt** – Task **v24.6b** |
 
 ---
 
@@ -383,7 +388,7 @@ python tools/preflight.py
 
 ---
 
-## 10. Planungsdokumente (Stand v24.5)
+## 10. Planungsdokumente (Stand v24.6b)
 
 | Dokument | Status |
 |----------|--------|
@@ -414,7 +419,7 @@ python tools/preflight.py
 | Simulation B | **vorhanden** (Prüfungsbogen B) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Vollsimulation nutzt **82 Core-Fragen** (v24.4b) |
-| Prüfungssimulation 82/120 | **umgesetzt** (Core-IDs, `points`, Teilpunkte v24.5); **Browser-Endtest** und Wiederholungslogik (v24.6b) offen |
+| Prüfungssimulation 82/120 | **umgesetzt** (Core-IDs, `points`, Teilpunkte v24.5, Fokusnavigation v24.6b); **Browser-Endtest** (v24.6) offen |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
 | UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
 
@@ -450,19 +455,18 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-1. **v24.6b – Wiederholungslogik nach Prüfung** – gefilterte Fragenliste für unbeantwortete/falsche Fragen; siehe §8.4
+1. **v24.6x – Prüfungsanalyse UI** – stärkere Kontraste, klarere Karten, bessere Buttons; siehe §8.1
 2. **v24.6 – Browser-Endtest** – Vollsimulation 82/120 mit Teilbewertung manuell prüfen
-3. **v24.6x – Prüfungsanalyse UI** – stärkere Kontraste, klarere Karten, bessere Buttons; siehe §8.1
-4. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
-5. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**
-6. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
-7. **Später v24 Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C
-8. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
-9. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
-10. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
-11. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`
+3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
+4. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**
+5. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
+6. **Später v24 Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C
+7. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
+8. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
+9. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
+10. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`
 
-**Erledigt:** Fragenbank-Ausbau **86 Fragen** (v23.5.48); `points` vollständig (v24.3a–i/j); Core-Auswahl (v24.4b); Teilpunkte-Code (v24.5).
+**Erledigt:** Fragenbank-Ausbau **86 Fragen** (v23.5.48); `points` vollständig (v24.3a–i/j); Core-Auswahl (v24.4b); Teilpunkte-Code (v24.5); Fokusnavigation offener Fragen + frühzeitige Abgabe (v24.6b, `a169595`).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
