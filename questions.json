@@ -1120,6 +1120,7 @@
     "id": "technik_001",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "single",
+    "points": 1,
     "question": "Was gehört zu den Grundzügen der Sicherheitstechnik?",
     "answers": [
       "Einbruchmeldeanlagen",
@@ -1134,6 +1135,7 @@
     "id": "technik_002",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "multiple",
+    "points": 2,
     "question": "Was ist bei technischen Sicherheitseinrichtungen besonders wichtig?",
     "answers": [
       "Regelmäßige Funktionsprüfung",
@@ -1148,6 +1150,7 @@
     "id": "technik_003",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "praxisfall",
+    "points": 2,
     "question": "Eine Brandmeldeanlage löst Alarm aus, aber es ist zunächst kein Rauch sichtbar. Was ist richtig?",
     "answers": [
       "Den Alarm ernst nehmen und nach Dienstanweisung handeln",
@@ -1162,6 +1165,7 @@
     "id": "technik_004",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "combination",
+    "points": 2,
     "question": "Welche Aussagen zur Zutrittskontrolle sind richtig?\n\n1. Sie kann unbefugten Zutritt verhindern.\n2. Ausweise oder Berechtigungen können geprüft werden.\n3. Sie ersetzt alle menschlichen Kontrollen vollständig.\n4. Sie darf niemals dokumentiert werden.",
     "answers": [
       "Nur die Aussagen 1 und 2 sind richtig.",
@@ -1176,6 +1180,7 @@
     "id": "technik_005",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "single",
+    "points": 1,
     "question": "Welche Aufgabe kann eine Einbruchmeldeanlage erfüllen?",
     "answers": [
       "Einbruchversuche erkennen oder melden",
@@ -1190,6 +1195,7 @@
     "id": "technik_006",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "single",
+    "points": 1,
     "question": "Gegen 2:00 Uhr meldet die Einbruchmeldeanlage (EMA) einen Alarm in einem abgesperrten Lagerbereich. Der Sicherheitsmitarbeiter sieht auf dem Monitor zunächst niemanden. Welche Verhaltensweise ist im Grundsatz richtig?",
     "answers": [
       "Den Alarm ignorieren, weil niemand sichtbar ist – vermutlich Fehlalarm",
@@ -1204,6 +1210,7 @@
     "id": "technik_007",
     "category": "Grundzüge der Sicherheitstechnik",
     "type": "multiple",
+    "points": 2,
     "question": "Ein Einkaufszentrum nutzt Videoüberwachung und ein elektronisches Zutrittskontrollsystem für Nebenräume. Welche zwei Aussagen zu technischer Sicherung im Sicherheitsdienst sind im Grundsatz zutreffend?",
     "answers": [
       "Videoüberwachung darf ohne Kennzeichnung und ohne rechtliche Grundlage beliebig in Umkleiden aufgenommen werden",
