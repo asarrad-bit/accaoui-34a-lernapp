@@ -2574,6 +2574,24 @@ function isExamAnswerCorrect(question, selectedAnswersForQuestion) {
   return selectedSorted === correctSorted;
 }
 
+function getExamQuestionReachedPoints(question, selectedAnswersForQuestion) {
+  if (!question || !Array.isArray(selectedAnswersForQuestion) || selectedAnswersForQuestion.length === 0) {
+    return 0;
+  }
+
+  const correctIndexes = new Set(question.correct);
+  const selectedUnique = [...new Set(selectedAnswersForQuestion)];
+  let reached = 0;
+
+  selectedUnique.forEach(index => {
+    if (correctIndexes.has(index)) {
+      reached += 1;
+    }
+  });
+
+  return Math.min(reached, getQuestionPoints(question));
+}
+
 function getQuestionPoints(question) {
   if (!question) {
     return DEFAULT_QUESTION_POINTS;
@@ -2605,14 +2623,7 @@ function getExamReachedPoints() {
 
   examQuestions.forEach((question, index) => {
     const selected = examAnswers[index] || [];
-
-    if (selected.length === 0) {
-      return;
-    }
-
-    if (isExamAnswerCorrect(question, selected)) {
-      reachedPoints += getQuestionPoints(question);
-    }
+    reachedPoints += getExamQuestionReachedPoints(question, selected);
   });
 
   return reachedPoints;
