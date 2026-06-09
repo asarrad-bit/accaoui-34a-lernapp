@@ -714,6 +714,7 @@
     "id": "umgang_001",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Was ist bei einer verbalen Konfliktsituation besonders wichtig?",
     "answers": [
       "Ruhige Ansprache",
@@ -728,6 +729,7 @@
     "id": "umgang_002",
     "category": "Umgang mit Menschen",
     "type": "multiple",
+    "points": 1,
     "question": "Welche Aussagen beschreiben professionelles Verhalten im Sicherheitsdienst?",
     "answers": [
       "Sachlich bleiben und klare Grenzen setzen",
@@ -742,6 +744,7 @@
     "id": "umgang_003",
     "category": "Umgang mit Menschen",
     "type": "praxisfall",
+    "points": 1,
     "question": "Eine alkoholisierte Person wird laut und nähert sich aggressiv. Was ist richtig?",
     "answers": [
       "Sicherheitsabstand halten",
@@ -756,6 +759,7 @@
     "id": "umgang_004",
     "category": "Umgang mit Menschen",
     "type": "combination",
+    "points": 1,
     "question": "Welche Aussagen zur Deeskalation sind richtig?\n\n1. Ruhige Stimme kann Konflikte entschärfen.\n2. Ausreichender Abstand kann Sicherheit schaffen.\n3. Provokation ist ein bewährtes Mittel zur Beruhigung.\n4. Bloßstellung hilft immer bei Konflikten.",
     "answers": [
       "Nur die Aussagen 1 und 2 sind richtig.",
@@ -770,6 +774,7 @@
     "id": "umgang_005",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Was gehört zu guter Kommunikation im Sicherheitsdienst?",
     "answers": [
       "Klare, kurze und respektvolle Sprache",
@@ -784,6 +789,7 @@
     "id": "umgang_006",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "An einem Objekteingang schreit ein Besucher, schlägt mit der Faust auf den Tresen und fordert sofortigen Zutritt ohne Ausweis. Welche erste Reaktion unterstützt Deeskalation am ehesten?",
     "answers": [
       "Mit gleicher Lautstärke antworten und die Person vor anderen bloßstellen",
@@ -798,6 +804,7 @@
     "id": "umgang_007",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Ein Lieferant ohne gültige Zutrittsfreigabe besteht auf sofortigen Zugang zum Lager. Welche professionelle Kommunikation ist im Grundsatz angemessen?",
     "answers": [
       "Du kommst hier nicht rein, verzieh dich.",
@@ -812,6 +819,7 @@
     "id": "umgang_008",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Eine Besucherin beschwert sich aufgeregt über lange Wartezeiten an der Pforte. Sie unterbricht häufig. Welche Verhaltensweise entspricht aktivem Zuhören und ruhiger Gesprächsführung?",
     "answers": [
       "Sofort unterbrechen und die Beschwerde als „unberechtigt“ abtun",
@@ -826,6 +834,7 @@
     "id": "umgang_009",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Zwei Personen streiten lautstark in einem Flur; eine droht mit der Faust. Andere Mitarbeiter sind in der Nähe. Welche Kombination aus Konfliktvermeidung und Eigenschutz ist im Grundsatz richtig?",
     "answers": [
       "Unmittelbar zwischen die Streitenden springen und selbst Faustschläge riskieren",
@@ -840,6 +849,7 @@
     "id": "umgang_010",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Nach einer Firmenfeier taumelt ein Gast im Foyer, spricht laut und blockiert den Ausgang. Welche Verhaltensweise ist im Grundsatz angemessen?",
     "answers": [
       "Den Gast verspotten, damit er schneller geht",
@@ -854,6 +864,7 @@
     "id": "umgang_011",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Nach einem Konzert strömen Hunderte Besucher gleichzeitig auf einen Ausgang zu. Es entsteht Gedränge. Welche Maßnahme ist im Grundsatz sinnvoll?",
     "answers": [
       "Einzelne Besucher körperlich zurückdrängen, ohne Absprache",
@@ -868,6 +879,7 @@
     "id": "umgang_012",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Ein internationaler Besucher versteht die Sicherheitsanweisung nur teilweise und reagiert verunsichert. Welches Verhalten ist interkulturell und dienstlich angemessen?",
     "answers": [
       "Lauter schreien, bis die Person „versteht“",
@@ -882,6 +894,7 @@
     "id": "umgang_013",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Ein Kollege sagt im Funk: „Die Gruppe da drüben sieht verdächtig aus – bestimmt wieder Ärger.“ Wie sollten Sie professionell reagieren?",
     "answers": [
       "Zustimmen und die Gruppe ohne Anlass kontrollieren",
@@ -896,6 +909,7 @@
     "id": "umgang_014",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Ein Besucher beleidigt Sie persönlich nach einer Zutrittsverweigerung. Sie spüren starken Ärger. Was ist im Sinne von Selbstkontrolle und Stressverhalten richtig?",
     "answers": [
       "Mit gleichen Beleidigungen antworten",
@@ -910,6 +924,7 @@
     "id": "umgang_015",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Eine aufgebrachte Person tritt beim Gespräch sehr nah an Sie heran. Welche Körpersprache und Distanz sind im Grundsatz angemessen?",
     "answers": [
       "Nähe zulassen und selbst die Stirn an die der Person legen",
@@ -924,6 +939,7 @@
     "id": "umgang_016",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Ein Mieter beschwert sich schriftlich und mündlich über „unhöfliches“ Verhalten eines Sicherheitsmitarbeiters. Welches Vorgehen entspricht Beschwerdemanagement im Grundsatz?",
     "answers": [
       "Beschwerde ignorieren, weil Sicherheit wichtiger ist",
@@ -938,6 +954,7 @@
     "id": "umgang_017",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Jugendliche filmen Sie und rufen: „Mach was, Security!“ um eine Reaktion zu bekommen. Welche Reaktion ist bei Provokation am ehesten professionell?",
     "answers": [
       "In die Kamera schreien und drohen",
@@ -952,6 +969,7 @@
     "id": "umgang_018",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Sie beobachten eine Person, die wiederholt Fotos von Sicherheitsbereichen macht und auf Nachfrage ausweichend reagiert. Die Schicht endet in 10 Minuten. Was ist bei Teamkommunikation richtig?",
     "answers": [
       "Nichts sagen – ist Sache der nächsten Schicht",
@@ -966,6 +984,7 @@
     "id": "umgang_019",
     "category": "Umgang mit Menschen",
     "type": "single",
+    "points": 1,
     "question": "Nach einer verbalen Auseinandersetzung mit einem Besucher (Beleidigungen, keine Körperverletzung) ist der Vorfall beendet. Welche Dokumentation ist im Grundsatz sinnvoll?",
     "answers": [
       "Keine Notiz – war ja nichts Schlimmes",
