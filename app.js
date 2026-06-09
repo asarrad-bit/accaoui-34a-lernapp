@@ -566,7 +566,7 @@ function startLearningSession(questions, title, mode) {
   currentMode = mode || "learning";
   currentTrainingTitle = title || "Lernmodus";
 
-  currentQuestions = [...questions];
+  currentQuestions = shuffleArray([...questions]);
   currentQuestionIndex = 0;
   selectedAnswers = [];
 
