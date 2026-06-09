@@ -1029,7 +1029,7 @@ function flipFlashcard() {
     button.disabled = true;
     button.innerText = "Antwort angezeigt";
   }
-} 
+}
 
 // Duplicate simple mark functions removed here in favor of the
 // v21.5 progress-tracking implementations later in this file.
@@ -1871,7 +1871,7 @@ function finishExamMode() {
 
     </section>
   `;
-} 
+}
 
 /* =========================
    PRÜFUNGSMODUS
@@ -1879,6 +1879,18 @@ function finishExamMode() {
 
 const EXAM_SHORT_QUESTION_LIMIT_V20 = EXAM_QUESTION_LIMIT;
 const EXAM_FULL_QUESTION_LIMIT_V20 = 82;
+
+const EXAM_CORE_QUESTION_IDS_V244 = [
+  "roso_001", "roso_002", "roso_003", "roso_005", "v23_roso_006", "v23_roso_007", "v23_roso_008",
+  "gewo_002", "gewo_004", "v23_gewo_006", "v23_gewo_007", "v23_gewo_008",
+  "ds_001", "ds_002", "ds_003", "ds_004", "ds_005",
+  "bgb_001", "bgb_002", "bgb_003", "bgb_004", "bgb_005", "bgb_006", "bgb_007", "bgb_008", "bgb_009", "bgb_010", "bgb_011", "bgb_012", "bgb_013",
+  "straf_001", "straf_002", "straf_003", "straf_004", "straf_005", "straf_006", "straf_007", "straf_008", "straf_009", "straf_010", "straf_011", "straf_012", "straf_013",
+  "uvv_001", "uvv_002", "uvv_003", "uvv_004", "uvv_005", "uvv_006", "uvv_007", "uvv_008",
+  "waffen_001", "waffen_002", "waffen_003", "waffen_004", "waffen_005",
+  "umgang_001", "umgang_002", "umgang_003", "umgang_004", "umgang_005", "umgang_006", "umgang_007", "umgang_008", "umgang_009", "umgang_010", "umgang_011", "umgang_012", "umgang_013", "umgang_014", "umgang_015", "umgang_016", "umgang_017", "umgang_018", "umgang_019",
+  "technik_001", "technik_002", "technik_003", "technik_004", "technik_005", "technik_006", "technik_007"
+];
 
 let currentExamLimit = EXAM_SHORT_QUESTION_LIMIT_V20;
 let currentExamTitle = "§34a Kurzprüfung";
@@ -1966,10 +1978,45 @@ function startExamMode(questionLimit, examTitle, examType) {
   currentExamTitle = examTitle || "§34a Kurzprüfung";
   currentExamType = examType || "short";
 
-  examQuestions = shuffleArray([...allQuestions]).slice(
-    0,
-    Math.min(currentExamLimit, allQuestions.length)
-  );
+  if (currentExamType === "full") {
+    const questionById = new Map(
+      allQuestions.map(question => [String(question.id), question])
+    );
+
+    const missingIds = [];
+    const coreQuestions = [];
+
+    EXAM_CORE_QUESTION_IDS_V244.forEach(coreId => {
+      const question = questionById.get(coreId);
+
+      if (!question) {
+        missingIds.push(coreId);
+        return;
+      }
+
+      coreQuestions.push(question);
+    });
+
+    if (missingIds.length > 0) {
+      console.error(
+        "Vollsimulation: Core-Fragen fehlen in der Fragenbank:",
+        missingIds
+      );
+      alert(
+        "Die Vollsimulation kann nicht gestartet werden. Fehlende Core-Fragen: " +
+          missingIds.join(", ")
+      );
+      return;
+    }
+
+    examQuestions = shuffleArray(coreQuestions);
+    currentExamLimit = examQuestions.length;
+  } else {
+    examQuestions = shuffleArray([...allQuestions]).slice(
+      0,
+      Math.min(currentExamLimit, allQuestions.length)
+    );
+  }
 
   examQuestionIndex = 0;
   examAnswers = {};
@@ -2896,7 +2943,7 @@ function startMistakeTraining() {
     "Fehlertraining aus der Prüfung",
     "last-exam-mistakes"
   );
-} 
+}
 
 
 /* =========================
@@ -3265,7 +3312,7 @@ function toggleTopicDetails(detailsId) {
       ? "Details ausblenden ▲"
       : "Details anzeigen ▼";
   }
-} 
+}
 
 function resetExamHistory() {
   showConfirmModal(
@@ -3624,7 +3671,7 @@ function getTotalFlashcardProgress() {
     unknown
   };
 }
- 
+
 /* Überschreibt die bisherige Gewusst-Funktion */
 function markFlashcardKnown() {
   const question = flashcardQuestions[flashcardIndex];
