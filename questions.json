@@ -1200,6 +1200,7 @@
     "id": "waffen_001",
     "category": "Umgang mit Waffen",
     "type": "single",
+    "points": 1,
     "question": "Welche Aussage zu Anscheinswaffen ist richtig?",
     "answers": [
       "Anscheinswaffen können für Dritte wie echte Waffen wirken.",
@@ -1214,6 +1215,7 @@
     "id": "waffen_002",
     "category": "Umgang mit Waffen",
     "type": "multiple",
+    "points": 2,
     "question": "Was ist im Waffenrecht für Sicherheitsmitarbeiter besonders wichtig?",
     "answers": [
       "Besitz und Führen rechtlich unterscheiden",
@@ -1228,6 +1230,7 @@
     "id": "waffen_003",
     "category": "Umgang mit Waffen",
     "type": "praxisfall",
+    "points": 2,
     "question": "Ein Sicherheitsmitarbeiter möchte im Dienst eine erlaubnispflichtige Schusswaffe führen. Was ist grundsätzlich richtig?",
     "answers": [
       "Er benötigt eine passende waffenrechtliche Erlaubnis.",
@@ -1242,6 +1245,7 @@
     "id": "waffen_004",
     "category": "Umgang mit Waffen",
     "type": "combination",
+    "points": 2,
     "question": "Welche Aussagen zum kleinen Waffenschein sind richtig?\n\n1. Er betrifft das Führen bestimmter Schreckschuss-, Reizstoff- und Signalwaffen.\n2. Er erlaubt automatisch das Führen scharfer Schusswaffen.\n3. Er ersetzt nicht alle sonstigen waffenrechtlichen Grenzen.\n4. Er macht jede Verwendung im Bewachungsdienst automatisch zulässig.",
     "answers": [
       "Nur die Aussagen 1 und 3 sind richtig.",
@@ -1256,6 +1260,7 @@
     "id": "waffen_005",
     "category": "Umgang mit Waffen",
     "type": "single",
+    "points": 1,
     "question": "Welche Aussage zum Führen von Waffen ist richtig?",
     "answers": [
       "Nicht jede frei verkäufliche Waffe darf überall geführt werden.",
