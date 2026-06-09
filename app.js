@@ -1642,7 +1642,7 @@ function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
 
     <p>
       Es gibt noch ${unansweredCount} unbeantwortete Prüfungsfrage(n).
-      Sie können zur ersten offenen Prüfungsfrage springen oder die Prüfung trotzdem abgeben.
+      Sie können offene Fragen nachholen oder die Prüfung trotzdem abgeben.
     </p>
 
     <p class="warning-small">
@@ -1651,7 +1651,7 @@ function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
 
     <div class="warning-actions">
       <button class="warning-btn primary-warning-btn" onclick="startUnansweredExamFocus()">
-        Zur ersten offenen Prüfungsfrage
+        Offene Fragen nachholen
       </button>
 
       <button class="warning-btn danger-warning-btn" onclick="finishExamMode()">
@@ -2369,7 +2369,7 @@ function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
 
     <p>
       Es gibt noch ${unansweredCount} unbeantwortete Prüfungsfrage(n).
-      Sie können zur ersten offenen Prüfungsfrage springen oder die Prüfung trotzdem abgeben.
+      Sie können offene Fragen nachholen oder die Prüfung trotzdem abgeben.
     </p>
 
     <p class="warning-small">
@@ -2378,7 +2378,7 @@ function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
 
     <div class="warning-actions">
       <button class="warning-btn primary-warning-btn" onclick="startUnansweredExamFocus()">
-        Zur ersten offenen Prüfungsfrage
+        Offene Fragen nachholen
       </button>
 
       <button class="warning-btn danger-warning-btn" onclick="finishExamMode()">
@@ -2931,7 +2931,7 @@ function buildExamTopicBreakdownHtml(topicBreakdown) {
             <strong>${stats.unanswered}</strong>
           </div>
 
-          <div>
+          <div class="quote-column ${statusClass}">
             <span>Quote</span>
             <strong>${stats.percent}%</strong>
           </div>
@@ -2944,7 +2944,7 @@ function buildExamTopicBreakdownHtml(topicBreakdown) {
           <div>
             ${
               problemCount > 0
-                ? `<button class="next-btn secondary-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Trainieren</button>`
+                ? `<button class="next-btn secondary-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Thema trainieren</button>`
                 : `<button class="next-btn secondary-btn" disabled>Sicher</button>`
             }
           </div>
