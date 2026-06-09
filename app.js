@@ -28,6 +28,8 @@ let wrongAnswersCount = 0;
 let examQuestions = [];
 let examQuestionIndex = 0;
 let examAnswers = {};
+let examFocusQuestionIndexes = null;
+let examFocusQuestionPosition = 0;
 let examTimer = null;
 let examSecondsLeft = 120 * 60;
 
@@ -1484,6 +1486,10 @@ function renderExamQuestion() {
       <button class="next-btn" id="nextExamBtn">
         ${examQuestionIndex === examQuestions.length - 1 ? "Prüfung abgeben" : "Nächste Frage"}
       </button>
+
+      <button class="next-btn danger-warning-btn" id="finishExamNowBtn">
+        Prüfung jetzt abgeben
+      </button>
     </div>
   `;
 
@@ -1493,17 +1499,38 @@ function renderExamQuestion() {
 
   const prevBtn = document.getElementById("prevExamBtn");
   const nextBtn = document.getElementById("nextExamBtn");
+  const finishExamNowBtn = document.getElementById("finishExamNowBtn");
+  const disablePrev = examFocusQuestionIndexes
+    ? examFocusQuestionPosition === 0
+    : examQuestionIndex === 0;
+  const isLastInFocus =
+    examFocusQuestionIndexes &&
+    examFocusQuestionPosition >= examFocusQuestionIndexes.length - 1;
+  const isLastQuestion = examQuestionIndex === examQuestions.length - 1;
+  const nextLabel =
+    isLastInFocus || isLastQuestion ? "Prüfung abgeben" : "Nächste Frage";
 
   if (prevBtn) {
     prevBtn.onclick = previousExamQuestion;
-
-    if (examQuestionIndex === 0) {
-      prevBtn.disabled = true;
-    }
+    prevBtn.disabled = disablePrev;
   }
 
   if (nextBtn) {
+    nextBtn.innerText = nextLabel;
     nextBtn.onclick = nextExamQuestion;
+  }
+
+  if (finishExamNowBtn) {
+    finishExamNowBtn.onclick = () => {
+      if (
+        Array.isArray(examFocusQuestionIndexes) &&
+        examFocusQuestionIndexes.length > 0
+      ) {
+        finishExamMode();
+      } else {
+        handleExamSubmitRequest();
+      }
+    };
   }
 
   updateExamProgress();
@@ -1545,6 +1572,15 @@ function toggleExamAnswer(button) {
 }
 
 function previousExamQuestion() {
+  if (examFocusQuestionIndexes) {
+    if (examFocusQuestionPosition > 0) {
+      examFocusQuestionPosition--;
+      examQuestionIndex = examFocusQuestionIndexes[examFocusQuestionPosition];
+      renderExamQuestion();
+    }
+    return;
+  }
+
   if (examQuestionIndex > 0) {
     examQuestionIndex--;
     renderExamQuestion();
@@ -1552,6 +1588,20 @@ function previousExamQuestion() {
 }
 
 function nextExamQuestion() {
+  if (examFocusQuestionIndexes) {
+    if (examFocusQuestionPosition < examFocusQuestionIndexes.length - 1) {
+      examFocusQuestionPosition++;
+      examQuestionIndex = examFocusQuestionIndexes[examFocusQuestionPosition];
+      renderExamQuestion();
+      return;
+    }
+
+    examFocusQuestionIndexes = null;
+    examFocusQuestionPosition = 0;
+    handleExamSubmitRequest();
+    return;
+  }
+
   if (examQuestionIndex >= examQuestions.length - 1) {
     handleExamSubmitRequest();
     return;
@@ -1600,7 +1650,7 @@ function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
     </p>
 
     <div class="warning-actions">
-      <button class="warning-btn primary-warning-btn" onclick="goToExamQuestion(${firstUnansweredIndex})">
+      <button class="warning-btn primary-warning-btn" onclick="startUnansweredExamFocus()">
         Zur ersten offenen Prüfungsfrage
       </button>
 
@@ -1621,6 +1671,8 @@ function goToExamQuestion(index) {
     return;
   }
 
+  examFocusQuestionIndexes = null;
+  examFocusQuestionPosition = 0;
   examQuestionIndex = index;
   renderExamQuestion();
 }
@@ -1693,6 +1745,32 @@ function getFirstUnansweredQuestionIndex() {
   }
 
   return -1;
+}
+
+function getUnansweredQuestionIndexes() {
+  const indexes = [];
+
+  for (let i = 0; i < examQuestions.length; i++) {
+    if (!examAnswers[i] || examAnswers[i].length === 0) {
+      indexes.push(i);
+    }
+  }
+
+  return indexes;
+}
+
+function startUnansweredExamFocus() {
+  const unansweredIndexes = getUnansweredQuestionIndexes();
+
+  if (unansweredIndexes.length === 0) {
+    finishExamMode();
+    return;
+  }
+
+  examFocusQuestionIndexes = unansweredIndexes;
+  examFocusQuestionPosition = 0;
+  examQuestionIndex = examFocusQuestionIndexes[0];
+  renderExamQuestion();
 }
 
 function scrollToAnswers() {
@@ -2043,6 +2121,9 @@ function showExamView() {
 
   if (!mainContent) return;
 
+  examFocusQuestionIndexes = null;
+  examFocusQuestionPosition = 0;
+
   mainContent.innerHTML = `
     <button class="back-btn" onclick="location.reload()">
       ← Prüfung verlassen
@@ -2132,6 +2213,10 @@ function renderExamQuestion() {
       <button class="next-btn" id="nextExamBtn">
         ${examQuestionIndex === examQuestions.length - 1 ? "Prüfung abgeben" : "Nächste Frage"}
       </button>
+
+      <button class="next-btn danger-warning-btn" id="finishExamNowBtn">
+        Prüfung jetzt abgeben
+      </button>
     </div>
   `;
 
@@ -2141,17 +2226,38 @@ function renderExamQuestion() {
 
   const prevBtn = document.getElementById("prevExamBtn");
   const nextBtn = document.getElementById("nextExamBtn");
+  const finishExamNowBtn = document.getElementById("finishExamNowBtn");
+  const disablePrev = examFocusQuestionIndexes
+    ? examFocusQuestionPosition === 0
+    : examQuestionIndex === 0;
+  const isLastInFocus =
+    examFocusQuestionIndexes &&
+    examFocusQuestionPosition >= examFocusQuestionIndexes.length - 1;
+  const isLastQuestion = examQuestionIndex === examQuestions.length - 1;
+  const nextLabel =
+    isLastInFocus || isLastQuestion ? "Prüfung abgeben" : "Nächste Frage";
 
   if (prevBtn) {
     prevBtn.onclick = previousExamQuestion;
-
-    if (examQuestionIndex === 0) {
-      prevBtn.disabled = true;
-    }
+    prevBtn.disabled = disablePrev;
   }
 
   if (nextBtn) {
+    nextBtn.innerText = nextLabel;
     nextBtn.onclick = nextExamQuestion;
+  }
+
+  if (finishExamNowBtn) {
+    finishExamNowBtn.onclick = () => {
+      if (
+        Array.isArray(examFocusQuestionIndexes) &&
+        examFocusQuestionIndexes.length > 0
+      ) {
+        finishExamMode();
+      } else {
+        handleExamSubmitRequest();
+      }
+    };
   }
 
   updateExamProgress();
@@ -2193,6 +2299,15 @@ function toggleExamAnswer(button) {
 }
 
 function previousExamQuestion() {
+  if (examFocusQuestionIndexes) {
+    if (examFocusQuestionPosition > 0) {
+      examFocusQuestionPosition--;
+      examQuestionIndex = examFocusQuestionIndexes[examFocusQuestionPosition];
+      renderExamQuestion();
+    }
+    return;
+  }
+
   if (examQuestionIndex > 0) {
     examQuestionIndex--;
     renderExamQuestion();
@@ -2200,6 +2315,20 @@ function previousExamQuestion() {
 }
 
 function nextExamQuestion() {
+  if (examFocusQuestionIndexes) {
+    if (examFocusQuestionPosition < examFocusQuestionIndexes.length - 1) {
+      examFocusQuestionPosition++;
+      examQuestionIndex = examFocusQuestionIndexes[examFocusQuestionPosition];
+      renderExamQuestion();
+      return;
+    }
+
+    examFocusQuestionIndexes = null;
+    examFocusQuestionPosition = 0;
+    handleExamSubmitRequest();
+    return;
+  }
+
   if (examQuestionIndex >= examQuestions.length - 1) {
     handleExamSubmitRequest();
     return;
@@ -2248,7 +2377,7 @@ function showExamSubmitWarning(firstUnansweredIndex, unansweredCount) {
     </p>
 
     <div class="warning-actions">
-      <button class="warning-btn primary-warning-btn" onclick="goToExamQuestion(${firstUnansweredIndex})">
+      <button class="warning-btn primary-warning-btn" onclick="startUnansweredExamFocus()">
         Zur ersten offenen Prüfungsfrage
       </button>
 
@@ -2269,6 +2398,8 @@ function goToExamQuestion(index) {
     return;
   }
 
+  examFocusQuestionIndexes = null;
+  examFocusQuestionPosition = 0;
   examQuestionIndex = index;
   renderExamQuestion();
 }
@@ -3544,6 +3675,7 @@ window.showExamReview = showExamReview;
 window.scrollToAnswers = scrollToAnswers;
 window.finishExamMode = finishExamMode;
 window.goToExamQuestion = goToExamQuestion;
+window.startUnansweredExamFocus = startUnansweredExamFocus;
 window.showExamSubmitWarning = showExamSubmitWarning;
 
 window.startMistakeTraining = startMistakeTraining;
