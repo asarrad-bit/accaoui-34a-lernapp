@@ -566,7 +566,9 @@ function startLearningSession(questions, title, mode) {
   currentMode = mode || "learning";
   currentTrainingTitle = title || "Lernmodus";
 
-  currentQuestions = shuffleArray([...questions]);
+  currentQuestions = shuffleArray([...questions]).map(question =>
+    createShuffledQuestion(question)
+  );
   currentQuestionIndex = 0;
   selectedAnswers = [];
 
@@ -2087,13 +2089,14 @@ function startExamMode(questionLimit, examTitle, examType) {
       return;
     }
 
-    examQuestions = shuffleArray(coreQuestions);
+    examQuestions = shuffleArray(coreQuestions).map(question =>
+      createShuffledQuestion(question)
+    );
     currentExamLimit = examQuestions.length;
   } else {
-    examQuestions = shuffleArray([...allQuestions]).slice(
-      0,
-      Math.min(currentExamLimit, allQuestions.length)
-    );
+    examQuestions = shuffleArray([...allQuestions])
+      .slice(0, Math.min(currentExamLimit, allQuestions.length))
+      .map(question => createShuffledQuestion(question));
   }
 
   examQuestionIndex = 0;
@@ -3557,6 +3560,39 @@ function formatQuestionText(text) {
 
 function shuffleArray(array) {
   return [...array].sort(() => Math.random() - 0.5);
+}
+
+function createShuffledQuestion(question) {
+  if (!question) {
+    return question;
+  }
+
+  if (!Array.isArray(question.answers) || question.answers.length === 0) {
+    return { ...question };
+  }
+
+  const originalCorrect = Array.isArray(question.correct) ? question.correct : [];
+  const indexedAnswers = question.answers.map((answer, originalIndex) => ({
+    answer,
+    originalIndex
+  }));
+  const shuffledEntries = shuffleArray(indexedAnswers);
+  const newAnswers = shuffledEntries.map(entry => entry.answer);
+  const newCorrect = [];
+
+  shuffledEntries.forEach((entry, newIndex) => {
+    if (originalCorrect.includes(entry.originalIndex)) {
+      newCorrect.push(newIndex);
+    }
+  });
+
+  newCorrect.sort((a, b) => a - b);
+
+  return {
+    ...question,
+    answers: newAnswers,
+    correct: newCorrect
+  };
 }
 
 function formatSeconds(totalSeconds) {
