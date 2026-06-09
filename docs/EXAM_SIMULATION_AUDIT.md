@@ -1,6 +1,6 @@
 # Accaoui §34a – Prüfungssimulation Audit (82 Fragen / 120 Punkte)
 
-Stand: **v24.0** (Dokumentation, kein Code-Task)
+Stand: **v24.3x** (Teilpunkte-Audit ergänzt; v24.0 Basis)
 Projekt: Accaoui §34a Lern-App
 Grundlage: `questions.json` (86 Fragen), `app.js` (Prüfungsmodus), `docs/PROJECT_MASTERLIST.md` §7
 
@@ -119,13 +119,15 @@ Stand: Zählung aus `questions.json` (v24.0).
 
 | Task | Inhalt |
 |------|--------|
-| **v24.1** | `points`-Felder in `questions.json` **fachlich geplant** ergänzen (keine blinde Vergabe) |
-| **v24.2** | Auswahlfunktion für Vollsimulation **nach Sachgebiet** bauen |
-| **v24.3** | 82-Fragen-/120-Punkte-**Auswertung** testen |
-| **v24.4** | **Browser-Test** Vollsimulation |
-| **v24.5** | Dokumentation und Online-Test |
+| **v24.1** | `points`-Felder fachlich geplant (`docs/EXAM_POINTS_PLAN.md`) |
+| **v24.2** | Feste 82 Core-IDs (`docs/EXAM_CORE_SELECTION_PLAN.md`) |
+| **v24.3a–f** | `points`-Felder je Sachgebiet in `questions.json` ergänzen |
+| **v24.3x** | **Teilpunkte-Bewertung** auditiert und dokumentiert (dieser Abschnitt §10) |
+| **v24.4** | Restliche `points`-Felder fertigstellen |
+| **v24.5** | Teilpunkte-Logik technisch prüfen und umsetzen |
+| **v24.6** | Vollsimulation **82 Fragen / 120 Punkte** mit Teilbewertung testen |
 
-**v24.0 (dieser Task):** Nur Audit dokumentieren – **kein Code**, keine `questions.json`-Änderung.
+**Hinweis:** v24.0 / v24.3x = **nur Dokumentation** in diesem Audit – **kein Code** in den Audit-Tasks.
 
 ---
 
@@ -146,9 +148,50 @@ Die Zuordnung erfolgt **pro Frage** in der Review-/Pflegephase, nicht per Skript
 
 ---
 
+## 10. Teilpunkte-Bewertung (Audit v24.3x, ab 01.07.2025)
+
+**Hinweis:** Nur Audit-/Dokumentationsschritt – **keine technische Umsetzung** in v24.3x.
+
+### 10.1 Bewertungsgrundlage
+
+- Ab **01.07.2025** werden **teilrichtige Antworten** in der Sachkundeprüfung nach § 34a berücksichtigt.
+- **Jede richtige Lösung** zählt mit **1 Punkt**.
+- Eine Aufgabe mit **zwei richtigen Lösungen** kann **2 Punkte** bringen.
+- Wird nur **eine von zwei** richtigen Lösungen erkannt, kann dafür **1 Punkt** erreicht werden.
+- **Maximalpunktzahl** schriftlich: **120 Punkte**.
+- **Bestehensgrenze:** **50 Prozent** = **60 Punkte**.
+
+### 10.2 Konsequenz für die App
+
+- Die Prüfungsauswertung darf Mehrfachantworten **nicht** nur als komplett richtig oder komplett falsch bewerten.
+- Die App muss später **Teilpunkte** berechnen.
+- Das `points`-Feld einer Frage soll zur **Anzahl richtiger Antworten** passen:
+  - **Eine** richtige Antwort → in der Regel `points: 1`
+  - **Zwei** richtige Antworten → in der Regel `points: 2`
+- Siehe Zuordnung in `docs/EXAM_POINTS_PLAN.md` und Core-IDs in `docs/EXAM_CORE_SELECTION_PLAN.md`.
+
+### 10.3 Noch offen zu prüfen
+
+- Wie **falsche zusätzliche Markierungen** technisch bewertet werden sollen.
+- Ob falsche Kreuze **nur nicht zählen** oder ob sie **Teilpunkte reduzieren**.
+- Umsetzung **erst nach fachlicher Entscheidung** und **separatem Code-Task** (v24.5).
+
+### 10.4 Vorläufige technische Zielregel (für späteren Code-Task)
+
+| Fragetyp | Regel |
+|----------|--------|
+| **Single** (`single`) | Richtige Antwort = volle Punkte · falsche Antwort = **0 Punkte** |
+| **Multiple** (`multiple`, `combination` mit mehreren richtigen Indizes) | Pro **korrekt gesetztem Kreuz** = **1 Punkt** · falsche Zusatzantworten dürfen **nicht belohnt** werden · genaue **Abzugslogik** separat festlegen |
+
+**Praxisfall:** Bewertung analog zur Anzahl richtiger Lösungen und dem `points`-Feld – Details in v24.5.
+
+---
+
 ## Verweise
 
-- `docs/PROJECT_MASTERLIST.md` – §7 Prüfungsaufbau, §14 nächste Aufgaben
+- `docs/EXAM_POINTS_PLAN.md` – Punkteplan und Teilpunkte (§10)
+- `docs/EXAM_CORE_SELECTION_PLAN.md` – feste 82 Core-IDs
+- `docs/PROJECT_MASTERLIST.md` – §7 Prüfungsaufbau, §8.2/§8.3, §14 nächste Aufgaben
 - `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md` – Ausbauplan 51 → 86
 - `docs/WRITTEN_QUESTION_STANDARD.md` – Fragenstandard
 

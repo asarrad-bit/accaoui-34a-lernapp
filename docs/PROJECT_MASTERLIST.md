@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v24.2
+Stand: v24.3x
 Branch: `refactor/oral-exam-module`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -135,7 +135,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v24.2)
+## 5. Aktueller Versionsstand (bis v24.3x)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -166,7 +166,9 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v23.5.48 | Fragenbank-Ausbau abgeschlossen: **86 Fragen** in `questions.json` (inkl. Umgang mit Menschen `umgang_006`–`umgang_019`) |
 | v24.0 | `docs/EXAM_SIMULATION_AUDIT.md` – Prüfungssimulation 82/120 auditiert; **kein Code-Task** |
 | v24.1 | `docs/EXAM_POINTS_PLAN.md` – Punktefelder fachlich geplant (86 Fragen, Simulationskern 82/120); **keine** `questions.json`-Änderung |
-| v24.2 | `docs/EXAM_CORE_SELECTION_PLAN.md` – **Option A:** feste 82 Core-IDs; 4 Reserve-IDs; **keine** `questions.json`-Änderung |
+| v24.2 | `docs/EXAM_CORE_SELECTION_PLAN.md` – **Option A:** feste 82 Core-IDs; 4 Reserve-IDs |
+| v24.3a–f | `points`-Felder in `questions.json` (Recht, Gewerbe, DS, BGB, Strafrecht, UVV) – **in Arbeit / Teilstände** |
+| v24.3x | Teilpunkte-Bewertung ab 01.07.2025 auditiert (`EXAM_SIMULATION_AUDIT.md` §10, `EXAM_POINTS_PLAN.md` §10) – **kein Code** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -290,22 +292,49 @@ Kernbotschaft für die App (Beispieltext):
 |--------|-------------|
 | Dokument | `docs/EXAM_SIMULATION_AUDIT.md` – **vorhanden** |
 | Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht) |
-| `points`-Felder | **nicht vorhanden** – faktisch 1 Punkt pro Frage (`DEFAULT_QUESTION_POINTS`) |
+| `points`-Felder | **teilweise** in `questions.json` (v24.3a–f); App nutzt Fallback 1 Punkt wo fehlend |
 | Vollsimulation (Ist) | 82 Fragen per Zufall aus Gesamtpool – **ohne** Sachgebiets- und Punktegewichtung |
 | Vollsimulation (Soll) | **82 Fragen / 120 Punkte** nach Sachgebietstabelle §7 |
 | Punkteplan | `docs/EXAM_POINTS_PLAN.md` – **vorhanden** (v24.1, fachliche Zuordnung 1/2 Punkte) |
 | Core-ID-Plan | `docs/EXAM_CORE_SELECTION_PLAN.md` – **vorhanden** (v24.2, **Option A:** feste 82 Kern-IDs) |
-| `points`-Felder in JSON | **noch nicht** – Umsetzung erst **v24.3** nach Core-ID-Planung |
-| App-Status | Timer (120 min) und Bestehen (50 %) vorhanden; **Core-Auswahl** und **Punkte-Logik** folgen in v24.4 ff. |
+| `points`-Felder in JSON | **teilweise** (v24.3a–f); Rest in **v24.4** |
+| Teilpunkte-Audit | **v24.3x** – siehe §8.3; App-Umsetzung **v24.5** |
+| App-Status | Timer (120 min) und Bestehen (50 %) vorhanden; **Teilpunkte** und **Core-Auswahl** folgen in v24.4–v24.6 |
 
 ### Empfohlene Folge-Tasks
 
-- **v24.3** – `points`-Felder kontrolliert in `questions.json` ergänzen (nach `EXAM_POINTS_PLAN.md`)
-- **v24.4** – Core-ID-Auswahlfunktion in der App (nach `EXAM_CORE_SELECTION_PLAN.md`)
-- **v24.5** – Vollsimulation 82/120 testen
-- **v24.6** – Browser-Test und Online-Dokumentation
+- **v24.3a–f** – `points`-Felder je Sachgebiet (nach `EXAM_POINTS_PLAN.md`) – **teilweise erledigt**
+- **v24.3x** – Teilpunkte-Audit dokumentiert – siehe §8.3
+- **v24.4** – restliche `points`-Felder + Core-ID-Auswahl in App
+- **v24.5** – Teilpunkte-Logik umsetzen
+- **v24.6** – Vollsimulation 82/120 mit Teilbewertung testen
 
-**Hinweis:** v24.0–v24.2 = **nur Dokumentation**, kein Code, keine `questions.json`-Änderung.
+**Hinweis:** Audit-Dokumentation (v24.0, v24.1, v24.2, v24.3x) ohne App-Code; `points` in JSON separat (v24.3a–f / v24.4).
+
+---
+
+## 8.3 Teilpunkte-Bewertung (Audit v24.3x)
+
+| Aspekt | Stand |
+|--------|--------|
+| Gültig ab | **01.07.2025** – teilrichtige Antworten zählen |
+| Regel | Pro **richtige Lösung** 1 Punkt; max. schriftlich **120**; Bestehen **60** (50 %) |
+| `points`-Feld | Soll **Anzahl richtiger Antworten** abbilden (1 oder 2 in der Regel) |
+| App (Ist) | Auswertung noch **binär** bei Mehrfachantworten – **Teilpunkte offen** |
+| Dokumentation | `docs/EXAM_SIMULATION_AUDIT.md` §10, `docs/EXAM_POINTS_PLAN.md` §10 |
+| Offen | Falsche Zusatzkreuze: ignorieren vs. Abzug – **fachlich vor v24.5** |
+| Vorläufige Code-Regel | Single: voll/0 · Multiple: +1 pro richtigem Kreuz, keine Belohnung falscher Zusatzantworten |
+
+### Roadmap (Teilpunkte und Vollsimulation)
+
+| Task | Inhalt |
+|------|--------|
+| **v24.3x** | Teilpunkte-Bewertung **dokumentiert** (dieser Abschnitt) |
+| **v24.4** | Restliche `points`-Felder in `questions.json` fertigstellen |
+| **v24.5** | Teilpunkte-Logik technisch prüfen und umsetzen |
+| **v24.6** | Vollsimulation 82/120 **mit Teilbewertung** testen |
+
+**Kein Code-Task in v24.3x.**
 
 ---
 
@@ -325,7 +354,7 @@ python tools/preflight.py
 
 ---
 
-## 10. Planungsdokumente (Stand v24.2)
+## 10. Planungsdokumente (Stand v24.3x)
 
 | Dokument | Status |
 |----------|--------|
@@ -354,7 +383,7 @@ python tools/preflight.py
 | Simulation B | **vorhanden** (Prüfungsbogen B) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Prüfung zieht **82** nach Gewichtung – **noch nicht umgesetzt** |
-| Prüfungssimulation 82/120 | **auditiert** (v24.0), **Punkte geplant** (v24.1), **Core-IDs fest** (v24.2, Option A) – siehe `docs/EXAM_*`; App/JSON-Umsetzung v24.3 ff. |
+| Prüfungssimulation 82/120 | **auditiert** (v24.0), Punkte/Core-IDs geplant, **Teilpunkte auditiert** (v24.3x) – siehe `docs/EXAM_*`; App-Teilpunkte **v24.5** |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
 | UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
 
@@ -390,7 +419,7 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-1. **Prüfungssimulation 82/120** – Punkteplan (v24.1) und Core-ID-Liste (v24.2) **erledigt**; als Nächstes: `points` in JSON (v24.3), Core-Auswahl in App (v24.4), Tests (v24.5–v24.6); siehe `docs/EXAM_CORE_SELECTION_PLAN.md`, §8.2
+1. **Prüfungssimulation 82/120** – Punkteplan, Core-IDs und **Teilpunkte-Audit** (v24.3x) **dokumentiert**; als Nächstes: restliche `points` (v24.4), Teilpunkte-Code (v24.5), Test (v24.6); siehe §8.2 / §8.3
 2. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
 3. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**
 4. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien

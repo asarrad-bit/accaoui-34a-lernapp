@@ -1,6 +1,6 @@
 # Accaoui §34a – Punkteplan schriftliche Vollsimulation
 
-Stand: **v24.1** (fachliche Planung, keine Umsetzung)
+Stand: **v24.3x** (Teilpunkte-Audit ergänzt; Punkteplan v24.1)
 Projekt: Accaoui §34a Lern-App
 Grundlage: `docs/EXAM_SIMULATION_AUDIT.md`, `docs/WRITTEN_QUESTION_EXPANSION_PLAN.md`, `questions.json` (86 Fragen, nur gelesen)
 
@@ -296,12 +296,14 @@ Rechnerisch: **38 × 2 + 44 × 1 = 120 Punkte**.
 
 | Task | Inhalt |
 |------|--------|
-| **v24.2** | `points`-Felder **kontrolliert** in `questions.json` ergänzen (nach Prüfung dieses Plans) |
-| **v24.3** | Auswahlfunktion nach **Sachgebiet** und **Punktegewichtung** bauen |
-| **v24.4** | Vollsimulation **82/120** testen |
-| **v24.5** | Browser- und Online-Test dokumentieren |
+| **v24.2** | Feste 82 Core-IDs dokumentiert (`docs/EXAM_CORE_SELECTION_PLAN.md`) |
+| **v24.3a–f** | `points`-Felder je Sachgebiet in `questions.json` ergänzen |
+| **v24.3x** | **Teilpunkte-Bewertung** auditiert (§10) – **kein Code** |
+| **v24.4** | Restliche `points`-Felder fertigstellen |
+| **v24.5** | Teilpunkte-Logik technisch prüfen und umsetzen |
+| **v24.6** | Vollsimulation **82/120** mit Teilbewertung testen |
 
-**v24.1 (dieser Task):** Nur fachliche Planung – **keine** Änderung an `questions.json`.
+**v24.1:** Fachliche Punkteplanung – **keine** automatische JSON-Umsetzung in einem Schritt.
 
 ---
 
@@ -311,6 +313,43 @@ Rechnerisch: **38 × 2 + 44 × 1 = 120 Punkte**.
 - **Keine Änderung** an `questions.json` in v24.1.
 - Diese Datei ist die **fachliche Planungsgrundlage** für v24.2 ff.
 - Reservefragen erhalten ebenfalls geplante Punkte (für Training), sind aber **nicht** Teil des festen 82-Fragen-Kerns.
+
+---
+
+## 10. Teilpunkte-Bewertung (Audit v24.3x, ab 01.07.2025)
+
+**Hinweis:** Nur Dokumentation – **keine** Änderung an `questions.json` und **kein Code** in v24.3x.
+
+### 10.1 Bewertungsgrundlage
+
+| Merkmal | Vorgabe |
+|---------|---------|
+| Gültig ab | **01.07.2025** |
+| Teilrichtige Antworten | **werden berücksichtigt** |
+| Pro richtige Lösung | **1 Punkt** |
+| Aufgabe mit 2 richtigen Lösungen | **max. 2 Punkte** |
+| Nur 1 von 2 richtig | **1 Punkt** möglich |
+| Maximal schriftlich | **120 Punkte** |
+| Bestehen | **50 %** = **60 Punkte** |
+
+### 10.2 Konsequenz für die App und `points`-Feld
+
+- Mehrfachantworten dürfen **nicht** nur binär (ganz richtig / ganz falsch) ausgewertet werden.
+- Die App muss später **Teilpunkte** berechnen (`docs/EXAM_SIMULATION_AUDIT.md` §10).
+- **`points`** = maximale erreichbare Punkte der Frage; soll zur **Anzahl richtiger Antworten** passen:
+  - **1** richtige Lösung → in der Regel `points: 1`
+  - **2** richtige Lösungen → in der Regel `points: 2`
+- Die Tabellen in §6 dieses Plans ordnen `points: 1` oder `points: 2` **fachlich** – nicht automatisch nach `type`.
+
+### 10.3 Noch offen zu prüfen
+
+- Bewertung **falscher Zusatzmarkierungen** (nur ignorieren vs. Punktabzug).
+- Fachliche Entscheidung **vor** Code-Task v24.5.
+
+### 10.4 Vorläufige technische Zielregel (Code-Task v24.5)
+
+- **Single:** richtige Antwort = volle Punkte · falsche Antwort = 0 Punkte.
+- **Multiple:** pro korrekt gesetztem Kreuz = 1 Punkt · falsche Zusatzantworten nicht belohnen · Abzugslogik **separat** festlegen.
 
 ---
 
