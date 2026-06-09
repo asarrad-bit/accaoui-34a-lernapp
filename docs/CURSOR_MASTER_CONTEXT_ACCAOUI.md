@@ -1,9 +1,9 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: 02.06.2026
+Stand: v24.5
 Projekt: Accaoui §34a Lern-App
 Lokaler Pfad: `C:\xampp\htdocs\accaoui\v4-dashboard`
-Branch: `refactor/oral-exam-module`
+Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 
 ## 1. Sofort-Regel
@@ -129,6 +129,26 @@ Aktueller funktionaler Stand:
 5. Prüfungshistorie funktioniert
 6. Fehlertraining funktioniert
 7. Kategorien-Normalisierung funktioniert
+8. **86 Fragen** in `questions.json` (Pool-Ziel erreicht)
+9. **`points`-Felder vollständig** für alle 9 Sachgebiete (v24.3a–i); globaler Check **82/120/38** (v24.3j)
+10. **Vollsimulation** nutzt feste **82-Core-Fragen** (v24.4b)
+11. **Teilpunkte-Logik** im Prüfungsmodus eingebaut (v24.5)
+
+### Entwicklungsstand Prüfungssimulation (v24.5)
+
+| Version | Inhalt | Status |
+|---|---|---|
+| v24.3a–i | `points`-Felder alle 9 Sachgebiete | **erledigt** |
+| v24.3j | Globaler Check 82 Core / 120 Punkte / 38 Zweipunktfragen | **erledigt** |
+| v24.4b | Vollsimulation mit festen 82-Core-IDs | **erledigt** |
+| v24.5 | Teilpunkte für Mehrfachantworten im Prüfungsmodus | **erledigt** |
+| v24.6 | Browser-Endtest Vollsimulation mit Teilbewertung | **offen** |
+| v24.6b | Wiederholungslogik: nur gefilterte Fragen (z. B. 34→45→56→60) | **offen** |
+| v24.6x | Prüfungsanalyse nach Themen: UI-Kontraste/Karten | **offen** |
+
+### UI-Hinweis Prüfungsanalyse
+
+Die **Prüfungsanalyse nach Themen** wirkt aktuell blass und nicht klar genug strukturiert. Späterer UI-Task: stärkere Kontraste, klarere Karten, bessere Button-Position, professionellere Ergebnisdarstellung.
 
 Ziel:
 
@@ -309,6 +329,12 @@ Cursor darf nicht:
 5. `test/` ändern, außer ausdrücklich erlaubt
 6. Code mit `--fix`, Prettier oder automatischer Formatierung verändern
 
+### Kennzeichnungs- und Sicherheitsregel
+
+1. Cursor-Aufträge immer mit **„NUR FÜR CURSOR – NICHT IN GIT BASH“** kennzeichnen.
+2. Git-Bash-Befehle immer mit **„NUR IN GIT BASH AUSFÜHREN“** kennzeichnen.
+3. Cursor darf **keinen Commit** und **keinen Push** ausführen (außer ausdrücklich vom Nutzer gewünscht).
+
 ## 13. Roadmap ab jetzt
 
 ### v23.5.4 – Gesamtstand bereinigen
@@ -352,12 +378,22 @@ Cursor darf nicht:
 3. einheitliche Bogenlogik A/B/C
 4. Fehlertraining stabil anbinden
 
-### v25 – Schriftliche Prüfung ausbauen
+### v24.3–v24.5 – Schriftliche Prüfungssimulation (erledigt)
 
-1. 82-Fragen-Logik
-2. Punktebewertung
-3. feste Themengewichtung
-4. Fragenbank von 51 auf 82 und weiter ausbauen
+1. `points`-Felder vollständig (v24.3a–i/j)
+2. 82-Core-Fragen in Vollsimulation (v24.4b)
+3. Teilpunkte-Logik im Prüfungsmodus (v24.5)
+
+### v24.6 – Prüfungssimulation testen und nacharbeiten
+
+1. Browser-Endtest 82/120 mit Teilbewertung (v24.6)
+2. Wiederholungslogik korrigieren (v24.6b): nur gefilterte Fragen, z. B. 34→45→56→60, nicht 34→35→36
+3. Prüfungsanalyse UI verbessern (v24.6x)
+
+### v25 – Schriftliche Fragenbank ausbauen
+
+1. Fragenbank über 86 hinaus erweitern
+2. Review- und Import-Prozess (siehe `docs/QUESTION_DATABASE_PLAN.md`)
 
 ### v26 – Rechtstexte
 
@@ -382,31 +418,17 @@ Cursor darf nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-Als nächstes erstellen:
+Als Nächstes (Code-Tasks):
 
-```txt
-docs/QUESTION_DATABASE_PLAN.md
-```
+1. **v24.6b** – Wiederholungslogik nach Prüfung: eigene gefilterte Fragenliste für unbeantwortete/falsche Fragen
+2. **v24.6** – Browser-Endtest Vollsimulation 82/120 mit Teilbewertung
+3. **v24.6x** – Prüfungsanalyse nach Themen optisch überarbeiten
 
-Noch keine App-Dateien ändern.
+Fehlerbeschreibung v24.6b:
 
-Verboten für den nächsten Schritt:
-
-```txt
-app.js
-patch-v21.js
-questions.json
-data/
-style.css
-index.html
-test/
-```
-
-Erlaubt:
-
-```txt
-docs/QUESTION_DATABASE_PLAN.md
-```
+- Wenn nur Fragen **34, 45, 56, 60** unbeantwortet sind, darf die Wiederholungsrunde **nur diese vier** enthalten.
+- **Falsch:** 34 → 35 → 36 (volles Prüfungsset)
+- **Richtig:** 34 → 45 → 56 → 60 (gefilterte Liste in fester Reihenfolge)
 
 ## 15. Wenn ein neuer Chat beginnt
 
@@ -414,16 +436,21 @@ Zuerst nennen:
 
 ```txt
 docs/PROJECT_MASTERLIST.md
-docs/WRITTEN_QUESTION_STANDARD.md
-docs/QUESTION_DATABASE_PLAN.md, falls vorhanden
+docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
+docs/EXAM_SIMULATION_AUDIT.md
+docs/EXAM_POINTS_PLAN.md
+docs/EXAM_CORE_SELECTION_PLAN.md
 ```
 
-Dann ausführen:
+Dann **NUR IN GIT BASH AUSFÜHREN**:
 
 ```bash
 git status
+git pull --ff-only
 git log -1 --oneline
 python tools/preflight.py
 ```
+
+**Hinweis:** Alte Chat-Uploads und Prüfungsmuster sind **nicht automatisch** Arbeitsgrundlage im neuen Chat. Bei Bedarf Prüfungsmuster erneut hochladen oder im Repo dokumentieren.
 
 Keine Änderung ohne sauberen Arbeitsstand.
