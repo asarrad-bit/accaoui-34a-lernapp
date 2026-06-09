@@ -398,6 +398,8 @@ python tools/preflight.py
 | `docs/SUPABASE_QUESTION_SCHEMA.md` | Supabase-Fragenmodell – **vorhanden** |
 | `docs/SUPABASE_USER_PROGRESS_SCHEMA.md` | Nutzer, Kurse, Fortschritt – **vorhanden** |
 | `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md` | Umsetzungsreihenfolge Supabase – **vorhanden** |
+| `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` | Quellenpakete / Musterunterlagen – Status v24.5y – **vorhanden** |
+| `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md` | Mündliche Prüfung / Musterfragen – Status v24.5y – **vorhanden** |
 | `docs/PROJECT_MASTERLIST.md` | Diese Datei |
 
 ---
@@ -458,6 +460,7 @@ Installiert (Referenz):
 8. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
 9. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
 10. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
+11. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`
 
 **Erledigt:** Fragenbank-Ausbau **86 Fragen** (v23.5.48); `points` vollständig (v24.3a–i/j); Core-Auswahl (v24.4b); Teilpunkte-Code (v24.5).
 

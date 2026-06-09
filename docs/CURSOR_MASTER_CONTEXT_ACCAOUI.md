@@ -451,6 +451,13 @@ git log -1 --oneline
 python tools/preflight.py
 ```
 
-**Hinweis:** Alte Chat-Uploads und Prüfungsmuster sind **nicht automatisch** Arbeitsgrundlage im neuen Chat. Bei Bedarf Prüfungsmuster erneut hochladen oder im Repo dokumentieren.
+**Hinweis:** Neue Chats starten mit **GitHub-Dokumenten** (Liste oben). Große ZIPs mit Quellen-PDFs **nur bei Bedarf** hochladen – nicht standardmäßig in jeden Chat.
+
+| Status-Dokument | Inhalt |
+|-----------------|--------|
+| `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` | Quellenpakete, PDF-ZIPs, Extraktions- und Prüfstatus |
+| `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md` | Mündliche Prüfung, Musterfragen, offene Aufgaben |
+
+Alte Chat-Uploads und Prüfungsmuster sind **nicht automatisch** Arbeitsgrundlage im neuen Chat. Bei Bedarf erneut hochladen oder im Repo dokumentieren.
 
 Keine Änderung ohne sauberen Arbeitsstand.
