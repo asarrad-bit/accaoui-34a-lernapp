@@ -2906,59 +2906,63 @@ function buildExamTopicBreakdownHtml(topicBreakdown) {
         statusText = "Schwach";
       }
 
+      const actionHtml = problemCount > 0
+        ? `<button class="next-btn topic-analysis-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Thema trainieren</button>`
+        : `<button class="next-btn topic-analysis-btn" disabled>Sicher</button>`;
+
       return `
-        <div class="topic-stat-row">
+        <article class="topic-analysis-card">
 
-          <div class="topic-name">
-            <span>Thema</span>
-            <strong>${categoryIcons[categoryName] || "📘"} ${escapeHtml(categoryName)}</strong>
+          <div class="topic-analysis-main">
+            <div class="topic-analysis-title">
+              <span>Thema</span>
+              <strong>${categoryIcons[categoryName] || "📘"} ${escapeHtml(categoryName)}</strong>
+            </div>
+
+            <div class="topic-analysis-action">
+              ${actionHtml}
+            </div>
           </div>
 
-          <div>
-            <span>Fragen</span>
-            <strong>${stats.total}</strong>
+          <div class="topic-analysis-metrics">
+            <div class="topic-analysis-metric">
+              <span>Fragen</span>
+              <strong>${stats.total}</strong>
+            </div>
+
+            <div class="topic-analysis-metric">
+              <span>Richtig</span>
+              <strong>${stats.correct}</strong>
+            </div>
+
+            <div class="topic-analysis-metric">
+              <span>Falsch</span>
+              <strong>${stats.wrong}</strong>
+            </div>
+
+            <div class="topic-analysis-metric">
+              <span>Offen</span>
+              <strong>${stats.unanswered}</strong>
+            </div>
+
+            <div class="topic-analysis-metric">
+              <span>Quote</span>
+              <strong>${stats.percent}%</strong>
+            </div>
+
+            <div class="topic-analysis-metric">
+              <span>Status</span>
+              <strong class="${statusClass}">${statusText}</strong>
+            </div>
           </div>
 
-          <div>
-            <span>Richtig</span>
-            <strong>${stats.correct}</strong>
-          </div>
-
-          <div>
-            <span>Falsch</span>
-            <strong>${stats.wrong}</strong>
-          </div>
-
-          <div>
-            <span>Offen</span>
-            <strong>${stats.unanswered}</strong>
-          </div>
-
-          <div class="quote-column ${statusClass}">
-            <span>Quote</span>
-            <strong>${stats.percent}%</strong>
-          </div>
-
-          <div>
-            <span>Status</span>
-            <strong class="${statusClass}">${statusText}</strong>
-          </div>
-
-          <div>
-            ${
-              problemCount > 0
-                ? `<button class="next-btn secondary-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Thema trainieren</button>`
-                : `<button class="next-btn secondary-btn" disabled>Sicher</button>`
-            }
-          </div>
-
-        </div>
+        </article>
       `;
     })
     .join("");
 
   return `
-    <div class="topic-stats-section">
+    <div class="topic-stats-section topic-analysis-section">
 
       <div class="section-head">
         <h2>Prüfungsanalyse nach Themen</h2>
@@ -2967,7 +2971,7 @@ function buildExamTopicBreakdownHtml(topicBreakdown) {
         </p>
       </div>
 
-      <div class="topic-stats-list">
+      <div class="topic-analysis-list">
         ${rows}
       </div>
 
