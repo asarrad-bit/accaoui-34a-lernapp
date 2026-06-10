@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v24.6b
+Stand: v24.6h
 Projekt: Accaoui §34a Lern-App
 Lokaler Pfad: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Branch: `main`
@@ -27,6 +27,19 @@ git status --short
 ```
 
 Nur committen, wenn Preflight grün ist, `git diff --check` keine Ausgabe zeigt und nur erlaubte Dateien geändert wurden.
+
+### Arbeitsworkflow / Git-Synchronisation
+
+**Bevor** an der Accaoui §34a Lern-App gearbeitet wird, zuerst fragen:
+
+> **„Bist du gerade auf Arbeit oder zuhause?“**
+
+Danach immer in dieser Reihenfolge:
+
+1. **Richtiger Laptop / richtiger Arbeitsstand** klären (Arbeit vs. Zuhause)
+2. `git status` prüfen
+3. `git pull --ff-only` ausführen
+4. Nach der Arbeit: **Commit + Push nicht vergessen**
 
 ## 2. Ziel der App
 
@@ -133,23 +146,23 @@ Aktueller funktionaler Stand:
 9. **`points`-Felder vollständig** für alle 9 Sachgebiete (v24.3a–i); globaler Check **82/120/38** (v24.3j)
 10. **Vollsimulation** nutzt feste **82-Core-Fragen** (v24.4b)
 11. **Teilpunkte-Logik** im Prüfungsmodus eingebaut (v24.5)
-12. **Wiederholungslogik offener Prüfungsfragen** + **„Prüfung jetzt abgeben“** (v24.6b, Commit `a169595`)
+12. **Wiederholungslogik offener Prüfungsfragen** + frühe Abgabe (v24.6b)
+13. **Fragen-/Antwort-Mix** in Lern- und Fehlermodi (v24.6d/e)
+14. **Prüfungsanalyse UI** responsive + Premium (v24.6f, v24.6x)
+15. **Fehlerübersicht nach Themen** Premium + responsive (v24.6g)
 
-### Entwicklungsstand Prüfungssimulation (v24.6b)
+### Entwicklungsstand v24.6 (Auszug)
 
 | Version | Inhalt | Status |
 |---|---|---|
-| v24.3a–i | `points`-Felder alle 9 Sachgebiete | **erledigt** |
-| v24.3j | Globaler Check 82 Core / 120 Punkte / 38 Zweipunktfragen | **erledigt** |
-| v24.4b | Vollsimulation mit festen 82-Core-IDs | **erledigt** |
-| v24.5 | Teilpunkte für Mehrfachantworten im Prüfungsmodus | **erledigt** |
-| v24.6b | Gefilterte Fokusliste offener Fragen (34→45→56→60); frühzeitige Abgabe | **erledigt** |
+| v24.6b | Offene Fragen gezielt; frühe Abgabe; unbeantwortet in Auswertung | **erledigt** |
+| v24.6d | Fragenreihenfolge in Lern-/Wiederholungs-/Fehlermodi gemischt | **erledigt** |
+| v24.6e | Antwortreihenfolge gemischt; Indizes intern korrekt; JSON unverändert | **erledigt** |
+| v24.6f | Prüfungsanalyse responsive stabil | **erledigt** |
+| v24.6x | Prüfungsanalyse optisch/funktional; Buttontexte verbessert | **erledigt** |
+| v24.6g | Fehlerübersicht nach Themen: Premium, responsive | **erledigt** |
+| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **offen** |
 | v24.6 | Browser-Endtest Vollsimulation mit Teilbewertung | **offen** |
-| v24.6x | Prüfungsanalyse nach Themen: UI-Kontraste/Karten | **offen** |
-
-### UI-Hinweis Prüfungsanalyse
-
-Die **Prüfungsanalyse nach Themen** wirkt aktuell blass und nicht klar genug strukturiert. Späterer UI-Task: stärkere Kontraste, klarere Karten, bessere Button-Position, professionellere Ergebnisdarstellung.
 
 Ziel:
 
@@ -385,11 +398,14 @@ Cursor darf nicht:
 2. 82-Core-Fragen in Vollsimulation (v24.4b)
 3. Teilpunkte-Logik im Prüfungsmodus (v24.5)
 
-### v24.6 – Prüfungssimulation testen und nacharbeiten
+### v24.6 – Prüfungssimulation und UX (Auszug)
 
-1. ~~Wiederholungslogik korrigieren (v24.6b)~~ – **erledigt**: gefilterte Fokusliste (34→45→56→60), Button „Prüfung jetzt abgeben“ (`a169595`)
-2. Browser-Endtest 82/120 mit Teilbewertung (v24.6) – **offen**
-3. Prüfungsanalyse UI verbessern (v24.6x) – **offen**
+**Erledigt:** v24.6b (Wiederholung/offene Fragen), v24.6d/e (Mix), v24.6f/x (Prüfungsanalyse UI), v24.6g (Fehlerübersicht UI)
+
+**Offen:**
+
+1. **v24.6c** – Pausieren/Fortsetzen (Session-Reihenfolge speichern wegen v24.6d/e)
+2. **v24.6** – Browser-Endtest 82/120 mit Teilbewertung
 
 ### v25 – Schriftliche Fragenbank ausbauen
 
@@ -419,16 +435,19 @@ Cursor darf nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-Als Nächstes (Code-Tasks):
+**v24.6c – Prüfung/Lernen pausieren und später fortsetzen**
 
-1. **v24.6x** – Prüfungsanalyse nach Themen optisch überarbeiten
-2. **v24.6** – Browser-Endtest Vollsimulation 82/120 mit Teilbewertung
+Wichtig wegen v24.6d/e (gemischte Reihenfolge): Beim Fortsetzen muss die **konkrete Session** gespeichert werden:
 
-v24.6b (erledigt, Commit `a169595`):
+- Fragenreihenfolge
+- Antwortreihenfolge
+- aktuelle Frage
+- ausgewählte Antworten
+- Prüfungstimer
+- Modus/Sessiontyp
+- Punkte-/Auswertungszustand soweit nötig
 
-- Offene Prüfungsfragen werden als **gefilterte Liste** abgearbeitet (z. B. **34 → 45 → 56 → 60**, nicht 34 → 35 → 36).
-- **„Prüfung jetzt abgeben“** jederzeit verfügbar; im Fokusmodus sofortiges Ergebnis, sonst Warnung mit „Trotzdem abgeben“.
-- Offene Fragen bei Abgabe werden als **unbeantwortet** gezählt (0 Punkte).
+Danach: **v24.6** – Browser-Endtest Vollsimulation 82/120 mit Teilbewertung.
 
 ## 15. Wenn ein neuer Chat beginnt
 

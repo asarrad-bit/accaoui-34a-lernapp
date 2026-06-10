@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v24.6b
+Stand: v24.6h
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -41,6 +41,21 @@ Optional bei bewusst freigegebenen Kern-Datei-Änderungen:
 $env:ACCAOUI_ALLOW_PROTECTED="index.html,app.js"
 python tools/preflight.py
 ```
+
+### Projektarbeitsregel: Arbeit / Zuhause
+
+Bevor an der Accaoui §34a Lern-App gearbeitet wird, zuerst fragen:
+
+> **„Bist du gerade auf Arbeit oder zuhause?“**
+
+Danach immer klären:
+
+1. richtiger Laptop / richtiger Arbeitsstand
+2. `git status` prüfen
+3. `git pull --ff-only` ausführen
+4. nach der Arbeit **Commit + Push** nicht vergessen
+
+Details: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` → Arbeitsworkflow / Git-Synchronisation.
 
 ---
 
@@ -141,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v24.5)
+## 5. Aktueller Versionsstand (bis v24.6g)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -178,7 +193,12 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v24.3x | Teilpunkte-Bewertung ab 01.07.2025 auditiert (`EXAM_SIMULATION_AUDIT.md` §10, `EXAM_POINTS_PLAN.md` §10) – **Dokumentation** |
 | v24.4b | Vollsimulation nutzt feste **82-Core-Fragen** (`EXAM_CORE_QUESTION_IDS_V244` in `app.js`) |
 | v24.5 | Teilpunkte-Logik für Mehrfachantworten im Prüfungsmodus eingebaut (+1 pro richtigem Kreuz) |
-| v24.6b | Wiederholungslogik offener Prüfungsfragen: gefilterte Fokusliste (z. B. 34→45→56→60); Button **„Prüfung jetzt abgeben“** (Commit `a169595`) |
+| v24.6b | Wiederholungslogik/offene Fragen nach Prüfung; frühe Abgabe; offene Fragen in Auswertung sichtbar – **erledigt** |
+| v24.6d | Fragenreihenfolge in Lern-/Wiederholungs-/Fehlermodi wird gemischt – **erledigt** |
+| v24.6e | Antwortreihenfolge wird gemischt; korrekte Indizes intern korrekt; `questions.json` unverändert – **erledigt** |
+| v24.6f | Prüfungsanalyse responsive stabil (Desktop/Mobile, keine Überlappung) – **erledigt** |
+| v24.6g | Fehlerübersicht nach Themen: Premium-Kartenlook, responsive stabil – **erledigt** |
+| v24.6x | Prüfungsanalyse optisch/funktional verbessert; Buttontexte; nutzerfreundlicher – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -294,22 +314,15 @@ Kernbotschaft für die App (Beispieltext):
 
 **Hinweis:** Kein Sofort-Code-Task. Umsetzung erst nach Abschluss des Fragenbank-Ausbaus.
 
-### UI-Hinweis: Prüfungsanalyse nach Themen (v24.5x)
+### UI-Hinweis: Prüfungsanalyse nach Themen
 
-Die **Prüfungsanalyse nach Themen** in der Ergebnisansicht wirkt aktuell **blass** und **nicht klar genug strukturiert**.
-
-Späterer UI-Task (kein Sofort-Code):
-
-1. stärkere Kontraste
-2. klarere Kartenstruktur
-3. bessere Button-Position
-4. professionellere, ruhigere Ergebnisdarstellung passend zur Accaoui-App
+**Erledigt (v24.6f / v24.6x):** responsive stabil, Premium-Kartenlook, bessere Buttontexte. Fehlerübersicht nach Themen zusätzlich in **v24.6g** überarbeitet.
 
 ---
 
-## 8.2 Prüfungssimulation 82/120 (Stand v24.6b)
+## 8.2 Prüfungssimulation 82/120 (Stand v24.6g)
 
-| Aspekt | Stand v24.6b |
+| Aspekt | Stand v24.6g |
 |--------|-------------|
 | Dokument | `docs/EXAM_SIMULATION_AUDIT.md` – **vorhanden** |
 | Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht) |
@@ -321,12 +334,15 @@ Späterer UI-Task (kein Sofort-Code):
 | Teilpunkte-Audit | **v24.3x** dokumentiert; **v24.5** Code umgesetzt |
 | App-Status | Timer (120 min), Bestehen (50 %), Core-Auswahl, Teilpunkte und **Fokusnavigation offener Fragen** (v24.6b) **vorhanden** |
 | Frühzeitige Abgabe | Button **„Prüfung jetzt abgeben“** – normal: Warnung bei offenen Fragen; Fokusmodus: direktes Ergebnis (offene = unbeantwortet) |
+| Prüfungsanalyse UI | **erledigt** (v24.6f, v24.6x) – responsive, Premium-Look |
+| Fehlerübersicht UI | **erledigt** (v24.6g) – Premium-Kartenlook, keine Überlappung |
+| Fragen-/Antwort-Mix | **erledigt** (v24.6d, v24.6e) – Reihenfolge gemischt, Indizes korrekt |
 | Browser-Endtest | **wichtig** – Vollsimulation 82/120 mit Teilbewertung manuell prüfen (v24.6) |
 
 ### Empfohlene Folge-Tasks
 
+- **v24.6c** – Prüfung/Lernen pausieren und später fortsetzen (siehe §8.5)
 - **v24.6** – Vollsimulation 82/120 mit Teilbewertung im Browser testen und dokumentieren
-- **v24.6x** – Prüfungsanalyse nach Themen optisch überarbeiten (siehe §8.1 UI-Hinweis)
 
 ---
 
@@ -352,8 +368,10 @@ Späterer UI-Task (kein Sofort-Code):
 | **v24.4b** | Core-Auswahl in App **erledigt** |
 | **v24.5** | Teilpunkte-Logik **erledigt** |
 | **v24.6** | Vollsimulation 82/120 **mit Teilbewertung** im Browser testen |
-| **v24.6b** | Wiederholungslogik offener Fragen + frühzeitige Abgabe – **erledigt** (siehe §8.4) |
-| **v24.6x** | Prüfungsanalyse nach Themen optisch überarbeiten |
+| **v24.6b** | Wiederholungslogik offener Fragen + frühzeitige Abgabe – **erledigt** (§8.4) |
+| **v24.6d/e** | Fragen- und Antwortreihenfolge gemischt – **erledigt** |
+| **v24.6f/x/g** | Prüfungsanalyse + Fehlerübersicht UI – **erledigt** |
+| **v24.6c** | Pausieren/Fortsetzen Prüfung und Lernen – **offen** (§8.5) |
 
 ---
 
@@ -369,6 +387,17 @@ Späterer UI-Task (kein Sofort-Code):
 | Offene bei Abgabe | Unbeantwortete Fragen werden in der Auswertung als **unbeantwortet** gezählt (0 Punkte) |
 | Commit | `a169595` – v24.6b fix unanswered exam navigation and early submit |
 | Status | **erledigt** – Task **v24.6b** |
+
+---
+
+## 8.5 Pausieren und Fortsetzen (offen: v24.6c)
+
+| Aspekt | Stand |
+|--------|--------|
+| Ziel | Prüfung und Lernen pausieren, später exakt fortsetzen |
+| Voraussetzung | Fragen- und Antwortreihenfolge werden gemischt (v24.6d/e) – **konkrete Session-Reihenfolge muss gespeichert werden** |
+| Zu speichern | Fragenreihenfolge, Antwortreihenfolge, aktuelle Frage, ausgewählte Antworten, Prüfungstimer, Modus/Sessiontyp, Punkte-/Auswertungszustand soweit nötig |
+| Status | **offen** – nächster sinnvoller Entwicklungsschritt |
 
 ---
 
@@ -388,7 +417,7 @@ python tools/preflight.py
 
 ---
 
-## 10. Planungsdokumente (Stand v24.6b)
+## 10. Planungsdokumente (Stand v24.6h)
 
 | Dokument | Status |
 |----------|--------|
@@ -419,7 +448,7 @@ python tools/preflight.py
 | Simulation B | **vorhanden** (Prüfungsbogen B) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Vollsimulation nutzt **82 Core-Fragen** (v24.4b) |
-| Prüfungssimulation 82/120 | **umgesetzt** (Core-IDs, `points`, Teilpunkte v24.5, Fokusnavigation v24.6b); **Browser-Endtest** (v24.6) offen |
+| Prüfungssimulation 82/120 | **umgesetzt** (Core, Teilpunkte, v24.6b); UI v24.6f/x/g **erledigt**; Mix v24.6d/e **erledigt**; **v24.6c** Pause offen |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
 | UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
 
@@ -455,7 +484,7 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-1. **v24.6x – Prüfungsanalyse UI** – stärkere Kontraste, klarere Karten, bessere Buttons; siehe §8.1
+1. **v24.6c – Pausieren/Fortsetzen** – Prüfung und Lernen speichern und fortsetzen; Session-Reihenfolge wegen v24.6d/e sichern (§8.5)
 2. **v24.6 – Browser-Endtest** – Vollsimulation 82/120 mit Teilbewertung manuell prüfen
 3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
 4. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**
@@ -466,7 +495,7 @@ Installiert (Referenz):
 9. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
 10. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`
 
-**Erledigt:** Fragenbank-Ausbau **86 Fragen** (v23.5.48); `points` vollständig (v24.3a–i/j); Core-Auswahl (v24.4b); Teilpunkte-Code (v24.5); Fokusnavigation offener Fragen + frühzeitige Abgabe (v24.6b, `a169595`).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
