@@ -58,8 +58,11 @@ const STORAGE_KEYS = {
   examHistory: "accaoui_exam_history",
   topicStats: "accaoui_topic_stats",
   topicMistakes: "accaoui_topic_mistakes",
-  answeredQuestions: "accaoui_answered_questions"
+  answeredQuestions: "accaoui_answered_questions",
+  activeSession: "accaoui_active_session"
 };
+
+let examSessionTimerSaveTimeout = null;
 
 const categories = [
   "Recht der öffentlichen Sicherheit und Ordnung",
@@ -97,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadAllLocalData();
   activateDashboardButtons();
+  renderDashboardResumeExamCard();
   loadQuestions();
 });
 
@@ -128,6 +132,7 @@ async function loadQuestions() {
 
     buildCategoryCards();
     updateDashboardNumbers();
+    renderDashboardResumeExamCard();
 
   } catch (error) {
     console.error("Fehler beim Laden der Fragen:", error);
@@ -164,6 +169,234 @@ function readStorage(key, fallbackValue) {
 
 function writeStorage(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getActiveSession() {
+  return readStorage(STORAGE_KEYS.activeSession, null);
+}
+
+function saveActiveSession(session) {
+  if (!session) {
+    return;
+  }
+
+  writeStorage(STORAGE_KEYS.activeSession, session);
+}
+
+function clearActiveSession() {
+  localStorage.removeItem(STORAGE_KEYS.activeSession);
+}
+
+function hasActiveExamSession() {
+  const session = getActiveSession();
+
+  return Boolean(
+    session &&
+    session.sessionType === "exam" &&
+    Array.isArray(session.questions) &&
+    session.questions.length > 0
+  );
+}
+
+function saveActiveExamSession() {
+  if (currentMode !== "exam" || !Array.isArray(examQuestions) || examQuestions.length === 0) {
+    return;
+  }
+
+  const existing = getActiveSession();
+  const now = new Date().toISOString();
+
+  saveActiveSession({
+    version: "v24.6c",
+    sessionType: "exam",
+    title: currentExamTitle,
+    examType: currentExamType,
+    examLimit: currentExamLimit,
+    questions: examQuestions,
+    currentIndex: examQuestionIndex,
+    answers: examAnswers,
+    secondsLeft: examSecondsLeft,
+    focusQuestionIndexes: examFocusQuestionIndexes,
+    focusQuestionPosition: examFocusQuestionPosition,
+    createdAt: existing && existing.createdAt ? existing.createdAt : now,
+    updatedAt: now
+  });
+}
+
+function scheduleExamSessionTimerSave() {
+  if (examSessionTimerSaveTimeout) {
+    return;
+  }
+
+  examSessionTimerSaveTimeout = setTimeout(() => {
+    examSessionTimerSaveTimeout = null;
+
+    if (currentMode === "exam") {
+      saveActiveExamSession();
+    }
+  }, 10000);
+}
+
+function resumeActiveExamSession() {
+  const session = getActiveSession();
+
+  if (!session || session.sessionType !== "exam") {
+    showSmallNotice("Keine gespeicherte Prüfung gefunden.");
+    return false;
+  }
+
+  if (!Array.isArray(session.questions) || session.questions.length === 0) {
+    showSmallNotice("Gespeicherte Prüfung ist ungültig.");
+    clearActiveSession();
+    renderDashboardResumeExamCard();
+    return false;
+  }
+
+  currentMode = "exam";
+  examQuestions = session.questions;
+  examQuestionIndex = Number(session.currentIndex) || 0;
+  examAnswers = session.answers || {};
+  examSecondsLeft =
+    Number.isFinite(Number(session.secondsLeft))
+      ? Number(session.secondsLeft)
+      : EXAM_DURATION_SECONDS;
+  examFocusQuestionIndexes = Array.isArray(session.focusQuestionIndexes)
+    ? session.focusQuestionIndexes
+    : null;
+  examFocusQuestionPosition = Number(session.focusQuestionPosition) || 0;
+  currentExamTitle = session.title || "§34a Kurzprüfung";
+  currentExamType = session.examType || "short";
+  currentExamLimit = Number(session.examLimit) || examQuestions.length;
+
+  showExamView(true);
+
+  if (examHasTimer()) {
+    startExamTimer();
+  } else {
+    clearExamTimer();
+  }
+
+  renderExamQuestion();
+  return true;
+}
+
+function pauseExam() {
+  saveActiveExamSession();
+  clearExamTimer();
+  showExamPausedNotice();
+}
+
+function showExamPausedNotice() {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  const session = getActiveSession();
+  const title = session && session.title ? session.title : currentExamTitle;
+
+  mainContent.innerHTML = `
+    <section class="review-wrapper">
+      <div class="review-header">
+        <p class="eyebrow">Prüfung pausiert</p>
+        <h1>${escapeHtml(title)}</h1>
+        <p>
+          Ihre Prüfung wurde gespeichert. Sie können sie jederzeit vom Dashboard
+          oder hier fortsetzen.
+        </p>
+      </div>
+
+      <div class="last-exam-box">
+        <span>Gespeichert</span>
+        <strong>Fortsetzen jederzeit möglich</strong>
+        <p>Es wurde keine Auswertung gestartet und keine Fehler gespeichert.</p>
+
+        <div class="result-actions">
+          <button class="next-btn" onclick="resumeActiveExamSession()">
+            Prüfung fortsetzen
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zum Dashboard
+          </button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function discardSavedExamSession() {
+  if (!hasActiveExamSession()) {
+    return;
+  }
+
+  if (!confirm("Gespeicherte Prüfung wirklich löschen?")) {
+    return;
+  }
+
+  clearActiveSession();
+  renderDashboardResumeExamCard();
+  showSmallNotice("Gespeicherte Prüfung wurde gelöscht.");
+}
+
+function renderDashboardResumeExamCard() {
+  const existing = document.getElementById("examResumeCard");
+
+  if (existing) {
+    existing.remove();
+  }
+
+  if (!hasActiveExamSession()) {
+    return;
+  }
+
+  const session = getActiveSession();
+  const mainContent = document.querySelector(".main-content");
+  const heroGrid = document.querySelector(".hero-grid");
+
+  if (!mainContent || !heroGrid) {
+    return;
+  }
+
+  const title = session.title || "Gespeicherte Prüfung";
+  const questionLabel =
+    Number.isFinite(Number(session.currentIndex)) && Array.isArray(session.questions)
+      ? "Frage " + (Number(session.currentIndex) + 1) + "/" + session.questions.length
+      : "Fortsetzen möglich";
+
+  const card = document.createElement("section");
+  card.id = "examResumeCard";
+  card.className = "last-exam-box";
+  card.innerHTML = `
+    <span>Angefangene Prüfung</span>
+    <strong>${escapeHtml(title)}</strong>
+    <p>${escapeHtml(questionLabel)} · gespeichert am ${escapeHtml(formatSessionDate(session.updatedAt))}</p>
+
+    <div class="result-actions">
+      <button class="next-btn" onclick="resumeActiveExamSession()">
+        Prüfung fortsetzen
+      </button>
+
+      <button class="next-btn secondary-btn" onclick="discardSavedExamSession()">
+        Gespeicherte Prüfung löschen
+      </button>
+    </div>
+  `;
+
+  heroGrid.parentNode.insertBefore(card, heroGrid);
+}
+
+function formatSessionDate(isoDate) {
+  if (!isoDate) {
+    return "unbekannt";
+  }
+
+  const date = new Date(isoDate);
+
+  if (Number.isNaN(date.getTime())) {
+    return "unbekannt";
+  }
+
+  return date.toLocaleString("de-DE");
 }
 
 
@@ -1773,6 +2006,7 @@ function startUnansweredExamFocus() {
   examFocusQuestionPosition = 0;
   examQuestionIndex = examFocusQuestionIndexes[0];
   renderExamQuestion();
+  saveActiveExamSession();
 }
 
 function scrollToAnswers() {
@@ -2052,6 +2286,9 @@ function startExamMode(questionLimit, examTitle, examType) {
     return;
   }
 
+  clearActiveSession();
+  renderDashboardResumeExamCard();
+
   currentMode = "exam";
 
   currentExamLimit = Number(questionLimit) || EXAM_SHORT_QUESTION_LIMIT_V20;
@@ -2113,23 +2350,26 @@ function startExamMode(questionLimit, examTitle, examType) {
   }
 
   renderExamQuestion();
+  saveActiveExamSession();
 }
 
 function repeatCurrentExamMode() {
   startExamMode(currentExamLimit, currentExamTitle, currentExamType);
 }
 
-function showExamView() {
+function showExamView(preserveFocusState) {
   const mainContent = document.querySelector(".main-content");
 
   if (!mainContent) return;
 
-  examFocusQuestionIndexes = null;
-  examFocusQuestionPosition = 0;
+  if (!preserveFocusState) {
+    examFocusQuestionIndexes = null;
+    examFocusQuestionPosition = 0;
+  }
 
   mainContent.innerHTML = `
-    <button class="back-btn" onclick="location.reload()">
-      ← Prüfung verlassen
+    <button class="back-btn" onclick="pauseExam()">
+      ← Prüfung pausieren
     </button>
 
     <div class="learning-header">
@@ -2143,7 +2383,7 @@ function showExamView() {
           ? `
             <div class="score-box exam-timer-box">
               <span>Restzeit</span>
-              <strong id="examTimer">${formatSeconds(EXAM_DURATION_SECONDS)}</strong>
+              <strong id="examTimer">${formatSeconds(examSecondsLeft)}</strong>
             </div>
           `
           : ""
@@ -2171,6 +2411,12 @@ function showExamView() {
     <section class="question-card" id="examQuestionArea"></section>
 
     <div class="exam-nav" id="examNav"></div>
+
+    <div class="exam-actions" style="margin-top:16px;">
+      <button class="next-btn secondary-btn" onclick="pauseExam()">
+        Prüfung pausieren
+      </button>
+    </div>
   `;
 }
 
@@ -2220,6 +2466,10 @@ function renderExamQuestion() {
       <button class="next-btn danger-warning-btn" id="finishExamNowBtn">
         Prüfung jetzt abgeben
       </button>
+
+      <button class="next-btn secondary-btn" onclick="pauseExam()">
+        Prüfung pausieren
+      </button>
     </div>
   `;
 
@@ -2265,6 +2515,7 @@ function renderExamQuestion() {
 
   updateExamProgress();
   renderExamNavigation();
+  saveActiveExamSession();
 }
 
 function toggleExamAnswer(button) {
@@ -2299,6 +2550,7 @@ function toggleExamAnswer(button) {
   }
 
   renderExamNavigation();
+  saveActiveExamSession();
 }
 
 function previousExamQuestion() {
@@ -2307,6 +2559,7 @@ function previousExamQuestion() {
       examFocusQuestionPosition--;
       examQuestionIndex = examFocusQuestionIndexes[examFocusQuestionPosition];
       renderExamQuestion();
+      saveActiveExamSession();
     }
     return;
   }
@@ -2314,6 +2567,7 @@ function previousExamQuestion() {
   if (examQuestionIndex > 0) {
     examQuestionIndex--;
     renderExamQuestion();
+    saveActiveExamSession();
   }
 }
 
@@ -2323,6 +2577,7 @@ function nextExamQuestion() {
       examFocusQuestionPosition++;
       examQuestionIndex = examFocusQuestionIndexes[examFocusQuestionPosition];
       renderExamQuestion();
+      saveActiveExamSession();
       return;
     }
 
@@ -2339,6 +2594,7 @@ function nextExamQuestion() {
 
   examQuestionIndex++;
   renderExamQuestion();
+  saveActiveExamSession();
 }
 
 function handleExamSubmitRequest() {
@@ -2405,6 +2661,7 @@ function goToExamQuestion(index) {
   examFocusQuestionPosition = 0;
   examQuestionIndex = index;
   renderExamQuestion();
+  saveActiveExamSession();
 }
 
 function updateExamProgress() {
@@ -2449,6 +2706,7 @@ function renderExamNavigation() {
     button.onclick = () => {
       examQuestionIndex = index;
       renderExamQuestion();
+      saveActiveExamSession();
     };
 
     examNav.appendChild(button);
@@ -2495,6 +2753,7 @@ function startExamTimer() {
     examSecondsLeft--;
 
     updateExamTimerDisplay();
+    scheduleExamSessionTimerSave();
 
     if (examSecondsLeft <= 0) {
       clearExamTimer();
@@ -2520,6 +2779,7 @@ function updateExamTimerDisplay() {
 
 function finishExamMode() {
   clearExamTimer();
+  clearActiveSession();
 
   let correctCount = 0;
   let wrongCount = 0;
@@ -2612,7 +2872,7 @@ function finishExamMode() {
 
       <div class="result-hero ${passed ? "passed" : "failed"}">
 
-        <p class="eyebrow">Prüfungsergebnis · ${escapeHtml(currentExamTitle)}</p>
+        <p class="eyebrow"${passed ? "" : ' style="color:#F8FAFC;"'}>Prüfungsergebnis · ${escapeHtml(currentExamTitle)}</p>
 
         <h1>${passed ? "Bestanden" : "Nicht bestanden"}</h1>
 
@@ -3740,6 +4000,9 @@ window.finishExamMode = finishExamMode;
 window.goToExamQuestion = goToExamQuestion;
 window.startUnansweredExamFocus = startUnansweredExamFocus;
 window.showExamSubmitWarning = showExamSubmitWarning;
+window.pauseExam = pauseExam;
+window.resumeActiveExamSession = resumeActiveExamSession;
+window.discardSavedExamSession = discardSavedExamSession;
 
 window.startMistakeTraining = startMistakeTraining;
 window.showMistakeOverview = showMistakeOverview;
