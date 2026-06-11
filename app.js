@@ -2888,11 +2888,22 @@ function buildExamTopicBreakdownHtml(topicBreakdown) {
     .map(categoryName => {
       const stats = topicBreakdown[categoryName];
       const problemCount = stats.wrong + stats.unanswered;
+      const answeredCount = stats.total - stats.unanswered;
+      const coveragePercent =
+        stats.total > 0
+          ? Math.round((answeredCount / stats.total) * 100)
+          : 0;
 
       let statusClass = "topic-neutral";
       let statusText = "Nicht geprüft";
 
-      if (problemCount === 0 && stats.total > 0) {
+      if (answeredCount === 0) {
+        statusClass = "topic-neutral";
+        statusText = "Nicht geprüft";
+      } else if (coveragePercent < 50) {
+        statusClass = "topic-neutral";
+        statusText = "Teilweise offen";
+      } else if (problemCount === 0 && stats.total > 0) {
         statusClass = "topic-strong";
         statusText = "Sicher";
       } else if (stats.percent >= 70) {
@@ -2907,7 +2918,7 @@ function buildExamTopicBreakdownHtml(topicBreakdown) {
       }
 
       const actionHtml = problemCount > 0
-        ? `<button class="next-btn topic-analysis-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Thema trainieren</button>`
+        ? `<button class="next-btn topic-analysis-btn danger-training-btn" onclick='openCategory(${JSON.stringify(categoryName)})'>Thema trainieren</button>`
         : `<button class="next-btn topic-analysis-btn" disabled>Sicher</button>`;
 
       return `
@@ -3353,20 +3364,32 @@ function buildTopicStatsHtml() {
     const mistakeCount = getTopicMistakeCount(categoryName);
     const openCount = getCategoryOpenQuestions(categoryName).length;
     const totalCategoryQuestions = getCategoryQuestions(categoryName).length;
+    const answeredUniqueCount =
+      totalCategoryQuestions > 0 ? totalCategoryQuestions - openCount : 0;
+    const coveragePercent =
+      totalCategoryQuestions > 0
+        ? Math.round((answeredUniqueCount / totalCategoryQuestions) * 100)
+        : 0;
 
     let statusClass = "topic-neutral";
     let statusText = "Noch nicht bearbeitet";
 
-    if (stats.answered > 0 && percent < 50) {
+    if (answeredUniqueCount === 0) {
+      statusClass = "topic-neutral";
+      statusText = "Noch nicht bearbeitet";
+    } else if (coveragePercent < 50) {
+      statusClass = "topic-neutral";
+      statusText = "Teilweise offen";
+    } else if (percent < 50) {
       statusClass = "topic-weak";
       statusText = "Nicht bestanden";
-    } else if (stats.answered > 0 && percent >= 50 && percent < 70) {
+    } else if (percent >= 50 && percent < 70) {
       statusClass = "topic-medium";
       statusText = "Bestanden · Ausbaufähig";
-    } else if (stats.answered > 0 && percent >= 70 && percent < 85) {
+    } else if (percent >= 70 && percent < 85) {
       statusClass = "topic-solid";
       statusText = "Solide";
-    } else if (stats.answered > 0 && percent >= 85) {
+    } else if (percent >= 85) {
       statusClass = "topic-strong";
       statusText = "Stark";
     }
