@@ -6103,6 +6103,73 @@ body.mobile-back-dialog-open-v2276 {
 }
 
 /* =====================================================
+   v24.7b LERNMODUS – PAUSE-BUTTON NEBEN AUSWERTUNG
+===================================================== */
+
+.learning-actions-left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.learning-pause-btn {
+  appearance: none;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(36, 72, 199, 0.18);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f5ff 100%);
+  color: #071229;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  white-space: nowrap;
+}
+
+.learning-pause-btn:hover {
+  background: linear-gradient(135deg, #f8fbff 0%, #e8efff 100%);
+  border-color: rgba(36, 72, 199, 0.28);
+}
+
+.learning-abort-controls-v2311 .learning-progress-label-v247b {
+  margin-left: auto;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .learning-abort-controls-v2311 {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .learning-actions-left {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .learning-actions-left .learning-finish-btn-v2311,
+  .learning-actions-left .learning-pause-btn {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    width: auto !important;
+  }
+
+  .learning-abort-controls-v2311 .learning-progress-label-v247b {
+    flex: 1 1 100%;
+    margin-left: 0;
+    text-align: right !important;
+  }
+}
+
+/* =====================================================
    v23.1.2 MÜNDLICHE PRÜFUNG – KOMPAKTE ÜBERSICHT DESIGN
 ===================================================== */
 

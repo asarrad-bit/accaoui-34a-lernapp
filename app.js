@@ -60,7 +60,8 @@ const STORAGE_KEYS = {
   topicStats: "accaoui_topic_stats",
   topicMistakes: "accaoui_topic_mistakes",
   answeredQuestions: "accaoui_answered_questions",
-  activeSession: "accaoui_active_session"
+  activeSession: "accaoui_active_session",
+  activeLearningSession: "accaoui_active_learning_session"
 };
 
 let examSessionTimerSaveTimeout = null;
@@ -102,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadAllLocalData();
   activateDashboardButtons();
   renderDashboardResumeExamCard();
+  renderDashboardResumeLearningCard();
   loadQuestions();
 });
 
@@ -134,6 +136,7 @@ async function loadQuestions() {
     buildCategoryCards();
     updateDashboardNumbers();
     renderDashboardResumeExamCard();
+    renderDashboardResumeLearningCard();
 
   } catch (error) {
     console.error("Fehler beim Laden der Fragen:", error);
@@ -398,6 +401,295 @@ function formatSessionDate(isoDate) {
   }
 
   return date.toLocaleString("de-DE");
+}
+
+function isActiveLearningMode() {
+  const learningModes = [
+    "learning",
+    "category",
+    "open-questions",
+    "topic-mistakes",
+    "all-mistakes",
+    "last-exam-mistakes"
+  ];
+
+  return (
+    learningModes.includes(currentMode) &&
+    Array.isArray(currentQuestions) &&
+    currentQuestions.length > 0
+  );
+}
+
+function getActiveLearningSession() {
+  return readStorage(STORAGE_KEYS.activeLearningSession, null);
+}
+
+function saveActiveLearningSession(session) {
+  if (!session) {
+    return;
+  }
+
+  writeStorage(STORAGE_KEYS.activeLearningSession, session);
+}
+
+function clearActiveLearningSession() {
+  localStorage.removeItem(STORAGE_KEYS.activeLearningSession);
+}
+
+function hasActiveLearningSession() {
+  const session = getActiveLearningSession();
+
+  return Boolean(
+    session &&
+    session.sessionType === "learning" &&
+    Array.isArray(session.questions) &&
+    session.questions.length > 0
+  );
+}
+
+function saveCurrentLearningSession() {
+  if (!isActiveLearningMode()) {
+    return;
+  }
+
+  const existing = getActiveLearningSession();
+  const now = new Date().toISOString();
+  const nextBtn = document.getElementById("nextBtn");
+  const awaitingNext = Boolean(nextBtn && nextBtn.style.display !== "none");
+
+  saveActiveLearningSession({
+    version: "v24.7b",
+    sessionType: "learning",
+    title: currentTrainingTitle,
+    mode: currentMode,
+    questions: currentQuestions,
+    currentIndex: currentQuestionIndex,
+    selectedAnswers: selectedAnswers,
+    correctAnswersCount: correctAnswersCount,
+    wrongAnswersCount: wrongAnswersCount,
+    awaitingNext: awaitingNext,
+    createdAt: existing && existing.createdAt ? existing.createdAt : now,
+    updatedAt: now
+  });
+}
+
+function restoreLearningQuestionReviewState() {
+  const question = currentQuestions[currentQuestionIndex];
+
+  if (!question) {
+    return;
+  }
+
+  const correct = question.correct;
+  const selectedSorted = [...selectedAnswers].sort((a, b) => a - b).join(",");
+  const correctSorted = [...correct].sort((a, b) => a - b).join(",");
+  const isCorrect = selectedSorted === correctSorted;
+
+  document.querySelectorAll(".answer-btn").forEach(button => {
+    const index = Number(button.dataset.index);
+
+    button.disabled = true;
+
+    if (correct.includes(index)) {
+      button.classList.add("correct");
+    }
+
+    if (selectedAnswers.includes(index) && !correct.includes(index)) {
+      button.classList.add("wrong");
+    }
+  });
+
+  const explanationBox = document.getElementById("explanationBox");
+
+  if (explanationBox) {
+    explanationBox.style.display = "block";
+    explanationBox.innerHTML = `
+      <h3>${isCorrect ? "Richtig" : "Falsch"}</h3>
+      <p>${escapeHtml(question.explanation || "")}</p>
+    `;
+  }
+
+  const nextBtn = document.getElementById("nextBtn");
+
+  if (nextBtn) {
+    nextBtn.style.display = "inline-block";
+  }
+}
+
+function resumeActiveLearningSession() {
+  const session = getActiveLearningSession();
+
+  if (!session || session.sessionType !== "learning") {
+    showSmallNotice("Keine gespeicherte Lerneinheit gefunden.");
+    return false;
+  }
+
+  if (!Array.isArray(session.questions) || session.questions.length === 0) {
+    showSmallNotice("Gespeicherte Lerneinheit ist ungültig.");
+    clearActiveLearningSession();
+    renderDashboardResumeLearningCard();
+    return false;
+  }
+
+  currentMode = session.mode || "learning";
+  currentTrainingTitle = session.title || "Lernmodus";
+  currentQuestions = session.questions;
+  currentQuestionIndex = Number(session.currentIndex) || 0;
+  selectedAnswers = Array.isArray(session.selectedAnswers) ? session.selectedAnswers : [];
+  correctAnswersCount = Number(session.correctAnswersCount) || 0;
+  wrongAnswersCount = Number(session.wrongAnswersCount) || 0;
+
+  showLearningView(currentTrainingTitle, {
+    preserveSelectedAnswers: true,
+    awaitingNext: Boolean(session.awaitingNext)
+  });
+  updateProgress();
+  return true;
+}
+
+function pauseLearningSession() {
+  saveCurrentLearningSession();
+  showLearningPausedNotice();
+}
+
+function showLearningPausedNotice() {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  const session = getActiveLearningSession();
+  const title = session && session.title ? session.title : currentTrainingTitle;
+
+  mainContent.innerHTML = `
+    <section class="review-wrapper">
+      <div class="review-header">
+        <p class="eyebrow">Lerneinheit pausiert</p>
+        <h1>${escapeHtml(title)}</h1>
+        <p>
+          Ihre Lerneinheit wurde gespeichert. Sie können sie jederzeit vom Dashboard
+          oder hier fortsetzen.
+        </p>
+      </div>
+
+      <div class="last-exam-box">
+        <span>Gespeichert</span>
+        <strong>Fortsetzen jederzeit möglich</strong>
+
+        <div class="result-actions">
+          <button class="next-btn" onclick="resumeActiveLearningSession()">
+            Lerneinheit fortsetzen
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zum Dashboard
+          </button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function discardSavedLearningSession() {
+  if (!hasActiveLearningSession()) {
+    return;
+  }
+
+  if (!confirm("Gespeicherte Lerneinheit wirklich löschen?")) {
+    return;
+  }
+
+  clearActiveLearningSession();
+  renderDashboardResumeLearningCard();
+  showSmallNotice("Gespeicherte Lerneinheit wurde gelöscht.");
+}
+
+function renderDashboardResumeLearningCard() {
+  const existing = document.getElementById("learningResumeCard");
+
+  if (existing) {
+    existing.remove();
+  }
+
+  if (!hasActiveLearningSession()) {
+    return;
+  }
+
+  const session = getActiveLearningSession();
+  const mainContent = document.querySelector(".main-content");
+  const heroGrid = document.querySelector(".hero-grid");
+
+  if (!mainContent || !heroGrid) {
+    return;
+  }
+
+  const title = session.title || "Gespeicherte Lerneinheit";
+  const questionLabel =
+    Number.isFinite(Number(session.currentIndex)) && Array.isArray(session.questions)
+      ? "Frage " + (Number(session.currentIndex) + 1) + "/" + session.questions.length
+      : "Fortsetzen möglich";
+
+  const card = document.createElement("section");
+  card.id = "learningResumeCard";
+  card.className = "last-exam-box";
+  card.innerHTML = `
+    <span>Angefangene Lerneinheit</span>
+    <strong>${escapeHtml(title)}</strong>
+    <p>${escapeHtml(questionLabel)} · gespeichert am ${escapeHtml(formatSessionDate(session.updatedAt))}</p>
+
+    <div class="result-actions">
+      <button class="next-btn" onclick="resumeActiveLearningSession()">
+        Lerneinheit fortsetzen
+      </button>
+
+      <button class="next-btn secondary-btn" onclick="discardSavedLearningSession()">
+        Gespeicherte Lerneinheit löschen
+      </button>
+    </div>
+  `;
+
+  heroGrid.parentNode.insertBefore(card, heroGrid);
+}
+
+function renderLearningActionControls() {
+  if (!isActiveLearningMode()) {
+    return;
+  }
+
+  const progressWrapper = document.querySelector(".progress-wrapper");
+  const questionArea = document.getElementById("questionArea");
+
+  if (!progressWrapper || !questionArea) {
+    return;
+  }
+
+  let controls = document.getElementById("learningAbortControlsV2311");
+
+  if (!controls) {
+    controls = document.createElement("div");
+    controls.id = "learningAbortControlsV2311";
+    controls.className = "learning-abort-controls-v2311";
+    progressWrapper.insertAdjacentElement("afterend", controls);
+  }
+
+  const total = Array.isArray(currentQuestions) ? currentQuestions.length : 0;
+  const answered =
+    Number(correctAnswersCount || 0) + Number(wrongAnswersCount || 0);
+
+  controls.innerHTML = `
+    <div class="learning-actions-left">
+      <button type="button" class="learning-finish-btn-v2311" onclick="showLearningPartialResultV2311()">
+        Auswertung anzeigen
+      </button>
+
+      <button type="button" class="next-btn learning-pause-btn" onclick="pauseLearningSession()">
+        Lernen pausieren
+      </button>
+    </div>
+
+    <span class="learning-progress-label-v247b">
+      ${answered}/${total} bearbeitet
+    </span>
+  `;
 }
 
 
@@ -796,6 +1088,8 @@ function openCategory(categoryName) {
 
 function startLearningSession(questions, title, mode) {
   clearExamTimer();
+  clearActiveLearningSession();
+  renderDashboardResumeLearningCard();
 
   currentMode = mode || "learning";
   currentTrainingTitle = title || "Lernmodus";
@@ -812,7 +1106,8 @@ function startLearningSession(questions, title, mode) {
   showLearningView(currentTrainingTitle);
 }
 
-function showLearningView(title) {
+function showLearningView(title, options) {
+  const viewOptions = options || {};
   const mainContent = document.querySelector(".main-content");
 
   if (!mainContent) return;
@@ -830,7 +1125,7 @@ function showLearningView(title) {
 
       <div class="score-box">
         <span>Frage</span>
-        <strong id="questionCounter">1/${currentQuestions.length}</strong>
+        <strong id="questionCounter">${currentQuestionIndex + 1}/${currentQuestions.length}</strong>
       </div>
     </div>
 
@@ -848,11 +1143,20 @@ function showLearningView(title) {
     <section class="question-card" id="questionArea"></section>
   `;
 
-  renderQuestion();
+  renderQuestion(viewOptions.preserveSelectedAnswers);
+
+  if (viewOptions.awaitingNext) {
+    restoreLearningQuestionReviewState();
+  }
+
+  setTimeout(renderLearningActionControls, 60);
+  setTimeout(renderLearningActionControls, 200);
 }
 
-function renderQuestion() {
-  selectedAnswers = [];
+function renderQuestion(preserveSelectedAnswers) {
+  if (!preserveSelectedAnswers) {
+    selectedAnswers = [];
+  }
 
   const question = currentQuestions[currentQuestionIndex];
   const questionArea = document.getElementById("questionArea");
@@ -900,6 +1204,18 @@ function renderQuestion() {
   if (nextBtn) {
     nextBtn.onclick = nextQuestion;
   }
+
+  if (preserveSelectedAnswers && selectedAnswers.length > 0) {
+    document.querySelectorAll(".answer-btn").forEach(button => {
+      const index = Number(button.dataset.index);
+
+      if (selectedAnswers.includes(index)) {
+        button.classList.add("selected");
+      }
+    });
+  }
+
+  saveCurrentLearningSession();
 }
 
 function selectAnswer(button) {
@@ -927,6 +1243,7 @@ function selectAnswer(button) {
     button.classList.add("selected");
   }
 
+  saveCurrentLearningSession();
   checkAnswerWhenComplete();
 }
 
@@ -971,6 +1288,7 @@ function checkLearningAnswer() {
 
   updateProgress();
   updateDashboardNumbers();
+  saveCurrentLearningSession();
 
   document.querySelectorAll(".answer-btn").forEach(button => {
     const index = Number(button.dataset.index);
@@ -1001,6 +1319,8 @@ function checkLearningAnswer() {
   if (nextBtn) {
     nextBtn.style.display = "inline-block";
   }
+
+  saveCurrentLearningSession();
 }
 
 function nextQuestion() {
@@ -1010,6 +1330,8 @@ function nextQuestion() {
     showFinishScreen();
     return;
   }
+
+  saveCurrentLearningSession();
 
   const questionCounter = document.getElementById("questionCounter");
 
@@ -1037,9 +1359,13 @@ function updateProgress() {
     resultStats.innerText =
       correctAnswersCount + " richtig · " + wrongAnswersCount + " falsch";
   }
+
+  setTimeout(renderLearningActionControls, 60);
 }
 
 function showFinishScreen() {
+  clearActiveLearningSession();
+
   const total = currentQuestions.length;
   const percent = total > 0
     ? Math.round((correctAnswersCount / total) * 100)
@@ -4037,6 +4363,9 @@ window.showExamSubmitWarning = showExamSubmitWarning;
 window.pauseExam = pauseExam;
 window.resumeActiveExamSession = resumeActiveExamSession;
 window.discardSavedExamSession = discardSavedExamSession;
+window.pauseLearningSession = pauseLearningSession;
+window.resumeActiveLearningSession = resumeActiveLearningSession;
+window.discardSavedLearningSession = discardSavedLearningSession;
 
 window.startMistakeTraining = startMistakeTraining;
 window.showMistakeOverview = showMistakeOverview;
