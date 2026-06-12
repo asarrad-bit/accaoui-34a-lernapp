@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v24.7b
+Stand: v24.7c
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v24.7b)
+## 5. Aktueller Versionsstand (bis v24.7c)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -203,6 +203,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v24.6a | Doppelten Button „Prüfung pausieren“ in der Vollsimulation entfernt; nur ein Pause-Button bleibt sichtbar – **erledigt** |
 | v24.7a | Prüfungsnavigation kompakter/einklappbar: 82 Zahlen nicht dauerhaft sichtbar; Summary zeigt aktuelle Frage, beantwortete und offene Fragen; Fragenübersicht per Button ein-/ausblendbar – **erledigt** |
 | v24.7b | Lernmodus pausieren / fortsetzen: aktive Lerneinheit wird in `localStorage` gespeichert; Dashboard-Karte „Angefangene Lerneinheit“; Button „Lernen pausieren“ neben „Auswertung anzeigen“; gespeicherte Lerneinheit kann fortgesetzt oder gelöscht werden – **erledigt** |
+| v24.7c | Lernmodus-Fortsetzen stabilisiert: ausgewählte Antworten bleiben nach Pause/Fortsetzen sichtbar; bereits ausgewertete Fragen stellen Erklärung, Markierungen und „Nächste Frage“ korrekt wieder her – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
