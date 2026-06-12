@@ -2368,10 +2368,6 @@ function showExamView(preserveFocusState) {
   }
 
   mainContent.innerHTML = `
-    <button class="back-btn" onclick="pauseExam()">
-      ← Prüfung pausieren
-    </button>
-
     <div class="learning-header">
       <div>
         <p class="eyebrow">Prüfungsmodus</p>
@@ -2411,12 +2407,6 @@ function showExamView(preserveFocusState) {
     <section class="question-card" id="examQuestionArea"></section>
 
     <div class="exam-nav" id="examNav"></div>
-
-    <div class="exam-actions" style="margin-top:16px;">
-      <button class="next-btn secondary-btn" onclick="pauseExam()">
-        Prüfung pausieren
-      </button>
-    </div>
   `;
 }
 
