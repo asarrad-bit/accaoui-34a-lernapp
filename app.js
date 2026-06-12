@@ -32,6 +32,7 @@ let examFocusQuestionIndexes = null;
 let examFocusQuestionPosition = 0;
 let examTimer = null;
 let examSecondsLeft = 120 * 60;
+let examNavigationExpanded = false;
 
 let lastExamMistakes = [];
 let examHistory = [];
@@ -2362,6 +2363,8 @@ function showExamView(preserveFocusState) {
 
   if (!mainContent) return;
 
+  examNavigationExpanded = false;
+
   if (!preserveFocusState) {
     examFocusQuestionIndexes = null;
     examFocusQuestionPosition = 0;
@@ -2406,7 +2409,17 @@ function showExamView(preserveFocusState) {
 
     <section class="question-card" id="examQuestionArea"></section>
 
-    <div class="exam-nav" id="examNav"></div>
+    <div class="exam-nav-panel">
+      <button class="exam-nav-toggle" id="examNavToggle" type="button">
+        Fragenübersicht anzeigen
+      </button>
+
+      <div class="exam-nav-summary" id="examNavSummary">
+        Frage 1 von ${examQuestions.length}
+      </div>
+
+      <div class="exam-nav collapsed" id="examNav"></div>
+    </div>
   `;
 }
 
@@ -2672,10 +2685,41 @@ function updateExamProgress() {
   }
 }
 
+function toggleExamNavigation() {
+  examNavigationExpanded = !examNavigationExpanded;
+  renderExamNavigation();
+}
+
 function renderExamNavigation() {
   const examNav = document.getElementById("examNav");
+  const examNavToggle = document.getElementById("examNavToggle");
+  const examNavSummary = document.getElementById("examNavSummary");
 
   if (!examNav) return;
+
+  const answeredCount = Object.values(examAnswers).filter(
+    answer => Array.isArray(answer) && answer.length > 0
+  ).length;
+  const openCount = examQuestions.length - answeredCount;
+
+  if (examNavSummary) {
+    examNavSummary.innerText =
+      "Frage " + (examQuestionIndex + 1) + " von " + examQuestions.length +
+      " · beantwortet: " + answeredCount + " · offen: " + openCount;
+  }
+
+  if (examNavToggle) {
+    examNavToggle.innerText = examNavigationExpanded
+      ? "Fragenübersicht ausblenden"
+      : "Fragenübersicht anzeigen";
+    examNavToggle.onclick = toggleExamNavigation;
+  }
+
+  if (examNavigationExpanded) {
+    examNav.classList.remove("collapsed");
+  } else {
+    examNav.classList.add("collapsed");
+  }
 
   examNav.innerHTML = "";
 
