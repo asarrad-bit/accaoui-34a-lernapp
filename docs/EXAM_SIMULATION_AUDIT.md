@@ -8,6 +8,24 @@ Grundlage: `questions.json` (86 Fragen), `app.js` (Prüfungsmodus), `docs/PROJEC
 
 ---
 
+## Aktueller Prüfstand v24.6a
+
+- v24.5: Teilpunkte-Logik für Mehrfachantworten wurde technisch umgesetzt.
+- v24.6: Vollsimulation wurde im Browser getestet.
+- v24.6a: Doppelte Anzeige des Buttons „Prüfung pausieren“ wurde entfernt.
+- Vollsimulation zeigt 82 Fragen.
+- Maximalpunktzahl ist 120 Punkte.
+- Bestehensgrenze ist 60 Punkte.
+- 2-Punkte-Fragen können teilrichtig 1 Punkt bringen.
+- vollständig richtige 2-Punkte-Fragen bringen 2 Punkte.
+- falsche Antworten allein bringen 0 Punkte.
+- Pause/Fortsetzen ist getestet.
+- Der Button „Prüfung pausieren“ ist nur noch einmal sichtbar.
+- Keine Änderung an questions.json in v24.6a.
+- Keine Änderung an Punkteberechnung in v24.6a.
+
+---
+
 ## 1. Ausgangslage
 
 - Die **Fragenbank** umfasst aktuell **86 Fragen** (Ziel-Pool nach Ausbauplan erreicht).
