@@ -24,6 +24,8 @@ let selectedAnswers = [];
 
 let correctAnswersCount = 0;
 let wrongAnswersCount = 0;
+let learningQuestionAwaitingNext = false;
+let pendingLearningViewOptions = null;
 
 let examQuestions = [];
 let examQuestionIndex = 0;
@@ -447,6 +449,16 @@ function hasActiveLearningSession() {
   );
 }
 
+function normalizeSelectedAnswerIndexes(answers) {
+  if (!Array.isArray(answers)) {
+    return [];
+  }
+
+  return answers
+    .map(value => Number(value))
+    .filter(index => Number.isInteger(index) && index >= 0);
+}
+
 function saveCurrentLearningSession() {
   if (!isActiveLearningMode()) {
     return;
@@ -455,7 +467,13 @@ function saveCurrentLearningSession() {
   const existing = getActiveLearningSession();
   const now = new Date().toISOString();
   const nextBtn = document.getElementById("nextBtn");
-  const awaitingNext = Boolean(nextBtn && nextBtn.style.display !== "none");
+  const awaitingNext =
+    learningQuestionAwaitingNext ||
+    Boolean(
+      nextBtn &&
+      nextBtn.style.display !== "none" &&
+      window.getComputedStyle(nextBtn).display !== "none"
+    );
 
   saveActiveLearningSession({
     version: "v24.7b",
@@ -464,7 +482,7 @@ function saveCurrentLearningSession() {
     mode: currentMode,
     questions: currentQuestions,
     currentIndex: currentQuestionIndex,
-    selectedAnswers: selectedAnswers,
+    selectedAnswers: normalizeSelectedAnswerIndexes(selectedAnswers),
     correctAnswersCount: correctAnswersCount,
     wrongAnswersCount: wrongAnswersCount,
     awaitingNext: awaitingNext,
@@ -535,14 +553,17 @@ function resumeActiveLearningSession() {
   currentTrainingTitle = session.title || "Lernmodus";
   currentQuestions = session.questions;
   currentQuestionIndex = Number(session.currentIndex) || 0;
-  selectedAnswers = Array.isArray(session.selectedAnswers) ? session.selectedAnswers : [];
+  selectedAnswers = normalizeSelectedAnswerIndexes(session.selectedAnswers);
   correctAnswersCount = Number(session.correctAnswersCount) || 0;
   wrongAnswersCount = Number(session.wrongAnswersCount) || 0;
+  learningQuestionAwaitingNext = Boolean(session.awaitingNext);
 
-  showLearningView(currentTrainingTitle, {
+  pendingLearningViewOptions = {
     preserveSelectedAnswers: true,
-    awaitingNext: Boolean(session.awaitingNext)
-  });
+    awaitingNext: learningQuestionAwaitingNext
+  };
+
+  showLearningView(currentTrainingTitle, pendingLearningViewOptions);
   updateProgress();
   return true;
 }
@@ -1091,6 +1112,9 @@ function startLearningSession(questions, title, mode) {
   clearActiveLearningSession();
   renderDashboardResumeLearningCard();
 
+  learningQuestionAwaitingNext = false;
+  pendingLearningViewOptions = null;
+
   currentMode = mode || "learning";
   currentTrainingTitle = title || "Lernmodus";
 
@@ -1107,7 +1131,12 @@ function startLearningSession(questions, title, mode) {
 }
 
 function showLearningView(title, options) {
-  const viewOptions = options || {};
+  const viewOptions = options || pendingLearningViewOptions || {};
+  pendingLearningViewOptions = null;
+
+  const preserveSelectedAnswers = Boolean(viewOptions.preserveSelectedAnswers);
+  const awaitingNext = Boolean(viewOptions.awaitingNext);
+
   const mainContent = document.querySelector(".main-content");
 
   if (!mainContent) return;
@@ -1143,9 +1172,12 @@ function showLearningView(title, options) {
     <section class="question-card" id="questionArea"></section>
   `;
 
-  renderQuestion(viewOptions.preserveSelectedAnswers);
+  renderQuestion({
+    preserveSelectedAnswers: preserveSelectedAnswers,
+    awaitingNext: awaitingNext
+  });
 
-  if (viewOptions.awaitingNext) {
+  if (awaitingNext) {
     restoreLearningQuestionReviewState();
   }
 
@@ -1153,9 +1185,18 @@ function showLearningView(title, options) {
   setTimeout(renderLearningActionControls, 200);
 }
 
-function renderQuestion(preserveSelectedAnswers) {
+function renderQuestion(resumeOptions) {
+  const options =
+    typeof resumeOptions === "boolean"
+      ? { preserveSelectedAnswers: resumeOptions }
+      : resumeOptions || {};
+
+  const preserveSelectedAnswers = Boolean(options.preserveSelectedAnswers);
+  const awaitingNext = Boolean(options.awaitingNext);
+
   if (!preserveSelectedAnswers) {
     selectedAnswers = [];
+    learningQuestionAwaitingNext = false;
   }
 
   const question = currentQuestions[currentQuestionIndex];
@@ -1205,7 +1246,7 @@ function renderQuestion(preserveSelectedAnswers) {
     nextBtn.onclick = nextQuestion;
   }
 
-  if (preserveSelectedAnswers && selectedAnswers.length > 0) {
+  if (preserveSelectedAnswers && !awaitingNext && selectedAnswers.length > 0) {
     document.querySelectorAll(".answer-btn").forEach(button => {
       const index = Number(button.dataset.index);
 
@@ -1222,6 +1263,10 @@ function selectAnswer(button) {
   const question = currentQuestions[currentQuestionIndex];
 
   if (!question) return;
+
+  if (learningQuestionAwaitingNext) {
+    return;
+  }
 
   const maxAnswers = question.correct.length;
   const index = Number(button.dataset.index);
@@ -1320,10 +1365,12 @@ function checkLearningAnswer() {
     nextBtn.style.display = "inline-block";
   }
 
+  learningQuestionAwaitingNext = true;
   saveCurrentLearningSession();
 }
 
 function nextQuestion() {
+  learningQuestionAwaitingNext = false;
   currentQuestionIndex++;
 
   if (currentQuestionIndex >= currentQuestions.length) {
