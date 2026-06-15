@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v24.8
+Stand: v24.9
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v24.8)
+## 5. Aktueller Versionsstand (bis v24.9)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -207,6 +207,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v24.7d | Automatisches Sicherheits-Speichern bei App-Verlassen: laufende Prüfung oder Lerneinheit wird bei Tab-Wechsel, Browser-Hintergrund, Neuladen oder Schließen automatisch in `localStorage` gesichert – **erledigt** |
 | v24.7e | Auto-Save Feintest bestanden: Lernmodus bei Tab-Wechsel, Lernmodus bei Browser-Neuladen und Prüfung bei Browser-Neuladen wurden erfolgreich getestet; Dashboard-Karten „Angefangene Lerneinheit“ und „Angefangene Prüfung“ erscheinen korrekt – **erledigt** |
 | v24.8 | Auto-Save-Anzeige ergänzt: nach automatischer Sicherung erscheint eine kleine, unaufdringliche Statusanzeige „Automatisch gespeichert“; Cache-Versionen für `app.js` und `style.css` in `index.html` auf v24.8 gesetzt – **erledigt** |
+| v24.9 | Stabilitätstest nach Auto-Save/Pause/Fortsetzen bestanden: Lernmodus-Pause, Lernmodus-Auto-Save, Prüfung-Pause, Prüfung-Auto-Save bei Reload und Session-Löschung nach Abgabe erfolgreich geprüft – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
