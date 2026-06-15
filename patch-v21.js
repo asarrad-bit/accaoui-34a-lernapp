@@ -5600,3 +5600,130 @@ if (!window.ACCAOUI_V232_ORAL_SHEET_B_PATCH) {
     /* Rebinding je nach Browser nicht notwendig */
   }
 }
+
+/* =====================================================
+   v25.1 MÜNDLICHE PRÜFUNG – PRÜFUNGSBOGEN B
+   Ziel:
+   - Prüfungsbogen B in Modusauswahl startbar
+   - 15 Fragen aus ACCAOUI_ORAL_SHEETS_V23
+===================================================== */
+
+if (!window.ACCAOUI_V251_ORAL_SHEET_B_PATCH) {
+  window.ACCAOUI_V251_ORAL_SHEET_B_PATCH = true;
+
+  function getOralSheetBQuestionsV251() {
+    const sheetsData = window.ACCAOUI_ORAL_SHEETS_V23;
+
+    if (!sheetsData || !Array.isArray(sheetsData.sheets)) {
+      return [];
+    }
+
+    const sheet = sheetsData.sheets.find(item => item && item.id === "oral_sheet_b_v23");
+
+    if (!sheet || !Array.isArray(sheet.questions)) {
+      return [];
+    }
+
+    return sheet.questions
+      .map(question => {
+        if (!question) {
+          return null;
+        }
+
+        return {
+          id: question.id,
+          mode: question.mode || "oral",
+          sheetId: "oral_sheet_b_v23",
+          sheetTitle: "Prüfungsbogen B",
+          category: question.topic,
+          question: question.examinerQuestion,
+          sampleAnswer: question.modelAnswer,
+          examinerNote: question.examinerNotes,
+          followUpQuestions: question.followUpQuestions,
+          criticalMistakes: question.criticalMistakes,
+          examinerName: question.examinerRole,
+          examinerIndex: Number(question.examinerBlock) - 1,
+          examinerBlockTitle: question.subtopic || question.topic
+        };
+      })
+      .filter(Boolean);
+  }
+
+  window.getOralSheetBQuestionsV251 = getOralSheetBQuestionsV251;
+
+  window.startOralSimulationSheetBV251 = function startOralSimulationSheetBV251() {
+    if (typeof window.closeOralModeSheetV2314 === "function") {
+      window.closeOralModeSheetV2314();
+    }
+
+    const questions = getOralSheetBQuestionsV251();
+
+    if (questions.length !== 15) {
+      showSmallNotice("Prüfungsbogen B konnte nicht geladen werden.");
+      return;
+    }
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
+
+    startOralExamSessionV220(
+      questions,
+      "15-Minuten-Simulation · Prüfungsbogen B"
+    );
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = false;
+
+    if (typeof startOralSimulationTimerV2317 === "function") {
+      startOralSimulationTimerV2317();
+    }
+
+    if (typeof updateActiveExaminerV2317 === "function") {
+      updateActiveExaminerV2317();
+    }
+  };
+
+  function injectOralSheetBModeButtonV251() {
+    const grid = document.querySelector(".oral-mode-grid-v2314");
+
+    if (!grid || grid.querySelector("[data-oral-sheet-b-v251]")) {
+      return;
+    }
+
+    const legacyButton = document.getElementById("oralModeSheetBBtnV232");
+
+    if (legacyButton) {
+      legacyButton.remove();
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "oral-mode-card-v2314";
+    button.setAttribute("data-oral-sheet-b-v251", "true");
+    button.setAttribute("onclick", "startOralSimulationSheetBV251()");
+    button.innerHTML = `
+      <span>🧾</span>
+      <strong>Prüfungsbogen B</strong>
+      <small>3 Prüfer · 15 neue Fallfragen · Auswertung am Ende</small>
+    `;
+
+    const primaryButton = grid.querySelector(".oral-mode-card-v2314.is-primary");
+
+    if (primaryButton && primaryButton.nextElementSibling) {
+      grid.insertBefore(button, primaryButton.nextElementSibling);
+    } else if (primaryButton) {
+      primaryButton.insertAdjacentElement("afterend", button);
+    } else {
+      grid.appendChild(button);
+    }
+  }
+
+  window.accaouiPreviousShowOralExamModeSelectV251 =
+    window.showOralExamModeSelectV2314;
+
+  window.showOralExamModeSelectV2314 = function patchedShowOralExamModeSelectV251() {
+    if (typeof window.accaouiPreviousShowOralExamModeSelectV251 === "function") {
+      window.accaouiPreviousShowOralExamModeSelectV251();
+    }
+
+    injectOralSheetBModeButtonV251();
+  };
+}
