@@ -67,6 +67,8 @@ const STORAGE_KEYS = {
 };
 
 let examSessionTimerSaveTimeout = null;
+let pendingAutoSaveIndicator = false;
+let autoSaveIndicatorTimeout = null;
 
 const categories = [
   "Recht der öffentlichen Sicherheit und Ordnung",
@@ -492,6 +494,44 @@ function saveCurrentLearningSession() {
   });
 }
 
+function showAutoSaveIndicator(reason) {
+  if (!document.body) {
+    return;
+  }
+
+  let indicator = document.getElementById("autoSaveIndicatorV248");
+
+  if (!indicator) {
+    indicator = document.createElement("div");
+    indicator.id = "autoSaveIndicatorV248";
+    indicator.className = "auto-save-indicator-v248";
+    indicator.setAttribute("role", "status");
+    indicator.setAttribute("aria-live", "polite");
+    document.body.appendChild(indicator);
+  }
+
+  indicator.innerHTML = `
+    <strong>Automatisch gespeichert</strong>
+    <span>Gerade eben</span>
+  `;
+
+  indicator.classList.remove("hide");
+  indicator.classList.add("show");
+
+  if (autoSaveIndicatorTimeout) {
+    clearTimeout(autoSaveIndicatorTimeout);
+  }
+
+  autoSaveIndicatorTimeout = setTimeout(() => {
+    indicator.classList.remove("show");
+    indicator.classList.add("hide");
+  }, 5000);
+
+  if (reason) {
+    console.log("Auto-Save-Anzeige:", reason);
+  }
+}
+
 function autoSaveActiveSessionOnLeave(reason) {
   let saved = false;
 
@@ -505,8 +545,16 @@ function autoSaveActiveSessionOnLeave(reason) {
     saved = true;
   }
 
-  if (saved && reason) {
-    console.log("Aktive Session automatisch gespeichert:", reason);
+  if (saved) {
+    if (reason) {
+      console.log("Aktive Session automatisch gespeichert:", reason);
+    }
+
+    if (document.visibilityState === "hidden") {
+      pendingAutoSaveIndicator = true;
+    } else {
+      showAutoSaveIndicator(reason);
+    }
   }
 }
 
@@ -514,6 +562,12 @@ function registerActiveSessionAutoSaveListeners() {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
       autoSaveActiveSessionOnLeave("visibilitychange");
+      return;
+    }
+
+    if (document.visibilityState === "visible" && pendingAutoSaveIndicator) {
+      pendingAutoSaveIndicator = false;
+      showAutoSaveIndicator("visible");
     }
   });
 
