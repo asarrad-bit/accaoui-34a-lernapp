@@ -102,6 +102,7 @@ const categoryAccentColor = "#2344c6";
 document.addEventListener("DOMContentLoaded", () => {
   console.log("App-Version:", APP_VERSION);
 
+  registerActiveSessionAutoSaveListeners();
   loadAllLocalData();
   activateDashboardButtons();
   renderDashboardResumeExamCard();
@@ -488,6 +489,40 @@ function saveCurrentLearningSession() {
     awaitingNext: awaitingNext,
     createdAt: existing && existing.createdAt ? existing.createdAt : now,
     updatedAt: now
+  });
+}
+
+function autoSaveActiveSessionOnLeave(reason) {
+  let saved = false;
+
+  if (currentMode === "exam" && Array.isArray(examQuestions) && examQuestions.length > 0) {
+    saveActiveExamSession();
+    saved = true;
+  }
+
+  if (isActiveLearningMode()) {
+    saveCurrentLearningSession();
+    saved = true;
+  }
+
+  if (saved && reason) {
+    console.log("Aktive Session automatisch gespeichert:", reason);
+  }
+}
+
+function registerActiveSessionAutoSaveListeners() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      autoSaveActiveSessionOnLeave("visibilitychange");
+    }
+  });
+
+  window.addEventListener("pagehide", () => {
+    autoSaveActiveSessionOnLeave("pagehide");
+  });
+
+  window.addEventListener("beforeunload", () => {
+    autoSaveActiveSessionOnLeave("beforeunload");
   });
 }
 
