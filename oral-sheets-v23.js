@@ -471,6 +471,433 @@ const ACCAOUI_ORAL_SHEETS_V23 = {
           sourceStyle: "accaoui_original"
         }
       ]
+    },
+    {
+      id: "oral_sheet_c_v25",
+      title: "Prüfungsbogen C",
+      status: "draft",
+      questions: [
+        {
+          id: "oral-c-001",
+          mode: "oral",
+          sheet: "C",
+          order: 1,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Recht der öffentlichen Sicherheit und Ordnung",
+          subtopic: "Öffentliches Recht / Privatrecht / Rolle des Sicherheitsmitarbeiters",
+          examinerQuestion: "Ein Besucher sagt zu Ihnen: „Sie sind keine Polizei, Sie dürfen hier gar nichts.“ Erklären Sie, auf welcher rechtlichen Grundlage Sie trotzdem handeln dürfen und wo Ihre Grenzen liegen.",
+          modelAnswer: "Ich handle nicht hoheitlich wie die Polizei, sondern privatrechtlich im Auftrag des Hausrechtsinhabers. Grundlage sind vor allem Hausrecht, Dienstanweisung und die allgemein zulässigen Jedermannsrechte. Ich darf Personen ansprechen, Zutritt verweigern oder zum Verlassen auffordern, wenn Auftrag und Hausordnung das hergeben. Ich darf aber keine Polizeibefugnisse vortäuschen, keine Strafen verhängen und nur in rechtfertigenden Ausnahmesituationen, etwa Notwehr oder vorläufige Festnahme bei frischer Tat, körperlich eingreifen.",
+          followUpQuestions: [
+            "Was ist der Unterschied zwischen privatrechtlichem Handeln und hoheitlichem Handeln?",
+            "Wann muss die Polizei eingeschaltet werden?",
+            "Warum ist es gefährlich, sich als Sicherheitsmitarbeiter wie eine Amtsperson zu verhalten?"
+          ],
+          examinerNotes: "Der Prüfling muss private Befugnisse klar von staatlicher Hoheitsgewalt trennen.",
+          criticalMistakes: [
+            "Sicherheitsmitarbeiter mit Polizeibeamten gleichsetzen",
+            "Hausrecht als grenzenlose Befugnis darstellen",
+            "Polizeiliche Maßnahmen vortäuschen",
+            "Keine Grenzen der eigenen Rolle nennen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-002",
+          mode: "oral",
+          sheet: "C",
+          order: 2,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Bürgerliches Gesetzbuch",
+          subtopic: "Hausrecht / Besitzdiener / Besitzschutz",
+          examinerQuestion: "Sie werden vom Betreiber eines Einkaufszentrums beauftragt, das Hausrecht durchzusetzen. Was bedeutet Hausrecht und welche Rolle haben Sie als Sicherheitsmitarbeiter dabei?",
+          modelAnswer: "Hausrecht bedeutet, dass der Berechtigte bestimmen darf, wer ein Grundstück, Gebäude oder Geschäft betreten und dort bleiben darf. Als Sicherheitsmitarbeiter übe ich dieses Recht nicht aus eigenem Recht aus, sondern im Auftrag des Hausrechtsinhabers. Ich darf auf Hausordnung und Anweisungen hinweisen, Zutritt verweigern oder Personen auffordern, den Bereich zu verlassen. Dabei muss ich verhältnismäßig, sachlich und diskriminierungsfrei handeln.",
+          followUpQuestions: [
+            "Was ist ein Besitzdiener?",
+            "Darf ein Sicherheitsmitarbeiter immer körperlich eingreifen?",
+            "Was tun Sie, wenn eine Person trotz Hausverbot nicht geht?"
+          ],
+          examinerNotes: "Hausrecht, Auftrag, Besitzdienerstellung und Grenzen müssen sauber erklärt werden.",
+          criticalMistakes: [
+            "Hausrecht als eigenes Recht des Mitarbeiters darstellen",
+            "Körperlichen Zwang ohne Rechtfertigung erlauben",
+            "Diskriminierende Zutrittsverweigerung akzeptieren",
+            "Polizei bei Eskalation nicht erwähnen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-003",
+          mode: "oral",
+          sheet: "C",
+          order: 3,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Strafgesetzbuch und Strafverfahrensrecht",
+          subtopic: "Vorläufige Festnahme / § 127 Abs. 1 StPO",
+          examinerQuestion: "Sie beobachten, wie eine Person Ware einsteckt und ohne zu bezahlen den Kassenbereich verlässt. Wann dürfen Sie diese Person nach § 127 Abs. 1 StPO vorläufig festhalten?",
+          modelAnswer: "Eine vorläufige Festnahme durch jedermann ist nur möglich, wenn die Person auf frischer Tat betroffen oder verfolgt wird und zusätzlich Fluchtverdacht besteht oder die Identität nicht sofort festgestellt werden kann. Ein bloßer Verdacht reicht nicht. Das Festhalten muss verhältnismäßig sein, die Polizei ist unverzüglich zu informieren und die Maßnahme dient nicht der Bestrafung.",
+          followUpQuestions: [
+            "Was bedeutet frische Tat?",
+            "Reicht ein bloßer Verdacht?",
+            "Was ist nach dem Festhalten sofort zu tun?"
+          ],
+          examinerNotes: "Frische Tat, Fluchtverdacht oder ungeklärte Identität und unverzügliche Polizei müssen genannt werden.",
+          criticalMistakes: [
+            "Bloßen Verdacht als ausreichend ansehen",
+            "Festhalten als Strafe darstellen",
+            "Polizei nicht informieren",
+            "Unverhältnismäßige Gewalt erlauben"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-004",
+          mode: "oral",
+          sheet: "C",
+          order: 4,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Strafgesetzbuch und Strafverfahrensrecht",
+          subtopic: "Notwehr / Nothilfe / Verhältnismäßigkeit",
+          examinerQuestion: "Ein Besucher schlägt plötzlich nach Ihnen. Was ist Notwehr und wie muss Ihre Reaktion rechtlich bewertet werden?",
+          modelAnswer: "Notwehr ist die erforderliche Verteidigung gegen einen gegenwärtigen rechtswidrigen Angriff. Wenn der Besucher gerade angreift, darf ich mich verteidigen. Die Abwehr muss geeignet und erforderlich sein, also den Angriff beenden und darf nicht unnötig überzogen sein. Wenn ich eine andere Person schütze, spricht man von Nothilfe. Sobald der Angriff beendet ist, endet auch die Notwehrlage.",
+          followUpQuestions: [
+            "Was bedeutet gegenwärtiger Angriff?",
+            "Was ist Nothilfe?",
+            "Darf man nach Ende des Angriffs noch zurückschlagen?"
+          ],
+          examinerNotes: "Erforderlichkeit, Gegenwärtigkeit und Ende der Notwehrlage sind entscheidend.",
+          criticalMistakes: [
+            "Rache als Notwehr darstellen",
+            "Vergangenen Angriff als Notwehrlage behandeln",
+            "Unverhältnismäßige Gewalt erlauben",
+            "Nothilfe nicht erklären können"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-005",
+          mode: "oral",
+          sheet: "C",
+          order: 5,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Bürgerliches Gesetzbuch",
+          subtopic: "Besitzwehr / Besitzkehr / verbotene Eigenmacht",
+          examinerQuestion: "Ein Besucher nimmt ein Absperrschild des Objekts weg und will damit das Gelände verlassen. Welche zivilrechtlichen Begriffe und Möglichkeiten sind hier wichtig?",
+          modelAnswer: "Wichtig sind Besitz, verbotene Eigenmacht und Besitzschutz. Wenn jemand ohne Willen des Berechtigten den Besitz entzieht oder stört, liegt verbotene Eigenmacht vor. Der Besitzer oder Besitzdiener kann im engen Rahmen Besitzwehr oder Besitzkehr ausüben. Als Sicherheitsmitarbeiter muss ich verhältnismäßig handeln, den Auftrag beachten und bei Streit oder Gefahr die Polizei hinzuziehen.",
+          followUpQuestions: [
+            "Was ist verbotene Eigenmacht?",
+            "Was ist Besitzwehr?",
+            "Warum muss auch hier verhältnismäßig gehandelt werden?"
+          ],
+          examinerNotes: "BGB-Begriffe sollen praxisnah und nicht polizeilich erklärt werden.",
+          criticalMistakes: [
+            "Besitz und Eigentum verwechseln",
+            "Jede körperliche Gewalt erlauben",
+            "Besitzschutz mit Strafe verwechseln",
+            "Keine Verhältnismäßigkeit nennen"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-006",
+          mode: "oral",
+          sheet: "C",
+          order: 6,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Aggression / Deeskalation / Eigensicherung",
+          examinerQuestion: "Eine Person wird laut, beleidigt Sie und kommt immer näher. Beschreiben Sie Ihr Vorgehen in den ersten zwei Minuten.",
+          modelAnswer: "Ich halte Abstand, achte auf meinen Fluchtweg und bleibe ruhig. Ich spreche klar, langsam und respektvoll. Ich setze eine Grenze, zum Beispiel: „Bitte bleiben Sie auf Abstand, dann können wir sprechen.“ Ich vermeide Gegenbeleidigungen und provozierende Körpersprache. Gleichzeitig fordere ich Unterstützung an und informiere die Einsatzleitung. Bei Angriff oder konkreter Gefahr geht Eigenschutz vor und die Polizei wird gerufen.",
+          followUpQuestions: [
+            "Warum ist Abstand wichtig?",
+            "Welche Formulierung wäre deeskalierend?",
+            "Wann brechen Sie das Gespräch ab?"
+          ],
+          examinerNotes: "Der Prüfling soll Abstand, Ruhe, Grenze, Unterstützung und Eigenschutz strukturiert nennen.",
+          criticalMistakes: [
+            "Zurückbeleidigen",
+            "Unnötig körperlich nah herangehen",
+            "Allein in eine gefährliche Lage gehen",
+            "Eigenschutz vergessen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-007",
+          mode: "oral",
+          sheet: "C",
+          order: 7,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Alkoholisierte Person / Hausverbot",
+          examinerQuestion: "Eine alkoholisierte Person mit Hausverbot möchte in den Club. Sie wird laut und diskutiert. Wie gehen Sie vor?",
+          modelAnswer: "Ich bleibe ruhig, halte Abstand und spreche klar. Ich erkläre kurz, dass wegen Hausverbot kein Zutritt möglich ist. Ich lasse mich nicht in lange Diskussionen ziehen und achte darauf, andere Gäste zu schützen. Bei Aggression fordere ich Unterstützung an. Bei Drohung, Angriff oder Straftat informiere ich die Polizei. Der Vorfall wird sachlich dokumentiert.",
+          followUpQuestions: [
+            "Warum ist Alkohol ein Risikofaktor?",
+            "Was vermeiden Sie in der Kommunikation?",
+            "Welche Punkte gehören in die Dokumentation?"
+          ],
+          examinerNotes: "Klare Grenze, keine Provokation, Unterstützung und Dokumentation sind wichtig.",
+          criticalMistakes: [
+            "Alkoholisierte Person verspotten",
+            "Körperlich allein entfernen wollen",
+            "Hausverbot ignorieren",
+            "Keine Dokumentation erwähnen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-008",
+          mode: "oral",
+          sheet: "C",
+          order: 8,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Gruppe / Provokation / Kommunikation",
+          examinerQuestion: "Eine Gruppe Jugendlicher provoziert am Eingang, filmt Sie mit dem Handy und macht sich über Sie lustig. Wie bleiben Sie professionell?",
+          modelAnswer: "Ich lasse mich nicht provozieren und bleibe sachlich. Ich spreche möglichst eine Person als Ansprechpartner an, halte Abstand und behalte die Gruppe im Blick. Ich erkläre kurz die Regel oder den Grund der Maßnahme. Ich drohe nicht unnötig und vermeide Machtkämpfe. Wenn die Lage kippt, ziehe ich Kollegen oder Einsatzleitung hinzu und dokumentiere den Vorfall.",
+          followUpQuestions: [
+            "Warum sollte man eine Gruppe nicht frontal herausfordern?",
+            "Was ist professionelle Distanz?",
+            "Wann holen Sie Unterstützung?"
+          ],
+          examinerNotes: "Der Prüfling soll Gruppendynamik, Selbstkontrolle und klare Kommunikation erkennen.",
+          criticalMistakes: [
+            "Sich provozieren lassen",
+            "Die ganze Gruppe aggressiv konfrontieren",
+            "Handyaufnahme mit Gewalt verhindern wollen",
+            "Keine Unterstützung anfordern"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-009",
+          mode: "oral",
+          sheet: "C",
+          order: 9,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Interkulturelle Kommunikation / Sprachbarriere",
+          examinerQuestion: "Bei einer Kontrolle versteht eine Person kaum Deutsch, wirkt unsicher und wird nervös. Wie handeln Sie respektvoll und trotzdem sicher?",
+          modelAnswer: "Ich spreche langsam, einfach und freundlich. Ich erkläre den Kontrollgrund kurz und nutze klare Gesten. Ich bleibe geduldig, achte auf Würde und vermeide abwertende Aussagen. Die Sicherheitsregeln gelten weiter für alle, aber die Kommunikation wird angepasst. Wenn nötig, hole ich Unterstützung zur Verständigung hinzu.",
+          followUpQuestions: [
+            "Was bedeutet diskriminierungsfreier Umgang?",
+            "Wie vermeiden Sie Missverständnisse?",
+            "Warum dürfen Sicherheitsstandards trotzdem nicht aufgeweicht werden?"
+          ],
+          examinerNotes: "Respekt, Gleichbehandlung und klare Sicherheitsstandards müssen zusammen genannt werden.",
+          criticalMistakes: [
+            "Person wegen Sprache oder Herkunft abwerten",
+            "Kontrolle komplett unterlassen",
+            "Unklare oder aggressive Körpersprache nutzen",
+            "Regeln willkürlich anwenden"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-010",
+          mode: "oral",
+          sheet: "C",
+          order: 10,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Panik / Menschenmenge / Eigenschutz",
+          examinerQuestion: "Bei einer Veranstaltung entsteht plötzlich Gedränge, mehrere Personen werden unruhig und ein Ausgang ist blockiert. Was tun Sie?",
+          modelAnswer: "Ich bewahre Ruhe, informiere sofort Einsatzleitung und Kollegen und achte auf meinen Eigenschutz. Ich leite Personen ruhig zu freien Flucht- oder Ausweichwegen, vermeide panikauslösende Rufe und halte Fluchtwege frei. Wenn Menschen gefährdet sind, wird nach Alarm- oder Sicherheitskonzept gehandelt. Feuerwehr, Rettungsdienst oder Polizei werden je nach Lage informiert. Blockaden werden, soweit sicher möglich, entfernt oder abgesichert.",
+          followUpQuestions: [
+            "Warum ist ruhige Kommunikation in Menschenmengen wichtig?",
+            "Was tun Sie, wenn ein Fluchtweg blockiert ist?",
+            "Wann informieren Sie Rettungskräfte oder Polizei?"
+          ],
+          examinerNotes: "Der Prüfling soll Panik vermeiden, Meldekette nutzen und Fluchtwege sichern.",
+          criticalMistakes: [
+            "Panik verursachen",
+            "Blockierten Ausgang ignorieren",
+            "Allein unkoordiniert handeln",
+            "Eigenschutz und Meldekette vergessen"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-011",
+          mode: "oral",
+          sheet: "C",
+          order: 11,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Gewerberecht",
+          subtopic: "Dienstanweisung / Dienstausweis / Dienstkleidung",
+          examinerQuestion: "Welche Bedeutung haben Dienstanweisung, Dienstausweis und Dienstkleidung im Bewachungsgewerbe?",
+          modelAnswer: "Die Dienstanweisung enthält verbindliche Vorgaben für Verhalten, Aufgaben und Grenzen der Tätigkeit. Der Dienstausweis dient der Legitimation und muss nach Vorgaben mitgeführt werden. Dienstkleidung darf nicht mit Uniformen von Polizei oder Behörden verwechselt werden. Sicherheitsmitarbeiter müssen klar erkennbar sein, dürfen aber keine amtliche Stellung vortäuschen.",
+          followUpQuestions: [
+            "Warum darf Dienstkleidung nicht wie Polizei aussehen?",
+            "Welche Rolle hat die Dienstanweisung im Alltag?",
+            "Wann muss ein Ausweis vorgezeigt oder mitgeführt werden?"
+          ],
+          examinerNotes: "Gewerberechtliche Pflichten und Abgrenzung zu hoheitlichem Auftreten prüfen.",
+          criticalMistakes: [
+            "Polizeiähnliche Uniform als unproblematisch darstellen",
+            "Dienstanweisung als unverbindlich erklären",
+            "Dienstausweis nicht erwähnen",
+            "Amtliche Befugnisse vortäuschen"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-012",
+          mode: "oral",
+          sheet: "C",
+          order: 12,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Datenschutzrecht",
+          subtopic: "Besucherlisten / Videoüberwachung / Datenminimierung",
+          examinerQuestion: "Sie arbeiten am Empfang, führen Besucherlisten und der Eingangsbereich wird videoüberwacht. Welche Datenschutzgrundsätze müssen Sie beachten?",
+          modelAnswer: "Es handelt sich um personenbezogene Daten. Diese dürfen nur mit Rechtsgrundlage und für einen bestimmten Zweck verarbeitet werden. Es gilt Datenminimierung: nur notwendige Daten erfassen. Besucherlisten müssen vor Einsicht durch Unbefugte geschützt und nach Ablauf der Aufbewahrungsfrist gelöscht werden. Videoüberwachung muss kenntlich gemacht, verhältnismäßig und zweckgebunden sein. Ich handle nach Vorgaben des Verantwortlichen.",
+          followUpQuestions: [
+            "Warum dürfen Besucherlisten nicht offen liegen?",
+            "Was bedeutet Zweckbindung?",
+            "Was ist bei Videoüberwachung wichtig?"
+          ],
+          examinerNotes: "Zweckbindung, Datenminimierung, Schutz vor Einsicht, Löschung und Hinweis auf Videoüberwachung müssen genannt werden.",
+          criticalMistakes: [
+            "Daten offen liegen lassen",
+            "Private Weitergabe erlauben",
+            "Keine Löschung erwähnen",
+            "Videoüberwachung ohne Hinweis als unproblematisch darstellen"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-013",
+          mode: "oral",
+          sheet: "C",
+          order: 13,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+          subtopic: "Nachtdienst / Gefahrenstelle / Eigenschutz",
+          examinerQuestion: "Während einer Nachtschicht bemerken Sie eine schlecht beleuchtete Treppe und lose Kabel im Kontrollbereich. Wie handeln Sie nach UVV-Grundsätzen?",
+          modelAnswer: "Ich gefährde mich nicht unnötig, nutze sichere Wege und melde die Gefahrenstelle sofort nach Dienstweg. Wenn möglich und zumutbar, sichere ich den Bereich ab oder warne andere Personen. Ich dokumentiere die Feststellung. Gefährliche Reparaturen führe ich nicht eigenmächtig aus, sondern informiere Auftraggeber, Einsatzleitung oder zuständige Stelle.",
+          followUpQuestions: [
+            "Warum ist Eigenschutz im Nachtdienst wichtig?",
+            "Was dokumentieren Sie?",
+            "Wann dürfen Sie eine Gefahr selbst beseitigen?"
+          ],
+          examinerNotes: "Erkennen, melden, absichern, dokumentieren und Eigenschutz sollen vorkommen.",
+          criticalMistakes: [
+            "Gefahr ignorieren",
+            "Riskante Reparatur eigenmächtig durchführen",
+            "Keine Meldung oder Dokumentation",
+            "Andere Personen weiter in die Gefahr laufen lassen"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-014",
+          mode: "oral",
+          sheet: "C",
+          order: 14,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Umgang mit Waffen",
+          subtopic: "Gefährlicher Gegenstand / Einlasskontrolle",
+          examinerQuestion: "Bei einer Einlasskontrolle entdecken Sie bei einem Gast ein Messer. Wie reagieren Sie rechtlich und praktisch?",
+          modelAnswer: "Ich bleibe ruhig, halte Abstand und bewerte die Situation nach Hausordnung, Gefahrenlage und Art des Gegenstands. Ich darf den Zutritt verweigern und die Einsatzleitung informieren. Eigenmächtige Beschlagnahme oder Durchsuchung gegen den Willen ist nicht zulässig. Bei konkreter Gefahr oder Verdacht auf einen verbotenen Gegenstand informiere ich die Polizei. Der Vorgang wird dokumentiert.",
+          followUpQuestions: [
+            "Dürfen Sie das Messer einfach behalten?",
+            "Was tun Sie bei akuter Bedrohung?",
+            "Welche Rolle spielt die Hausordnung?"
+          ],
+          examinerNotes: "Zutrittsverweigerung ja, eigenmächtige Beschlagnahme nein, Polizei bei konkreter Gefahr.",
+          criticalMistakes: [
+            "Messer ohne Grundlage behalten",
+            "Körperliche Durchsuchung erzwingen",
+            "Akute Gefahr unterschätzen",
+            "Keine Dokumentation"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-c-015",
+          mode: "oral",
+          sheet: "C",
+          order: 15,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Grundzüge der Sicherheitstechnik",
+          subtopic: "Brandalarm / Fluchtwege / Feuerwehrzufahrt",
+          examinerQuestion: "Ein Brandalarm läuft auf, gleichzeitig stehen Kartons im Fluchtweg und eine Feuerwehrzufahrt ist teilweise blockiert. Was tun Sie?",
+          modelAnswer: "Ich befolge den Alarm- und Objektplan. Ich melde die Lage an Leitstelle oder Einsatzleitung und sorge dafür, dass Fluchtwege und Notausgänge freigehalten werden. Personen werden ruhig zur Evakuierung angeleitet. Die Feuerwehrzufahrt ist freizumachen oder abzusichern. Den Alarm setze ich nicht eigenmächtig zurück. Ich unterstütze Feuerwehr und Einsatzleitung mit klaren Informationen.",
+          followUpQuestions: [
+            "Warum dürfen Fluchtwege nie blockiert sein?",
+            "Dürfen Sie den Alarm selbst zurücksetzen?",
+            "Welche Informationen sind für Feuerwehr oder Einsatzleitung wichtig?"
+          ],
+          examinerNotes: "Alarmplan, Evakuierung, freie Fluchtwege, Feuerwehrzufahrt und keine eigenmächtige Rückstellung müssen genannt werden.",
+          criticalMistakes: [
+            "Kartons im Fluchtweg stehen lassen",
+            "Alarm ohne Prüfung zurücksetzen",
+            "Panik verursachen",
+            "Feuerwehrzufahrt ignorieren"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        }
+      ]
     }
   ]
 };
