@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.0b
+Stand: v26.0c
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.0b)
+## 5. Aktueller Versionsstand (bis v26.0c)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -228,6 +228,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v25.9 | Abschluss-Audit mündliche Prüfung: Prüfungsbögen A/B/C/D/E, Zufallsprüfung, Auswahlfenster, Startlogik, Navigation und Dokumentation geprüft; Modulstand stabil – **erledigt** |
 | v26.0a | Schriftliche Prüfung Dokumentations-Audit bereinigt: alte offene Hinweise zu Browser-Endtest und Pause/Fortsetzen korrigiert; 82-Core-Fragen, 120 Punkte, Teilpunkte, Mix, Fokusnavigation und Pause/Fortsetzen als umgesetzter Stand dokumentiert – **erledigt** |
 | v26.0b | Schriftliche Prüfung Live-Code-Audit durchgeführt: `EXAM_FULL_QUESTION_LIMIT_V20 = 82`, feste Core-ID-Liste `EXAM_CORE_QUESTION_IDS_V244`, 120-Minuten-Timer, 50-Prozent-Bestehensgrenze, Punkte-/Teilpunkte-Berechnung sowie Pause/Fortsetzen im Code bestätigt – **erledigt** |
+| v26.0c | Browser-Endtest schriftliche Vollsimulation bestanden: 82 Fragen sichtbar, 120-Minuten-Timer sichtbar, Prüfung pausieren und fortsetzen funktioniert, Antworten bleiben erhalten – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -351,9 +352,9 @@ Kernbotschaft für die App (Beispieltext):
 
 ---
 
-## 8.2 Prüfungssimulation 82/120 (Stand v26.0a)
+## 8.2 Prüfungssimulation 82/120 (Stand v26.0c)
 
-| Aspekt | Stand v26.0a |
+| Aspekt | Stand v26.0c |
 |--------|-------------|
 | Dokument | `docs/EXAM_SIMULATION_AUDIT.md` – **vorhanden** |
 | Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht) |
@@ -370,7 +371,7 @@ Kernbotschaft für die App (Beispieltext):
 | Fragen-/Antwort-Mix | **erledigt** (v24.6d, v24.6e) – Reihenfolge gemischt, Indizes korrekt |
 | Browser-Endtest | **erledigt** – Vollsimulation 82/120 mit Teilbewertung, Core-Auswahl, Mix, Fokusnavigation und Pause/Fortsetzen geprüft bzw. dokumentiert |
 
-### Status nach v26.0a
+### Status nach v26.0c
 
 - **v24.6c** – Prüfung/Lernen pausieren und später fortsetzen: **erledigt**.
 - **v24.6** – Vollsimulation 82/120 mit Teilbewertung im Browser testen und dokumentieren: **erledigt**.
@@ -378,7 +379,7 @@ Kernbotschaft für die App (Beispieltext):
 
 ---
 
-## 8.3 Teilpunkte-Bewertung (Stand v26.0a)
+## 8.3 Teilpunkte-Bewertung (Stand v26.0c)
 
 | Aspekt | Stand |
 |--------|--------|
@@ -483,7 +484,7 @@ python tools/preflight.py
 | Simulation E | **vorhanden und startbar** (Prüfungsbogen E, 15 Fragen; v25.4a/b) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Vollsimulation nutzt **82 Core-Fragen** (v24.4b) |
-| Prüfungssimulation 82/120 | **umgesetzt und dokumentiert** (82 Core-Fragen, 120 Punkte, 60 Punkte Bestehen, Teilpunkte, Mix, Fokusnavigation, Pause/Fortsetzen; v26.0a Audit erledigt) |
+| Prüfungssimulation 82/120 | **umgesetzt, dokumentiert und browsergetestet** (82 Core-Fragen, 120 Punkte, 60 Punkte Bestehen, Teilpunkte, Mix, Fokusnavigation, Pause/Fortsetzen; v26.0c Browser-Endtest erledigt) |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
 | UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
 
@@ -529,7 +530,7 @@ Installiert (Referenz):
 8. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id`.
 9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
 
-**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
