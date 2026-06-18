@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v25.6c
+Stand: v25.7
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v25.6c)
+## 5. Aktueller Versionsstand (bis v25.7)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -222,6 +222,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v25.5 | Qualitäts-/Stabilitätstest der mündlichen Prüfung A/B/C/D/E bestanden: alle fünf Prüfungsbögen sichtbar und startbar; Frageanzeige, Musterantwort, Weiter-Navigation und Prüferanzeige geprüft – **erledigt** |
 | v25.6 | UI-Feinschliff mündliche Prüfung: Buttonlabel der bisherigen 15-Minuten-Simulation zu `Prüfungsbogen A` vereinheitlicht; A/B/C/D/E optisch konsistent – **erledigt** |
 | v25.6c | `PROJECT_MASTERLIST.md` auf aktuellen Stand aktualisiert: Prüfungsbogen A Label vereinheitlicht, A/B/C/D/E weiterhin aktiv, insgesamt 75 mündliche Simulationsfragen dokumentiert – **erledigt** |
+| v25.7 | Auswahlfenster der mündlichen Prüfung geprüft: Prüfungsbögen A/B/C/D/E sichtbar, Reihenfolge korrekt, Darstellung im Browser sauber; keine weitere UI-Änderung erforderlich – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
