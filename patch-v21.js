@@ -5964,4 +5964,123 @@ if (!window.ACCAOUI_V253B_ORAL_SHEET_D_PATCH) {
 
     injectOralSheetDModeButtonV253B();
   };
+}/* =====================================================
+   v25.4b MÜNDLICHE PRÜFUNG – PRÜFUNGSBOGEN E
+   Ziel:
+   - Prüfungsbogen E in Modusauswahl startbar
+   - 15 Fragen aus ACCAOUI_ORAL_SHEETS_V23
+===================================================== */
+
+if (!window.ACCAOUI_V254B_ORAL_SHEET_E_PATCH) {
+  window.ACCAOUI_V254B_ORAL_SHEET_E_PATCH = true;
+
+  function getOralSheetEQuestionsV254B() {
+    const sheetsData = window.ACCAOUI_ORAL_SHEETS_V23;
+
+    if (!sheetsData || !Array.isArray(sheetsData.sheets)) {
+      return [];
+    }
+
+    const sheet = sheetsData.sheets.find(item => item && item.id === "oral_sheet_e_v254a");
+
+    if (!sheet || !Array.isArray(sheet.questions)) {
+      return [];
+    }
+
+    return sheet.questions
+      .map(question => {
+        if (!question) {
+          return null;
+        }
+
+        return {
+          id: question.id,
+          mode: question.mode || "oral",
+          sheetId: "oral_sheet_e_v254a",
+          sheetTitle: "Prüfungsbogen E",
+          category: question.topic,
+          question: question.examinerQuestion,
+          sampleAnswer: question.modelAnswer,
+          examinerNote: question.examinerNotes,
+          followUpQuestions: question.followUpQuestions,
+          criticalMistakes: question.criticalMistakes,
+          examinerName: question.examinerRole,
+          examinerIndex: Number(question.examinerBlock) - 1,
+          examinerBlockTitle: question.subtopic || question.topic
+        };
+      })
+      .filter(Boolean);
+  }
+
+  window.getOralSheetEQuestionsV254B = getOralSheetEQuestionsV254B;
+
+  window.startOralSimulationSheetEV254B = function startOralSimulationSheetEV254B() {
+    if (typeof window.closeOralModeSheetV2314 === "function") {
+      window.closeOralModeSheetV2314();
+    }
+
+    const questions = getOralSheetEQuestionsV254B();
+
+    if (questions.length !== 15) {
+      showSmallNotice("Prüfungsbogen E konnte nicht geladen werden.");
+      return;
+    }
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
+
+    startOralExamSessionV220(
+      questions,
+      "15-Minuten-Simulation · Prüfungsbogen E"
+    );
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = false;
+
+    if (typeof startOralSimulationTimerV2317 === "function") {
+      startOralSimulationTimerV2317();
+    }
+
+    if (typeof updateActiveExaminerV2317 === "function") {
+      updateActiveExaminerV2317();
+    }
+  };
+
+  function injectOralSheetEModeButtonV254B() {
+    const grid = document.querySelector(".oral-mode-grid-v2314");
+
+    if (!grid || grid.querySelector("[data-oral-sheet-e-v254b]")) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "oral-mode-card-v2314";
+    button.setAttribute("data-oral-sheet-e-v254b", "true");
+    button.setAttribute("onclick", "startOralSimulationSheetEV254B()");
+    button.innerHTML = `
+      <span>🧾</span>
+      <strong>Prüfungsbogen E</strong>
+      <small>3 Prüfer · 15 neue Fallfragen · Meldekette & Urteilskraft</small>
+    `;
+
+    const sheetDButton = grid.querySelector("[data-oral-sheet-d-v253b]");
+
+    if (sheetDButton && sheetDButton.nextElementSibling) {
+      grid.insertBefore(button, sheetDButton.nextElementSibling);
+    } else if (sheetDButton) {
+      sheetDButton.insertAdjacentElement("afterend", button);
+    } else {
+      grid.appendChild(button);
+    }
+  }
+
+  window.accaouiPreviousShowOralExamModeSelectV254B =
+    window.showOralExamModeSelectV2314;
+
+  window.showOralExamModeSelectV2314 = function patchedShowOralExamModeSelectV254B() {
+    if (typeof window.accaouiPreviousShowOralExamModeSelectV254B === "function") {
+      window.accaouiPreviousShowOralExamModeSelectV254B();
+    }
+
+    injectOralSheetEModeButtonV254B();
+  };
 }
