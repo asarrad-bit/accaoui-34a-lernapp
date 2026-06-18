@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.0c
+Stand: v26.1d
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.0c)
+## 5. Aktueller Versionsstand (bis v26.1d)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -229,6 +229,8 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.0a | Schriftliche Prüfung Dokumentations-Audit bereinigt: alte offene Hinweise zu Browser-Endtest und Pause/Fortsetzen korrigiert; 82-Core-Fragen, 120 Punkte, Teilpunkte, Mix, Fokusnavigation und Pause/Fortsetzen als umgesetzter Stand dokumentiert – **erledigt** |
 | v26.0b | Schriftliche Prüfung Live-Code-Audit durchgeführt: `EXAM_FULL_QUESTION_LIMIT_V20 = 82`, feste Core-ID-Liste `EXAM_CORE_QUESTION_IDS_V244`, 120-Minuten-Timer, 50-Prozent-Bestehensgrenze, Punkte-/Teilpunkte-Berechnung sowie Pause/Fortsetzen im Code bestätigt – **erledigt** |
 | v26.0c | Browser-Endtest schriftliche Vollsimulation bestanden: 82 Fragen sichtbar, 120-Minuten-Timer sichtbar, Prüfung pausieren und fortsetzen funktioniert, Antworten bleiben erhalten – **erledigt** |
+| v26.1c | Lernkarten pausieren / fortsetzen eingebaut und browsergetestet: Lernkartenrunde wird lokal gespeichert, Dashboard-Karte „Angefangene Lernkarten“ erscheint, Fortsetzen stellt Karte und Fortschritt wieder her; Premium-Leiste optisch verbessert – **erledigt** |
+| v26.1d | Masterliste auf Lernkarten-Abschluss aktualisiert; offene Retest-Hinweise bereinigt und Lernkartenstatus auf v26.1c gesetzt – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -482,11 +484,11 @@ python tools/preflight.py
 | Simulation C | **vorhanden und startbar** (Prüfungsbogen C, 15 Fragen; v25.2a/b) |
 | Simulation D | **vorhanden und startbar** (Prüfungsbogen D, 15 Fragen; v25.3a/b) |
 | Simulation E | **vorhanden und startbar** (Prüfungsbogen E, 15 Fragen; v25.4a/b) |
-| Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
+| Lernkarten | **umgesetzt und browsergetestet** (Kategorien, Lernkartenstart, Antwort anzeigen, Gewusst/Nicht gewusst, Fehler-Lernkarten, Pause/Fortsetzen, Dashboard-Karte „Angefangene Lernkarten“; v26.1c erledigt) |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Vollsimulation nutzt **82 Core-Fragen** (v24.4b) |
 | Prüfungssimulation 82/120 | **umgesetzt, dokumentiert und browsergetestet** (82 Core-Fragen, 120 Punkte, 60 Punkte Bestehen, Teilpunkte, Mix, Fokusnavigation, Pause/Fortsetzen; v26.0c Browser-Endtest erledigt) |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
-| UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
+| UX- und Lernlogik-Audit | **teilweise erledigt** – schriftliche Prüfung, mündliche Prüfung und Lernkarten wurden geprüft; weiterer Feinschliff bleibt fortlaufend |
 
 Langfristiges Ziel mündlich: skalierbare Bogen-Auswahl A/B/C/D unter einem Hauptmodus „Prüfungssimulation“ (siehe v24 Oral Exam Cleanup).
 
@@ -521,16 +523,16 @@ Installiert (Referenz):
 ## 14. Nächste sinnvolle Aufgaben
 
 1. **Schriftliche Prüfung Regressionstest bei Änderungen** – Vollsimulation 82/120, Teilpunkte, Pause/Fortsetzen, Mix und Auswertung nach späteren Code-Änderungen erneut prüfen.
-2. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien, sichere/unsichere Karten.
+2. **Lernkarten nach größeren UI-Änderungen kurz regressionsprüfen** – Stand v26.1c ist browsergetestet.
 3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul, siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**.
-4. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall, siehe §8.1.
+4. **UX- und Lernlogik weiter verfeinern** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall, siehe §8.1.
 5. **Später Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C/D/E/Zufall.
 6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`.
 7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen.
 8. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id`.
 9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
 
-**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
