@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v25.8b
+Stand: v25.9
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v25.8b)
+## 5. Aktueller Versionsstand (bis v25.9)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -225,6 +225,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v25.7 | Auswahlfenster der mündlichen Prüfung geprüft: Prüfungsbögen A/B/C/D/E sichtbar, Reihenfolge korrekt, Darstellung im Browser sauber; keine weitere UI-Änderung erforderlich – **erledigt** |
 | v25.8a | Zufallsprüfung für die mündliche Prüfung eingebaut: 15 zufällige Fragen aus Prüfungsbogen A/B/C/D/E, eigene sheetId `oral_random_v258a`, keine doppelte Fragenlogik innerhalb einer Runde – **erledigt** |
 | v25.8b | Zufallsprüfung im Browser getestet: Button sichtbar, Start funktioniert, Frageanzeige/Musterantwort/Navigation sauber, keine Fehlermeldung gemeldet – **erledigt** |
+| v25.9 | Abschluss-Audit mündliche Prüfung: Prüfungsbögen A/B/C/D/E, Zufallsprüfung, Auswahlfenster, Startlogik, Navigation und Dokumentation geprüft; Modulstand stabil – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -294,7 +295,7 @@ Die **spätere Vollsimulation** der schriftlichen Prüfung soll jedoch **exakt 8
 | Inhalt | häufig **Praxisfälle** |
 | Anforderung | **richtiges Verhalten beschreiben** und **rechtlich begründen** |
 
-**App-Stand v25.8a:** Prüfungsbogen A, B, C, D und E sind startbar, im Browser getestet und im Auswahlfenster optisch einheitlich benannt. Jeder Bogen enthält 15 Fragen. Zusätzlich ist eine Zufallsprüfung startbar, die 15 zufällige Fragen aus den 75 mündlichen Simulationsfragen nutzt.
+**App-Stand v25.9:** Der Bereich mündliche Prüfung ist als stabiles Trainingsmodul aufgebaut. Prüfungsbogen A, B, C, D und E sind startbar, im Browser getestet und im Auswahlfenster optisch einheitlich benannt. Jeder Bogen enthält 15 Fragen. Zusätzlich ist eine Zufallsprüfung startbar, die 15 zufällige Fragen aus den 75 mündlichen Simulationsfragen nutzt.
 
 ---
 
@@ -471,7 +472,7 @@ python tools/preflight.py
 | Bereich | Status |
 |---------|--------|
 | Schriftlicher Prüfungsmodus | **getestet** (Simulation, Statistik, Historie, Fehlertraining) |
-| Mündliche Prüfung | **getestet** (Training, Simulation, Bewertung, Fehlertraining; A/B/C/D/E sichtbar, startbar und einheitlich benannt; Zufallsprüfung sichtbar und startbar, v25.8b) |
+| Mündliche Prüfung | **getestet** (Training, Simulation, Bewertung, Fehlertraining; A/B/C/D/E sichtbar, startbar und einheitlich benannt; Zufallsprüfung sichtbar und startbar; Abschluss-Audit v25.9) |
 | Simulation A | **vorhanden** (15-Minuten-Bogen, 15 Fragen) |
 | Simulation B | **vorhanden und startbar** (Prüfungsbogen B, 15 Fragen) |
 | Simulation C | **vorhanden und startbar** (Prüfungsbogen C, 15 Fragen; v25.2a/b) |
