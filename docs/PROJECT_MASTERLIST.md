@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v25.1
+Stand: v25.2c
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v25.1)
+## 5. Aktueller Versionsstand (bis v25.2c)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -210,6 +210,9 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v24.9 | Stabilitätstest nach Auto-Save/Pause/Fortsetzen bestanden: Lernmodus-Pause, Lernmodus-Auto-Save, Prüfung-Pause, Prüfung-Auto-Save bei Reload und Session-Löschung nach Abgabe erfolgreich geprüft – **erledigt** |
 | v25.0 | Kompletter Qualitätscheck der App durchgeführt: Dashboard, Alle Fragen, Lernkarten, Prüfung, Fehlertraining und mündliche Prüfung geprüft; aktuell keine Fehler festgestellt – **erledigt** |
 | v25.1 | Mündliche Prüfung erweitert: vorhandener Prüfungsbogen B aus `oral-sheets-v23.js` ist jetzt in der Modusauswahl startbar; 15 Fallfragen mit Musterantworten, Prüferhinweisen und Auswertung erfolgreich getestet – **erledigt** |
+| v25.2a | Mündliche Prüfung erweitert: Prüfungsbogen C als vollständiger Datensatz mit 15 Accaoui-original Fallfragen in `oral-sheets-v23.js` ergänzt – **erledigt** |
+| v25.2b | Prüfungsbogen C in der Modusauswahl startbar gemacht; Browser-Test bestanden; Prüfungsbögen A/B/C sind jetzt aktiv – **erledigt** |
+| v25.2c | `PROJECT_MASTERLIST.md` auf aktuellen Stand aktualisiert: A/B/C aktiv, insgesamt 45 mündliche Simulationsfragen dokumentiert – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -278,6 +281,8 @@ Die **spätere Vollsimulation** der schriftlichen Prüfung soll jedoch **exakt 8
 | Form | **Einzelprüfung** oder **Gruppe bis zu 5 Teilnehmer** |
 | Inhalt | häufig **Praxisfälle** |
 | Anforderung | **richtiges Verhalten beschreiben** und **rechtlich begründen** |
+
+**App-Stand v25.2b:** Prüfungsbogen A, B und C sind startbar. Jeder Bogen enthält 15 Fragen. Damit sind aktuell **45 mündliche Simulationsfragen** aktiv.
 
 ---
 
@@ -454,9 +459,10 @@ python tools/preflight.py
 | Bereich | Status |
 |---------|--------|
 | Schriftlicher Prüfungsmodus | **getestet** (Simulation, Statistik, Historie, Fehlertraining) |
-| Mündliche Prüfung | **getestet** (Training, Simulation, Bewertung, Fehlertraining) |
-| Simulation A | **vorhanden** (15-Minuten-Bogen) |
-| Simulation B | **vorhanden** (Prüfungsbogen B) |
+| Mündliche Prüfung | **getestet** (Training, Simulation, Bewertung, Fehlertraining; A/B/C startbar) |
+| Simulation A | **vorhanden** (15-Minuten-Bogen, 15 Fragen) |
+| Simulation B | **vorhanden und startbar** (Prüfungsbogen B, 15 Fragen) |
+| Simulation C | **vorhanden und startbar** (Prüfungsbogen C, 15 Fragen; v25.2a/b) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Vollsimulation nutzt **82 Core-Fragen** (v24.4b) |
 | Prüfungssimulation 82/120 | **umgesetzt** (Core, Teilpunkte, v24.6b); UI v24.6f/x/g **erledigt**; Mix v24.6d/e **erledigt**; **v24.6c** Pause offen |
