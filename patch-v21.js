@@ -2933,7 +2933,7 @@ if (!window.ACCAOUI_V2314_ORAL_MODE_SELECTION_PATCH) {
 
         <button type="button" class="oral-mode-card-v2314 is-primary" onclick="startOralSimulation15V2314()">
           <span>⏱️</span>
-          <strong>15-Minuten-Simulation</strong>
+          <strong>Prüfungsbogen A</strong>
          <small>3 Prüfer · 15 Fragen · Auswertung am Ende</small>
         </button>
 
