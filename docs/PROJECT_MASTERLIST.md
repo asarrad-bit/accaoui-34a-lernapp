@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.0a
+Stand: v26.0b
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.0a)
+## 5. Aktueller Versionsstand (bis v26.0b)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -227,6 +227,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v25.8b | Zufallsprüfung im Browser getestet: Button sichtbar, Start funktioniert, Frageanzeige/Musterantwort/Navigation sauber, keine Fehlermeldung gemeldet – **erledigt** |
 | v25.9 | Abschluss-Audit mündliche Prüfung: Prüfungsbögen A/B/C/D/E, Zufallsprüfung, Auswahlfenster, Startlogik, Navigation und Dokumentation geprüft; Modulstand stabil – **erledigt** |
 | v26.0a | Schriftliche Prüfung Dokumentations-Audit bereinigt: alte offene Hinweise zu Browser-Endtest und Pause/Fortsetzen korrigiert; 82-Core-Fragen, 120 Punkte, Teilpunkte, Mix, Fokusnavigation und Pause/Fortsetzen als umgesetzter Stand dokumentiert – **erledigt** |
+| v26.0b | Schriftliche Prüfung Live-Code-Audit durchgeführt: `EXAM_FULL_QUESTION_LIMIT_V20 = 82`, feste Core-ID-Liste `EXAM_CORE_QUESTION_IDS_V244`, 120-Minuten-Timer, 50-Prozent-Bestehensgrenze, Punkte-/Teilpunkte-Berechnung sowie Pause/Fortsetzen im Code bestätigt – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
