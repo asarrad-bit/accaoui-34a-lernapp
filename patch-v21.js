@@ -6084,3 +6084,155 @@ if (!window.ACCAOUI_V254B_ORAL_SHEET_E_PATCH) {
     injectOralSheetEModeButtonV254B();
   };
 }
+
+/* =====================================================
+   v25.8a MÜNDLICHE PRÜFUNG – ZUFALLSPRÜFUNG
+   Ziel:
+   - 15 zufällige Fragen aus Prüfungsbogen A/B/C/D/E
+   - keine doppelten Fragen innerhalb einer Runde
+   - eigene sheetId, damit A/B-Ergebnislogik nicht falsch greift
+===================================================== */
+
+if (!window.ACCAOUI_V258A_ORAL_RANDOM_EXAM_PATCH) {
+  window.ACCAOUI_V258A_ORAL_RANDOM_EXAM_PATCH = true;
+
+  const ORAL_RANDOM_SHEET_ID_V258A = "oral_random_v258a";
+
+  function shuffleOralRandomQuestionsV258A(questions) {
+    const items = Array.isArray(questions) ? questions.slice() : [];
+
+    for (let i = items.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = items[i];
+      items[i] = items[j];
+      items[j] = temp;
+    }
+
+    return items;
+  }
+
+  function getAllOralSimulationQuestionsV258A() {
+    const getters = [
+      window.getOralExamSheetAQuestionsV2320,
+      window.getOralSheetBQuestionsV251,
+      window.getOralSheetCQuestionsV252B,
+      window.getOralSheetDQuestionsV253B,
+      window.getOralSheetEQuestionsV254B
+    ];
+
+    return getters.reduce((allQuestions, getter) => {
+      if (typeof getter !== "function") return allQuestions;
+
+      const questions = getter();
+
+      if (!Array.isArray(questions)) return allQuestions;
+
+      return allQuestions.concat(questions.filter(Boolean));
+    }, []);
+  }
+
+  function cloneOralRandomQuestionV258A(question, index) {
+    if (!question) return null;
+
+    const examinerIndex = index < 5 ? 0 : index < 10 ? 1 : 2;
+    const sourceSheetTitle = question.sheetTitle || "Prüfungsbogen";
+
+    return {
+      ...question,
+      id: ORAL_RANDOM_SHEET_ID_V258A + "_" + (index + 1) + "_" + (question.id || "frage"),
+      sourceQuestionId: question.id || "",
+      sourceSheetId: question.sheetId || "",
+      sourceSheetTitle,
+      sheetId: ORAL_RANDOM_SHEET_ID_V258A,
+      sheetTitle: "Zufallsprüfung",
+      examinerIndex,
+      examinerName:
+        examinerIndex === 0 ? "Prüfer 1" :
+        examinerIndex === 1 ? "Vorsitz" :
+        "Prüfer 3",
+      examinerBlockTitle: question.examinerBlockTitle || question.category || sourceSheetTitle || "Zufallsfrage"
+    };
+  }
+
+  function getOralRandomExamQuestionsV258A() {
+    const allQuestions = getAllOralSimulationQuestionsV258A();
+
+    if (allQuestions.length < 15) return [];
+
+    return shuffleOralRandomQuestionsV258A(allQuestions)
+      .slice(0, 15)
+      .map(cloneOralRandomQuestionV258A)
+      .filter(Boolean);
+  }
+
+  window.getOralRandomExamQuestionsV258A = getOralRandomExamQuestionsV258A;
+
+  window.startOralRandomExamV258A = function startOralRandomExamV258A() {
+    if (typeof window.closeOralModeSheetV2314 === "function") {
+      window.closeOralModeSheetV2314();
+    }
+
+    const questions = getOralRandomExamQuestionsV258A();
+
+    if (questions.length !== 15) {
+      showSmallNotice("Zufallsprüfung konnte nicht geladen werden.");
+      return;
+    }
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = true;
+    window.ACCAOUI_V2317_ORAL_SIMULATION_MODE = "15";
+
+    startOralExamSessionV220(
+      questions,
+      "Zufallsprüfung · 15 Fragen aus A/B/C/D/E"
+    );
+
+    window.ACCAOUI_V2317_STARTING_15_SIMULATION = false;
+
+    if (typeof startOralSimulationTimerV2317 === "function") {
+      startOralSimulationTimerV2317();
+    }
+
+    if (typeof updateActiveExaminerV2317 === "function") {
+      updateActiveExaminerV2317();
+    }
+  };
+
+  function injectOralRandomExamButtonV258A() {
+    const grid = document.querySelector(".oral-mode-grid-v2314");
+
+    if (!grid || grid.querySelector("[data-oral-random-v258a]")) return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "oral-mode-card-v2314";
+    button.setAttribute("data-oral-random-v258a", "true");
+    button.setAttribute("onclick", "startOralRandomExamV258A()");
+    button.innerHTML = `
+      <span>🔀</span>
+      <strong>Zufallsprüfung</strong>
+      <small>15 zufällige Fragen · aus A/B/C/D/E</small>
+    `;
+
+    const sheetEButton = grid.querySelector("[data-oral-sheet-e-v254b]");
+
+    if (sheetEButton && sheetEButton.nextElementSibling) {
+      grid.insertBefore(button, sheetEButton.nextElementSibling);
+    } else if (sheetEButton) {
+      sheetEButton.insertAdjacentElement("afterend", button);
+    } else {
+      grid.appendChild(button);
+    }
+  }
+
+  window.accaouiPreviousShowOralExamModeSelectV258A =
+    window.showOralExamModeSelectV2314;
+
+  window.showOralExamModeSelectV2314 = function patchedShowOralExamModeSelectV258A() {
+    if (typeof window.accaouiPreviousShowOralExamModeSelectV258A === "function") {
+      window.accaouiPreviousShowOralExamModeSelectV258A();
+    }
+
+    injectOralRandomExamButtonV258A();
+  };
+}
