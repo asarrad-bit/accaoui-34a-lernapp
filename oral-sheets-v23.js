@@ -1326,6 +1326,434 @@ const ACCAOUI_ORAL_SHEETS_V23 = {
           sourceStyle: "accaoui_original"
         }
       ]
+    },
+    {
+      id: "oral_sheet_e_v254a",
+      title: "Prüfungsbogen E",
+      description: "15 Accaoui-original Fallfragen für die mündliche §34a-Prüfung mit Fokus auf Auftrag, Hausordnung, Meldekette, schwierige Personensituationen, Brandschutz, Objektschutz und Kollegen-Fehlverhalten.",
+      status: "draft",
+      questions: [
+        {
+          id: "oral-e-001",
+          mode: "oral",
+          sheet: "E",
+          order: 1,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Gewerberecht",
+          subtopic: "Dienstanweisung / Auftrag / rechtmäßiges Handeln",
+          examinerQuestion: "Ein Auftraggeber verlangt von Ihnen, eine Person „mit allen Mitteln“ aus dem Gebäude zu entfernen. Wie gehen Sie mit einer solchen Anweisung um?",
+          modelAnswer: "Ich darf keine rechtswidrige oder unverhältnismäßige Anweisung ausführen. Auch wenn der Auftraggeber das Hausrecht hat, muss ich als Sicherheitsmitarbeiter rechtmäßig, verhältnismäßig und nach Dienstanweisung handeln. Ich würde die Situation prüfen, die Person zunächst ruhig ansprechen und sie zum Verlassen auffordern. Körperliches Eingreifen kommt nur in engen rechtlichen Grenzen in Betracht, zum Beispiel bei Gefahr, Notwehr oder wenn andere rechtliche Voraussetzungen vorliegen. Bei Unsicherheit informiere ich Einsatzleitung oder Polizei und dokumentiere den Vorgang.",
+          followUpQuestions: [
+            "Müssen Sie jede Anweisung des Auftraggebers befolgen?",
+            "Was bedeutet Verhältnismäßigkeit?",
+            "Wann darf körperliches Eingreifen überhaupt in Betracht kommen?"
+          ],
+          examinerNotes: "Der Prüfling muss erkennen, dass auch Auftraggeberanweisungen rechtmäßig und verhältnismäßig sein müssen.",
+          criticalMistakes: [
+            "Rechtswidrige Anweisung blind ausführen",
+            "„Mit allen Mitteln“ als Freibrief verstehen",
+            "Keine Verhältnismäßigkeit nennen",
+            "Keine Einsatzleitung oder Polizei bei Unsicherheit erwähnen"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-002",
+          mode: "oral",
+          sheet: "E",
+          order: 2,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Bürgerliches Gesetzbuch",
+          subtopic: "Hausrecht / Hausordnung / Zutrittsverweigerung",
+          examinerQuestion: "Eine Person möchte ein Objekt betreten, obwohl sie die Hausordnung nicht akzeptiert. Welche Möglichkeiten haben Sie?",
+          modelAnswer: "Wenn die Hausordnung Voraussetzung für den Zutritt ist, kann der Zutritt verweigert werden. Ich erkläre ruhig und sachlich, welche Regeln gelten und dass der Zutritt nur bei Einhaltung dieser Regeln möglich ist. Ich darf die Person nicht diskriminieren oder willkürlich behandeln. Wenn die Person aggressiv wird oder versucht, trotzdem einzudringen, fordere ich Unterstützung an und informiere je nach Lage die Polizei. Grundlage ist das Hausrecht des Berechtigten, nicht eine eigene polizeiliche Befugnis.",
+          followUpQuestions: [
+            "Warum ist die Hausordnung für den Zutritt wichtig?",
+            "Was wäre eine unzulässige Zutrittsverweigerung?",
+            "Wann muss die Polizei eingeschaltet werden?"
+          ],
+          examinerNotes: "Hausordnung und Hausrecht müssen sachlich, nicht willkürlich oder diskriminierend angewendet werden.",
+          criticalMistakes: [
+            "Hausordnung willkürlich anwenden",
+            "Diskriminierende Auswahl treffen",
+            "Polizeibefugnisse behaupten",
+            "Aggressives Eindringen nicht melden"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-003",
+          mode: "oral",
+          sheet: "E",
+          order: 3,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Grundzüge der Sicherheitstechnik",
+          subtopic: "Verdächtiger Gegenstand / Absicherung / Meldekette",
+          examinerQuestion: "Sie finden im Objekt eine herrenlose Tasche. Wie verhalten Sie sich sicher und rechtlich korrekt?",
+          modelAnswer: "Ich fasse die Tasche nicht unüberlegt an und öffne sie nicht eigenmächtig. Zuerst sichere ich den Bereich ab, halte Personen fern und informiere Einsatzleitung oder Leitstelle. Je nach Objektanweisung und Gefahrenlage wird die Polizei hinzugezogen. Ich beobachte die Umgebung und frage, wenn gefahrlos möglich, ob jemand die Tasche zuordnen kann. Wichtig sind Eigenschutz, Absicherung, Meldekette und Dokumentation.",
+          followUpQuestions: [
+            "Warum darf man die Tasche nicht einfach öffnen?",
+            "Welche Stellen informieren Sie?",
+            "Was dokumentieren Sie?"
+          ],
+          examinerNotes: "Verdächtige Gegenstände dürfen nicht unkontrolliert bewegt oder geöffnet werden. Meldekette und Eigenschutz sind entscheidend.",
+          criticalMistakes: [
+            "Tasche öffnen oder herumtragen",
+            "Bereich nicht absichern",
+            "Meldekette nicht einhalten",
+            "Gefahr unterschätzen"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-004",
+          mode: "oral",
+          sheet: "E",
+          order: 4,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Datenschutzrecht",
+          subtopic: "Videoüberwachung / Weitergabe / Zweckbindung",
+          examinerQuestion: "Ein Mitarbeiter des Auftraggebers fordert Sie auf, eine Videoaufnahme privat an ihn weiterzuleiten. Was ist zu beachten?",
+          modelAnswer: "Videoaufnahmen enthalten personenbezogene Daten und dürfen nicht privat weitergegeben werden. Eine Weitergabe ist nur zulässig, wenn es dafür eine rechtliche Grundlage, einen berechtigten Zweck und eine befugte Stelle gibt. Ich verweise auf den offiziellen Dienstweg und informiere die zuständige verantwortliche Stelle. Private Weiterleitung per Handy, Messenger oder E-Mail ist unzulässig. Datenschutz, Zweckbindung, Zugriffsbeschränkung und Dokumentation müssen beachtet werden.",
+          followUpQuestions: [
+            "Warum sind Videoaufnahmen personenbezogene Daten?",
+            "Was bedeutet Zweckbindung?",
+            "Warum ist private Weiterleitung gefährlich?"
+          ],
+          examinerNotes: "Der Prüfling muss Datenschutz auch gegenüber Auftraggebermitarbeitern sauber begrenzen.",
+          criticalMistakes: [
+            "Video privat versenden",
+            "Auftraggeberwunsch automatisch als Rechtsgrundlage ansehen",
+            "Datenschutz nicht beachten",
+            "Keine zuständige Stelle einschalten"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-005",
+          mode: "oral",
+          sheet: "E",
+          order: 5,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Umgang mit Menschen",
+          subtopic: "Professionelle Kommunikation / Beschwerde / Konfliktkontrolle",
+          examinerQuestion: "Ein Besucher behauptet, er sei Anwalt und droht Ihnen sofort mit Anzeige. Wie bleiben Sie professionell?",
+          modelAnswer: "Ich bleibe ruhig, sachlich und höflich. Ich lasse mich nicht einschüchtern und provoziere nicht zurück. Ich erkläre kurz die Grundlage meiner Maßnahme, zum Beispiel Hausordnung, Auftrag oder Sicherheitsregel. Wenn die Person eine Beschwerde einreichen möchte, verweise ich an die zuständige Stelle. Ich diskutiere nicht endlos über Rechtsfragen vor Ort. Bei weiterer Eskalation hole ich Unterstützung und dokumentiere den Vorfall sachlich.",
+          followUpQuestions: [
+            "Warum sollten Sie nicht emotional reagieren?",
+            "Wie erklären Sie Ihre Maßnahme kurz und sachlich?",
+            "Wann ziehen Sie Einsatzleitung oder Kollegen hinzu?"
+          ],
+          examinerNotes: "Professionelle Distanz und sachliche Kommunikation sind wichtiger als eine Rechtsdiskussion vor Ort.",
+          criticalMistakes: [
+            "Sich einschüchtern lassen und Regeln aufgeben",
+            "Zurückdrohen oder beleidigen",
+            "Endlose Rechtsdiskussion führen",
+            "Vorfall nicht dokumentieren"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-006",
+          mode: "oral",
+          sheet: "E",
+          order: 6,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Distanz / Körpersprache / Eigensicherung",
+          examinerQuestion: "Ein aggressiver Gast steht sehr nah vor Ihnen, berührt Sie aber noch nicht. Welche Maßnahmen sind angemessen?",
+          modelAnswer: "Ich achte zuerst auf meinen Eigenschutz und halte oder schaffe Abstand. Ich spreche ruhig, klar und bestimmt, ohne selbst aggressiv zu wirken. Ich setze eine deutliche Grenze, zum Beispiel: „Bitte treten Sie einen Schritt zurück, dann können wir sprechen.“ Ich positioniere mich so, dass ich einen Ausweichweg habe, und fordere bei Bedarf Unterstützung an. Körperliches Eingreifen ist nicht automatisch gerechtfertigt, nur weil jemand nah steht. Bei konkreter Gefahr, Angriff oder Drohung informiere ich Kollegen, Einsatzleitung oder Polizei.",
+          followUpQuestions: [
+            "Warum ist Abstand in dieser Lage wichtig?",
+            "Welche Formulierung wäre deeskalierend?",
+            "Wann wird aus Nähe eine konkrete Gefahr?"
+          ],
+          examinerNotes: "Nähe allein rechtfertigt nicht automatisch körperliches Eingreifen. Abstand, Grenze und Eigensicherung sind Pflichtpunkte.",
+          criticalMistakes: [
+            "Sofort körperlich schubsen",
+            "Ohne Ausweichweg stehen bleiben",
+            "Selbst aggressiv auftreten",
+            "Keine Unterstützung anfordern"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-007",
+          mode: "oral",
+          sheet: "E",
+          order: 7,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Gruppendynamik / Zutrittskontrolle / Unterstützung",
+          examinerQuestion: "Eine Gruppe versucht, gemeinsam durch eine Zutrittskontrolle zu drängen. Wie handeln Sie?",
+          modelAnswer: "Ich bleibe ruhig und versuche, die Gruppe nicht allein körperlich aufzuhalten. Ich spreche klar und deutlich, dass der Zutritt nur einzeln und nach Kontrolle möglich ist. Ich fordere sofort Unterstützung an und informiere die Einsatzleitung. Wenn möglich, spreche ich eine führende Person der Gruppe direkt an. Ich achte auf Fluchtwege, Eigenschutz und darauf, keine Panik oder Eskalation auszulösen. Bei Gewalt, Drohung oder Durchbruch wird die Polizei informiert und der Vorfall dokumentiert.",
+          followUpQuestions: [
+            "Warum ist Gruppendynamik gefährlich?",
+            "Warum sollte man nicht allein körperlich blockieren?",
+            "Wann wird die Polizei eingeschaltet?"
+          ],
+          examinerNotes: "Der Prüfling muss Gruppendynamik erkennen und darf keine Alleinlösung mit Körperkraft beschreiben.",
+          criticalMistakes: [
+            "Allein gegen die Gruppe körperlich vorgehen",
+            "Gruppe beleidigen oder provozieren",
+            "Keine Unterstützung anfordern",
+            "Durchbruch oder Gewalt nicht melden"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-008",
+          mode: "oral",
+          sheet: "E",
+          order: 8,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Kinderschutz / hilflose Lage / Kommunikation",
+          examinerQuestion: "Ein Kind hat seine Eltern im Einkaufszentrum verloren und weint. Wie reagieren Sie?",
+          modelAnswer: "Ich spreche das Kind ruhig, freundlich und kindgerecht an und bringe es, wenn möglich, an einen sicheren, gut einsehbaren Ort. Ich informiere Kollegen, Einsatzleitung oder die zuständige Stelle im Objekt. Ich lasse das Kind nicht allein und übergebe es nicht einfach an irgendeine fremde Person. Die Eltern werden über sichere Wege gesucht, zum Beispiel über die Information oder Durchsage nach Objektvorgabe. Bei Verdacht auf Gefahr, Vernachlässigung oder wenn die Eltern nicht auffindbar sind, wird die Polizei informiert. Der Vorgang wird dokumentiert.",
+          followUpQuestions: [
+            "Warum darf das Kind nicht allein gelassen werden?",
+            "Warum darf man es nicht einfach einer fremden Person übergeben?",
+            "Wann informieren Sie die Polizei?"
+          ],
+          examinerNotes: "Kinderschutz verlangt ruhiges Handeln, sichere Übergabe und klare Meldekette.",
+          criticalMistakes: [
+            "Kind allein lassen",
+            "Kind an unbekannte Person übergeben",
+            "Keine Meldung an Einsatzleitung oder Objektstelle",
+            "Keine Dokumentation"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-009",
+          mode: "oral",
+          sheet: "E",
+          order: 9,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Würde / Hausrecht / Deeskalation",
+          examinerQuestion: "Eine Person wirkt obdachlos, sitzt im Eingangsbereich und wird von Kunden beschimpft. Wie gehen Sie menschlich und rechtssicher vor?",
+          modelAnswer: "Ich behandle die Person respektvoll und ohne abwertende Sprache. Zuerst prüfe ich die Lage: Liegt eine Störung, Gefahr oder ein Verstoß gegen die Hausordnung vor? Ich spreche die Person ruhig an und erkläre, falls nötig, die Regeln des Objekts. Gleichzeitig verhindere ich, dass Kunden die Person weiter beschimpfen oder die Situation eskaliert. Wenn die Person hilfsbedürftig wirkt, kann je nach Lage Unterstützung, Sozialdienst, Rettungsdienst oder Polizei informiert werden. Hausrecht darf nicht willkürlich oder diskriminierend angewendet werden. Der Vorfall wird sachlich dokumentiert.",
+          followUpQuestions: [
+            "Warum ist respektvolle Sprache wichtig?",
+            "Wann kann Hausrecht angewendet werden?",
+            "Was tun Sie, wenn Kunden die Person beleidigen?"
+          ],
+          examinerNotes: "Der Prüfling muss Würde, Hausrecht und Hilfebedarf zusammen denken.",
+          criticalMistakes: [
+            "Obdachlose Person abwerten",
+            "Hausrecht diskriminierend anwenden",
+            "Beschimpfungen durch Kunden ignorieren",
+            "Hilfebedarf nicht erkennen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-010",
+          mode: "oral",
+          sheet: "E",
+          order: 10,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Neutralität / Konfliktklärung / Dokumentation",
+          examinerQuestion: "Nach einem Streit behaupten beide Beteiligten, der jeweils andere habe angefangen. Wie vermeiden Sie falsche Parteinahme?",
+          modelAnswer: "Ich bleibe neutral und bewerte nur, was ich selbst wahrgenommen habe oder was durch Zeugen nachvollziehbar ist. Ich trenne die Beteiligten räumlich, beruhige die Lage und höre die Angaben sachlich an, ohne vorschnell Schuld zuzuweisen. Wenn eine Straftat, Verletzung oder konkrete Gefahr im Raum steht, informiere ich Einsatzleitung und gegebenenfalls Polizei oder Rettungsdienst. In der Dokumentation trenne ich eigene Beobachtungen, Aussagen der Beteiligten und Aussagen von Zeugen klar voneinander. Ich entscheide nicht wie ein Gericht, sondern sichere die Lage.",
+          followUpQuestions: [
+            "Warum ist Neutralität wichtig?",
+            "Wie trennen Sie eigene Wahrnehmung von Aussagen anderer?",
+            "Wann informieren Sie Polizei oder Rettungsdienst?"
+          ],
+          examinerNotes: "Neutralität und saubere Dokumentation sind hier wichtiger als Schuldzuweisung.",
+          criticalMistakes: [
+            "Vorschnell Partei ergreifen",
+            "Vermutungen als Tatsachen dokumentieren",
+            "Beteiligte weiter zusammen streiten lassen",
+            "Sich als Richter aufspielen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-011",
+          mode: "oral",
+          sheet: "E",
+          order: 11,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Grundzüge der Sicherheitstechnik",
+          subtopic: "Brandverdacht / Meldekette / Gefahrenprüfung",
+          examinerQuestion: "Sie bemerken Rauchgeruch, aber es wurde noch kein Brandalarm ausgelöst. Was tun Sie?",
+          modelAnswer: "Ich nehme Rauchgeruch ernst und ignoriere ihn nicht. Ich informiere sofort Einsatzleitung, Leitstelle oder die zuständige Objektstelle und handle nach Alarm- oder Brandschutzordnung. Wenn es gefahrlos möglich ist, prüfe ich aus sicherer Entfernung die Lage, ohne mich selbst zu gefährden. Ich halte Fluchtwege frei und achte darauf, ob Personen gefährdet sind. Bei konkretem Brandverdacht oder sichtbarem Rauch werden Feuerwehr und weitere zuständige Stellen informiert. Alle Beobachtungen und Maßnahmen werden dokumentiert.",
+          followUpQuestions: [
+            "Warum darf Rauchgeruch nicht ignoriert werden?",
+            "Wann informieren Sie die Feuerwehr?",
+            "Warum ist Eigenschutz wichtig?"
+          ],
+          examinerNotes: "Rauchgeruch ist als mögliche Gefahr zu behandeln. Meldekette und Eigenschutz müssen genannt werden.",
+          criticalMistakes: [
+            "Rauchgeruch ignorieren",
+            "Allein in gefährliche Bereiche gehen",
+            "Keine Meldekette einhalten",
+            "Fluchtwege und Personen im Objekt nicht beachten"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-012",
+          mode: "oral",
+          sheet: "E",
+          order: 12,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Grundzüge der Sicherheitstechnik",
+          subtopic: "Notausgang / Fluchtweg / Brandschutz",
+          examinerQuestion: "Die Notausgangstür ist verschlossen, obwohl Personen im Gebäude sind. Wie handeln Sie?",
+          modelAnswer: "Eine verschlossene Notausgangstür kann eine erhebliche Gefahr darstellen. Ich informiere sofort Einsatzleitung oder die zuständige Objektstelle und sichere den Bereich, damit niemand im Notfall gefährdet wird. Wenn möglich, wird die Tür nach Objektvorgabe sofort freigegeben oder ein alternativer Fluchtweg klar kenntlich gemacht. Ich dokumentiere die Feststellung und die getroffenen Maßnahmen. Bei akuter Gefahr oder wenn der Mangel nicht sofort beseitigt werden kann, werden weitere zuständige Stellen informiert, zum Beispiel Feuerwehr oder Betreiber.",
+          followUpQuestions: [
+            "Warum sind Notausgänge besonders wichtig?",
+            "Was tun Sie, wenn die Tür nicht sofort geöffnet werden kann?",
+            "Warum muss der Mangel dokumentiert werden?"
+          ],
+          examinerNotes: "Fluchtwege und Notausgänge haben hohe Sicherheitsrelevanz und dürfen nicht ignoriert werden.",
+          criticalMistakes: [
+            "Verschlossene Notausgangstür ignorieren",
+            "Keine Meldung machen",
+            "Personen im Gebäude nicht berücksichtigen",
+            "Fluchtwegproblem nicht dokumentieren"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-013",
+          mode: "oral",
+          sheet: "E",
+          order: 13,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Grundzüge der Sicherheitstechnik",
+          subtopic: "Zutrittssicherung / Kontrollgang / Objektschutz",
+          examinerQuestion: "Bei einem Kontrollgang sehen Sie eine offene Außentür in einem sensiblen Objektbereich. Was sind Ihre nächsten Schritte?",
+          modelAnswer: "Ich bewerte die Lage vorsichtig und achte zuerst auf Eigenschutz. Eine offene Außentür kann auf unbefugten Zutritt, Einbruch, technischen Defekt oder Nachlässigkeit hinweisen. Ich informiere Einsatzleitung oder Leitstelle, sichere den Bereich nach Dienstanweisung und prüfe, ob Personen oder Spuren erkennbar sind, ohne Beweise zu verändern oder mich zu gefährden. Je nach Lage wird die Polizei oder eine zuständige Objektstelle informiert. Die Feststellung, Uhrzeit, Ort und Maßnahmen werden dokumentiert.",
+          followUpQuestions: [
+            "Warum darf man nicht einfach unvorsichtig hineingehen?",
+            "Welche Informationen melden Sie?",
+            "Wann rufen Sie die Polizei?"
+          ],
+          examinerNotes: "Der Prüfling muss eine mögliche Einbruchslage erkennen und Eigenschutz beachten.",
+          criticalMistakes: [
+            "Ohne Meldung allein in den Bereich gehen",
+            "Mögliche Einbruchslage unterschätzen",
+            "Keine Dokumentation erstellen",
+            "Spuren verändern oder Beweise anfassen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-014",
+          mode: "oral",
+          sheet: "E",
+          order: 14,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Gewerberecht",
+          subtopic: "Dienstanweisung / Objektunterweisung / Verantwortlichkeit",
+          examinerQuestion: "Sie sollen einen Dienst übernehmen, obwohl Sie keine klare Einweisung zum Objekt erhalten haben. Was tun Sie?",
+          modelAnswer: "Ich darf einen sicherheitsrelevanten Dienst nicht blind übernehmen, wenn mir wesentliche Informationen fehlen. Ich frage nach Dienstanweisung, Objektbesonderheiten, Ansprechpartnern, Notfallwegen, Meldekette, Schlüsseln, Alarmanlagen und besonderen Gefahren. Wenn wichtige Informationen fehlen, informiere ich Einsatzleitung oder Vorgesetzte und lasse mir die Einweisung geben. Ich dokumentiere, wenn eine Einweisung nicht oder nur unvollständig erfolgt ist. Ziel ist, den Dienst sicher und fachgerecht auszuführen, nicht einfach unvorbereitet zu handeln.",
+          followUpQuestions: [
+            "Welche Informationen brauchen Sie vor Dienstbeginn?",
+            "Warum ist eine Objektunterweisung wichtig?",
+            "Was tun Sie, wenn niemand eine Einweisung geben kann?"
+          ],
+          examinerNotes: "Dienstanweisung und Objektunterweisung sind für sichere Dienstausführung wesentlich.",
+          criticalMistakes: [
+            "Dienst ohne Wissen über Objekt und Notfallwege blind übernehmen",
+            "Keine Rückfrage stellen",
+            "Meldekette und Ansprechpartner nicht kennen",
+            "Fehlende Einweisung nicht melden oder dokumentieren"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-e-015",
+          mode: "oral",
+          sheet: "E",
+          order: 15,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Umgang mit Menschen",
+          subtopic: "Kollegiales Fehlverhalten / Befugnisüberschreitung / Meldepflicht",
+          examinerQuestion: "Ein Kollege überschreitet seine Befugnisse und behandelt eine Person grob. Wie reagieren Sie?",
+          modelAnswer: "Ich schaue nicht weg. Wenn eine Person gefährdet ist oder der Kollege rechtswidrig handelt, muss die Situation gestoppt oder entschärft werden, soweit das sicher möglich ist. Ich bleibe ruhig, spreche den Kollegen sachlich an und versuche, die Lage zu deeskalieren. Bei Gefahr, Gewalt oder Straftatverdacht informiere ich sofort Einsatzleitung und gegebenenfalls Polizei. Der Vorfall wird sachlich dokumentiert. Kollegialität bedeutet nicht, rechtswidriges Verhalten zu decken.",
+          followUpQuestions: [
+            "Warum darf man Fehlverhalten eines Kollegen nicht decken?",
+            "Wann informieren Sie Einsatzleitung oder Polizei?",
+            "Wie bleiben Sie dabei professionell?"
+          ],
+          examinerNotes: "Der Prüfling muss Loyalität von rechtswidrigem Decken unterscheiden.",
+          criticalMistakes: [
+            "Wegschauen oder Fehlverhalten decken",
+            "Selbst aggressiv in den Konflikt einsteigen",
+            "Keine Meldung an Einsatzleitung",
+            "Rechtswidrige Gewalt verharmlosen"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        }
+      ]
     }
   ]
 };
