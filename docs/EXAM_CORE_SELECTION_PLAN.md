@@ -238,33 +238,34 @@ technik_001,technik_002,technik_003,technik_004,technik_005,technik_006,technik_
 
 ---
 
-## 6. Technische Regel für spätere Umsetzung
+## 6. Technische Regel der Umsetzung
 
-Die spätere Vollsimulation darf **nicht** mehr nur `shuffleArray([...allQuestions]).slice(0, 82)` verwenden.
+Die Vollsimulation darf **nicht** nur `shuffleArray([...allQuestions]).slice(0, 82)` verwenden.
 
-Sie muss stattdessen:
+Sie verwendet stattdessen die feste Core-ID-Logik:
 
 1. die **Core-ID-Liste** laden (aus dieser Datei oder daraus abgeleiteter Konstante),
 2. **genau diese 82 Fragen** aus `questions.json` finden,
 3. **fehlende IDs** als Fehler melden,
 4. **doppelte IDs** verhindern,
 5. **Kategorieanzahl** prüfen (7/5/5/13/13/8/5/19/7),
-6. **Punkte** später aus dem `points`-Feld berechnen (nach `docs/EXAM_POINTS_PLAN.md`).
+6. **Punkte** aus dem `points`-Feld berechnen (nach `docs/EXAM_POINTS_PLAN.md`).
 
 **Reihenfolge in der Prüfung:** Kann nach Sachgebiet sortiert oder gemischt werden – das ist eine **separate** UX-Entscheidung in v24.4. Die **Menge** der IDs ist fest.
 
 ---
 
-## 7. Spätere Tasks
+## 7. Umgesetzte Tasks
 
 | Task | Inhalt |
 |------|--------|
-| **v24.3** | `points`-Felder auf Grundlage von `docs/EXAM_POINTS_PLAN.md` **kontrolliert** in `questions.json` ergänzen |
-| **v24.4** | Core-ID-Auswahlfunktion in der App vorbereiten |
-| **v24.5** | Vollsimulation **82 Fragen / 120 Punkte** testen |
-| **v24.6** | Browser- und Online-Test dokumentieren |
+| **v24.3** | `points`-Felder auf Grundlage von `docs/EXAM_POINTS_PLAN.md` **kontrolliert** in `questions.json` ergänzt |
+| **v24.4** | Core-ID-Auswahlfunktion in der App vorbereitet |
+| **v24.5** | Vollsimulation **82 Fragen / 120 Punkte** mit Teilpunkten umgesetzt |
+| **v24.6** | Browser- und Online-Test dokumentiert |
+| **v26.0a** | Dokumentations-Audit bereinigt; alte Planhinweise als erledigt gekennzeichnet |
 
-**v24.2 (dieser Task):** Nur Core-ID-Plan – **kein Code**, keine `questions.json`-Änderung.
+**v24.2:** Core-ID-Plan dokumentiert. Spätere Umsetzung bis v24.6 erfolgt; v26.0a bereinigt die Dokumentation.
 
 ---
 

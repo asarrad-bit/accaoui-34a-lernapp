@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v25.9
+Stand: v26.0a
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v25.9)
+## 5. Aktueller Versionsstand (bis v26.0a)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -226,6 +226,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v25.8a | Zufallsprüfung für die mündliche Prüfung eingebaut: 15 zufällige Fragen aus Prüfungsbogen A/B/C/D/E, eigene sheetId `oral_random_v258a`, keine doppelte Fragenlogik innerhalb einer Runde – **erledigt** |
 | v25.8b | Zufallsprüfung im Browser getestet: Button sichtbar, Start funktioniert, Frageanzeige/Musterantwort/Navigation sauber, keine Fehlermeldung gemeldet – **erledigt** |
 | v25.9 | Abschluss-Audit mündliche Prüfung: Prüfungsbögen A/B/C/D/E, Zufallsprüfung, Auswahlfenster, Startlogik, Navigation und Dokumentation geprüft; Modulstand stabil – **erledigt** |
+| v26.0a | Schriftliche Prüfung Dokumentations-Audit bereinigt: alte offene Hinweise zu Browser-Endtest und Pause/Fortsetzen korrigiert; 82-Core-Fragen, 120 Punkte, Teilpunkte, Mix, Fokusnavigation und Pause/Fortsetzen als umgesetzter Stand dokumentiert – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -349,9 +350,9 @@ Kernbotschaft für die App (Beispieltext):
 
 ---
 
-## 8.2 Prüfungssimulation 82/120 (Stand v24.6g)
+## 8.2 Prüfungssimulation 82/120 (Stand v26.0a)
 
-| Aspekt | Stand v24.6g |
+| Aspekt | Stand v26.0a |
 |--------|-------------|
 | Dokument | `docs/EXAM_SIMULATION_AUDIT.md` – **vorhanden** |
 | Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht) |
@@ -366,16 +367,17 @@ Kernbotschaft für die App (Beispieltext):
 | Prüfungsanalyse UI | **erledigt** (v24.6f, v24.6x) – responsive, Premium-Look |
 | Fehlerübersicht UI | **erledigt** (v24.6g) – Premium-Kartenlook, keine Überlappung |
 | Fragen-/Antwort-Mix | **erledigt** (v24.6d, v24.6e) – Reihenfolge gemischt, Indizes korrekt |
-| Browser-Endtest | **wichtig** – Vollsimulation 82/120 mit Teilbewertung manuell prüfen (v24.6) |
+| Browser-Endtest | **erledigt** – Vollsimulation 82/120 mit Teilbewertung, Core-Auswahl, Mix, Fokusnavigation und Pause/Fortsetzen geprüft bzw. dokumentiert |
 
-### Empfohlene Folge-Tasks
+### Status nach v26.0a
 
-- **v24.6c** – Prüfung/Lernen pausieren und später fortsetzen (siehe §8.5)
-- **v24.6** – Vollsimulation 82/120 mit Teilbewertung im Browser testen und dokumentieren
+- **v24.6c** – Prüfung/Lernen pausieren und später fortsetzen: **erledigt**.
+- **v24.6** – Vollsimulation 82/120 mit Teilbewertung im Browser testen und dokumentieren: **erledigt**.
+- Künftige Änderungen am schriftlichen Prüfungsmodus müssen als Regressionstest erneut gegen 82 Fragen / 120 Punkte / 60 Punkte Bestehen / Teilpunkte / Pause-Fortsetzen geprüft werden.
 
 ---
 
-## 8.3 Teilpunkte-Bewertung (Stand v24.5)
+## 8.3 Teilpunkte-Bewertung (Stand v26.0a)
 
 | Aspekt | Stand |
 |--------|--------|
@@ -386,7 +388,7 @@ Kernbotschaft für die App (Beispieltext):
 | Lernmodus | Weiterhin **binär** (alles-oder-nichts) – bewusst getrennt vom Prüfungsmodus |
 | Dokumentation | `docs/EXAM_SIMULATION_AUDIT.md` §10, `docs/EXAM_POINTS_PLAN.md` §10 |
 | Code-Regel (Prüfung) | Single: voll/0 · Multiple: +1 pro richtigem Kreuz, falsche Zusatzkreuze zählen nicht |
-| Offen | **Browser-Endtest** Vollsimulation mit Teilbewertung (v24.6) |
+| Offen | Keine offene Kernfunktion; bei späteren Code-Änderungen Regressionstest empfohlen |
 
 ### Roadmap (Teilpunkte und Vollsimulation)
 
@@ -396,11 +398,11 @@ Kernbotschaft für die App (Beispieltext):
 | **v24.3a–i/j** | `points`-Felder vollständig + globaler Check **erledigt** |
 | **v24.4b** | Core-Auswahl in App **erledigt** |
 | **v24.5** | Teilpunkte-Logik **erledigt** |
-| **v24.6** | Vollsimulation 82/120 **mit Teilbewertung** im Browser testen |
+| **v24.6** | Vollsimulation 82/120 **mit Teilbewertung** im Browser testen – **erledigt** |
 | **v24.6b** | Wiederholungslogik offener Fragen + frühzeitige Abgabe – **erledigt** (§8.4) |
 | **v24.6d/e** | Fragen- und Antwortreihenfolge gemischt – **erledigt** |
 | **v24.6f/x/g** | Prüfungsanalyse + Fehlerübersicht UI – **erledigt** |
-| **v24.6c** | Pausieren/Fortsetzen Prüfung und Lernen – **offen** (§8.5) |
+| **v24.6c** | Pausieren/Fortsetzen Prüfung und Lernen – **erledigt** |
 
 ---
 
@@ -480,7 +482,7 @@ python tools/preflight.py
 | Simulation E | **vorhanden und startbar** (Prüfungsbogen E, 15 Fragen; v25.4a/b) |
 | Lernkarten | vorhanden – **vollständiger Retest empfohlen** |
 | Schriftliche Fragenbank | **86 Fragen** in `questions.json` (Pool-Ziel erreicht); Vollsimulation nutzt **82 Core-Fragen** (v24.4b) |
-| Prüfungssimulation 82/120 | **umgesetzt** (Core, Teilpunkte, v24.6b); UI v24.6f/x/g **erledigt**; Mix v24.6d/e **erledigt**; **v24.6c** Pause offen |
+| Prüfungssimulation 82/120 | **umgesetzt und dokumentiert** (82 Core-Fragen, 120 Punkte, 60 Punkte Bestehen, Teilpunkte, Mix, Fokusnavigation, Pause/Fortsetzen; v26.0a Audit erledigt) |
 | Lernstrategie-Modul | **geplant** – siehe `docs/LEARNING_STRATEGY_MODULE.md` |
 | UX- und Lernlogik-Audit | **geplant** – siehe §8.1 (v24.x) |
 
@@ -516,18 +518,17 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-1. **v24.6c – Pausieren/Fortsetzen** – Prüfung und Lernen speichern und fortsetzen; Session-Reihenfolge wegen v24.6d/e sichern (§8.5)
-2. **v24.6 – Browser-Endtest** – Vollsimulation 82/120 mit Teilbewertung manuell prüfen
-3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul (v24.x/v25.x), siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**
-4. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall (v24.x), siehe §8.1 – **kein sofortiger Code-Task**
-5. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien
-6. **Später v24 Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C
-7. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`
-8. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen (v26)
-9. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id` (v27, Roadmap Phase 3–6)
-10. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`
+1. **Schriftliche Prüfung Regressionstest bei Änderungen** – Vollsimulation 82/120, Teilpunkte, Pause/Fortsetzen, Mix und Auswertung nach späteren Code-Änderungen erneut prüfen.
+2. **Lernkarten vollständig testen** – Fortschritt, Wiederholung, Kategorien, sichere/unsichere Karten.
+3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul, siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**.
+4. **UX- und Lernlogik-Audit** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall, siehe §8.1.
+5. **Später Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C/D/E/Zufall.
+6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`.
+7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen.
+8. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id`.
+9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
 
-**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 

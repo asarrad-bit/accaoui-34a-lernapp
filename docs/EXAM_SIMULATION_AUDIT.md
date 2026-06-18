@@ -1,10 +1,10 @@
 # Accaoui §34a – Prüfungssimulation Audit (82 Fragen / 120 Punkte)
 
-Stand: **v24.3x** (Teilpunkte-Audit ergänzt; v24.0 Basis)
+Stand: **v26.0a** (Dokumentations-Audit; technische Umsetzung bis v24.6c/v24.6g berücksichtigt)
 Projekt: Accaoui §34a Lern-App
 Grundlage: `questions.json` (86 Fragen), `app.js` (Prüfungsmodus), `docs/PROJECT_MASTERLIST.md` §7
 
-**Hinweis:** Dieses Dokument beschreibt den **Ist-Stand** und die **geplante Anpassung**. In v24.0 wird **kein Code** und **keine** `questions.json`-Änderung vorgenommen.
+**Hinweis:** Dieses Dokument beschreibt den aktuellen Prüfstand der schriftlichen Vollsimulation. Frühere Planpunkte zu `points`, Core-Auswahl, Teilpunkten und Pause/Fortsetzen sind inzwischen technisch umgesetzt bzw. dokumentiert.
 
 ---
 
@@ -38,29 +38,32 @@ Die App enthält bereits Konstanten und UI für eine Vollsimulation mit 82 Frage
 
 ---
 
-## 2. Aktueller technischer Befund
+## 2. Aktueller technischer Befund v26.0a
 
 | Befund | Detail |
 |--------|--------|
-| `questions.json` | Enthält **keine** `points`-, `score`- oder `weight`-Felder |
-| Alle 86 Fragen | Haben aktuell **kein Punktefeld** in den Daten |
-| Fallback in der App | `getQuestionPoints()` nutzt `DEFAULT_QUESTION_POINTS = 1`, wenn kein Feld gesetzt ist |
-| Faktische Auswertung | Die Fragenbank ist damit derzeit nur als **86-Punkte-Basis** auswertbar (jede Frage = 1 Punkt) |
-| Punkte-Infrastruktur | Die App enthält bereits `getQuestionPoints()`, `getExamMaxPoints()`, `getExamReachedPoints()`, `getExamPassPoints()` – die **Datenbasis** ist aber noch nicht vorbereitet |
-| Vollsimulation-Start | `startExamMode()` erzeugt `examQuestions` per `shuffleArray([...allQuestions]).slice(0, limit)` – **zufällig aus dem Gesamtpool**, ohne Sachgebiet und ohne Punktegewichtung |
+| `questions.json` | Enthält `points`-Felder für die schriftlichen Fragen |
+| Fragenbank | **86 Fragen** im Pool |
+| Vollsimulation | Nutzt **82 feste Core-Fragen** aus `EXAM_CORE_QUESTION_IDS_V244` |
+| Maximalpunkte | **120 Punkte** |
+| Bestehensgrenze | **60 Punkte** (50 Prozent) |
+| Teilpunkte | Im Prüfungsmodus umgesetzt: richtige Kreuze können Teilpunkte bringen; falsche Zusatzkreuze zählen nicht positiv |
+| Pause/Fortsetzen | Aktive Prüfung wird über `accaoui_active_session` gespeichert und kann fortgesetzt werden |
+| UI | Fokusnavigation, Prüfungsanalyse, Fehlerübersicht und Fragen-/Antwort-Mix sind umgesetzt |
 
-**Kurzfassung:** Timer, Fragenanzahl (82) und Bestehensgrenze (50 %) sind in der App angelegt; **Punkteverteilung** und **sachgebietsbezogene Ziehung** fehlen noch.
+**Kurzfassung:** Die schriftliche Vollsimulation ist als 82/120-Prüfungsmodus umgesetzt. Alte Planhinweise aus v24.0/v24.1/v24.2 wurden mit v26.0a dokumentarisch bereinigt.
 
----
+## 3. Kritischer Regressionstest für spätere Änderungen
 
-## 3. Kritischer Punkt
+Bei jeder späteren Änderung am schriftlichen Prüfungsmodus müssen mindestens diese Punkte erneut geprüft werden:
 
-- Die **Vollsimulation darf nicht** einfach **82 zufällige Fragen** aus `allQuestions` ziehen.
-- Die Vollsimulation **muss später** nach **Sachgebiet** und **Zielgewichtung** (Fragen + Punkte pro Kategorie) ziehen.
-- **Aktueller Code** (`app.js`, `startExamMode`): `examQuestions = shuffleArray([...allQuestions]).slice(0, Math.min(currentExamLimit, allQuestions.length))`.
-- **Bewertung:** Für **Training** und **Smoke-Tests** akzeptabel; für eine **IHK-nahe Vollsimulation** **nicht ausreichend**.
-
----
+1. Vollsimulation startet mit **82 Fragen**.
+2. Maximalpunktzahl bleibt **120 Punkte**.
+3. Bestehensgrenze bleibt **60 Punkte**.
+4. Teilpunkte werden im Prüfungsmodus korrekt berechnet.
+5. Feste Core-Fragen bleiben von Reservefragen getrennt.
+6. Pause/Fortsetzen funktioniert und löscht die aktive Session nach Abgabe.
+7. Prüfungsanalyse und Fehlerübersicht zeigen keine UI-Überlappungen.
 
 ## 4. Zielmodell schriftliche Prüfung
 
