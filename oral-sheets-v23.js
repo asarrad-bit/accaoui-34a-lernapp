@@ -898,6 +898,434 @@ const ACCAOUI_ORAL_SHEETS_V23 = {
           sourceStyle: "accaoui_original"
         }
       ]
+    },
+    {
+      id: "oral_sheet_d_v253a",
+      title: "Prüfungsbogen D",
+      description: "15 Accaoui-original Fallfragen für die mündliche §34a-Prüfung mit Fokus auf Befugnisse, Deeskalation, Dokumentation, Datenschutz, UVV, Waffen und Sicherheitstechnik.",
+      status: "draft",
+      questions: [
+        {
+          id: "oral-d-001",
+          mode: "oral",
+          sheet: "D",
+          order: 1,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Bürgerliches Gesetzbuch",
+          subtopic: "Taschenkontrolle / Einwilligung / Hausrecht",
+          examinerQuestion: "Ein Kunde soll am Ausgang seine Tasche öffnen. Darf ein Sicherheitsmitarbeiter eine Taschenkontrolle erzwingen? Erklären Sie die rechtlichen Grenzen.",
+          modelAnswer: "Eine Taschenkontrolle darf grundsätzlich nicht gegen den Willen der Person erzwungen werden. Der Sicherheitsmitarbeiter kann auf Grundlage des Hausrechts und der Hausordnung um eine freiwillige Kontrolle bitten. Verweigert die Person die Kontrolle, kann der Zutritt künftig verweigert oder die Polizei hinzugezogen werden, wenn ein konkreter Verdacht besteht. Eine körperliche Durchsuchung oder gewaltsame Taschenöffnung ist ohne rechtliche Grundlage nicht zulässig. Wichtig sind Freiwilligkeit, Verhältnismäßigkeit und klare Kommunikation.",
+          followUpQuestions: [
+            "Was bedeutet freiwillige Einwilligung?",
+            "Was tun Sie bei konkretem Diebstahlsverdacht?",
+            "Warum ist eine erzwungene Durchsuchung rechtlich gefährlich?"
+          ],
+          examinerNotes: "Der Prüfling muss Freiwilligkeit, Hausrecht, Verdacht, Polizei und Grenzen privater Befugnisse sauber trennen.",
+          criticalMistakes: [
+            "Taschenkontrolle gegen den Willen erlauben",
+            "Hausrecht als Durchsuchungsrecht darstellen",
+            "Polizei bei konkretem Verdacht nicht erwähnen",
+            "Verhältnismäßigkeit vergessen"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-002",
+          mode: "oral",
+          sheet: "D",
+          order: 2,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Recht der öffentlichen Sicherheit und Ordnung",
+          subtopic: "Identitätsfeststellung / private Befugnisse / Polizeiabgrenzung",
+          examinerQuestion: "Eine Person weigert sich, ihren Ausweis zu zeigen. Welche Möglichkeiten haben Sie als Sicherheitsmitarbeiter – und wo enden Ihre Befugnisse?",
+          modelAnswer: "Ein Sicherheitsmitarbeiter darf eine Person ansprechen und um das Vorzeigen eines Ausweises bitten, wenn es dafür einen sachlichen Grund gibt, zum Beispiel Zutrittskontrolle oder Hausordnung. Er darf die Identitätsfeststellung aber nicht wie die Polizei erzwingen. Verweigert die Person die Mitwirkung, kann je nach Auftrag der Zutritt verweigert oder die Person zum Verlassen aufgefordert werden. Bei Straftatverdacht oder Gefahr muss die Polizei eingeschaltet werden. Polizeibefugnisse dürfen nicht vorgetäuscht werden.",
+          followUpQuestions: [
+            "Darf ein Sicherheitsmitarbeiter einen Ausweis verlangen wie die Polizei?",
+            "Was ist der Unterschied zwischen Bitten und Erzwingen?",
+            "Wann rufen Sie die Polizei?"
+          ],
+          examinerNotes: "Private Kontrolle und polizeiliche Identitätsfeststellung müssen klar abgegrenzt werden.",
+          criticalMistakes: [
+            "Polizeiliche Identitätsfeststellung behaupten",
+            "Ausweis zwangsweise wegnehmen wollen",
+            "Keine Grenze privater Befugnisse nennen",
+            "Keine Polizei bei Gefahr oder Straftatverdacht erwähnen"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-003",
+          mode: "oral",
+          sheet: "D",
+          order: 3,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Strafgesetzbuch und Strafverfahrensrecht",
+          subtopic: "Rechtfertigender Notstand / Hilfeleistung / Gefahrabwehr",
+          examinerQuestion: "In einem Objekt liegt eine bewusstlose Person hinter einer verschlossenen Tür. Welche rechtlichen Gedanken spielen bei Notstand und Hilfeleistung eine Rolle?",
+          modelAnswer: "Hier geht es nicht um Notwehr, sondern um eine Gefahr für Leben oder Gesundheit. Wichtig sind Hilfeleistung, Notruf und möglicherweise rechtfertigender Notstand, wenn ein geschütztes Rechtsgut nur durch Eingriff in ein anderes Rechtsgut gerettet werden kann. Ich informiere sofort Rettungsdienst, Einsatzleitung und je nach Lage Feuerwehr oder Polizei. Wenn akute Lebensgefahr besteht und keine mildere Möglichkeit vorhanden ist, kann ein verhältnismäßiger Eingriff gerechtfertigt sein. Eigengefährdung ist zu vermeiden, und der Vorfall muss dokumentiert werden.",
+          followUpQuestions: [
+            "Warum ist das keine klassische Notwehrlage?",
+            "Was bedeutet rechtfertigender Notstand?",
+            "Warum muss der Eingriff verhältnismäßig bleiben?"
+          ],
+          examinerNotes: "Notwehr und Notstand dürfen nicht verwechselt werden. Hilfeleistung, Notruf, Verhältnismäßigkeit und Eigenschutz sind Pflichtpunkte.",
+          criticalMistakes: [
+            "Notstand mit Notwehr verwechseln",
+            "Keine Rettungskräfte informieren",
+            "Türöffnung ohne Gefahr und ohne Verhältnismäßigkeit erlauben",
+            "Eigenschutz vergessen"
+          ],
+          difficulty: "hard",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-004",
+          mode: "oral",
+          sheet: "D",
+          order: 4,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Strafgesetzbuch und Strafverfahrensrecht",
+          subtopic: "Beleidigung / Bedrohung / Nötigung / professionelles Verhalten",
+          examinerQuestion: "Ein Gast beleidigt Sie schwer und droht, Sie später „abzufangen“. Welche Straftatbestände können berührt sein und wie reagieren Sie professionell?",
+          modelAnswer: "Je nach Wortlaut und Situation können Beleidigung, Bedrohung oder Nötigung berührt sein. Ich bleibe ruhig, provoziere nicht zurück und halte Abstand. Ich sichere mich selbst, informiere Kollegen oder Einsatzleitung und beende die Situation nach Möglichkeit deeskalierend. Bei konkreter Drohung, Gefahr oder Straftatverdacht wird die Polizei informiert. Wichtig ist, den Vorfall sachlich zu dokumentieren, mit Uhrzeit, Ort, Beteiligten, Wortlaut und Zeugen.",
+          followUpQuestions: [
+            "Warum dürfen Sie nicht zurückbeleidigen?",
+            "Wann wird aus einer Drohung eine ernsthafte Gefahr?",
+            "Was dokumentieren Sie genau?"
+          ],
+          examinerNotes: "Der Prüfling soll Straftatbestände vorsichtig einordnen und professionelles Verhalten beschreiben.",
+          criticalMistakes: [
+            "Zurückbeleidigen",
+            "Drohung ignorieren",
+            "Straftatbestände pauschal oder falsch sicher behaupten",
+            "Keine Dokumentation oder Meldung erwähnen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-005",
+          mode: "oral",
+          sheet: "D",
+          order: 5,
+          examinerBlock: 1,
+          examinerRole: "Prüfer 1",
+          topic: "Bürgerliches Gesetzbuch",
+          subtopic: "Hausverbot / Hausrecht / Verhältnismäßigkeit",
+          examinerQuestion: "Eine Person mit Hausverbot betritt ein Geschäft, bleibt aber ruhig stehen und sagt: „Ich gehe nicht.“ Wie setzen Sie das Hausrecht rechtssicher durch?",
+          modelAnswer: "Ich spreche die Person ruhig an und weise sachlich auf das bestehende Hausverbot hin. Ich fordere sie eindeutig auf, das Objekt zu verlassen. Ich bleibe verhältnismäßig und setze nicht sofort körperliche Gewalt ein. Wenn die Person nicht geht, informiere ich die Einsatzleitung und je nach Lage die Polizei. Das Verhalten kann Hausfriedensbruch darstellen, wenn die Person trotz Aufforderung bleibt. Der Vorfall wird mit Zeit, Ort, Aufforderung, Reaktion und Zeugen dokumentiert.",
+          followUpQuestions: [
+            "Wann kann Hausfriedensbruch vorliegen?",
+            "Warum ist eine klare Aufforderung wichtig?",
+            "Wann darf körperliches Eingreifen überhaupt in Betracht kommen?"
+          ],
+          examinerNotes: "Hausrecht, klare Aufforderung, Hausfriedensbruch, Verhältnismäßigkeit und Dokumentation müssen genannt werden.",
+          criticalMistakes: [
+            "Sofort körperlich entfernen wollen",
+            "Hausfriedensbruch nicht erkennen",
+            "Keine klare Aufforderung aussprechen",
+            "Polizei und Dokumentation vergessen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-006",
+          mode: "oral",
+          sheet: "D",
+          order: 6,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Verwirrte Person / Orientierungslosigkeit / Eigensicherung",
+          examinerQuestion: "Eine verwirrte Person läuft orientierungslos durch ein Objekt und reagiert kaum auf Ansprache. Wie handeln Sie menschlich, sicher und verhältnismäßig?",
+          modelAnswer: "Ich bleibe ruhig, halte Abstand und spreche die Person langsam, freundlich und einfach an. Ich vermeide Druck, hektische Bewegungen und laute Befehle. Gleichzeitig achte ich auf Eigenschutz und darauf, ob die Person sich selbst oder andere gefährdet. Wenn die Person hilflos wirkt, informiere ich Einsatzleitung, Rettungsdienst oder Polizei, je nach Lage. Ich begleite die Person nicht allein in abgelegene Bereiche und dokumentiere den Vorfall sachlich.",
+          followUpQuestions: [
+            "Warum ist ruhige Kommunikation hier besonders wichtig?",
+            "Wann informieren Sie Rettungsdienst oder Polizei?",
+            "Warum darf man die Person nicht einfach grob wegschicken?"
+          ],
+          examinerNotes: "Menschlichkeit und Eigensicherung müssen zusammen genannt werden.",
+          criticalMistakes: [
+            "Verwirrte Person auslachen oder abwerten",
+            "Zu nah herangehen und Eigenschutz vergessen",
+            "Hilflose Lage ignorieren",
+            "Keine Unterstützung anfordern"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-007",
+          mode: "oral",
+          sheet: "D",
+          order: 7,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Schutz von Personen / sexuelle Belästigung / Deeskalation",
+          examinerQuestion: "Eine Besucherin meldet, dass sie von einem Gast belästigt wurde. Wie reagieren Sie als Sicherheitsmitarbeiter?",
+          modelAnswer: "Ich nehme die Meldung ernst, bleibe ruhig und bringe die betroffene Person, wenn nötig, aus der unmittelbaren Gefahrensituation. Ich höre sachlich zu, ohne sie zu bedrängen oder zu beschuldigen. Ich informiere Kollegen oder Einsatzleitung und trenne die beteiligten Personen räumlich, soweit dies sicher möglich ist. Bei konkretem Verdacht auf eine Straftat oder Gefahr wird die Polizei informiert. Der Vorfall wird sorgfältig dokumentiert, mit Zeit, Ort, Beteiligten, Zeugen und wahrgenommenem Verhalten.",
+          followUpQuestions: [
+            "Warum darf man die Meldung nicht verharmlosen?",
+            "Warum sollten beteiligte Personen getrennt werden?",
+            "Welche Informationen gehören in die Dokumentation?"
+          ],
+          examinerNotes: "Schutz der betroffenen Person, Trennung der Beteiligten, Polizei bei Straftatverdacht und Dokumentation sind entscheidend.",
+          criticalMistakes: [
+            "Betroffene Person nicht ernst nehmen",
+            "Täter und betroffene Person weiter zusammenstehen lassen",
+            "Selbst Ermittler spielen",
+            "Keine Polizei bei konkretem Straftatverdacht erwähnen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-008",
+          mode: "oral",
+          sheet: "D",
+          order: 8,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Konflikt zwischen Personen / Trennung / Eskalationsvermeidung",
+          examinerQuestion: "Zwei Gäste streiten laut, schubsen sich aber noch nicht. Wie verhindern Sie eine Eskalation?",
+          modelAnswer: "Ich beobachte kurz die Lage, halte Abstand und spreche ruhig und klar. Ich stelle mich nicht ungeschützt zwischen die Personen, sondern versuche, Abstand zwischen ihnen herzustellen und Unterstützung anzufordern. Ich spreche nach Möglichkeit eine Person direkt an und setze klare Grenzen: keine Beleidigungen, kein körperlicher Kontakt. Wenn die Situation kippt oder eine Gefahr entsteht, wird die Einsatzleitung oder Polizei informiert. Ziel ist, die Lage zu beruhigen, nicht einen Machtkampf zu gewinnen.",
+          followUpQuestions: [
+            "Warum ist es gefährlich, sich einfach zwischen zwei aggressive Personen zu stellen?",
+            "Welche Formulierung wäre deeskalierend?",
+            "Wann holen Sie Kollegen dazu?"
+          ],
+          examinerNotes: "Der Prüfling muss Gruppendynamik, Abstand, Unterstützung und klare Grenze beherrschen.",
+          criticalMistakes: [
+            "Allein körperlich dazwischengehen",
+            "Partei ergreifen und Streit verstärken",
+            "Keine Unterstützung holen",
+            "Aggression durch Drohungen erhöhen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-009",
+          mode: "oral",
+          sheet: "D",
+          order: 9,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Angst / Stressreaktion / Erste Hilfe / Kommunikation",
+          examinerQuestion: "Eine Person bekommt bei einer Kontrolle Angst, zittert und sagt, sie bekomme keine Luft. Wie gehen Sie vor?",
+          modelAnswer: "Ich unterbreche die Situation, reduziere Druck und spreche ruhig mit der Person. Ich halte Abstand, sorge für Luft und Platz und frage, ob medizinische Hilfe benötigt wird. Wenn der Zustand ernst wirkt oder sich verschlechtert, informiere ich Rettungsdienst und Einsatzleitung. Ich bleibe bei der Person, soweit es sicher ist, und lasse sie nicht allein. Die Kontrolle wird nicht mit Zwang fortgesetzt, wenn eine gesundheitliche Gefahr erkennbar ist. Der Vorfall wird dokumentiert.",
+          followUpQuestions: [
+            "Warum muss hier Druck reduziert werden?",
+            "Wann rufen Sie den Rettungsdienst?",
+            "Warum darf die Kontrolle nicht stur fortgesetzt werden?"
+          ],
+          examinerNotes: "Gesundheitliche Lage, Deeskalation, Erste Hilfe, Rettungsdienst und Dokumentation müssen erkannt werden.",
+          criticalMistakes: [
+            "Angstreaktion als Schauspiel abtun",
+            "Kontrolle trotz möglicher gesundheitlicher Gefahr erzwingen",
+            "Rettungsdienst nicht erwähnen",
+            "Person ohne Beobachtung alleinlassen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-010",
+          mode: "oral",
+          sheet: "D",
+          order: 10,
+          examinerBlock: 2,
+          examinerRole: "Vorsitz",
+          topic: "Umgang mit Menschen",
+          subtopic: "Vorfalldokumentation / Bericht / Nachvollziehbarkeit",
+          examinerQuestion: "Nach einem Vorfall verlangt Ihr Auftraggeber eine schriftliche Meldung. Welche Punkte gehören in eine professionelle Dokumentation?",
+          modelAnswer: "Eine professionelle Dokumentation muss sachlich, vollständig und nachvollziehbar sein. Dazu gehören Datum, Uhrzeit, Ort, beteiligte Personen, Zeugen, genaue Beobachtungen, getroffene Maßnahmen, informierte Stellen und das Ergebnis. Wichtig ist, zwischen Tatsachen und persönlichen Einschätzungen zu unterscheiden. Beleidigungen, Vermutungen oder übertriebene Formulierungen gehören nicht in den Bericht. Datenschutz ist zu beachten, und die Meldung wird nur an berechtigte Stellen weitergegeben.",
+          followUpQuestions: [
+            "Warum muss man Tatsachen und Vermutungen trennen?",
+            "Welche Fehler machen Berichte unbrauchbar?",
+            "Warum ist Datenschutz auch bei Vorfallberichten wichtig?"
+          ],
+          examinerNotes: "Sachlichkeit, Vollständigkeit, Tatsachen/Einschätzungen und Datenschutz müssen genannt werden.",
+          criticalMistakes: [
+            "Vermutungen als Fakten darstellen",
+            "Unsachliche oder beleidigende Sprache verwenden",
+            "Uhrzeit, Ort oder Beteiligte vergessen",
+            "Bericht an unberechtigte Personen weitergeben"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-011",
+          mode: "oral",
+          sheet: "D",
+          order: 11,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Datenschutzrecht",
+          subtopic: "Vertraulichkeit / personenbezogene Daten / berufliche Verschwiegenheit",
+          examinerQuestion: "Ein Bekannter fragt Sie privat, welche Personen regelmäßig ein bestimmtes Objekt besuchen. Was ist datenschutzrechtlich und beruflich zu beachten?",
+          modelAnswer: "Ich darf solche Informationen nicht weitergeben. Es handelt sich um personenbezogene oder objektbezogene Informationen, die ich nur im Rahmen meines Dienstauftrags verwenden darf. Private Weitergabe ist unzulässig und kann datenschutzrechtliche, arbeitsrechtliche und vertragsrechtliche Folgen haben. Ich verweise darauf, dass ich zu dienstlichen Informationen keine Auskunft geben darf. Auffällige Anfragen oder Verdachtsmomente melde ich an die zuständige Stelle oder Einsatzleitung.",
+          followUpQuestions: [
+            "Warum sind Besuchsinformationen personenbezogen?",
+            "Was bedeutet Zweckbindung?",
+            "Welche Folgen kann eine unbefugte Weitergabe haben?"
+          ],
+          examinerNotes: "Datenschutz ist auch mündlich und privat relevant. Zweckbindung und Verschwiegenheit sind Kernpunkte.",
+          criticalMistakes: [
+            "Private Weitergabe als unproblematisch darstellen",
+            "Datenschutz nur auf Computerdateien beschränken",
+            "Zweckbindung nicht nennen",
+            "Keine Meldung bei auffälliger Anfrage erwähnen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-012",
+          mode: "oral",
+          sheet: "D",
+          order: 12,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Grundzüge der Sicherheitstechnik",
+          subtopic: "Schlüsselverwaltung / Schließanlage / Objektsicherheit",
+          examinerQuestion: "Während des Dienstes bemerken Sie, dass ein Generalschlüssel fehlt. Wie handeln Sie?",
+          modelAnswer: "Ich informiere sofort die Einsatzleitung oder die zuständige objektverantwortliche Stelle. Ein Generalschlüsselverlust ist ein erheblicher Sicherheitsvorfall, weil unbefugter Zugang möglich sein kann. Ich suche nicht heimlich allein weiter, sondern halte den Dienstweg ein. Der letzte bekannte Besitz, Zeitpunkt, Einsatzbereich und mögliche Übergaben müssen dokumentiert werden. Je nach Objektanweisung können Schließbereiche gesperrt, Kontrollen verstärkt oder weitere Sicherheitsmaßnahmen eingeleitet werden.",
+          followUpQuestions: [
+            "Warum ist ein Generalschlüssel besonders kritisch?",
+            "Was muss dokumentiert werden?",
+            "Warum darf der Verlust nicht verschwiegen werden?"
+          ],
+          examinerNotes: "Schlüsselverlust ist sicherheitsrelevant und muss sofort gemeldet und dokumentiert werden.",
+          criticalMistakes: [
+            "Schlüsselverlust verschweigen",
+            "Erst lange allein suchen und niemanden informieren",
+            "Keine Dokumentation erstellen",
+            "Risiko für das Objekt unterschätzen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-013",
+          mode: "oral",
+          sheet: "D",
+          order: 13,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Unfallverhütungsvorschriften Wach- und Sicherungsdienste",
+          subtopic: "Kontrollgang / Alleinarbeit / Kommunikationsmittel",
+          examinerQuestion: "Beim nächtlichen Kontrollgang fällt Ihr Funkgerät aus. Wie verhalten Sie sich nach UVV- und Sicherheitsgrundsätzen?",
+          modelAnswer: "Ich beachte den Eigenschutz und setze den Kontrollgang nicht blind fort, wenn dadurch meine Sicherheit gefährdet wird. Ich versuche, über ein Ersatzgerät, Telefon oder vereinbarte Meldewege Kontakt zur Leitstelle oder Einsatzleitung aufzunehmen. Wenn keine Kommunikation möglich ist, halte ich mich an die Dienstanweisung und begebe mich in einen sicheren Bereich. Der Ausfall wird gemeldet und dokumentiert. Kommunikationsmittel sind im Sicherheitsdienst wichtig, besonders bei Alleinarbeit und in Gefahrbereichen.",
+          followUpQuestions: [
+            "Warum ist Kommunikation beim Kontrollgang so wichtig?",
+            "Was tun Sie, wenn kein Ersatzgerät vorhanden ist?",
+            "Warum ist Alleinarbeit besonders riskant?"
+          ],
+          examinerNotes: "Eigenschutz, Meldewege, Ersatzkommunikation und keine riskante Alleinarbeit sind entscheidend.",
+          criticalMistakes: [
+            "Kontrollgang trotz fehlender Kommunikation riskant fortsetzen",
+            "Ausfall nicht melden",
+            "Keine Ersatzkommunikation versuchen",
+            "Eigenschutz vergessen"
+          ],
+          difficulty: "medium",
+          examRelevance: "high",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-014",
+          mode: "oral",
+          sheet: "D",
+          order: 14,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Umgang mit Waffen",
+          subtopic: "Reizstoffsprühgerät / gefährlicher Gegenstand / Einlasskontrolle",
+          examinerQuestion: "Bei einer Kontrolle finden Sie ein Pfefferspray. Wie bewerten Sie die Lage und was tun Sie?",
+          modelAnswer: "Ich bleibe ruhig, halte Abstand und bewerte die Situation nach Hausordnung, Objektvorgaben und konkreter Gefahrenlage. Ich darf den Zutritt verweigern, wenn das Mitführen solcher Gegenstände im Objekt nicht erlaubt ist oder eine Gefahr besteht. Ich nehme das Pfefferspray nicht eigenmächtig mit Gewalt weg und führe keine erzwungene Durchsuchung durch. Bei akuter Bedrohung, Straftatverdacht oder unklarer Rechtslage informiere ich Einsatzleitung und Polizei. Der Vorgang wird sachlich dokumentiert.",
+          followUpQuestions: [
+            "Dürfen Sie das Pfefferspray einfach wegnehmen?",
+            "Welche Rolle spielt die Hausordnung?",
+            "Wann informieren Sie die Polizei?"
+          ],
+          examinerNotes: "Zutrittsverweigerung kann zulässig sein, eigenmächtige Wegnahme oder erzwungene Durchsuchung nicht.",
+          criticalMistakes: [
+            "Gegenstand eigenmächtig mit Gewalt wegnehmen",
+            "Gefahr unterschätzen",
+            "Hausordnung und Objektvorgaben ignorieren",
+            "Keine Polizei bei konkreter Bedrohung erwähnen"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        },
+        {
+          id: "oral-d-015",
+          mode: "oral",
+          sheet: "D",
+          order: 15,
+          examinerBlock: 3,
+          examinerRole: "Prüfer 3",
+          topic: "Grundzüge der Sicherheitstechnik",
+          subtopic: "Stromausfall / Notbeleuchtung / Evakuierung / Meldekette",
+          examinerQuestion: "Im Objekt fällt der Strom aus, die Beleuchtung ist gestört und Besucher werden unruhig. Was sind Ihre wichtigsten Maßnahmen?",
+          modelAnswer: "Ich bleibe ruhig, informiere sofort Einsatzleitung oder Leitstelle und halte mich an den Alarm- oder Notfallplan des Objekts. Ich achte auf Fluchtwege, Notausgänge und mögliche Gefahrenstellen. Besucher werden ruhig informiert und, falls erforderlich, zu sicheren Bereichen oder Ausgängen geleitet. Ich prüfe nicht eigenmächtig technische Anlagen, wenn ich dafür nicht zuständig bin. Bei Gefahr für Personen werden Feuerwehr, Rettungsdienst oder Polizei informiert. Alle Maßnahmen und Beobachtungen werden dokumentiert.",
+          followUpQuestions: [
+            "Warum ist Ruhe in dieser Lage besonders wichtig?",
+            "Welche Bedeutung haben Fluchtwege und Notbeleuchtung?",
+            "Wann müssen externe Stellen informiert werden?"
+          ],
+          examinerNotes: "Notfallplan, Meldekette, freie Fluchtwege, keine Technikarbeiten ohne Zuständigkeit und Dokumentation müssen genannt werden.",
+          criticalMistakes: [
+            "Panik verstärken",
+            "Fluchtwege und Notausgänge nicht beachten",
+            "Eigenmächtig an technischen Anlagen arbeiten",
+            "Keine Meldekette und Dokumentation nennen"
+          ],
+          difficulty: "medium",
+          examRelevance: "medium",
+          ihkSimilarityRisk: "low",
+          sourceStyle: "accaoui_original"
+        }
+      ]
     }
   ]
 };
