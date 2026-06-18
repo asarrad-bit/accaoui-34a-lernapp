@@ -720,6 +720,8 @@ function renderDashboardResumeLearningCard() {
     existing.remove();
   }
 
+  renderDashboardResumeFlashcardCard();
+
   if (!hasActiveLearningSession()) {
     return;
   }
@@ -1630,6 +1632,7 @@ let flashcardIndex = 0;
 let flashcardFlipped = false;
 let flashcardKnownCount = 0;
 let flashcardUnknownCount = 0;
+let currentFlashcardTitle = "Lernkarten";
 
 function startFlashcardSessionByCategory(categoryName) {
   const questions = getCategoryQuestions(categoryName);
@@ -1661,20 +1664,25 @@ function startFlashcardsFromMistakes() {
 
 function startFlashcardSession(questions, title) {
   currentMode = "flashcards";
+  clearActiveFlashcardSession();
+  renderDashboardResumeFlashcardCard();
 
+  currentFlashcardTitle = title || "Lernkarten";
   flashcardQuestions = shuffleArray([...questions]);
   flashcardIndex = 0;
   flashcardFlipped = false;
   flashcardKnownCount = 0;
   flashcardUnknownCount = 0;
 
-  showFlashcardView(title || "Lernkarten");
+  showFlashcardView(currentFlashcardTitle);
 }
 
 function showFlashcardView(title) {
   const mainContent = document.querySelector(".main-content");
 
   if (!mainContent) return;
+
+  currentFlashcardTitle = title || currentFlashcardTitle || "Lernkarten";
 
   mainContent.innerHTML = `
     <button class="back-btn" onclick="showFlashcardsPage()">
@@ -1697,6 +1705,13 @@ function showFlashcardView(title) {
       <div class="progress-info">
         <span id="flashcardProgressText">0%</span>
         <span id="flashcardStats">0 gewusst · 0 nicht gewusst</span>
+
+        <div class="flashcard-session-actions-v261c">
+          <button type="button" class="next-btn secondary-btn flashcard-pause-btn-v261c" onclick="pauseFlashcardSession()">
+            Lernkarten pausieren
+          </button>
+          <span>Runde speichern</span>
+        </div>
       </div>
 
       <div class="progress-bar">
@@ -1708,6 +1723,7 @@ function showFlashcardView(title) {
   `;
 
   renderFlashcard();
+  saveActiveFlashcardSession();
 }
 
 function flipFlashcard() {
@@ -1720,6 +1736,7 @@ function flipFlashcard() {
   flashcardFlipped = true;
 
   inner.classList.add("flipped");
+  saveActiveFlashcardSession();
 
   if (rating) {
     rating.style.display = "flex";
@@ -1743,7 +1760,9 @@ function nextFlashcard() {
   }
 
   flashcardIndex++;
+  flashcardFlipped = false;
   renderFlashcard();
+  saveActiveFlashcardSession();
 }
 
 function previousFlashcard() {
@@ -1753,7 +1772,9 @@ function previousFlashcard() {
   }
 
   flashcardIndex--;
+  flashcardFlipped = false;
   renderFlashcard();
+  saveActiveFlashcardSession();
 }
 
 function updateFlashcardProgress() {
@@ -1786,6 +1807,9 @@ function updateFlashcardProgress() {
 }
 
 function showFlashcardFinishScreen() {
+  clearActiveFlashcardSession();
+  renderDashboardResumeFlashcardCard();
+
   const totalRated = flashcardKnownCount + flashcardUnknownCount;
   const percent =
     totalRated > 0
@@ -4530,6 +4554,7 @@ window.markFlashcardUnknown = markFlashcardUnknown;
 ===================================================== */
 
 const FLASHCARD_PROGRESS_KEY = "accaoui_flashcard_progress";
+const ACTIVE_FLASHCARD_SESSION_KEY_V261C = "accaoui_active_flashcard_session";
 
 let flashcardProgressStore = {};
 
@@ -4640,6 +4665,194 @@ function getTotalFlashcardProgress() {
   };
 }
 
+function getActiveFlashcardSession() {
+  if (typeof readStorage === "function") {
+    return readStorage(ACTIVE_FLASHCARD_SESSION_KEY_V261C, null);
+  }
+
+  const saved = localStorage.getItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
+  return saved ? JSON.parse(saved) : null;
+}
+
+function saveActiveFlashcardSession() {
+  if (!Array.isArray(flashcardQuestions) || flashcardQuestions.length === 0) {
+    return;
+  }
+
+  const existing = getActiveFlashcardSession();
+  const now = new Date().toISOString();
+
+  const session = {
+    version: "v26.1c",
+    sessionType: "flashcards",
+    title: currentFlashcardTitle || "Lernkarten",
+    questions: flashcardQuestions,
+    currentIndex: Number(flashcardIndex) || 0,
+    flipped: Boolean(flashcardFlipped),
+    knownCount: Number(flashcardKnownCount) || 0,
+    unknownCount: Number(flashcardUnknownCount) || 0,
+    createdAt: existing && existing.createdAt ? existing.createdAt : now,
+    updatedAt: now
+  };
+
+  if (typeof writeStorage === "function") {
+    writeStorage(ACTIVE_FLASHCARD_SESSION_KEY_V261C, session);
+  } else {
+    localStorage.setItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C, JSON.stringify(session));
+  }
+}
+
+function clearActiveFlashcardSession() {
+  if (typeof removeStorage === "function") {
+    removeStorage(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
+  } else {
+    localStorage.removeItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
+  }
+}
+
+function hasActiveFlashcardSession() {
+  const session = getActiveFlashcardSession();
+  return Boolean(
+    session &&
+    session.sessionType === "flashcards" &&
+    Array.isArray(session.questions) &&
+    session.questions.length > 0
+  );
+}
+
+function pauseFlashcardSession() {
+  currentMode = "flashcards";
+  saveActiveFlashcardSession();
+  showFlashcardPausedNotice();
+}
+
+function showFlashcardPausedNotice() {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) return;
+
+  const session = getActiveFlashcardSession();
+  const title = session && session.title ? session.title : currentFlashcardTitle;
+
+  mainContent.innerHTML = `
+    <section class="review-wrapper">
+      <div class="review-header">
+        <p class="eyebrow">Lernkarten pausiert</p>
+        <h1>${escapeHtml(title || "Lernkarten")}</h1>
+        <p>Ihre Lernkartenrunde wurde gespeichert. Sie können sie jederzeit vom Dashboard fortsetzen.</p>
+      </div>
+
+      <div class="last-exam-box">
+        <span>Gespeichert</span>
+        <strong>Fortsetzen jederzeit möglich</strong>
+
+        <div class="result-actions">
+          <button class="next-btn" onclick="resumeActiveFlashcardSession()">
+            Lernkarten fortsetzen
+          </button>
+
+          <button class="next-btn secondary-btn" onclick="location.reload()">
+            Zum Dashboard
+          </button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function resumeActiveFlashcardSession() {
+  const session = getActiveFlashcardSession();
+
+  if (!session || session.sessionType !== "flashcards") {
+    showSmallNotice("Keine gespeicherte Lernkartenrunde gefunden.");
+    return false;
+  }
+
+  if (!Array.isArray(session.questions) || session.questions.length === 0) {
+    showSmallNotice("Gespeicherte Lernkartenrunde ist ungültig.");
+    clearActiveFlashcardSession();
+    renderDashboardResumeFlashcardCard();
+    return false;
+  }
+
+  currentMode = "flashcards";
+  currentFlashcardTitle = session.title || "Lernkarten";
+  flashcardQuestions = session.questions;
+  flashcardIndex = Number(session.currentIndex) || 0;
+  flashcardFlipped = Boolean(session.flipped);
+  flashcardKnownCount = Number(session.knownCount) || 0;
+  flashcardUnknownCount = Number(session.unknownCount) || 0;
+
+  const shouldRestoreFlipped = flashcardFlipped;
+  flashcardFlipped = false;
+
+  showFlashcardView(currentFlashcardTitle);
+
+  if (shouldRestoreFlipped) {
+    setTimeout(flipFlashcard, 60);
+  }
+
+  updateFlashcardProgress();
+  return true;
+}
+
+function discardSavedFlashcardSession() {
+  if (!hasActiveFlashcardSession()) {
+    return;
+  }
+
+  clearActiveFlashcardSession();
+  renderDashboardResumeFlashcardCard();
+  showSmallNotice("Gespeicherte Lernkartenrunde wurde gelöscht.");
+}
+
+function renderDashboardResumeFlashcardCard() {
+  const existing = document.getElementById("flashcardResumeCardV261C");
+
+  if (existing) {
+    existing.remove();
+  }
+
+  if (!hasActiveFlashcardSession()) {
+    return;
+  }
+
+  const session = getActiveFlashcardSession();
+  const mainContent = document.querySelector(".main-content");
+  const heroGrid = document.querySelector(".hero-grid");
+
+  if (!mainContent || !heroGrid) {
+    return;
+  }
+
+  const title = session.title || "Gespeicherte Lernkartenrunde";
+  const cardLabel =
+    Number.isFinite(Number(session.currentIndex)) && Array.isArray(session.questions)
+      ? "Karte " + (Number(session.currentIndex) + 1) + "/" + session.questions.length
+      : "Fortsetzen möglich";
+
+  const card = document.createElement("section");
+  card.id = "flashcardResumeCardV261C";
+  card.className = "last-exam-box";
+  card.innerHTML = `
+    <span>Angefangene Lernkarten</span>
+    <strong>${escapeHtml(title)}</strong>
+    <p>${escapeHtml(cardLabel)} · gespeichert am ${escapeHtml(formatSessionDate(session.updatedAt))}</p>
+
+    <div class="result-actions">
+      <button class="next-btn" onclick="resumeActiveFlashcardSession()">
+        Lernkarten fortsetzen
+      </button>
+
+      <button class="next-btn secondary-btn" onclick="discardSavedFlashcardSession()">
+        Gespeicherte Lernkarten löschen
+      </button>
+    </div>
+  `;
+
+  heroGrid.parentNode.insertBefore(card, heroGrid);
+}
+
 /* Überschreibt die bisherige Gewusst-Funktion */
 function markFlashcardKnown() {
   const question = flashcardQuestions[flashcardIndex];
@@ -4652,6 +4865,7 @@ function markFlashcardKnown() {
 
   flashcardKnownCount++;
   updateFlashcardProgress();
+  saveActiveFlashcardSession();
   nextFlashcard();
 }
 
@@ -4666,6 +4880,7 @@ function markFlashcardUnknown() {
 
   flashcardUnknownCount++;
   updateFlashcardProgress();
+  saveActiveFlashcardSession();
   nextFlashcard();
 }
 
@@ -4674,6 +4889,12 @@ window.markFlashcardUnknown = markFlashcardUnknown;
 window.saveFlashcardProgress = saveFlashcardProgress;
 window.getFlashcardCategoryProgress = getFlashcardCategoryProgress;
 window.getTotalFlashcardProgress = getTotalFlashcardProgress;
+window.pauseFlashcardSession = pauseFlashcardSession;
+window.resumeActiveFlashcardSession = resumeActiveFlashcardSession;
+window.discardSavedFlashcardSession = discardSavedFlashcardSession;
+window.renderDashboardResumeFlashcardCard = renderDashboardResumeFlashcardCard;
+window.saveActiveFlashcardSession = saveActiveFlashcardSession;
+window.getActiveFlashcardSession = getActiveFlashcardSession;
 
 /* =====================================================
    v22.3 MÜNDLICHE PRÜFUNG – FRAGE/ANTWORT ALS FLIP IN SZENE

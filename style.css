@@ -9037,3 +9037,333 @@ body .main-content .topic-stats-list > .topic-stat-row .topic-neutral {
     width: 100% !important;
   }
 }
+/* =====================================================
+   v26.1c Lernkarten pausieren / fortsetzen
+===================================================== */
+
+.flashcard-session-actions-v261c {
+  width: min(960px, 94%);
+  margin: 18px auto 22px auto;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.flashcard-session-actions-v261c span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.flashcard-pause-btn-v261c {
+  min-width: 180px;
+}
+
+@media (max-width: 700px) {
+  .flashcard-session-actions-v261c {
+    width: 96%;
+    align-items: stretch;
+  }
+
+  .flashcard-pause-btn-v261c {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   v26.1c Feinschliff: Lernkarten-Pause in Fortschrittsleiste
+===================================================== */
+
+.progress-info .flashcard-session-actions-v261c {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.progress-info .flashcard-session-actions-v261c span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.progress-info .flashcard-pause-btn-v261c {
+  min-width: 150px;
+  min-height: 34px;
+  padding: 8px 13px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .progress-info .flashcard-session-actions-v261c {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+
+  .progress-info .flashcard-pause-btn-v261c {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   v26.1c Feinschliff: Lernkarten-Leiste zentrieren
+===================================================== */
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .progress-info {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  text-align: center !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardProgressText,
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardStats {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c {
+  margin-left: 0 !important;
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-pause-btn-v261c {
+  min-width: 145px !important;
+  height: 34px !important;
+  padding: 7px 12px !important;
+  font-size: 12px !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c span {
+  white-space: nowrap !important;
+}
+
+@media (max-width: 700px) {
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .progress-info {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* =====================================================
+   v26.1c Premium-Feinschliff Lernkarten-Fortschrittsleiste
+===================================================== */
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) {
+  width: min(1080px, 94%) !important;
+  margin: 22px auto 30px auto !important;
+  padding: 14px 18px 13px 18px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.07) !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .progress-info {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  width: 100% !important;
+  margin: 0 0 12px 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardProgressText {
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  color: #334155 !important;
+  white-space: nowrap !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardStats {
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 7px !important;
+  flex-wrap: wrap !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardStats * {
+  white-space: nowrap !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex: 0 0 auto !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-pause-btn-v261c {
+  min-width: 142px !important;
+  min-height: 32px !important;
+  padding: 7px 13px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08) !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c span {
+  color: #64748b !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.03em !important;
+  white-space: nowrap !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .progress-bar {
+  height: 8px !important;
+  border-radius: 999px !important;
+  background: rgba(226, 232, 240, 0.95) !important;
+  overflow: hidden !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .progress-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+}
+
+@media (max-width: 900px) {
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .progress-info {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .progress-wrapper:has(.flashcard-session-actions-v261c) {
+    width: 96% !important;
+    padding: 13px 14px !important;
+  }
+
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c {
+    width: 100% !important;
+  }
+
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-pause-btn-v261c {
+    width: 100% !important;
+  }
+}
+
+/* =====================================================
+   v26.1c Premium-Layout: Lernkarten-Leiste links/rechts
+===================================================== */
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) {
+  width: min(920px, 94%) !important;
+  margin: 22px auto 28px auto !important;
+  padding: 13px 18px 12px 18px !important;
+  border-radius: 18px !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .progress-info {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: 100% !important;
+  margin: 0 0 12px 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardProgressText,
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardStats {
+  justify-self: start !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardProgressText {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardStats {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  margin-left: 96px !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  white-space: nowrap !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-pause-btn-v261c {
+  min-width: 150px !important;
+  height: 34px !important;
+  padding: 7px 14px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+}
+
+.progress-wrapper:has(.flashcard-session-actions-v261c) .progress-bar {
+  width: 100% !important;
+  margin-top: 0 !important;
+}
+
+@media (max-width: 900px) {
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .progress-info {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+  }
+
+  .progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardProgressText,
+  .progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardStats,
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c {
+    grid-column: 1 !important;
+    justify-self: center !important;
+    margin-left: 0 !important;
+  }
+
+  .progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardProgressText {
+    grid-row: 1 !important;
+  }
+
+  .progress-wrapper:has(.flashcard-session-actions-v261c) #flashcardStats {
+    grid-row: 2 !important;
+  }
+
+  .progress-wrapper:has(.flashcard-session-actions-v261c) .flashcard-session-actions-v261c {
+    grid-row: 3 !important;
+  }
+}
