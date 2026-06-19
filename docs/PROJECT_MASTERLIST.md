@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.3f
+Stand: v26.4b
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.3f)
+## 5. Aktueller Versionsstand (bis v26.4b)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -238,8 +238,10 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.3d | Masterliste auf Login-UI-Konzept aktualisiert; neues Dokument `docs/SUPABASE_LOGIN_UI_CONCEPT.md` verankert – **erledigt** |
 | v26.3e | Auth-Einstiegspunkt-Audit erstellt: bestehender DOMContentLoaded-Start, loadAllLocalData, activateDashboardButtons, loadQuestions und location.reload-Risiken für späteren Login geprüft – **erledigt** |
 | v26.3f | Masterliste auf Auth-Einstiegspunkt-Audit aktualisiert; neues Dokument `docs/SUPABASE_AUTH_ENTRYPOINT_AUDIT.md` verankert – **erledigt** |
+| v26.4a | Lokales Auth-Guard-Gerüst in `app.js` ergänzt: App-Start läuft jetzt über `initAppBoot()`, `initAuthFlow()` und `startLocalApp()`; Supabase bewusst noch nicht verbunden, App bleibt offen und startet wie bisher – **erledigt** |
+| v26.4b | Masterliste auf lokalen Auth-Guard aktualisiert; v26.4a als erster technischer Login-Vorbereitungsschritt verankert – **erledigt** |
 
-**Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft.
+**Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (kein SQL, keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang.
 
 ---
 
@@ -536,10 +538,10 @@ Installiert (Referenz):
 5. **Später Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C/D/E/Zufall.
 6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`.
 7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen.
-8. **Supabase / Login als nächster Hauptblock** – Auth, Kurse, Teilnehmerzugang, Ablaufdatum und Fortschritt pro `user_id`; Plan v26.3a, Login-UI-Konzept v26.3c und Auth-Einstiegspunkt-Audit v26.3e vorhanden.
+8. **Supabase / Login als nächster Hauptblock** – Auth, Kurse, Teilnehmerzugang, Ablaufdatum und Fortschritt pro `user_id`; Plan v26.3a, Login-UI-Konzept v26.3c, Auth-Einstiegspunkt-Audit v26.3e und lokales Auth-Guard-Gerüst v26.4a vorhanden.
 9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
 
-**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert); v26.3c (Login-UI-Konzept); v26.3d (Masterliste Login-UI aktualisiert); v26.3e (Auth-Einstiegspunkt-Audit); v26.3f (Masterliste Auth-Audit aktualisiert).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert); v26.3c (Login-UI-Konzept); v26.3d (Masterliste Login-UI aktualisiert); v26.3e (Auth-Einstiegspunkt-Audit); v26.3f (Masterliste Auth-Audit aktualisiert); v26.4a (lokales Auth-Guard-Gerüst); v26.4b (Masterliste Auth-Guard aktualisiert).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
