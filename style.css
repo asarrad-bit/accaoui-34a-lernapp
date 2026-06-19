@@ -9367,3 +9367,121 @@ body .main-content .topic-stats-list > .topic-stat-row .topic-neutral {
     grid-row: 3 !important;
   }
 }
+
+/* =========================
+   v26.4e auth notice design
+========================= */
+
+.auth-notice-shell {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+}
+
+.auth-notice-card {
+  width: min(720px, 100%);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  border-radius: 28px;
+  padding: 42px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+  text-align: center;
+}
+
+.auth-notice-icon {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 20px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(35, 68, 198, 0.12), rgba(212, 175, 55, 0.16));
+  font-size: 38px;
+}
+
+.auth-notice-eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2344c6;
+}
+
+.auth-notice-card h1 {
+  margin: 0 0 14px;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1.08;
+  color: #0a1a2f;
+}
+
+.auth-notice-message {
+  max-width: 540px;
+  margin: 0 auto 24px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.auth-notice-status {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 26px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+.auth-notice-status strong {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.auth-reset-btn {
+  min-width: 220px;
+}
+
+.auth-notice-expired .auth-notice-icon {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.20), rgba(245, 158, 11, 0.14));
+}
+
+.auth-notice-blocked .auth-notice-icon {
+  background: linear-gradient(135deg, rgba(180, 0, 0, 0.14), rgba(239, 68, 68, 0.12));
+}
+
+.auth-notice-no_course .auth-notice-icon {
+  background: linear-gradient(135deg, rgba(35, 68, 198, 0.13), rgba(14, 165, 233, 0.10));
+}
+
+@media (max-width: 640px) {
+  .auth-notice-shell {
+    min-height: auto;
+    padding: 30px 12px;
+  }
+
+  .auth-notice-card {
+    padding: 30px 20px;
+    border-radius: 22px;
+  }
+
+  .auth-notice-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+    font-size: 32px;
+  }
+
+  .auth-reset-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}

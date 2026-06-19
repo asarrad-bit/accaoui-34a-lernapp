@@ -45,7 +45,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v26.4c-local-auth-guard-test";
+const APP_VERSION = "v26.4e-auth-notice-design";
 const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
 
 const DEFAULT_QUESTION_POINTS = 1;
@@ -190,16 +190,31 @@ function renderLoginOrAccessNotice(accessState) {
 
   const title = accessState.title || "Zugang erforderlich";
   const message = accessState.message || "Bitte melden Sie sich mit einem gültigen Teilnehmerzugang an.";
+  const status = accessState.status || "unknown";
+  const noticeType = String(status).replace(/[^a-z0-9_-]/gi, "").toLowerCase();
+  const iconMap = {
+    login_required: "🔐",
+    expired: "⏳",
+    blocked: "⛔",
+    no_course: "📚"
+  };
+  const icon = iconMap[status] || "🔐";
 
   mainContent.innerHTML = `
-    <section class="notice-card">
-      <p class="eyebrow">Accaoui Bildung GmbH</p>
-      <h1>${title}</h1>
-      <p>${message}</p>
-      <p class="muted-text">Status: ${accessState.status}</p>
-      <button class="next-btn" onclick="localStorage.removeItem('accaoui_auth_guard_test_state'); location.reload();">
-        Testmodus zurücksetzen
-      </button>
+    <section class="auth-notice-shell auth-notice-${noticeType}">
+      <div class="auth-notice-card">
+        <div class="auth-notice-icon" aria-hidden="true">${icon}</div>
+        <p class="auth-notice-eyebrow">Accaoui Bildung GmbH</p>
+        <h1>${title}</h1>
+        <p class="auth-notice-message">${message}</p>
+        <div class="auth-notice-status">
+          <span>Status</span>
+          <strong>${status}</strong>
+        </div>
+        <button class="next-btn auth-reset-btn" onclick="localStorage.removeItem('accaoui_auth_guard_test_state'); location.reload();">
+          Testmodus zurücksetzen
+        </button>
+      </div>
     </section>
   `;
 }
