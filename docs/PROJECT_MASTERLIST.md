@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.3b
+Stand: v26.3d
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.3b)
+## 5. Aktueller Versionsstand (bis v26.3d)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -234,8 +234,10 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.2a | Masterliste-Altlasten bereinigt: alte Hinweise zu „späterer Vollsimulation“, offenem Pausieren/Fortsetzen und geplantem UX-/Lernlogik-Audit an den tatsächlichen App-Stand angepasst – **erledigt** |
 | v26.3a | Supabase Login- und Teilnehmerzugang-Plan erstellt: Login/Auth, Teilnehmerprofil, Kursfreischaltung, Ablaufdatum/Zugangsdauer, Rollenmodell und v27.0-Startentscheidung dokumentiert – **erledigt** |
 | v26.3b | Masterliste auf Supabase/Login-Plan aktualisiert; neues Dokument `docs/SUPABASE_LOGIN_ACCESS_PLAN.md` als verbindlicher nächster Business-Block verankert – **erledigt** |
+| v26.3c | Login-UI-Konzept erstellt: künftiger App-Start über Auth-Status, Login-Seite, gültiger Zugang, abgelaufener Kurs, gesperrter Zugang und fehlende Kurszuordnung dokumentiert – **erledigt** |
+| v26.3d | Masterliste auf Login-UI-Konzept aktualisiert; neues Dokument `docs/SUPABASE_LOGIN_UI_CONCEPT.md` verankert – **erledigt** |
 
-**Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan als eigenes Dokument vorhanden.
+**Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist zusätzlich das Login-UI-Konzept dokumentiert.
 
 ---
 
@@ -532,10 +534,10 @@ Installiert (Referenz):
 5. **Später Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C/D/E/Zufall.
 6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`.
 7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen.
-8. **Supabase / Login als nächster Hauptblock** – Auth, Kurse, Teilnehmerzugang, Ablaufdatum und Fortschritt pro `user_id`; Plan v26.3a vorhanden.
+8. **Supabase / Login als nächster Hauptblock** – Auth, Kurse, Teilnehmerzugang, Ablaufdatum und Fortschritt pro `user_id`; Plan v26.3a und Login-UI-Konzept v26.3c vorhanden.
 9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
 
-**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert); v26.3c (Login-UI-Konzept); v26.3d (Masterliste Login-UI aktualisiert).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
