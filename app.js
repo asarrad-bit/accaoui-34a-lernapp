@@ -45,7 +45,8 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v26.4a-local-auth-guard";
+const APP_VERSION = "v26.4c-local-auth-guard-test";
+const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
 
 const DEFAULT_QUESTION_POINTS = 1;
 
@@ -122,12 +123,51 @@ function initAuthFlow() {
 }
 
 function getCurrentAccessState() {
-  // v26.4a: Lokales Auth-Guard-Gerüst.
+  // v26.4c: Lokaler Testmodus für späteren Auth-Guard.
   // Supabase ist hier bewusst noch nicht verbunden.
+  let testState = "";
+
+  try {
+    testState = localStorage.getItem(AUTH_GUARD_TEST_STATE_KEY) || "";
+  } catch (error) {
+    console.warn("Auth-Guard-Teststatus konnte nicht gelesen werden.", error);
+  }
+
+  const blockedStates = {
+    login_required: {
+      status: "login_required",
+      title: "Teilnehmer-Login erforderlich",
+      message: "Bitte melden Sie sich mit einem gültigen Teilnehmerzugang an."
+    },
+    expired: {
+      status: "expired",
+      title: "Kurszugang abgelaufen",
+      message: "Ihr Kurszugang ist abgelaufen. Bitte wenden Sie sich an Accaoui Bildung."
+    },
+    blocked: {
+      status: "blocked",
+      title: "Zugang gesperrt",
+      message: "Ihr Zugang ist aktuell gesperrt. Bitte wenden Sie sich an die Verwaltung."
+    },
+    no_course: {
+      status: "no_course",
+      title: "Kein aktiver Kurs",
+      message: "Ihrem Konto ist aktuell kein aktiver Kurs zugeordnet. Bitte wenden Sie sich an Accaoui Bildung."
+    }
+  };
+
+  if (blockedStates[testState]) {
+    return {
+      isAllowed: false,
+      source: "local-auth-guard-test-v26.4c",
+      ...blockedStates[testState]
+    };
+  }
+
   return {
     isAllowed: true,
     status: "local_access_granted",
-    source: "local-auth-guard-v26.4a"
+    source: "local-auth-guard-test-v26.4c"
   };
 }
 
@@ -148,11 +188,18 @@ function renderLoginOrAccessNotice(accessState) {
     return;
   }
 
+  const title = accessState.title || "Zugang erforderlich";
+  const message = accessState.message || "Bitte melden Sie sich mit einem gültigen Teilnehmerzugang an.";
+
   mainContent.innerHTML = `
     <section class="notice-card">
       <p class="eyebrow">Accaoui Bildung GmbH</p>
-      <h1>Zugang erforderlich</h1>
-      <p>Bitte melden Sie sich mit einem gültigen Teilnehmerzugang an.</p>
+      <h1>${title}</h1>
+      <p>${message}</p>
+      <p class="muted-text">Status: ${accessState.status}</p>
+      <button class="next-btn" onclick="localStorage.removeItem('accaoui_auth_guard_test_state'); location.reload();">
+        Testmodus zurücksetzen
+      </button>
     </section>
   `;
 }
