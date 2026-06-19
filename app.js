@@ -45,8 +45,9 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v26.6a-supabase-config-state";
+const APP_VERSION = "v26.6c-optional-supabase-config-loader";
 const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
+const SUPABASE_LOCAL_CONFIG_PATH = "data/supabase-config.local.js";
 
 const DEFAULT_QUESTION_POINTS = 1;
 
@@ -106,10 +107,58 @@ document.addEventListener("DOMContentLoaded", () => {
   initAppBoot();
 });
 
-function initAppBoot() {
+async function initAppBoot() {
   console.log("App-Version:", APP_VERSION);
+
+  const configLoadState = await loadOptionalSupabaseConfig();
+  console.info("Supabase-Config-Ladeweg:", configLoadState.status);
+
   logSupabaseConfigState();
   initAuthFlow();
+}
+
+async function loadOptionalSupabaseConfig() {
+  if (window.ACCAOUI_SUPABASE_CONFIG) {
+    return {
+      status: "config_already_available"
+    };
+  }
+
+  try {
+    const response = await fetch(SUPABASE_LOCAL_CONFIG_PATH + "?v=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      return {
+        status: "local_config_not_found"
+      };
+    }
+
+    const configScript = await response.text();
+
+    if (!configScript.includes("ACCAOUI_SUPABASE_CONFIG")) {
+      return {
+        status: "local_config_invalid"
+      };
+    }
+
+    const scriptElement = document.createElement("script");
+    scriptElement.textContent = configScript + "\n//# sourceURL=" + SUPABASE_LOCAL_CONFIG_PATH;
+    document.head.appendChild(scriptElement);
+
+    return {
+      status: window.ACCAOUI_SUPABASE_CONFIG
+        ? "local_config_loaded"
+        : "local_config_without_window_config"
+    };
+  } catch (error) {
+    console.info("Optionale Supabase-Config nicht geladen:", error.message);
+
+    return {
+      status: "local_config_unavailable"
+    };
+  }
 }
 
 function getSupabaseConfigState() {
