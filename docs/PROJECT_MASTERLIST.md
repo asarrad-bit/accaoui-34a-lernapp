@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.1d
+Stand: v26.2a
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.1d)
+## 5. Aktueller Versionsstand (bis v26.2a)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -231,6 +231,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.0c | Browser-Endtest schriftliche Vollsimulation bestanden: 82 Fragen sichtbar, 120-Minuten-Timer sichtbar, Prüfung pausieren und fortsetzen funktioniert, Antworten bleiben erhalten – **erledigt** |
 | v26.1c | Lernkarten pausieren / fortsetzen eingebaut und browsergetestet: Lernkartenrunde wird lokal gespeichert, Dashboard-Karte „Angefangene Lernkarten“ erscheint, Fortsetzen stellt Karte und Fortschritt wieder her; Premium-Leiste optisch verbessert – **erledigt** |
 | v26.1d | Masterliste auf Lernkarten-Abschluss aktualisiert; offene Retest-Hinweise bereinigt und Lernkartenstatus auf v26.1c gesetzt – **erledigt** |
+| v26.2a | Masterliste-Altlasten bereinigt: alte Hinweise zu „späterer Vollsimulation“, offenem Pausieren/Fortsetzen und geplantem UX-/Lernlogik-Audit an den tatsächlichen App-Stand angepasst – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
 
@@ -287,9 +288,9 @@ Der offizielle Aufbau der **Sachkundeprüfung nach § 34a GewO** ist für die Ap
 
 Die **Fragenbank** in `questions.json` darf **größer als 82 Fragen** sein (Ziel nach Ausbauplan: **86** Fragen als Pool mit Reserve).
 
-Die **spätere Vollsimulation** der schriftlichen Prüfung soll jedoch **exakt 82 Fragen** nach **Sachgebiet** und **Punktegewichtung** der Tabelle oben ziehen (Zufallsauswahl pro Kategorie aus dem verfügbaren Pool).
+Die **Vollsimulation** der schriftlichen Prüfung nutzt inzwischen **exakt 82 Core-Fragen** mit **120 Punkten** nach Sachgebiet und Punktegewichtung. Die zusätzliche Fragenbank bleibt als Pool/Reserve erhalten.
 
-**Stand v24.5:** **86 Fragen** im Pool, **82 Core-Fragen / 120 Punkte** in der Vollsimulation umgesetzt; `points`-Felder vollständig (v24.3a–i/j). Teilpunkte-Code im Prüfungsmodus vorhanden (v24.5). Details: `docs/EXAM_SIMULATION_AUDIT.md`, `docs/EXAM_POINTS_PLAN.md`, `docs/EXAM_CORE_SELECTION_PLAN.md`.
+**Stand v26.2a:** **86 Fragen** im Pool, **82 Core-Fragen / 120 Punkte** in der Vollsimulation umgesetzt; `points`-Felder vollständig, Teilpunkte-Code vorhanden, Browser-Endtest bestanden. Details: `docs/EXAM_SIMULATION_AUDIT.md`, `docs/EXAM_POINTS_PLAN.md`, `docs/EXAM_CORE_SELECTION_PLAN.md`.
 
 ### Mündliche Prüfung
 
@@ -322,13 +323,13 @@ Kernbotschaft für die App (Beispieltext):
 
 ---
 
-## 8.1 UX- und Lernlogik-Audit (geplant, v24.x)
+## 8.1 UX- und Lernlogik-Audit (teilweise erledigt, fortlaufend)
 
 | Aspekt | Stand |
 |--------|--------|
-| App-Status | **vorgemerkt**, noch **kein Code** |
-| Geplante Version | **v24.x** |
-| Voraussetzung | Abschluss des **Fragenbank-Ausbaus** (86-Fragen-Pool) |
+| App-Status | **teilweise erledigt** – schriftliche Prüfung, mündliche Prüfung und Lernkarten wurden geprüft und stabilisiert |
+| Aktueller Stand | v26.2a |
+| Fortlaufend | Weitere UX-Verbesserungen bleiben möglich, aber keine offene Kernfunktion |
 
 ### Inhalt des Audits
 
@@ -336,7 +337,7 @@ Kernbotschaft für die App (Beispieltext):
 2. **Unterschied zwischen Lernmodus und Lernkarten** klar erklären:
    - **Lernmodus** = echte Wissensabfrage mit richtig/falsch.
    - **Lernkarten** = Selbsteinschätzung mit gewusst/wiederholen/offen.
-3. In der App später einen kurzen Hinweis ergänzen:
+3. Optional später in der App einen kurzen Hinweis ergänzen:
    > *Lernmodus prüft Ihre Antworten. Lernkarten bewerten Ihre Selbsteinschätzung.*
 4. **Themenbereich-Üben:** Nächste Frage erst nach Antwort grundsätzlich beibehalten, weil dies **Active Recall** unterstützt.
 5. **Optional später prüfen:**
@@ -346,7 +347,7 @@ Kernbotschaft für die App (Beispieltext):
    - offene Fragen gezielt nachtrainieren
 6. **Ziel:** Lernlogik verständlicher machen, **ohne** die aktuelle stabile Funktion zu verändern.
 
-**Hinweis:** Kein Sofort-Code-Task. Umsetzung erst nach Abschluss des Fragenbank-Ausbaus.
+**Hinweis:** Kein Sofort-Code-Task. Die Kernbereiche schriftliche Prüfung, mündliche Prüfung und Lernkarten sind stabilisiert; weiterer Feinschliff ist fortlaufend.
 
 ### UI-Hinweis: Prüfungsanalyse nach Themen
 
@@ -425,14 +426,14 @@ Kernbotschaft für die App (Beispieltext):
 
 ---
 
-## 8.5 Pausieren und Fortsetzen (offen: v24.6c)
+## 8.5 Pausieren und Fortsetzen (erledigt)
 
 | Aspekt | Stand |
 |--------|--------|
-| Ziel | Prüfung und Lernen pausieren, später exakt fortsetzen |
-| Voraussetzung | Fragen- und Antwortreihenfolge werden gemischt (v24.6d/e) – **konkrete Session-Reihenfolge muss gespeichert werden** |
-| Zu speichern | Fragenreihenfolge, Antwortreihenfolge, aktuelle Frage, ausgewählte Antworten, Prüfungstimer, Modus/Sessiontyp, Punkte-/Auswertungszustand soweit nötig |
-| Status | **offen** – nächster sinnvoller Entwicklungsschritt |
+| Ziel | Prüfung, Lernmodus und Lernkarten pausieren, später exakt fortsetzen |
+| Umsetzung | Aktive Prüfung, aktive Lerneinheit und aktive Lernkartenrunde werden lokal gespeichert |
+| Enthalten | Fragenreihenfolge, Antwortreihenfolge bzw. Kartenreihenfolge, aktuelle Position, ausgewählte Antworten/Status, Timer bei Prüfung, Modus/Sessiontyp |
+| Status | **erledigt** – Prüfung/Lernmodus ab v24.6c/v24.7b, Lernkarten ab v26.1c |
 
 ---
 
@@ -532,7 +533,7 @@ Installiert (Referenz):
 8. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id`.
 9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
 
-**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
