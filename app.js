@@ -45,7 +45,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v21-lernkarten-modus-vorbereiten";
+const APP_VERSION = "v26.4a-local-auth-guard";
 
 const DEFAULT_QUESTION_POINTS = 1;
 
@@ -102,15 +102,60 @@ const categoryAccentColor = "#2344c6";
 ========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("App-Version:", APP_VERSION);
+  initAppBoot();
+});
 
+function initAppBoot() {
+  console.log("App-Version:", APP_VERSION);
+  initAuthFlow();
+}
+
+function initAuthFlow() {
+  const accessState = getCurrentAccessState();
+
+  if (accessState.isAllowed) {
+    startLocalApp();
+    return;
+  }
+
+  renderLoginOrAccessNotice(accessState);
+}
+
+function getCurrentAccessState() {
+  // v26.4a: Lokales Auth-Guard-Gerüst.
+  // Supabase ist hier bewusst noch nicht verbunden.
+  return {
+    isAllowed: true,
+    status: "local_access_granted",
+    source: "local-auth-guard-v26.4a"
+  };
+}
+
+function startLocalApp() {
   registerActiveSessionAutoSaveListeners();
   loadAllLocalData();
   activateDashboardButtons();
   renderDashboardResumeExamCard();
   renderDashboardResumeLearningCard();
   loadQuestions();
-});
+}
+
+function renderLoginOrAccessNotice(accessState) {
+  const mainContent = document.querySelector(".main-content");
+
+  if (!mainContent) {
+    console.warn("Kein Hauptbereich für Auth-Hinweis gefunden.", accessState);
+    return;
+  }
+
+  mainContent.innerHTML = `
+    <section class="notice-card">
+      <p class="eyebrow">Accaoui Bildung GmbH</p>
+      <h1>Zugang erforderlich</h1>
+      <p>Bitte melden Sie sich mit einem gültigen Teilnehmerzugang an.</p>
+    </section>
+  `;
+}
 
 async function loadQuestions() {
   try {
