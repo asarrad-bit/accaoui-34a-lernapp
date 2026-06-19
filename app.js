@@ -45,7 +45,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v26.4e-auth-notice-design";
+const APP_VERSION = "v26.6a-supabase-config-state";
 const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
 
 const DEFAULT_QUESTION_POINTS = 1;
@@ -108,7 +108,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initAppBoot() {
   console.log("App-Version:", APP_VERSION);
+  logSupabaseConfigState();
   initAuthFlow();
+}
+
+function getSupabaseConfigState() {
+  const config = window.ACCAOUI_SUPABASE_CONFIG;
+
+  if (!config) {
+    return {
+      status: "local_mode",
+      isConfigured: false,
+      reason: "no_config_loaded"
+    };
+  }
+
+  const url = typeof config.url === "string" ? config.url.trim() : "";
+  const anonKey = typeof config.anonKey === "string" ? config.anonKey.trim() : "";
+
+  const hasPlaceholder =
+    !url ||
+    !anonKey ||
+    url.includes("YOUR-PROJECT") ||
+    anonKey.includes("YOUR_PUBLIC_ANON_KEY");
+
+  if (hasPlaceholder) {
+    return {
+      status: "placeholder_config",
+      isConfigured: false,
+      reason: "placeholder_or_missing_values"
+    };
+  }
+
+  return {
+    status: "config_available",
+    isConfigured: true,
+    reason: "public_config_present"
+  };
+}
+
+function logSupabaseConfigState() {
+  const configState = getSupabaseConfigState();
+
+  console.info("Supabase-Config-Status:", configState.status);
 }
 
 function initAuthFlow() {
