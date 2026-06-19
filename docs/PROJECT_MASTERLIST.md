@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.2a
+Stand: v26.3b
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.2a)
+## 5. Aktueller Versionsstand (bis v26.3b)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -232,8 +232,10 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.1c | Lernkarten pausieren / fortsetzen eingebaut und browsergetestet: Lernkartenrunde wird lokal gespeichert, Dashboard-Karte „Angefangene Lernkarten“ erscheint, Fortsetzen stellt Karte und Fortschritt wieder her; Premium-Leiste optisch verbessert – **erledigt** |
 | v26.1d | Masterliste auf Lernkarten-Abschluss aktualisiert; offene Retest-Hinweise bereinigt und Lernkartenstatus auf v26.1c gesetzt – **erledigt** |
 | v26.2a | Masterliste-Altlasten bereinigt: alte Hinweise zu „späterer Vollsimulation“, offenem Pausieren/Fortsetzen und geplantem UX-/Lernlogik-Audit an den tatsächlichen App-Stand angepasst – **erledigt** |
+| v26.3a | Supabase Login- und Teilnehmerzugang-Plan erstellt: Login/Auth, Teilnehmerprofil, Kursfreischaltung, Ablaufdatum/Zugangsdauer, Rollenmodell und v27.0-Startentscheidung dokumentiert – **erledigt** |
+| v26.3b | Masterliste auf Supabase/Login-Plan aktualisiert; neues Dokument `docs/SUPABASE_LOGIN_ACCESS_PLAN.md` als verbindlicher nächster Business-Block verankert – **erledigt** |
 
-**Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung).
+**Hinweis:** Supabase ist geplant, aber noch **nicht** in der App eingebunden (kein SQL, keine Live-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan als eigenes Dokument vorhanden.
 
 ---
 
@@ -530,10 +532,10 @@ Installiert (Referenz):
 5. **Später Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C/D/E/Zufall.
 6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`.
 7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen.
-8. **Später Supabase / Login** – Auth, Kurse, Fortschritt pro `user_id`.
+8. **Supabase / Login als nächster Hauptblock** – Auth, Kurse, Teilnehmerzugang, Ablaufdatum und Fortschritt pro `user_id`; Plan v26.3a vorhanden.
 9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
 
-**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt).
+**Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert).
 
 Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfung später als erweiterter Prüfermodus.
 
