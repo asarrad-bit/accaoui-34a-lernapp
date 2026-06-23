@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.8c
+// Stand: v26.9a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -68,25 +68,53 @@
     };
   }
 
-  function getClientState() {
+  function getClientReadinessState() {
     const configState = getConfigState();
     const sdkState = getSdkState();
 
-    if (!configState.isConfigured) {
+    if (configState.status === "local_mode") {
       return {
         status: "local_mode",
         isReady: false,
+        canCreateClient: false,
         hasSdk: sdkState.hasSdk,
+        reason: "no_config_loaded",
         configState,
         sdkState
       };
     }
 
-    if (!sdkState.hasSdk) {
+    if (configState.status === "placeholder_config") {
+      return {
+        status: "placeholder_config",
+        isReady: false,
+        canCreateClient: false,
+        hasSdk: sdkState.hasSdk,
+        reason: "placeholder_or_missing_values",
+        configState,
+        sdkState
+      };
+    }
+
+    if (sdkState.status === "sdk_missing") {
       return {
         status: "sdk_missing",
         isReady: false,
+        canCreateClient: false,
         hasSdk: false,
+        reason: "window_supabase_missing",
+        configState,
+        sdkState
+      };
+    }
+
+    if (sdkState.status === "sdk_invalid") {
+      return {
+        status: "sdk_invalid",
+        isReady: false,
+        canCreateClient: false,
+        hasSdk: false,
+        reason: "createClient_missing",
         configState,
         sdkState
       };
@@ -95,10 +123,17 @@
     return {
       status: "client_ready_later",
       isReady: false,
+      canCreateClient: false,
+      wouldCreateClientWhenEnabled: true,
       hasSdk: true,
+      reason: "sdk_and_config_available_client_creation_disabled_in_stub",
       configState,
       sdkState
     };
+  }
+
+  function getClientState() {
+    return getClientReadinessState();
   }
 
   function getCurrentSession() {
@@ -112,14 +147,15 @@
     return Promise.resolve({
       isAllowed: true,
       status: "local_access_granted",
-      source: "supabase-client-adapter-stub-v26.8c"
+      source: "supabase-client-adapter-stub-v26.9a"
     });
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.8c",
+    version: "v26.9a",
     getConfigState,
     getSdkState,
+    getClientReadinessState,
     getClientState,
     getCurrentSession,
     getParticipantAccessState
