@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.9a
+// Stand: v26.10a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -136,10 +136,40 @@
     return getClientReadinessState();
   }
 
+  function getAuthReadinessState() {
+    const clientState = getClientReadinessState();
+
+    if (!clientState.isReady) {
+      return {
+        status: "client_not_ready",
+        canCheckSession: false,
+        hasSession: false,
+        reason: clientState.reason,
+        clientState
+      };
+    }
+
+    return {
+      status: "auth_ready_later",
+      canCheckSession: false,
+      hasSession: false,
+      reason: "auth_check_disabled_in_stub",
+      futureStatuses: [
+        "session_available_later",
+        "no_session_later",
+        "auth_error_later"
+      ],
+      clientState
+    };
+  }
+
   function getCurrentSession() {
+    const authState = getAuthReadinessState();
+
     return Promise.resolve({
-      status: "no_session_adapter_stub",
-      session: null
+      status: "no_session_client_not_ready",
+      session: null,
+      authState
     });
   }
 
@@ -147,16 +177,17 @@
     return Promise.resolve({
       isAllowed: true,
       status: "local_access_granted",
-      source: "supabase-client-adapter-stub-v26.9a"
+      source: "supabase-client-adapter-stub-v26.10a"
     });
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.9a",
+    version: "v26.10a",
     getConfigState,
     getSdkState,
     getClientReadinessState,
     getClientState,
+    getAuthReadinessState,
     getCurrentSession,
     getParticipantAccessState
   };
