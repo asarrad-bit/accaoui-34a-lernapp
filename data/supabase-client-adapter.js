@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.10a
+// Stand: v26.11a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -173,22 +173,67 @@
     });
   }
 
+  function getParticipantAccessReadinessState() {
+    const authState = getAuthReadinessState();
+
+    if (authState.status === "client_not_ready") {
+      return {
+        isAllowed: true,
+        status: "local_access_granted",
+        mode: "local_mode",
+        reason: "supabase_not_ready_local_access",
+        source: "supabase-client-adapter-stub-v26.11a",
+        futureStatuses: [
+          "participant_active_later",
+          "course_expired_later",
+          "participant_blocked_later",
+          "no_course_later",
+          "no_session_later"
+        ],
+        authState
+      };
+    }
+
+    if (!authState.hasSession) {
+      return {
+        isAllowed: false,
+        status: "no_session_later",
+        mode: "supabase_mode_later",
+        reason: "session_required_later",
+        source: "supabase-client-adapter-stub-v26.11a",
+        authState
+      };
+    }
+
+    return {
+      isAllowed: false,
+      status: "access_check_later",
+      mode: "supabase_mode_later",
+      reason: "participant_access_check_disabled_in_stub",
+      source: "supabase-client-adapter-stub-v26.11a",
+      futureStatuses: [
+        "participant_active_later",
+        "course_expired_later",
+        "participant_blocked_later",
+        "no_course_later"
+      ],
+      authState
+    };
+  }
+
   function getParticipantAccessState() {
-    return Promise.resolve({
-      isAllowed: true,
-      status: "local_access_granted",
-      source: "supabase-client-adapter-stub-v26.10a"
-    });
+    return Promise.resolve(getParticipantAccessReadinessState());
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.10a",
+    version: "v26.11a",
     getConfigState,
     getSdkState,
     getClientReadinessState,
     getClientState,
     getAuthReadinessState,
     getCurrentSession,
+    getParticipantAccessReadinessState,
     getParticipantAccessState
   };
 
