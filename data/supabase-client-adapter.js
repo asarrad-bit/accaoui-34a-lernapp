@@ -1,7 +1,7 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.7c
+// Stand: v26.8c
 //
-// Aktuell bewusst OHNE Supabase-SDK.
+// Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
 // Keine echten Keys.
 // Kein Login-Zwang.
@@ -42,14 +42,62 @@
     };
   }
 
-  function getClientState() {
-    const configState = getConfigState();
+  function getSdkState() {
+    const supabaseGlobal = window.supabase;
+
+    if (!supabaseGlobal) {
+      return {
+        status: "sdk_missing",
+        hasSdk: false,
+        reason: "window_supabase_missing"
+      };
+    }
+
+    if (typeof supabaseGlobal.createClient !== "function") {
+      return {
+        status: "sdk_invalid",
+        hasSdk: false,
+        reason: "createClient_missing"
+      };
+    }
 
     return {
-      status: configState.isConfigured ? "client_ready_later" : "local_mode",
+      status: "sdk_available",
+      hasSdk: true,
+      reason: "createClient_available"
+    };
+  }
+
+  function getClientState() {
+    const configState = getConfigState();
+    const sdkState = getSdkState();
+
+    if (!configState.isConfigured) {
+      return {
+        status: "local_mode",
+        isReady: false,
+        hasSdk: sdkState.hasSdk,
+        configState,
+        sdkState
+      };
+    }
+
+    if (!sdkState.hasSdk) {
+      return {
+        status: "sdk_missing",
+        isReady: false,
+        hasSdk: false,
+        configState,
+        sdkState
+      };
+    }
+
+    return {
+      status: "client_ready_later",
       isReady: false,
-      hasSdk: false,
-      configState
+      hasSdk: true,
+      configState,
+      sdkState
     };
   }
 
@@ -64,13 +112,14 @@
     return Promise.resolve({
       isAllowed: true,
       status: "local_access_granted",
-      source: "supabase-client-adapter-stub-v26.7c"
+      source: "supabase-client-adapter-stub-v26.8c"
     });
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.7c",
+    version: "v26.8c",
     getConfigState,
+    getSdkState,
     getClientState,
     getCurrentSession,
     getParticipantAccessState
