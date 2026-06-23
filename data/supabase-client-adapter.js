@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.11a
+// Stand: v26.11d
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -182,7 +182,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.11a",
+        source: "supabase-client-adapter-stub-v26.11d",
         futureStatuses: [
           "participant_active_later",
           "course_expired_later",
@@ -200,7 +200,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.11a",
+        source: "supabase-client-adapter-stub-v26.11d",
         authState
       };
     }
@@ -210,7 +210,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.11a",
+      source: "supabase-client-adapter-stub-v26.11d",
       futureStatuses: [
         "participant_active_later",
         "course_expired_later",
@@ -225,8 +225,32 @@
     return Promise.resolve(getParticipantAccessReadinessState());
   }
 
+  function getAdapterHealthState() {
+    const configState = getConfigState();
+    const sdkState = getSdkState();
+    const clientState = getClientReadinessState();
+    const authState = getAuthReadinessState();
+    const participantAccessState = getParticipantAccessReadinessState();
+
+    return {
+      version: "v26.11d",
+      status: participantAccessState.status,
+      isSupabaseLive: false,
+      isLocalAccessAllowed: participantAccessState.isAllowed === true,
+      hasConfig: configState.isConfigured === true,
+      hasSdk: sdkState.hasSdk === true,
+      canCreateClient: clientState.canCreateClient === true,
+      canCheckSession: authState.canCheckSession === true,
+      configState,
+      sdkState,
+      clientState,
+      authState,
+      participantAccessState
+    };
+  }
+
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.11a",
+    version: "v26.11d",
     getConfigState,
     getSdkState,
     getClientReadinessState,
@@ -234,7 +258,8 @@
     getAuthReadinessState,
     getCurrentSession,
     getParticipantAccessReadinessState,
-    getParticipantAccessState
+    getParticipantAccessState,
+    getAdapterHealthState
   };
 
   console.info("Accaoui Supabase Adapter geladen:", window.ACCAOUI_SUPABASE_ADAPTER.version);
