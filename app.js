@@ -45,7 +45,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v26.6c-optional-supabase-config-loader";
+const APP_VERSION = "v26.12a-adapter-health-hook";
 const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
 const SUPABASE_LOCAL_CONFIG_PATH = "data/supabase-config.local.js";
 
@@ -114,6 +114,7 @@ async function initAppBoot() {
   console.info("Supabase-Config-Ladeweg:", configLoadState.status);
 
   logSupabaseConfigState();
+  logSupabaseAdapterHealthState();
   initAuthFlow();
 }
 
@@ -200,6 +201,41 @@ function logSupabaseConfigState() {
   const configState = getSupabaseConfigState();
 
   console.info("Supabase-Config-Status:", configState.status);
+}
+
+function getSupabaseAdapterHealthState() {
+  const adapter = window.ACCAOUI_SUPABASE_ADAPTER;
+
+  if (!adapter || typeof adapter.getAdapterHealthState !== "function") {
+    return {
+      status: "adapter_unavailable",
+      isSupabaseLive: false,
+      isLocalAccessAllowed: true,
+      reason: "adapter_health_state_missing"
+    };
+  }
+
+  try {
+    return adapter.getAdapterHealthState();
+  } catch (error) {
+    console.warn("Supabase-Adapter-Health-State konnte nicht gelesen werden.", error);
+
+    return {
+      status: "adapter_health_error",
+      isSupabaseLive: false,
+      isLocalAccessAllowed: true,
+      reason: "adapter_health_state_error"
+    };
+  }
+}
+
+function logSupabaseAdapterHealthState() {
+  const adapterHealthState = getSupabaseAdapterHealthState();
+
+  window.ACCAOUI_SUPABASE_APP_HEALTH_STATE = adapterHealthState;
+
+  console.info("Supabase-Adapter-Health:", adapterHealthState.status);
+  console.info("Supabase-Adapter-Live:", adapterHealthState.isSupabaseLive === true);
 }
 
 function initAuthFlow() {
