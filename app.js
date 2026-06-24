@@ -45,7 +45,7 @@ let answeredQuestions = {};
 let currentMode = "dashboard";
 let currentTrainingTitle = "";
 
-const APP_VERSION = "v26.12a-adapter-health-hook";
+const APP_VERSION = "v26.12c-access-health-flow";
 const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
 const SUPABASE_LOCAL_CONFIG_PATH = "data/supabase-config.local.js";
 
@@ -291,10 +291,24 @@ function getCurrentAccessState() {
     };
   }
 
+  const adapterHealthState = getSupabaseAdapterHealthState();
+
+  if (adapterHealthState.isLocalAccessAllowed) {
+    return {
+      isAllowed: true,
+      status: adapterHealthState.status || "local_access_granted",
+      source: "supabase-adapter-health-v26.12c",
+      adapterHealthState
+    };
+  }
+
   return {
-    isAllowed: true,
-    status: "local_access_granted",
-    source: "local-auth-guard-test-v26.4c"
+    isAllowed: false,
+    status: adapterHealthState.status || "supabase_access_required",
+    title: "Teilnehmerzugang erforderlich",
+    message: "Ihr Teilnehmerzugang konnte nicht freigegeben werden. Bitte wenden Sie sich an Accaoui Bildung.",
+    source: "supabase-adapter-health-v26.12c",
+    adapterHealthState
   };
 }
 
