@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.11b
+Stand: v26.12e
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.11b)
+## 5. Aktueller Versionsstand (bis v26.12e)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -278,6 +278,14 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.10d | Masterliste auf Supabase-Auth-Readiness-Test aktualisiert; neues Dokument `docs/SUPABASE_AUTH_READINESS_TEST.md` verankert – **erledigt** |
 | v26.11a | Teilnehmerzugangs-Readiness im Supabase-Adapter vorbereitet: `getParticipantAccessReadinessState()` ergänzt, lokaler Zugriff bleibt bei nicht bereitem Supabase bewusst erlaubt (`local_access_granted`), spätere Status `participant_active_later`, `course_expired_later`, `participant_blocked_later`, `no_course_later` und `no_session_later` vorbereitet; kein SDK, keine Live-Verbindung, keine echten Keys, kein Login-Zwang – **erledigt** |
 | v26.11b | Masterliste auf Teilnehmerzugangs-Readiness aktualisiert; v26.11a als sicherer Adapter-Vorbereitungsschritt ohne echten Teilnehmerzugang und ohne Login-Zwang verankert – **erledigt** |
+| v26.11c | Teilnehmerzugangs-Readiness-Test dokumentiert: lokaler Zugriff bleibt ohne Supabase bewusst erlaubt; `local_access_granted`, `supabase_not_ready_local_access` und spätere Status vorbereitet – **erledigt** |
+| v26.11d | Supabase-Adapter-Health-State ergänzt: `getAdapterHealthState()` bündelt Config-State, SDK-State, Client-Readiness, Auth-Readiness und Teilnehmerzugangs-Readiness – **erledigt** |
+| v26.11e | Supabase-Adapter-Health-State-Test dokumentiert: zentrale Gesamtübersicht geprüft; lokaler Modus bleibt stabil, kein SDK, keine Live-Verbindung, keine echten Keys, kein Login-Zwang – **erledigt** |
+| v26.12a | `app.js` an Supabase-Adapter-Health-State angebunden: `getSupabaseAdapterHealthState()`, `logSupabaseAdapterHealthState()` und `window.ACCAOUI_SUPABASE_APP_HEALTH_STATE` ergänzt – **erledigt** |
+| v26.12b | Supabase-App-Health-Hook-Test dokumentiert: App liest zentralen Adapter-Health-State im lokalen Modus – **erledigt** |
+| v26.12c | Access-Flow an Adapter-Health-State angebunden: `getCurrentAccessState()` nutzt den Health-State, lokaler Zugriff bleibt erlaubt, solange Supabase nicht live ist – **erledigt** |
+| v26.12d | Supabase-Access-Flow-Health-Test dokumentiert: Dashboard, Lernkarten und Prüfung bleiben lokal nutzbar, kein Login-Zwang – **erledigt** |
+| v26.12e | Masterliste auf Teilnehmerzugang, Adapter-Health-State, App-Health-Hook und Access-Flow-Health aktualisiert; neue Testdokumente verankert – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (kein SQL, keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
@@ -514,6 +522,10 @@ python tools/preflight.py
 | `docs/SUPABASE_QUESTION_SCHEMA.md` | Supabase-Fragenmodell – **vorhanden** |
 | `docs/SUPABASE_USER_PROGRESS_SCHEMA.md` | Nutzer, Kurse, Fortschritt – **vorhanden** |
 | `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md` | Umsetzungsreihenfolge Supabase – **vorhanden** |
+| `docs/SUPABASE_PARTICIPANT_ACCESS_READINESS_TEST.md` | Lokaler Test der Teilnehmerzugangs-Readiness: lokaler Zugriff erlaubt, keine echte Teilnehmerprüfung – **vorhanden (v26.11c)** |
+| `docs/SUPABASE_ADAPTER_HEALTH_STATE_TEST.md` | Lokaler Test des Adapter-Health-State: zentrale Gesamtübersicht über Config, SDK, Client, Auth und Teilnehmerzugang – **vorhanden (v26.11e)** |
+| `docs/SUPABASE_APP_HEALTH_HOOK_TEST.md` | Lokaler Test des App-Health-Hooks: `app.js` liest Adapter-Health-State und stellt ihn global bereit – **vorhanden (v26.12b)** |
+| `docs/SUPABASE_ACCESS_FLOW_HEALTH_TEST.md` | Lokaler Test des Access-Flows mit Adapter-Health-State: lokaler Zugriff bleibt erlaubt, kein Login-Zwang – **vorhanden (v26.12d)** |
 | `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` | Quellenpakete / Musterunterlagen – Status v24.5y – **vorhanden** |
 | `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md` | Mündliche Prüfung / Musterfragen – Status v24.5y – **vorhanden** |
 | `docs/PROJECT_MASTERLIST.md` | Diese Datei |
