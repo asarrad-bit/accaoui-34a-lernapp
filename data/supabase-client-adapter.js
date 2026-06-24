@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.13a
+// Stand: v26.15a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -48,6 +48,87 @@
     return window.ACCAOUI_SUPABASE_LIVE_ENABLED === true;
   }
 
+  function getSupabaseFailSafeState() {
+    const configState = getConfigState();
+    const sdkState = getSdkState();
+    const isLiveEnabled = isSupabaseLiveEnabled();
+
+    if (!isLiveEnabled && configState.isConfigured && sdkState.hasSdk) {
+      return {
+        status: "live_switch_disabled_with_config_and_sdk",
+        isSafe: true,
+        isLiveEnabled,
+        reason: "live_switch_required_before_client_creation",
+        configState,
+        sdkState
+      };
+    }
+
+    if (!isLiveEnabled && configState.isConfigured) {
+      return {
+        status: "live_switch_disabled_with_config",
+        isSafe: true,
+        isLiveEnabled,
+        reason: "live_switch_required_before_supabase_use",
+        configState,
+        sdkState
+      };
+    }
+
+    if (!isLiveEnabled && sdkState.hasSdk) {
+      return {
+        status: "live_switch_disabled_with_sdk",
+        isSafe: true,
+        isLiveEnabled,
+        reason: "live_switch_required_before_sdk_use",
+        configState,
+        sdkState
+      };
+    }
+
+    if (isLiveEnabled && !configState.isConfigured && !sdkState.hasSdk) {
+      return {
+        status: "live_switch_enabled_but_config_and_sdk_missing",
+        isSafe: true,
+        isLiveEnabled,
+        reason: "missing_config_and_sdk",
+        configState,
+        sdkState
+      };
+    }
+
+    if (isLiveEnabled && !configState.isConfigured) {
+      return {
+        status: "live_switch_enabled_but_config_missing",
+        isSafe: true,
+        isLiveEnabled,
+        reason: "missing_config",
+        configState,
+        sdkState
+      };
+    }
+
+    if (isLiveEnabled && !sdkState.hasSdk) {
+      return {
+        status: "live_switch_enabled_but_sdk_missing",
+        isSafe: true,
+        isLiveEnabled,
+        reason: "missing_sdk",
+        configState,
+        sdkState
+      };
+    }
+
+    return {
+      status: isLiveEnabled ? "live_prerequisites_available_client_still_disabled" : "local_mode_safe",
+      isSafe: true,
+      isLiveEnabled,
+      reason: isLiveEnabled ? "client_creation_still_disabled_in_stub" : "local_mode_without_live_switch",
+      configState,
+      sdkState
+    };
+  }
+
   function getSdkState() {
     const supabaseGlobal = window.supabase;
 
@@ -78,6 +159,7 @@
     const configState = getConfigState();
     const sdkState = getSdkState();
     const isLiveEnabled = isSupabaseLiveEnabled();
+    const failSafeState = getSupabaseFailSafeState();
 
     if (configState.status === "local_mode") {
       return {
@@ -88,7 +170,8 @@
         hasSdk: sdkState.hasSdk,
         reason: "no_config_loaded",
         configState,
-        sdkState
+        sdkState,
+        failSafeState
       };
     }
 
@@ -101,7 +184,8 @@
         hasSdk: sdkState.hasSdk,
         reason: "placeholder_or_missing_values",
         configState,
-        sdkState
+        sdkState,
+        failSafeState
       };
     }
 
@@ -114,7 +198,8 @@
         hasSdk: false,
         reason: "window_supabase_missing",
         configState,
-        sdkState
+        sdkState,
+        failSafeState
       };
     }
 
@@ -127,7 +212,8 @@
         hasSdk: false,
         reason: "createClient_missing",
         configState,
-        sdkState
+        sdkState,
+        failSafeState
       };
     }
 
@@ -141,7 +227,8 @@
         hasSdk: true,
         reason: "supabase_live_switch_disabled",
         configState,
-        sdkState
+        sdkState,
+        failSafeState
       };
     }
 
@@ -154,7 +241,8 @@
       hasSdk: true,
       reason: "live_switch_enabled_but_client_creation_disabled_in_stub",
       configState,
-      sdkState
+      sdkState,
+      failSafeState
     };
   }
 
@@ -208,7 +296,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.13a",
+        source: "supabase-client-adapter-stub-v26.15a",
         futureStatuses: [
           "participant_active_later",
           "course_expired_later",
@@ -226,7 +314,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.13a",
+        source: "supabase-client-adapter-stub-v26.15a",
         authState
       };
     }
@@ -236,7 +324,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.13a",
+      source: "supabase-client-adapter-stub-v26.15a",
       futureStatuses: [
         "participant_active_later",
         "course_expired_later",
@@ -257,12 +345,15 @@
     const clientState = getClientReadinessState();
     const authState = getAuthReadinessState();
     const participantAccessState = getParticipantAccessReadinessState();
+    const failSafeState = getSupabaseFailSafeState();
 
     return {
-      version: "v26.13a",
+      version: "v26.15a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
+      failSafeStatus: failSafeState.status,
+      isFailSafeSafe: failSafeState.isSafe === true,
       isLocalAccessAllowed: participantAccessState.isAllowed === true,
       hasConfig: configState.isConfigured === true,
       hasSdk: sdkState.hasSdk === true,
@@ -272,13 +363,15 @@
       sdkState,
       clientState,
       authState,
-      participantAccessState
+      participantAccessState,
+      failSafeState
     };
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.13a",
+    version: "v26.15a",
     isSupabaseLiveEnabled,
+    getSupabaseFailSafeState,
     getConfigState,
     getSdkState,
     getClientReadinessState,
