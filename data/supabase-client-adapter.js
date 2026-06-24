@@ -1,10 +1,12 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.11d
+// Stand: v26.13a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
 // Keine echten Keys.
 // Kein Login-Zwang.
+// Supabase-Live-Modus nur mit bewusstem Schalter:
+// window.ACCAOUI_SUPABASE_LIVE_ENABLED === true
 
 (function () {
   function getConfigState() {
@@ -42,6 +44,10 @@
     };
   }
 
+  function isSupabaseLiveEnabled() {
+    return window.ACCAOUI_SUPABASE_LIVE_ENABLED === true;
+  }
+
   function getSdkState() {
     const supabaseGlobal = window.supabase;
 
@@ -71,12 +77,14 @@
   function getClientReadinessState() {
     const configState = getConfigState();
     const sdkState = getSdkState();
+    const isLiveEnabled = isSupabaseLiveEnabled();
 
     if (configState.status === "local_mode") {
       return {
         status: "local_mode",
         isReady: false,
         canCreateClient: false,
+        isLiveEnabled,
         hasSdk: sdkState.hasSdk,
         reason: "no_config_loaded",
         configState,
@@ -89,6 +97,7 @@
         status: "placeholder_config",
         isReady: false,
         canCreateClient: false,
+        isLiveEnabled,
         hasSdk: sdkState.hasSdk,
         reason: "placeholder_or_missing_values",
         configState,
@@ -101,6 +110,7 @@
         status: "sdk_missing",
         isReady: false,
         canCreateClient: false,
+        isLiveEnabled,
         hasSdk: false,
         reason: "window_supabase_missing",
         configState,
@@ -113,6 +123,7 @@
         status: "sdk_invalid",
         isReady: false,
         canCreateClient: false,
+        isLiveEnabled,
         hasSdk: false,
         reason: "createClient_missing",
         configState,
@@ -120,13 +131,28 @@
       };
     }
 
+    if (!isLiveEnabled) {
+      return {
+        status: "live_switch_disabled",
+        isReady: false,
+        canCreateClient: false,
+        isLiveEnabled,
+        wouldCreateClientWhenEnabled: true,
+        hasSdk: true,
+        reason: "supabase_live_switch_disabled",
+        configState,
+        sdkState
+      };
+    }
+
     return {
-      status: "client_ready_later",
+      status: "live_switch_enabled_client_creation_disabled_in_stub",
       isReady: false,
       canCreateClient: false,
+      isLiveEnabled,
       wouldCreateClientWhenEnabled: true,
       hasSdk: true,
-      reason: "sdk_and_config_available_client_creation_disabled_in_stub",
+      reason: "live_switch_enabled_but_client_creation_disabled_in_stub",
       configState,
       sdkState
     };
@@ -182,7 +208,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.11d",
+        source: "supabase-client-adapter-stub-v26.13a",
         futureStatuses: [
           "participant_active_later",
           "course_expired_later",
@@ -200,7 +226,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.11d",
+        source: "supabase-client-adapter-stub-v26.13a",
         authState
       };
     }
@@ -210,7 +236,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.11d",
+      source: "supabase-client-adapter-stub-v26.13a",
       futureStatuses: [
         "participant_active_later",
         "course_expired_later",
@@ -233,9 +259,10 @@
     const participantAccessState = getParticipantAccessReadinessState();
 
     return {
-      version: "v26.11d",
+      version: "v26.13a",
       status: participantAccessState.status,
       isSupabaseLive: false,
+      isLiveEnabled: isSupabaseLiveEnabled(),
       isLocalAccessAllowed: participantAccessState.isAllowed === true,
       hasConfig: configState.isConfigured === true,
       hasSdk: sdkState.hasSdk === true,
@@ -250,7 +277,8 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.11d",
+    version: "v26.13a",
+    isSupabaseLiveEnabled,
     getConfigState,
     getSdkState,
     getClientReadinessState,
