@@ -1,52 +1,70 @@
-# Accaoui §34a Lern-App – Supabase Config Loader Test
+# Accaoui §34a Lern-App – Supabase-Config-Loader-Test
 
-Stand: v26.6e
+Stand: v26.16b
 
-Ziel: Den optionalen lokalen Supabase-Config-Loader testen, ohne echte Supabase-Keys, ohne SDK und ohne Live-Verbindung.
+Ziel: Prüfen und dokumentieren, ob der neue Supabase-Config-Loader sicher geladen wird, ohne Supabase live zu schalten.
 
-## 1. Testaufbau
+## 1. Testgegenstand
 
-Es wurde lokal eine Datei erstellt:
+Getestet wurde:
 
-data/supabase-config.local.js
+1. data/supabase-config-loader.js
+2. window.ACCAOUI_SUPABASE_CONFIG_LOADER
+3. getConfigLoaderState()
+4. loadLocalConfigIfEnabled()
+5. Einbindung in data/supabase-client-adapter.js
+6. Anzeige im Adapter-Health-State
+7. Script-Ladefolge in index.html
 
-Diese Datei war durch .gitignore geschützt und wurde nicht committed.
+## 2. Sicherheitsziel
 
-Die Datei enthielt nur Fake-Testwerte:
+Der Config-Loader darf in diesem Stand:
 
-1. fake-local-test.supabase.co
-2. fake_public_anon_key_for_loader_test_only
+1. den Ladezustand der Supabase-Config prüfen
+2. den lokalen Config-Pfad kennen
+3. den Beispiel-Config-Pfad kennen
+4. den Autoload-Schalter erkennen
+5. im Adapter-Health-State sichtbar sein
 
-## 2. Browser-Test
+Der Config-Loader darf in diesem Stand nicht:
 
-Die App wurde im Browser neu geladen.
+1. echte Keys enthalten
+2. echte Keys committen
+3. Supabase automatisch live schalten
+4. einen Supabase-Client erzeugen
+5. eine Session prüfen
+6. Login-Zwang auslösen
+7. Datenbankabfragen ausführen
 
-Die Konsole zeigte:
+## 3. Browser-Test Normalmodus
 
-1. App-Version: v26.6c-optional-supabase-config-loader
-2. Supabase-Config-Ladeweg: local_config_loaded
-3. Supabase-Config-Status: config_available
-4. Fragen geladen: 86
+Erwartetes und bestätigtes Ergebnis im lokalen Normalmodus:
 
-## 3. Ergebnis
+1. loader version: v26.16a
+2. loader status: local_config_autoload_disabled
+3. loader safe: true
+4. loader autoload: false
+5. adapter version: v26.16a
+6. adapter configLoaderStatus: local_config_autoload_disabled
+7. adapter isConfigLoaderAvailable: true
+8. adapter failSafeStatus: local_mode_safe
+9. adapter isSupabaseLive: false
+10. adapter canCreateClient: false
+11. adapter canCheckSession: false
 
-Der Test war erfolgreich.
+## 4. Bewertung
+
+Der Test ist bestanden.
 
 Bedeutung:
 
-1. Lokale Config wird erkannt.
-2. Optionaler Loader funktioniert.
-3. App startet weiterhin lokal.
-4. Fragenbank lädt weiterhin.
-5. Es wurde keine echte Supabase-Verbindung hergestellt.
-6. Es wurden keine echten Keys verwendet.
-
-## 4. Sicherheitsprüfung
-
-Die lokale Testdatei wurde danach wieder gelöscht.
-
-data/supabase-config.local.js bleibt weiterhin in .gitignore geschützt.
+1. Der Config-Loader ist technisch vorbereitet.
+2. Der Loader bleibt im lokalen Modus sicher.
+3. Ohne bewussten Autoload-Schalter wird keine lokale Config nachgeladen.
+4. Ohne Live-Schalter geht Supabase nicht live.
+5. Ohne SDK und ohne Client-Erzeugung bleibt die App vollständig lokal.
+6. Die spätere echte Supabase-Anbindung ist strukturell vorbereitet, aber weiterhin deaktiviert.
 
 ## 5. Status
 
-Status v26.6e: Optionaler lokaler Supabase-Config-Loader erfolgreich getestet. Keine echte Supabase-Verbindung. Keine echten Keys im Code.
+Status v26.16b: Supabase-Config-Loader-Test dokumentiert. Der Loader ist sicher vorbereitet, bleibt ohne echte Keys und ohne Live-Schaltung lokal, und der Adapter erkennt den Loader im Health-State.
