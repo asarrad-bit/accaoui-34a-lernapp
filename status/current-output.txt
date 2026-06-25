@@ -1,1 +1,464 @@
-Status-Ausgabe für ChatGPT.
+===== git status --short =====
+ M data/supabase-client-adapter.js
+ M index.html
+ M status/current-output.txt
+?? data/supabase-config-loader.js
+
+===== git log -10 =====
+9f19269 (HEAD -> chat-status, origin/chat-status) create chat status output file
+08cb3e6 (origin/main, origin/HEAD, main) v26.15c update masterlist for supabase fail-safe status
+6dc68d9 v26.15b document supabase fail-safe status test
+88b26f9 v26.15a add supabase fail-safe status
+974d89a v26.14b update masterlist for supabase live switch dry run
+cb9ebee v26.14a document supabase live switch dry run
+651da9e v26.13c update masterlist for supabase live switch
+95716d9 v26.13b document supabase live switch test
+0474635 v26.13a add supabase live mode switch
+0b75dcd v26.12e update masterlist for app health and access flow
+
+===== git diff --stat =====
+ data/supabase-client-adapter.js |  51 ++++++--
+ index.html                      | 251 ++++++++++++++++++++--------------------
+ status/current-output.txt       |  20 +++-
+ 3 files changed, 189 insertions(+), 133 deletions(-)
+
+===== git diff --check =====
+index.html:1: trailing whitespace.
++<!DOCTYPE html>
+index.html:2: trailing whitespace.
++<html lang="de">
+index.html:3: trailing whitespace.
++<head>
+index.html:4: trailing whitespace.
++  <meta charset="UTF-8" />
+index.html:5: trailing whitespace.
++  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+index.html:6: trailing whitespace.
++  <title>Accaoui §34a Prüfungssystem</title>
+index.html:7: trailing whitespace.
++ <link rel="stylesheet" href="style.css?v=24.8">
+index.html:8: trailing whitespace.
++<link rel="stylesheet" href="oral-exam.css?v=23.3.7">
+index.html:9: trailing whitespace.
++</head>
+index.html:10: trailing whitespace.
++<body>
+index.html:11: trailing whitespace.
++
+index.html:12: trailing whitespace.
++<div class="layout">
+index.html:13: trailing whitespace.
++
+index.html:14: trailing whitespace.
++  <aside class="sidebar">
+index.html:15: trailing whitespace.
++
+index.html:16: trailing whitespace.
++    <div class="logo-area">
+index.html:17: trailing whitespace.
++      <h2>ACCAOUI</h2>
+index.html:18: trailing whitespace.
++      <span>§34a SYSTEM</span>
+index.html:19: trailing whitespace.
++    </div>
+index.html:20: trailing whitespace.
++
+index.html:21: trailing whitespace.
++    <nav class="menu">
+index.html:22: trailing whitespace.
++
+index.html:23: trailing whitespace.
++      <div class="menu-item active">
+index.html:24: trailing whitespace.
++        <span>🏠</span>
+index.html:25: trailing whitespace.
++        Dashboard
+index.html:26: trailing whitespace.
++      </div>
+index.html:27: trailing whitespace.
++
+index.html:28: trailing whitespace.
++<div class="menu-item" id="statsMenu">
+index.html:29: trailing whitespace.
++  <span>📊</span>
+index.html:30: trailing whitespace.
++  Statistik
+index.html:31: trailing whitespace.
++</div>
+index.html:32: trailing whitespace.
++      <div class="menu-item">
+index.html:33: trailing whitespace.
++        <span>📚</span>
+index.html:34: trailing whitespace.
++        Alle Fragen
+index.html:35: trailing whitespace.
++      </div>
+index.html:36: trailing whitespace.
++
+index.html:37: trailing whitespace.
++	  <div class="menu-item" id="flashcardsMenu">
+index.html:38: trailing whitespace.
++  <span>🃏</span>
+index.html:39: trailing whitespace.
++  Lernkarten
+index.html:40: trailing whitespace.
++</div>
+index.html:41: trailing whitespace.
++
+index.html:42: trailing whitespace.
++      <div class="menu-item">
+index.html:43: trailing whitespace.
++        <span>📝</span>
+index.html:44: trailing whitespace.
++        Prüfung
+index.html:45: trailing whitespace.
++      </div>
+index.html:46: trailing whitespace.
++
+index.html:47: trailing whitespace.
++      <div class="menu-item">
+index.html:48: trailing whitespace.
++        <span>🎯</span>
+index.html:49: trailing whitespace.
++        Fehlertraining
+index.html:50: trailing whitespace.
++      </div>
+index.html:51: trailing whitespace.
++
+index.html:52: trailing whitespace.
++      <div class="menu-item">
+index.html:53: trailing whitespace.
++        <span>🎤</span>
+index.html:54: trailing whitespace.
++        Mündliche Prüfung
+index.html:55: trailing whitespace.
++      </div>
+index.html:56: trailing whitespace.
++
+index.html:57: trailing whitespace.
++    </nav>
+index.html:58: trailing whitespace.
++
+index.html:59: trailing whitespace.
++  </aside>
+index.html:60: trailing whitespace.
++
+index.html:61: trailing whitespace.
++  <main class="main-content">
+index.html:62: trailing whitespace.
++
+index.html:63: trailing whitespace.
++    <header class="topbar">
+index.html:64: trailing whitespace.
++
+index.html:65: trailing whitespace.
++      <div>
+index.html:66: trailing whitespace.
++        <p class="eyebrow">Accaoui Bildung GmbH</p>
+index.html:67: trailing whitespace.
++        <h1>Sachkundeprüfung nach § 34a GewO</h1>
+index.html:68: trailing whitespace.
++      </div>
+index.html:69: trailing whitespace.
++
+index.html:70: trailing whitespace.
++      <div class="score-box">
+index.html:71: trailing whitespace.
++        <span>Bereitschaft</span>
+index.html:72: trailing whitespace.
++        <strong>72%</strong>
+index.html:73: trailing whitespace.
++      </div>
+index.html:74: trailing whitespace.
++
+index.html:75: trailing whitespace.
++    </header>
+index.html:76: trailing whitespace.
++
+index.html:77: trailing whitespace.
++    <section class="hero-grid">
+index.html:78: trailing whitespace.
++
+index.html:79: trailing whitespace.
++  <div class="hero-card blue" id="allQuestionsCard">
+index.html:80: trailing whitespace.
++    <div class="card-icon">📚</div>
+index.html:81: trailing whitespace.
++    <h2>Alle Fragen</h2>
+index.html:82: trailing whitespace.
++    <p>786 Fragen verfügbar</p>
+index.html:83: trailing whitespace.
++  </div>
+index.html:84: trailing whitespace.
++
+index.html:85: trailing whitespace.
++  <div class="hero-card white" id="openQuestionsCard">
+index.html:86: trailing whitespace.
++    <div class="card-icon">📝</div>
+index.html:87: trailing whitespace.
++    <h2>Offene Fragen</h2>
+index.html:88: trailing whitespace.
++    <p>321 unbeantwortet</p>
+index.html:89: trailing whitespace.
++  </div>
+index.html:90: trailing whitespace.
++
+index.html:91: trailing whitespace.
++  <div class="hero-card gold" id="examCard">
+index.html:92: trailing whitespace.
++    <div class="card-icon">⏱️</div>
+index.html:93: trailing whitespace.
++    <h2>Prüfung starten</h2>
+index.html:94: trailing whitespace.
++    <p>120 Minuten Simulation</p>
+index.html:95: trailing whitespace.
++  </div>
+index.html:96: trailing whitespace.
++
+index.html:97: trailing whitespace.
++  <div class="hero-card red" id="mistakeTrainingCard">
+index.html:98: trailing whitespace.
++    <div class="card-icon">🎯</div>
+index.html:99: trailing whitespace.
++    <h2>Fehlertraining</h2>
+index.html:100: trailing whitespace.
++    <p>16 Fragen wiederholen</p>
+index.html:101: trailing whitespace.
++  </div>
+index.html:102: trailing whitespace.
++
+index.html:103: trailing whitespace.
++</section>
+index.html:104: trailing whitespace.
++
+index.html:105: trailing whitespace.
++<section class="section-head">
+index.html:106: trailing whitespace.
++  <h2>§34a Themenbereiche</h2>
+index.html:107: trailing whitespace.
++  <p>Nach den Sachgebieten der §34a-Prüfung</p>
+index.html:108: trailing whitespace.
++</section>
+index.html:109: trailing whitespace.
++
+index.html:110: trailing whitespace.
++<section class="categories" id="categories"></section>
+index.html:111: trailing whitespace.
++
+index.html:112: trailing whitespace.
++  </main>
+index.html:113: trailing whitespace.
++
+index.html:114: trailing whitespace.
++</div>
+index.html:115: trailing whitespace.
++
+index.html:116: trailing whitespace.
++<script src="data/supabase-config-loader.js?v=26.16a"></script>
+index.html:117: trailing whitespace.
++<script src="data/supabase-client-adapter.js?v=26.16a"></script>
+index.html:118: trailing whitespace.
++<script src="app.js?v=24.8"></script>
+index.html:119: trailing whitespace.
++<script src="patch-v21.js?v=25.8a"></script>
+index.html:120: trailing whitespace.
++<script src="data/oral-question-bank.js?v=23.5.1"></script>
+index.html:121: trailing whitespace.
++<script src="data/oral-sheets-bank.js?v=23.5.0"></script>
+index.html:122: trailing whitespace.
++<script src="oral-sheets.js?v=23.3.7"></script>
+index.html:123: trailing whitespace.
++<script src="oral-sheets-v23.js?v=23.4.5"></script>
+index.html:124: trailing whitespace.
++<script src="oral-exam.js?v=23.4.0"></script>
+index.html:125: trailing whitespace.
++</body>
+index.html:126: trailing whitespace.
++</html>
+status/current-output.txt:27: trailing whitespace.
+++<!DOCTYPE html>
+status/current-output.txt:29: trailing whitespace.
+++<html lang="de">
+status/current-output.txt:31: trailing whitespace.
+++<head>
+status/current-output.txt:33: trailing whitespace.
+++  <meta charset="UTF-8" />
+status/current-output.txt:35: trailing whitespace.
+++  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+status/current-output.txt:37: trailing whitespace.
+++  <title>Accaoui §34a Prüfungssystem</title>
+status/current-output.txt:39: trailing whitespace.
+++ <link rel="stylesheet" href="style.css?v=24.8">
+status/current-output.txt:41: trailing whitespace.
+++<link rel="stylesheet" href="oral-exam.css?v=23.3.7">
+status/current-output.txt:43: trailing whitespace.
+++</head>
+status/current-output.txt:45: trailing whitespace.
+++<body>
+status/current-output.txt:47: trailing whitespace.
+++
+status/current-output.txt:49: trailing whitespace.
+++<div class="layout">
+status/current-output.txt:51: trailing whitespace.
+++
+status/current-output.txt:53: trailing whitespace.
+++  <aside class="sidebar">
+status/current-output.txt:55: trailing whitespace.
+++
+status/current-output.txt:57: trailing whitespace.
+++    <div class="logo-area">
+status/current-output.txt:59: trailing whitespace.
+++      <h2>ACCAOUI</h2>
+status/current-output.txt:61: trailing whitespace.
+++      <span>§34a SYSTEM</span>
+status/current-output.txt:63: trailing whitespace.
+++    </div>
+status/current-output.txt:65: trailing whitespace.
+++
+status/current-output.txt:67: trailing whitespace.
+++    <nav class="menu">
+status/current-output.txt:69: trailing whitespace.
+++
+status/current-output.txt:71: trailing whitespace.
+++      <div class="menu-item active">
+status/current-output.txt:73: trailing whitespace.
+++        <span>🏠</span>
+status/current-output.txt:75: trailing whitespace.
+++        Dashboard
+status/current-output.txt:77: trailing whitespace.
+++      </div>
+status/current-output.txt:79: trailing whitespace.
+++
+status/current-output.txt:81: trailing whitespace.
+++<div class="menu-item" id="statsMenu">
+status/current-output.txt:83: trailing whitespace.
+++  <span>📊</span>
+status/current-output.txt:85: trailing whitespace.
+++  Statistik
+status/current-output.txt:87: trailing whitespace.
+++</div>
+status/current-output.txt:89: trailing whitespace.
+++      <div class="menu-item">
+status/current-output.txt:91: trailing whitespace.
+++        <span>📚</span>
+status/current-output.txt:93: trailing whitespace.
+++        Alle Fragen
+status/current-output.txt:95: trailing whitespace.
+++      </div>
+status/current-output.txt:97: trailing whitespace.
+++
+status/current-output.txt:99: trailing whitespace.
+++	  <div class="menu-item" id="flashcardsMenu">
+status/current-output.txt:101: trailing whitespace.
+++  <span>🃏</span>
+status/current-output.txt:103: trailing whitespace.
+++  Lernkarten
+status/current-output.txt:105: trailing whitespace.
+++</div>
+status/current-output.txt:107: trailing whitespace.
+++
+status/current-output.txt:109: trailing whitespace.
+++      <div class="menu-item">
+status/current-output.txt:111: trailing whitespace.
+++        <span>📝</span>
+status/current-output.txt:113: trailing whitespace.
+++        Prüfung
+status/current-output.txt:115: trailing whitespace.
+++      </div>
+status/current-output.txt:117: trailing whitespace.
+++
+status/current-output.txt:119: trailing whitespace.
+++      <div class="menu-item">
+status/current-output.txt:121: trailing whitespace.
+++        <span>🎯</span>
+status/current-output.txt:123: trailing whitespace.
+++        Fehlertraining
+status/current-output.txt:125: trailing whitespace.
+++      </div>
+status/current-output.txt:127: trailing whitespace.
+++
+status/current-output.txt:129: trailing whitespace.
+++      <div class="menu-item">
+status/current-output.txt:131: trailing whitespace.
+++        <span>🎤</span>
+status/current-output.txt:133: trailing whitespace.
+++        Mündliche Prüfung
+status/current-output.txt:135: trailing whitespace.
+++      </div>
+status/current-output.txt:137: trailing whitespace.
+++
+status/current-output.txt:139: trailing whitespace.
+++    </nav>
+status/current-output.txt:141: trailing whitespace.
+++
+status/current-output.txt:143: trailing whitespace.
+++  </aside>
+status/current-output.txt:145: trailing whitespace.
+++
+status/current-output.txt:147: trailing whitespace.
+++  <main class="main-content">
+status/current-output.txt:149: trailing whitespace.
+++
+status/current-output.txt:151: trailing whitespace.
+++    <header class="topbar">
+status/current-output.txt:153: trailing whitespace.
+++
+status/current-output.txt:155: trailing whitespace.
+++      <div>
+status/current-output.txt:157: trailing whitespace.
+++        <p class="eyebrow">Accaoui Bildung GmbH</p>
+status/current-output.txt:159: trailing whitespace.
+++        <h1>Sachkundeprüfung nach § 34a GewO</h1>
+status/current-output.txt:161: trailing whitespace.
+++      </div>
+status/current-output.txt:163: trailing whitespace.
+++
+status/current-output.txt:165: trailing whitespace.
+++      <div class="score-box">
+status/current-output.txt:167: trailing whitespace.
+++        <span>Bereitschaft</span>
+
+===== preflight =====
+Exception in thread Thread-3 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\Accaoi Bildung\AppData\Local\Python\pythoncore-3.14-64\Lib\threading.py", line 1082, in _bootstrap_inner
+    self._context.run(self.run)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\Accaoi Bildung\AppData\Local\Python\pythoncore-3.14-64\Lib\threading.py", line 1024, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Accaoi Bildung\AppData\Local\Python\pythoncore-3.14-64\Lib\subprocess.py", line 1614, in _readerthread
+    buffer.append(fh.read())
+                  ~~~~~~~^^
+  File "C:\Users\Accaoi Bildung\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 1430: character maps to <undefined>
+Accaoui Preflight l�uft...
+
+Kategorie-Verteilung in questions.json:
+- Recht der �ffentlichen Sicherheit und Ordnung: 8
+- Gewerberecht: 8
+- Datenschutzrecht: 5
+- B�rgerliches Gesetzbuch: 13
+- Strafgesetzbuch und Strafverfahrensrecht: 13
+- Unfallverh�tungsvorschriften Wach- und Sicherungsdienste: 8
+- Umgang mit Waffen: 5
+- Umgang mit Menschen: 19
+- Grundz�ge der Sicherheitstechnik: 7
+
+OK: Kategorien-Audit bestanden.
+Traceback (most recent call last):
+  File "C:\xampp\htdocs\accaoui\v4-dashboard\tools\preflight.py", line 183, in <module>
+    main()
+    ~~~~^^
+  File "C:\xampp\htdocs\accaoui\v4-dashboard\tools\preflight.py", line 169, in main
+    check_git_diff_check()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\xampp\htdocs\accaoui\v4-dashboard\tools\preflight.py", line 72, in check_git_diff_check
+    code, stdout, stderr = run_command("git diff --check")
+                           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\xampp\htdocs\accaoui\v4-dashboard\tools\preflight.py", line 16, in run_command
+    return result.returncode, result.stdout.strip(), result.stderr.strip()
+                              ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'strip'
