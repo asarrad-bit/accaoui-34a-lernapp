@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.23a
+// Stand: v26.24a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -292,7 +292,7 @@
     const clientState = getClientReadinessState();
 
     return {
-      version: "v26.23a",
+      version: "v26.24a",
       status: "local_session_stub",
       hasSession: false,
       canCheckSession: false,
@@ -316,7 +316,7 @@
     const participantSessionState = getParticipantSessionState();
 
     return {
-      version: "v26.23a",
+      version: "v26.24a",
       status: "local_profile_stub",
       hasProfile: false,
       canLoadProfile: false,
@@ -340,7 +340,7 @@
     const participantProfileState = getParticipantProfileState();
 
     return {
-      version: "v26.23a",
+      version: "v26.24a",
       status: "local_course_stub",
       hasCourse: false,
       canLoadCourse: false,
@@ -373,7 +373,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.23a",
+        source: "supabase-client-adapter-stub-v26.24a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -394,7 +394,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.23a",
+        source: "supabase-client-adapter-stub-v26.24a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -407,7 +407,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.23a",
+      source: "supabase-client-adapter-stub-v26.24a",
       participantSessionState,
       participantProfileState,
       participantCourseState,
@@ -435,7 +435,7 @@
       participantCourseState.isLocalAccessAllowed === true;
 
     return {
-      version: "v26.23a",
+      version: "v26.24a",
       status: isLocalAccessAllowed ? "local_access_decision_allowed" : "access_decision_blocked_later",
       isAllowed: isLocalAccessAllowed,
       isLocalAccessAllowed,
@@ -458,6 +458,30 @@
       participantSessionState,
       participantProfileState,
       participantCourseState
+    };
+  }
+
+  function getLoginGateState() {
+    const participantAccessDecisionState = getParticipantAccessDecisionState();
+
+    return {
+      version: "v26.24a",
+      status: "local_login_gate_disabled",
+      isGateEnabled: false,
+      isLoginRequired: false,
+      canRenderLoginGate: false,
+      canBlockAccess: false,
+      isLocalAccessAllowed: true,
+      isSupabaseLive: false,
+      isLiveEnabled: isSupabaseLiveEnabled(),
+      reason: "login_gate_prepared_but_disabled_in_local_mode",
+      futureStatuses: [
+        "login_gate_enabled_later",
+        "login_required_later",
+        "login_optional_later",
+        "access_blocked_by_gate_later"
+      ],
+      participantAccessDecisionState
     };
   }
 
@@ -545,6 +569,7 @@
     const participantProfileState = getParticipantProfileState();
     const participantCourseState = getParticipantCourseState();
     const participantAccessDecisionState = getParticipantAccessDecisionState();
+    const loginGateState = getLoginGateState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -560,7 +585,7 @@
     if (failSafeState.status) blockingReasons.push(failSafeState.status);
 
     return {
-      version: "v26.23a",
+      version: "v26.24a",
       status: isLiveEnabled ? "supabase_live_requested_but_blocked_safe" : "supabase_local_safe",
       isSafeLocalMode: true,
       isSupabaseLive: false,
@@ -589,6 +614,11 @@
       isParticipantAccessDecisionAllowed: participantAccessDecisionState.isAllowed === true,
       isParticipantLoginRequired: participantAccessDecisionState.isLoginRequired === true,
       accessDecisionBlockingReasons: participantAccessDecisionState.blockingReasons,
+      loginGateStatus: loginGateState.status,
+      isLoginGateEnabled: loginGateState.isGateEnabled === true,
+      isLoginRequiredByGate: loginGateState.isLoginRequired === true,
+      canRenderLoginGate: loginGateState.canRenderLoginGate === true,
+      canLoginGateBlockAccess: loginGateState.canBlockAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -615,13 +645,14 @@
     const participantProfileState = getParticipantProfileState();
     const participantCourseState = getParticipantCourseState();
     const participantAccessDecisionState = getParticipantAccessDecisionState();
+    const loginGateState = getLoginGateState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.23a",
+      version: "v26.24a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -649,6 +680,7 @@
       participantProfileState,
       participantCourseState,
       participantAccessDecisionState,
+      loginGateState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -657,7 +689,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.23a",
+    version: "v26.24a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -673,6 +705,7 @@
     getParticipantProfileState,
     getParticipantCourseState,
     getParticipantAccessDecisionState,
+    getLoginGateState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
