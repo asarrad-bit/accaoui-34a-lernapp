@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.15a
+// Stand: v26.16a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -296,7 +296,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.15a",
+        source: "supabase-client-adapter-stub-v26.16a",
         futureStatuses: [
           "participant_active_later",
           "course_expired_later",
@@ -314,7 +314,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.15a",
+        source: "supabase-client-adapter-stub-v26.16a",
         authState
       };
     }
@@ -324,7 +324,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.15a",
+      source: "supabase-client-adapter-stub-v26.16a",
       futureStatuses: [
         "participant_active_later",
         "course_expired_later",
@@ -339,6 +339,38 @@
     return Promise.resolve(getParticipantAccessReadinessState());
   }
 
+  function getSupabaseConfigLoaderState() {
+    const loader = window.ACCAOUI_SUPABASE_CONFIG_LOADER;
+
+    if (!loader) {
+      return {
+        status: "config_loader_missing",
+        isAvailable: false,
+        isSafe: true,
+        reason: "config_loader_not_loaded"
+      };
+    }
+
+    if (typeof loader.getConfigLoaderState !== "function") {
+      return {
+        status: "config_loader_invalid",
+        isAvailable: false,
+        isSafe: true,
+        reason: "getConfigLoaderState_missing"
+      };
+    }
+
+    const loaderState = loader.getConfigLoaderState();
+
+    return {
+      status: loaderState.status || "config_loader_state_available",
+      isAvailable: true,
+      isSafe: loaderState.isSafeLocalMode === true,
+      reason: loaderState.reason || "config_loader_state_read",
+      loaderState
+    };
+  }
+
   function getAdapterHealthState() {
     const configState = getConfigState();
     const sdkState = getSdkState();
@@ -346,14 +378,17 @@
     const authState = getAuthReadinessState();
     const participantAccessState = getParticipantAccessReadinessState();
     const failSafeState = getSupabaseFailSafeState();
+    const configLoaderState = getSupabaseConfigLoaderState();
 
     return {
-      version: "v26.15a",
+      version: "v26.16a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
       failSafeStatus: failSafeState.status,
       isFailSafeSafe: failSafeState.isSafe === true,
+      configLoaderStatus: configLoaderState.status,
+      isConfigLoaderAvailable: configLoaderState.isAvailable === true,
       isLocalAccessAllowed: participantAccessState.isAllowed === true,
       hasConfig: configState.isConfigured === true,
       hasSdk: sdkState.hasSdk === true,
@@ -364,14 +399,16 @@
       clientState,
       authState,
       participantAccessState,
-      failSafeState
+      failSafeState,
+      configLoaderState
     };
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.15a",
+    version: "v26.16a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
+    getSupabaseConfigLoaderState,
     getConfigState,
     getSdkState,
     getClientReadinessState,
