@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.18a
+// Stand: v26.19a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -296,7 +296,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.18a",
+        source: "supabase-client-adapter-stub-v26.19a",
         futureStatuses: [
           "participant_active_later",
           "course_expired_later",
@@ -314,7 +314,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.18a",
+        source: "supabase-client-adapter-stub-v26.19a",
         authState
       };
     }
@@ -324,7 +324,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.18a",
+      source: "supabase-client-adapter-stub-v26.19a",
       futureStatuses: [
         "participant_active_later",
         "course_expired_later",
@@ -409,6 +409,57 @@
     };
   }
 
+  function getSupabaseSafetySummary() {
+    const configState = getConfigState();
+    const sdkState = getSdkState();
+    const clientState = getClientReadinessState();
+    const authState = getAuthReadinessState();
+    const participantAccessState = getParticipantAccessReadinessState();
+    const failSafeState = getSupabaseFailSafeState();
+    const configLoaderState = getSupabaseConfigLoaderState();
+    const configLoaderBootState = getSupabaseConfigLoaderBootState();
+    const isLiveEnabled = isSupabaseLiveEnabled();
+
+    const blockingReasons = [];
+
+    if (!isLiveEnabled) blockingReasons.push("live_switch_disabled");
+    if (!configState.isConfigured) blockingReasons.push(configState.status);
+    if (!sdkState.hasSdk) blockingReasons.push(sdkState.status);
+    if (!clientState.canCreateClient) blockingReasons.push(clientState.status);
+    if (!authState.canCheckSession) blockingReasons.push(authState.status);
+    if (failSafeState.status) blockingReasons.push(failSafeState.status);
+
+    return {
+      version: "v26.19a",
+      status: isLiveEnabled ? "supabase_live_requested_but_blocked_safe" : "supabase_local_safe",
+      isSafeLocalMode: true,
+      isSupabaseLive: false,
+      isLiveEnabled,
+      isLocalAccessAllowed: participantAccessState.isAllowed === true,
+      canCreateClient: false,
+      canCheckSession: false,
+      canAccessParticipantData: false,
+      configStatus: configState.status,
+      sdkStatus: sdkState.status,
+      clientStatus: clientState.status,
+      authStatus: authState.status,
+      participantAccessStatus: participantAccessState.status,
+      failSafeStatus: failSafeState.status,
+      configLoaderStatus: configLoaderState.status,
+      configLoaderBootStatus: configLoaderBootState.status,
+      configLoaderBootLoadStatus: configLoaderBootState.loadStatus,
+      blockingReasons: Array.from(new Set(blockingReasons)),
+      nextRequiredSteps: [
+        "provide_local_config_later",
+        "load_supabase_sdk_later",
+        "enable_live_switch_later",
+        "create_client_later",
+        "check_session_later",
+        "check_participant_access_later"
+      ]
+    };
+  }
+
   function getAdapterHealthState() {
     const configState = getConfigState();
     const sdkState = getSdkState();
@@ -418,12 +469,15 @@
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
+    const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.18a",
+      version: "v26.19a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
+      safetySummaryStatus: safetySummary.status,
+      isSafeLocalMode: safetySummary.isSafeLocalMode === true,
       failSafeStatus: failSafeState.status,
       isFailSafeSafe: failSafeState.isSafe === true,
       configLoaderStatus: configLoaderState.status,
@@ -444,16 +498,18 @@
       participantAccessState,
       failSafeState,
       configLoaderState,
-      configLoaderBootState
+      configLoaderBootState,
+      safetySummary
     };
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.18a",
+    version: "v26.19a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
     getSupabaseConfigLoaderBootState,
+    getSupabaseSafetySummary,
     getConfigState,
     getSdkState,
     getClientReadinessState,
