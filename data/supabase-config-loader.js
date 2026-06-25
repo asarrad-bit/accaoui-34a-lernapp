@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Config Loader
-// Stand: v26.16a
+// Stand: v26.17a
 //
 // Sicherer Vorbereitungs-Loader.
 // Keine echten Keys.
@@ -8,10 +8,33 @@
 // Kein Login-Zwang.
 
 (function () {
-  const VERSION = "v26.16a";
+  const VERSION = "v26.17a";
   const LOCAL_CONFIG_PATH = "data/supabase-config.local.js";
   const EXAMPLE_CONFIG_PATH = "data/supabase-config.example.js";
   const LOCAL_CONFIG_SCRIPT_ID = "accaoui-supabase-local-config-script";
+
+  let bootLoadState = {
+    version: VERSION,
+    status: "boot_not_started",
+    loadStatus: "not_started",
+    isSafeLocalMode: true,
+    isAutoLoadEnabled: false,
+    reason: "boot_state_not_initialized"
+  };
+
+  function setBootLoadState(nextState) {
+    bootLoadState = {
+      version: VERSION,
+      isSafeLocalMode: true,
+      ...nextState
+    };
+
+    return bootLoadState;
+  }
+
+  function getBootLoadState() {
+    return bootLoadState;
+  }
 
   function getWindowConfig() {
     return window.ACCAOUI_SUPABASE_CONFIG;
@@ -150,12 +173,42 @@
     getWindowConfig,
     getConfigValueState,
     getConfigLoaderState,
+    getBootLoadState,
     loadLocalConfigIfEnabled
   };
+
+  if (isAutoLoadEnabled()) {
+    setBootLoadState({
+      status: "local_config_autoload_requested",
+      loadStatus: "requested",
+      isAutoLoadEnabled: true,
+      reason: "autoload_flag_enabled_on_boot",
+      configState: getConfigValueState()
+    });
+
+    loadLocalConfigIfEnabled().then(function (state) {
+      setBootLoadState({
+        status: state.status || "local_config_autoload_finished",
+        loadStatus: state.loadStatus || "finished",
+        isAutoLoadEnabled: state.isAutoLoadEnabled === true,
+        reason: state.reason || "autoload_finished",
+        configState: state.configState
+      });
+    });
+  } else {
+    setBootLoadState({
+      status: "local_config_autoload_disabled",
+      loadStatus: "skipped",
+      isAutoLoadEnabled: false,
+      reason: "autoload_flag_not_enabled_on_boot",
+      configState: getConfigValueState()
+    });
+  }
 
   console.info(
     "Accaoui Supabase Config Loader geladen:",
     VERSION,
-    getConfigLoaderState().status
+    getConfigLoaderState().status,
+    getBootLoadState().loadStatus
   );
 })();
