@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.21a
+// Stand: v26.22a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -292,7 +292,7 @@
     const clientState = getClientReadinessState();
 
     return {
-      version: "v26.21a",
+      version: "v26.22a",
       status: "local_session_stub",
       hasSession: false,
       canCheckSession: false,
@@ -316,7 +316,7 @@
     const participantSessionState = getParticipantSessionState();
 
     return {
-      version: "v26.21a",
+      version: "v26.22a",
       status: "local_profile_stub",
       hasProfile: false,
       canLoadProfile: false,
@@ -336,9 +336,36 @@
     };
   }
 
+  function getParticipantCourseState() {
+    const participantProfileState = getParticipantProfileState();
+
+    return {
+      version: "v26.22a",
+      status: "local_course_stub",
+      hasCourse: false,
+      canLoadCourse: false,
+      isCourseRequired: false,
+      isCourseExpired: false,
+      isLocalAccessAllowed: true,
+      isSupabaseLive: false,
+      isLiveEnabled: isSupabaseLiveEnabled(),
+      course: null,
+      reason: "participant_course_load_prepared_but_disabled",
+      futureStatuses: [
+        "course_active_later",
+        "course_expired_later",
+        "course_missing_later",
+        "course_error_later"
+      ],
+      participantProfileState
+    };
+  }
+
   function getParticipantAccessReadinessState() {
     const authState = getAuthReadinessState();
     const participantSessionState = getParticipantSessionState();
+    const participantProfileState = getParticipantProfileState();
+    const participantCourseState = getParticipantCourseState();
 
     if (authState.status === "client_not_ready") {
       return {
@@ -346,8 +373,10 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.21a",
+        source: "supabase-client-adapter-stub-v26.22a",
         participantSessionState,
+        participantProfileState,
+        participantCourseState,
         futureStatuses: [
           "participant_active_later",
           "course_expired_later",
@@ -365,8 +394,10 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.21a",
+        source: "supabase-client-adapter-stub-v26.22a",
         participantSessionState,
+        participantProfileState,
+        participantCourseState,
         authState
       };
     }
@@ -376,8 +407,10 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.21a",
+      source: "supabase-client-adapter-stub-v26.22a",
       participantSessionState,
+      participantProfileState,
+      participantCourseState,
       futureStatuses: [
         "participant_active_later",
         "course_expired_later",
@@ -470,6 +503,7 @@
     const participantAccessState = getParticipantAccessReadinessState();
     const participantSessionState = getParticipantSessionState();
     const participantProfileState = getParticipantProfileState();
+    const participantCourseState = getParticipantCourseState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -485,7 +519,7 @@
     if (failSafeState.status) blockingReasons.push(failSafeState.status);
 
     return {
-      version: "v26.21a",
+      version: "v26.22a",
       status: isLiveEnabled ? "supabase_live_requested_but_blocked_safe" : "supabase_local_safe",
       isSafeLocalMode: true,
       isSupabaseLive: false,
@@ -505,6 +539,11 @@
       isParticipantProfileRequired: participantProfileState.isProfileRequired === true,
       canLoadParticipantProfile: participantProfileState.canLoadProfile === true,
       isParticipantProfileLoaded: participantProfileState.hasProfile === true,
+      participantCourseStatus: participantCourseState.status,
+      isParticipantCourseRequired: participantCourseState.isCourseRequired === true,
+      canLoadParticipantCourse: participantCourseState.canLoadCourse === true,
+      isParticipantCourseLoaded: participantCourseState.hasCourse === true,
+      isParticipantCourseExpired: participantCourseState.isCourseExpired === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -529,13 +568,14 @@
     const participantAccessState = getParticipantAccessReadinessState();
     const participantSessionState = getParticipantSessionState();
     const participantProfileState = getParticipantProfileState();
+    const participantCourseState = getParticipantCourseState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.21a",
+      version: "v26.22a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -561,6 +601,7 @@
       participantAccessState,
       participantSessionState,
       participantProfileState,
+      participantCourseState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -569,7 +610,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.21a",
+    version: "v26.22a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -583,6 +624,7 @@
     getCurrentSession,
     getParticipantSessionState,
     getParticipantProfileState,
+    getParticipantCourseState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
