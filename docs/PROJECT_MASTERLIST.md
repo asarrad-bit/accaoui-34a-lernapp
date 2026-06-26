@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.25c
+Stand: v26.26c
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -156,7 +156,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 
 ---
 
-## 5. Aktueller Versionsstand (bis v26.25c)
+## 5. Aktueller Versionsstand (bis v26.26c)
 
 ### App und mündliche Prüfung (Auszug)
 
@@ -324,6 +324,9 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.25a | Login-Gate-UI-State vorbereitet: `getLoginGateUiState()`, `local_login_gate_ui_hidden`, keine sichtbare Login-Maske, kein UI-Blocker, lokaler Zugriff bleibt erlaubt – **erledigt** |
 | v26.25b | Login-Gate-UI-State-Test dokumentiert: UI-State sichtbar, `isVisible=false`, `canRender=false`, `canBlockAccess=false`, kein Login-Zwang – **erledigt** |
 | v26.25c | Masterliste um Login-Gate-UI-State und Testdokument ergänzt – **erledigt** |
+| v26.26a | Login-Formular-State vorbereitet: `getLoginFormState()`, `local_login_form_disabled`, Formular unsichtbar, keine Eingabeprüfung, keine Authentifizierung, lokaler Zugriff bleibt erlaubt – **erledigt** |
+| v26.26b | Login-Formular-State-Test dokumentiert: Formular-State sichtbar, `canSubmit=false`, `canValidateInput=false`, `canAuthenticate=false`, kein Login-Zwang – **erledigt** |
+| v26.26c | Masterliste um Login-Formular-State und Testdokument ergänzt – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (kein SQL, keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
@@ -576,6 +579,7 @@ python tools/preflight.py
 | `docs/SUPABASE_PARTICIPANT_ACCESS_DECISION_TEST.md` | Lokaler Test der zentralen Teilnehmer-Zugriffsentscheidung: `getParticipantAccessDecisionState()`, `local_access_decision_allowed`, kein Login-Zwang, keine Sperre, lokaler Zugriff erlaubt – **vorhanden (v26.23b)** |
 | `docs/SUPABASE_LOGIN_GATE_STATE_TEST.md` | Lokaler Test des vorbereiteten Login-Gate-Status: `getLoginGateState()`, `local_login_gate_disabled`, kein Login-Zwang, Gate kann nicht blockieren, lokaler Zugriff erlaubt – **vorhanden (v26.24b)** |
 | `docs/SUPABASE_LOGIN_GATE_UI_STATE_TEST.md` | Lokaler Test des vorbereiteten Login-Gate-UI-State: `getLoginGateUiState()`, `local_login_gate_ui_hidden`, keine sichtbare Login-Maske, kein UI-Blocker, lokaler Zugriff erlaubt – **vorhanden (v26.25b)** |
+| `docs/SUPABASE_LOGIN_FORM_STATE_TEST.md` | Lokaler Test des vorbereiteten Login-Formular-State: `getLoginFormState()`, `local_login_form_disabled`, kein sichtbares Formular, keine Eingabeprüfung, keine Authentifizierung, lokaler Zugriff erlaubt – **vorhanden (v26.26b)** |
 | `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` | Quellenpakete / Musterunterlagen – Status v24.5y – **vorhanden** |
 | `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md` | Mündliche Prüfung / Musterfragen – Status v24.5y – **vorhanden** |
 | `docs/PROJECT_MASTERLIST.md` | Diese Datei |
