@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.26a
+// Stand: v26.27a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -292,7 +292,7 @@
     const clientState = getClientReadinessState();
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: "local_session_stub",
       hasSession: false,
       canCheckSession: false,
@@ -316,7 +316,7 @@
     const participantSessionState = getParticipantSessionState();
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: "local_profile_stub",
       hasProfile: false,
       canLoadProfile: false,
@@ -340,7 +340,7 @@
     const participantProfileState = getParticipantProfileState();
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: "local_course_stub",
       hasCourse: false,
       canLoadCourse: false,
@@ -373,7 +373,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.26a",
+        source: "supabase-client-adapter-stub-v26.27a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -394,7 +394,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.26a",
+        source: "supabase-client-adapter-stub-v26.27a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -407,7 +407,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.26a",
+      source: "supabase-client-adapter-stub-v26.27a",
       participantSessionState,
       participantProfileState,
       participantCourseState,
@@ -435,7 +435,7 @@
       participantCourseState.isLocalAccessAllowed === true;
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: isLocalAccessAllowed ? "local_access_decision_allowed" : "access_decision_blocked_later",
       isAllowed: isLocalAccessAllowed,
       isLocalAccessAllowed,
@@ -465,7 +465,7 @@
     const participantAccessDecisionState = getParticipantAccessDecisionState();
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: "local_login_gate_disabled",
       isGateEnabled: false,
       isLoginRequired: false,
@@ -489,7 +489,7 @@
     const loginGateState = getLoginGateState();
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: "local_login_gate_ui_hidden",
       isVisible: false,
       canRender: false,
@@ -514,7 +514,7 @@
     const loginGateUiState = getLoginGateUiState();
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: "local_login_form_disabled",
       isVisible: false,
       canRender: false,
@@ -537,6 +537,30 @@
         "login_form_error_later"
       ],
       loginGateUiState
+    };
+  }
+
+  function getLoginErrorState() {
+    const loginFormState = getLoginFormState();
+
+    return {
+      version: "v26.27a",
+      status: "local_login_error_none",
+      hasError: false,
+      canShowError: false,
+      errorCode: null,
+      errorMessage: null,
+      isRecoverable: true,
+      isLoginRequired: false,
+      isLocalAccessAllowed: true,
+      reason: "login_error_state_prepared_but_no_error_in_local_mode",
+      futureStatuses: [
+        "login_error_invalid_credentials_later",
+        "login_error_network_later",
+        "login_error_session_expired_later",
+        "login_error_unknown_later"
+      ],
+      loginFormState
     };
   }
 
@@ -627,6 +651,7 @@
     const loginGateState = getLoginGateState();
     const loginGateUiState = getLoginGateUiState();
     const loginFormState = getLoginFormState();
+    const loginErrorState = getLoginErrorState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -642,7 +667,7 @@
     if (failSafeState.status) blockingReasons.push(failSafeState.status);
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: isLiveEnabled ? "supabase_live_requested_but_blocked_safe" : "supabase_local_safe",
       isSafeLocalMode: true,
       isSupabaseLive: false,
@@ -687,6 +712,12 @@
       canValidateLoginFormInput: loginFormState.canValidateInput === true,
       canAuthenticateWithLoginForm: loginFormState.canAuthenticate === true,
       isLoginRequiredByForm: loginFormState.isLoginRequired === true,
+      loginErrorStatus: loginErrorState.status,
+      hasLoginError: loginErrorState.hasError === true,
+      canShowLoginError: loginErrorState.canShowError === true,
+      loginErrorCode: loginErrorState.errorCode,
+      loginErrorMessage: loginErrorState.errorMessage,
+      isLoginErrorRecoverable: loginErrorState.isRecoverable === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -716,13 +747,14 @@
     const loginGateState = getLoginGateState();
     const loginGateUiState = getLoginGateUiState();
     const loginFormState = getLoginFormState();
+    const loginErrorState = getLoginErrorState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.26a",
+      version: "v26.27a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -753,6 +785,7 @@
       loginGateState,
       loginGateUiState,
       loginFormState,
+      loginErrorState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -761,7 +794,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.26a",
+    version: "v26.27a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -780,6 +813,7 @@
     getLoginGateState,
     getLoginGateUiState,
     getLoginFormState,
+    getLoginErrorState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
