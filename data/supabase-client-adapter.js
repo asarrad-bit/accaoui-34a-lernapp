@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.35a
+// Stand: v26.36a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -292,7 +292,7 @@
     const clientState = getClientReadinessState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_session_stub",
       hasSession: false,
       canCheckSession: false,
@@ -316,7 +316,7 @@
     const participantSessionState = getParticipantSessionState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_profile_stub",
       hasProfile: false,
       canLoadProfile: false,
@@ -340,7 +340,7 @@
     const participantProfileState = getParticipantProfileState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_course_stub",
       hasCourse: false,
       canLoadCourse: false,
@@ -373,7 +373,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.35a",
+        source: "supabase-client-adapter-stub-v26.36a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -394,7 +394,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.35a",
+        source: "supabase-client-adapter-stub-v26.36a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -407,7 +407,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.35a",
+      source: "supabase-client-adapter-stub-v26.36a",
       participantSessionState,
       participantProfileState,
       participantCourseState,
@@ -435,7 +435,7 @@
       participantCourseState.isLocalAccessAllowed === true;
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: isLocalAccessAllowed ? "local_access_decision_allowed" : "access_decision_blocked_later",
       isAllowed: isLocalAccessAllowed,
       isLocalAccessAllowed,
@@ -465,7 +465,7 @@
     const participantAccessDecisionState = getParticipantAccessDecisionState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_login_gate_disabled",
       isGateEnabled: false,
       isLoginRequired: false,
@@ -489,7 +489,7 @@
     const loginGateState = getLoginGateState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_login_gate_ui_hidden",
       isVisible: false,
       canRender: false,
@@ -514,7 +514,7 @@
     const loginGateUiState = getLoginGateUiState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_login_form_disabled",
       isVisible: false,
       canRender: false,
@@ -544,7 +544,7 @@
     const loginFormState = getLoginFormState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_login_error_none",
       hasError: false,
       canShowError: false,
@@ -568,7 +568,7 @@
     const loginErrorState = getLoginErrorState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_login_success_none",
       hasSuccess: false,
       hasSession: false,
@@ -592,7 +592,7 @@
     const loginSuccessState = getLoginSuccessState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_logout_disabled",
       isAvailable: false,
       canLogout: false,
@@ -615,7 +615,7 @@
     const logoutState = getLogoutState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_dashboard_auth_disabled",
       isVisible: false,
       canRender: false,
@@ -642,7 +642,7 @@
     const participantCourseState = getParticipantCourseState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_dashboard_course_access_allowed",
       isCourseAccessRequired: false,
       canCheckCourseAccess: false,
@@ -669,7 +669,7 @@
     const participantDashboardCourseAccessState = getParticipantDashboardCourseAccessState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_dashboard_expiry_check_disabled",
       isExpiryCheckRequired: false,
       canCheckExpiry: false,
@@ -698,7 +698,7 @@
     const participantDashboardExpiryState = getParticipantDashboardExpiryState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_dashboard_access_decision_allowed",
       isDecisionAvailable: true,
       isDashboardAccessAllowed: true,
@@ -733,7 +733,7 @@
     const participantDashboardAccessDecisionState = getParticipantDashboardAccessDecisionState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_dashboard_readiness_ready",
       isReadinessAvailable: true,
       isReady: true,
@@ -771,7 +771,7 @@
     const participantDashboardReadinessState = getParticipantDashboardReadinessState();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: "local_dashboard_status_badge_hidden",
       isAvailable: true,
       isVisible: false,
@@ -791,6 +791,34 @@
         "dashboard_status_badge_error_later"
       ],
       participantDashboardReadinessState
+    };
+  }
+
+  function getParticipantDashboardNoticeBannerState() {
+    const participantDashboardStatusBadgeState = getParticipantDashboardStatusBadgeState();
+
+    return {
+      version: "v26.36a",
+      status: "local_dashboard_notice_banner_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      title: "Lokaler Modus aktiv",
+      message: "Das Teilnehmer-Dashboard ist vorbereitet und lokal ohne Login-Zwang nutzbar.",
+      tone: "info",
+      canDismiss: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_notice_banner_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_notice_banner_visible_later",
+        "dashboard_notice_banner_info_later",
+        "dashboard_notice_banner_warning_later",
+        "dashboard_notice_banner_blocking_later",
+        "dashboard_notice_banner_error_later"
+      ],
+      participantDashboardStatusBadgeState
     };
   }
 
@@ -890,6 +918,7 @@
     const participantDashboardAccessDecisionState = getParticipantDashboardAccessDecisionState();
     const participantDashboardReadinessState = getParticipantDashboardReadinessState();
     const participantDashboardStatusBadgeState = getParticipantDashboardStatusBadgeState();
+    const participantDashboardNoticeBannerState = getParticipantDashboardNoticeBannerState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -905,7 +934,7 @@
     if (failSafeState.status) blockingReasons.push(failSafeState.status);
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: isLiveEnabled ? "supabase_live_requested_but_blocked_safe" : "supabase_local_safe",
       isSafeLocalMode: true,
       isSupabaseLive: false,
@@ -1019,6 +1048,15 @@
       participantDashboardStatusBadgeLabel: participantDashboardStatusBadgeState.label,
       participantDashboardStatusBadgeTone: participantDashboardStatusBadgeState.tone,
       canBlockParticipantDashboardByStatusBadge: participantDashboardStatusBadgeState.canBlockDashboardAccess === true,
+      participantDashboardNoticeBannerStatus: participantDashboardNoticeBannerState.status,
+      isParticipantDashboardNoticeBannerAvailable: participantDashboardNoticeBannerState.isAvailable === true,
+      isParticipantDashboardNoticeBannerVisible: participantDashboardNoticeBannerState.isVisible === true,
+      canRenderParticipantDashboardNoticeBanner: participantDashboardNoticeBannerState.canRender === true,
+      participantDashboardNoticeBannerTitle: participantDashboardNoticeBannerState.title,
+      participantDashboardNoticeBannerMessage: participantDashboardNoticeBannerState.message,
+      participantDashboardNoticeBannerTone: participantDashboardNoticeBannerState.tone,
+      canDismissParticipantDashboardNoticeBanner: participantDashboardNoticeBannerState.canDismiss === true,
+      canBlockParticipantDashboardByNoticeBanner: participantDashboardNoticeBannerState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -1057,13 +1095,14 @@
     const participantDashboardAccessDecisionState = getParticipantDashboardAccessDecisionState();
     const participantDashboardReadinessState = getParticipantDashboardReadinessState();
     const participantDashboardStatusBadgeState = getParticipantDashboardStatusBadgeState();
+    const participantDashboardNoticeBannerState = getParticipantDashboardNoticeBannerState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.35a",
+      version: "v26.36a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -1103,6 +1142,7 @@
       participantDashboardAccessDecisionState,
       participantDashboardReadinessState,
       participantDashboardStatusBadgeState,
+      participantDashboardNoticeBannerState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -1111,7 +1151,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.35a",
+    version: "v26.36a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -1139,6 +1179,7 @@
     getParticipantDashboardAccessDecisionState,
     getParticipantDashboardReadinessState,
     getParticipantDashboardStatusBadgeState,
+    getParticipantDashboardNoticeBannerState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
