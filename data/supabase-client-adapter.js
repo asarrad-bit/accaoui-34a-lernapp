@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.51a
+// Stand: v26.52a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -292,7 +292,7 @@
     const clientState = getClientReadinessState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_session_stub",
       hasSession: false,
       canCheckSession: false,
@@ -316,7 +316,7 @@
     const participantSessionState = getParticipantSessionState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_profile_stub",
       hasProfile: false,
       canLoadProfile: false,
@@ -340,7 +340,7 @@
     const participantProfileState = getParticipantProfileState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_course_stub",
       hasCourse: false,
       canLoadCourse: false,
@@ -373,7 +373,7 @@
         status: "local_access_granted",
         mode: "local_mode",
         reason: "supabase_not_ready_local_access",
-        source: "supabase-client-adapter-stub-v26.51a",
+        source: "supabase-client-adapter-stub-v26.52a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -394,7 +394,7 @@
         status: "no_session_later",
         mode: "supabase_mode_later",
         reason: "session_required_later",
-        source: "supabase-client-adapter-stub-v26.51a",
+        source: "supabase-client-adapter-stub-v26.52a",
         participantSessionState,
         participantProfileState,
         participantCourseState,
@@ -407,7 +407,7 @@
       status: "access_check_later",
       mode: "supabase_mode_later",
       reason: "participant_access_check_disabled_in_stub",
-      source: "supabase-client-adapter-stub-v26.51a",
+      source: "supabase-client-adapter-stub-v26.52a",
       participantSessionState,
       participantProfileState,
       participantCourseState,
@@ -435,7 +435,7 @@
       participantCourseState.isLocalAccessAllowed === true;
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: isLocalAccessAllowed ? "local_access_decision_allowed" : "access_decision_blocked_later",
       isAllowed: isLocalAccessAllowed,
       isLocalAccessAllowed,
@@ -465,7 +465,7 @@
     const participantAccessDecisionState = getParticipantAccessDecisionState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_login_gate_disabled",
       isGateEnabled: false,
       isLoginRequired: false,
@@ -489,7 +489,7 @@
     const loginGateState = getLoginGateState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_login_gate_ui_hidden",
       isVisible: false,
       canRender: false,
@@ -514,7 +514,7 @@
     const loginGateUiState = getLoginGateUiState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_login_form_disabled",
       isVisible: false,
       canRender: false,
@@ -544,7 +544,7 @@
     const loginFormState = getLoginFormState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_login_error_none",
       hasError: false,
       canShowError: false,
@@ -568,7 +568,7 @@
     const loginErrorState = getLoginErrorState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_login_success_none",
       hasSuccess: false,
       hasSession: false,
@@ -592,7 +592,7 @@
     const loginSuccessState = getLoginSuccessState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_logout_disabled",
       isAvailable: false,
       canLogout: false,
@@ -615,7 +615,7 @@
     const logoutState = getLogoutState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_auth_disabled",
       isVisible: false,
       canRender: false,
@@ -642,7 +642,7 @@
     const participantCourseState = getParticipantCourseState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_course_access_allowed",
       isCourseAccessRequired: false,
       canCheckCourseAccess: false,
@@ -669,7 +669,7 @@
     const participantDashboardCourseAccessState = getParticipantDashboardCourseAccessState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_expiry_check_disabled",
       isExpiryCheckRequired: false,
       canCheckExpiry: false,
@@ -698,7 +698,7 @@
     const participantDashboardExpiryState = getParticipantDashboardExpiryState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_access_decision_allowed",
       isDecisionAvailable: true,
       isDashboardAccessAllowed: true,
@@ -733,7 +733,7 @@
     const participantDashboardAccessDecisionState = getParticipantDashboardAccessDecisionState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_readiness_ready",
       isReadinessAvailable: true,
       isReady: true,
@@ -771,7 +771,7 @@
     const participantDashboardReadinessState = getParticipantDashboardReadinessState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_status_badge_hidden",
       isAvailable: true,
       isVisible: false,
@@ -798,7 +798,7 @@
     const participantDashboardStatusBadgeState = getParticipantDashboardStatusBadgeState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_notice_banner_hidden",
       isAvailable: true,
       isVisible: false,
@@ -828,7 +828,7 @@
     const participantCourseState = getParticipantCourseState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_profile_header_hidden",
       isAvailable: true,
       isVisible: false,
@@ -863,7 +863,7 @@
     const participantDashboardExpiryState = getParticipantDashboardExpiryState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_course_card_hidden",
       isAvailable: true,
       isVisible: false,
@@ -898,7 +898,7 @@
     const participantSessionState = getParticipantSessionState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_progress_hidden",
       isAvailable: true,
       isVisible: false,
@@ -931,7 +931,7 @@
     const participantSessionState = getParticipantSessionState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_activity_list_hidden",
       isAvailable: true,
       isVisible: false,
@@ -963,7 +963,7 @@
     const participantDashboardProgressState = getParticipantDashboardProgressState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_recommendations_hidden",
       isAvailable: true,
       isVisible: false,
@@ -995,7 +995,7 @@
     const participantDashboardProgressState = getParticipantDashboardProgressState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_exam_status_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1030,7 +1030,7 @@
     const participantDashboardProfileHeaderState = getParticipantDashboardProfileHeaderState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_certificate_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1064,7 +1064,7 @@
     const participantDashboardProfileHeaderState = getParticipantDashboardProfileHeaderState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_documents_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1097,7 +1097,7 @@
     const participantDashboardProfileHeaderState = getParticipantDashboardProfileHeaderState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_messages_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1131,7 +1131,7 @@
     const participantDashboardProfileHeaderState = getParticipantDashboardProfileHeaderState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_support_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1164,7 +1164,7 @@
     const participantDashboardCourseCardState = getParticipantDashboardCourseCardState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_appointments_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1199,7 +1199,7 @@
     const participantDashboardCourseAccessState = getParticipantDashboardCourseAccessState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_payment_status_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1237,7 +1237,7 @@
     const participantDashboardCourseAccessState = getParticipantDashboardCourseAccessState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_contract_status_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1276,7 +1276,7 @@
     const participantDashboardPaymentStatusState = getParticipantDashboardPaymentStatusState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_invoices_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1315,7 +1315,7 @@
     const participantDashboardCourseAccessState = getParticipantDashboardCourseAccessState();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: "local_dashboard_attendance_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1345,6 +1345,43 @@
         "dashboard_attendance_error_later"
       ],
       participantDashboardInvoicesState,
+      participantDashboardCourseAccessState
+    };
+  }
+
+  function getParticipantDashboardLessonPlanState() {
+    const participantDashboardAttendanceState = getParticipantDashboardAttendanceState();
+    const participantDashboardCourseAccessState = getParticipantDashboardCourseAccessState();
+
+    return {
+      version: "v26.52a",
+      status: "local_dashboard_lesson_plan_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadLessonPlan: false,
+      hasLessonPlanData: false,
+      lessons: [],
+      totalLessonCount: null,
+      nextLessonAt: null,
+      currentTopic: null,
+      currentModule: null,
+      canShowLessonPlanList: false,
+      canShowLessonPlanCard: false,
+      canShowNextLessonHint: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_lesson_plan_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_lesson_plan_visible_later",
+        "dashboard_lesson_plan_loading_later",
+        "dashboard_lesson_plan_ready_later",
+        "dashboard_lesson_plan_empty_later",
+        "dashboard_lesson_plan_today_later",
+        "dashboard_lesson_plan_error_later"
+      ],
+      participantDashboardAttendanceState,
       participantDashboardCourseAccessState
     };
   }
@@ -1461,6 +1498,7 @@
     const participantDashboardContractStatusState = getParticipantDashboardContractStatusState();
     const participantDashboardInvoicesState = getParticipantDashboardInvoicesState();
     const participantDashboardAttendanceState = getParticipantDashboardAttendanceState();
+    const participantDashboardLessonPlanState = getParticipantDashboardLessonPlanState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -1476,7 +1514,7 @@
     if (failSafeState.status) blockingReasons.push(failSafeState.status);
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: isLiveEnabled ? "supabase_live_requested_but_blocked_safe" : "supabase_local_safe",
       isSafeLocalMode: true,
       isSupabaseLive: false,
@@ -1782,6 +1820,20 @@
       canShowParticipantDashboardAttendanceCard: participantDashboardAttendanceState.canShowAttendanceCard === true,
       canShowParticipantDashboardAttendanceRate: participantDashboardAttendanceState.canShowAttendanceRate === true,
       canBlockParticipantDashboardByAttendance: participantDashboardAttendanceState.canBlockDashboardAccess === true,
+      participantDashboardLessonPlanStatus: participantDashboardLessonPlanState.status,
+      isParticipantDashboardLessonPlanAvailable: participantDashboardLessonPlanState.isAvailable === true,
+      isParticipantDashboardLessonPlanVisible: participantDashboardLessonPlanState.isVisible === true,
+      canRenderParticipantDashboardLessonPlan: participantDashboardLessonPlanState.canRender === true,
+      canLoadParticipantDashboardLessonPlan: participantDashboardLessonPlanState.canLoadLessonPlan === true,
+      hasParticipantDashboardLessonPlanData: participantDashboardLessonPlanState.hasLessonPlanData === true,
+      participantDashboardTotalLessonCount: participantDashboardLessonPlanState.totalLessonCount,
+      participantDashboardNextLessonAt: participantDashboardLessonPlanState.nextLessonAt,
+      participantDashboardCurrentTopic: participantDashboardLessonPlanState.currentTopic,
+      participantDashboardCurrentModule: participantDashboardLessonPlanState.currentModule,
+      canShowParticipantDashboardLessonPlanList: participantDashboardLessonPlanState.canShowLessonPlanList === true,
+      canShowParticipantDashboardLessonPlanCard: participantDashboardLessonPlanState.canShowLessonPlanCard === true,
+      canShowParticipantDashboardNextLessonHint: participantDashboardLessonPlanState.canShowNextLessonHint === true,
+      canBlockParticipantDashboardByLessonPlan: participantDashboardLessonPlanState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -1836,13 +1888,14 @@
     const participantDashboardContractStatusState = getParticipantDashboardContractStatusState();
     const participantDashboardInvoicesState = getParticipantDashboardInvoicesState();
     const participantDashboardAttendanceState = getParticipantDashboardAttendanceState();
+    const participantDashboardLessonPlanState = getParticipantDashboardLessonPlanState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.51a",
+      version: "v26.52a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -1898,6 +1951,7 @@
       participantDashboardContractStatusState,
       participantDashboardInvoicesState,
       participantDashboardAttendanceState,
+      participantDashboardLessonPlanState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -1906,7 +1960,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.51a",
+    version: "v26.52a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -1950,6 +2004,7 @@
     getParticipantDashboardContractStatusState,
     getParticipantDashboardInvoicesState,
     getParticipantDashboardAttendanceState,
+    getParticipantDashboardLessonPlanState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
