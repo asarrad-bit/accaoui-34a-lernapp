@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.65a
+// Stand: v26.66a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1867,7 +1867,7 @@
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
 
     return {
-      version: "v26.65a",
+      version: "v26.66a",
       status: "local_dashboard_certificate_print_hidden",
       isAvailable: true,
       isVisible: false,
@@ -1905,6 +1905,50 @@
       ],
       participantDashboardCertificatePreviewState,
       participantDashboardCertificateDownloadState
+    };
+  }
+
+  function getParticipantDashboardCertificateShareState() {
+    const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
+    const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
+
+    return {
+      version: "v26.66a",
+      status: "local_dashboard_certificate_share_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateShare: false,
+      hasCertificateShareData: false,
+      certificateShareEntries: [],
+      activeCertificateShareId: null,
+      latestCertificateShareTitle: null,
+      latestCertificateShareStatus: null,
+      latestCertificateShareUrl: null,
+      latestCertificateShareExpiresAt: null,
+      recommendedCertificateShareAction: null,
+      canShowCertificateShareCard: false,
+      canShowCertificateShareButton: false,
+      canShowCertificateShareStatus: false,
+      canOpenCertificateShareDialog: false,
+      canCreateCertificateShareLink: false,
+      canCopyCertificateShareLink: false,
+      canSendCertificateShareEmail: false,
+      canRevokeCertificateShareLink: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_share_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_share_visible_later",
+        "dashboard_certificate_share_loading_later",
+        "dashboard_certificate_share_ready_later",
+        "dashboard_certificate_share_empty_later",
+        "dashboard_certificate_share_revoked_later",
+        "dashboard_certificate_share_error_later"
+      ],
+      participantDashboardCertificatePrintState,
+      participantDashboardCertificatePreviewState
     };
   }
 
@@ -2033,6 +2077,7 @@
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
     const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
+    const participantDashboardCertificateShareState = getParticipantDashboardCertificateShareState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -2600,6 +2645,17 @@
       canOpenParticipantDashboardCertificatePrintDialog: participantDashboardCertificatePrintState.canOpenCertificatePrintDialog === true,
       canStartParticipantDashboardCertificatePrint: participantDashboardCertificatePrintState.canStartCertificatePrint === true,
       canBlockParticipantDashboardByCertificatePrint: participantDashboardCertificatePrintState.canBlockDashboardAccess === true,
+      participantDashboardCertificateShareStatus: participantDashboardCertificateShareState.status,
+      isParticipantDashboardCertificateShareAvailable: participantDashboardCertificateShareState.isAvailable === true,
+      isParticipantDashboardCertificateShareVisible: participantDashboardCertificateShareState.isVisible === true,
+      canRenderParticipantDashboardCertificateShare: participantDashboardCertificateShareState.canRender === true,
+      canLoadParticipantDashboardCertificateShare: participantDashboardCertificateShareState.canLoadCertificateShare === true,
+      hasParticipantDashboardCertificateShareData: participantDashboardCertificateShareState.hasCertificateShareData === true,
+      canShowParticipantDashboardCertificateShareButton: participantDashboardCertificateShareState.canShowCertificateShareButton === true,
+      canOpenParticipantDashboardCertificateShareDialog: participantDashboardCertificateShareState.canOpenCertificateShareDialog === true,
+      canCreateParticipantDashboardCertificateShareLink: participantDashboardCertificateShareState.canCreateCertificateShareLink === true,
+      canSendParticipantDashboardCertificateShareEmail: participantDashboardCertificateShareState.canSendCertificateShareEmail === true,
+      canBlockParticipantDashboardByCertificateShare: participantDashboardCertificateShareState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -2667,13 +2723,14 @@
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
     const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
+    const participantDashboardCertificateShareState = getParticipantDashboardCertificateShareState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.65a",
+      version: "v26.66a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -2742,6 +2799,7 @@
       participantDashboardCertificateDownloadState,
       participantDashboardCertificatePreviewState,
       participantDashboardCertificatePrintState,
+      participantDashboardCertificateShareState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -2807,6 +2865,7 @@
     getParticipantDashboardCertificateDownloadState,
     getParticipantDashboardCertificatePreviewState,
     getParticipantDashboardCertificatePrintState,
+    getParticipantDashboardCertificateShareState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
