@@ -57,7 +57,7 @@ def check_index_versions():
             errors.append(f"Stylesheet fehlt in index.html: {style}")
 
 def check_category_audit():
-    code, stdout, stderr = run_command("python tools/audit-categories.py")
+    code, stdout, stderr = run_command(f'"{sys.executable}" tools/audit-categories.py')
 
     if stdout:
         print(stdout)
