@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.63a
+// Stand: v26.65a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1862,6 +1862,52 @@
     };
   }
 
+  function getParticipantDashboardCertificatePrintState() {
+    const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
+    const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
+
+    return {
+      version: "v26.65a",
+      status: "local_dashboard_certificate_print_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificatePrint: false,
+      hasCertificatePrintData: false,
+      certificatePrintEntries: [],
+      activeCertificatePrintId: null,
+      totalCertificatePrintCount: null,
+      latestCertificatePrintTitle: null,
+      latestCertificatePrintStatus: null,
+      latestCertificatePrintUrl: null,
+      latestCertificatePrintGeneratedAt: null,
+      latestCertificatePrintExpiresAt: null,
+      recommendedCertificatePrintAction: null,
+      canShowCertificatePrintList: false,
+      canShowCertificatePrintCard: false,
+      canShowCertificatePrintButton: false,
+      canShowCertificatePrintStatus: false,
+      canOpenCertificatePrintDialog: false,
+      canRenderCertificatePrintView: false,
+      canStartCertificatePrint: false,
+      canRefreshCertificatePrint: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_print_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_print_visible_later",
+        "dashboard_certificate_print_loading_later",
+        "dashboard_certificate_print_ready_later",
+        "dashboard_certificate_print_empty_later",
+        "dashboard_certificate_print_expired_later",
+        "dashboard_certificate_print_error_later"
+      ],
+      participantDashboardCertificatePreviewState,
+      participantDashboardCertificateDownloadState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -1986,6 +2032,7 @@
     const participantDashboardCertificateHistoryState = getParticipantDashboardCertificateHistoryState();
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
+    const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -2543,6 +2590,16 @@
       canRefreshParticipantDashboardCertificatePreview: participantDashboardCertificatePreviewState.canRefreshCertificatePreview === true,
       canPrintParticipantDashboardCertificatePreview: participantDashboardCertificatePreviewState.canPrintCertificatePreview === true,
       canBlockParticipantDashboardByCertificatePreview: participantDashboardCertificatePreviewState.canBlockDashboardAccess === true,
+      participantDashboardCertificatePrintStatus: participantDashboardCertificatePrintState.status,
+      isParticipantDashboardCertificatePrintAvailable: participantDashboardCertificatePrintState.isAvailable === true,
+      isParticipantDashboardCertificatePrintVisible: participantDashboardCertificatePrintState.isVisible === true,
+      canRenderParticipantDashboardCertificatePrint: participantDashboardCertificatePrintState.canRender === true,
+      canLoadParticipantDashboardCertificatePrint: participantDashboardCertificatePrintState.canLoadCertificatePrint === true,
+      hasParticipantDashboardCertificatePrintData: participantDashboardCertificatePrintState.hasCertificatePrintData === true,
+      canShowParticipantDashboardCertificatePrintButton: participantDashboardCertificatePrintState.canShowCertificatePrintButton === true,
+      canOpenParticipantDashboardCertificatePrintDialog: participantDashboardCertificatePrintState.canOpenCertificatePrintDialog === true,
+      canStartParticipantDashboardCertificatePrint: participantDashboardCertificatePrintState.canStartCertificatePrint === true,
+      canBlockParticipantDashboardByCertificatePrint: participantDashboardCertificatePrintState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -2609,13 +2666,14 @@
     const participantDashboardCertificateHistoryState = getParticipantDashboardCertificateHistoryState();
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
+    const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.63a",
+      version: "v26.65a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -2683,6 +2741,7 @@
       participantDashboardCertificateHistoryState,
       participantDashboardCertificateDownloadState,
       participantDashboardCertificatePreviewState,
+      participantDashboardCertificatePrintState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -2691,7 +2750,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.63a",
+    version: "v26.65a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -2747,6 +2806,7 @@
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,
     getParticipantDashboardCertificatePreviewState,
+    getParticipantDashboardCertificatePrintState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
