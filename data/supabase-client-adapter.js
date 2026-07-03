@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.69a
+// Stand: v26.70a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -2087,6 +2087,51 @@
     };
   }
 
+  function getParticipantDashboardCertificateRevocationState() {
+    const participantDashboardCertificateValidityState = getParticipantDashboardCertificateValidityState();
+    const participantDashboardCertificateVerificationState = getParticipantDashboardCertificateVerificationState();
+
+    return {
+      version: "v26.70a",
+      status: "local_dashboard_certificate_revocation_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateRevocation: false,
+      hasCertificateRevocationData: false,
+      certificateRevocationEntries: [],
+      activeCertificateRevocationId: null,
+      latestCertificateRevocationStatus: null,
+      latestCertificateRevocationReason: null,
+      latestCertificateRevocationRequestedAt: null,
+      latestCertificateRevocationConfirmedAt: null,
+      latestCertificateRevocationActor: null,
+      recommendedCertificateRevocationAction: null,
+      canShowCertificateRevocationCard: false,
+      canShowCertificateRevocationButton: false,
+      canShowCertificateRevocationStatus: false,
+      canOpenCertificateRevocationDialog: false,
+      canRequestCertificateRevocation: false,
+      canConfirmCertificateRevocation: false,
+      canCancelCertificateRevocation: false,
+      canShowCertificateRevokedNotice: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_revocation_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_revocation_visible_later",
+        "dashboard_certificate_revocation_loading_later",
+        "dashboard_certificate_revocation_requested_later",
+        "dashboard_certificate_revocation_confirmed_later",
+        "dashboard_certificate_revocation_cancelled_later",
+        "dashboard_certificate_revocation_error_later"
+      ],
+      participantDashboardCertificateValidityState,
+      participantDashboardCertificateVerificationState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -2216,6 +2261,7 @@
     const participantDashboardCertificateVerificationState = getParticipantDashboardCertificateVerificationState();
     const participantDashboardCertificateQrCodeState = getParticipantDashboardCertificateQrCodeState();
     const participantDashboardCertificateValidityState = getParticipantDashboardCertificateValidityState();
+    const participantDashboardCertificateRevocationState = getParticipantDashboardCertificateRevocationState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -2832,6 +2878,19 @@
       canShowParticipantDashboardCertificateExpiredBadge: participantDashboardCertificateValidityState.canShowCertificateExpiredBadge === true,
       canShowParticipantDashboardCertificateRevokedBadge: participantDashboardCertificateValidityState.canShowCertificateRevokedBadge === true,
       canBlockParticipantDashboardByCertificateValidity: participantDashboardCertificateValidityState.canBlockDashboardAccess === true,
+      participantDashboardCertificateRevocationStatus: participantDashboardCertificateRevocationState.status,
+      isParticipantDashboardCertificateRevocationAvailable: participantDashboardCertificateRevocationState.isAvailable === true,
+      isParticipantDashboardCertificateRevocationVisible: participantDashboardCertificateRevocationState.isVisible === true,
+      canRenderParticipantDashboardCertificateRevocation: participantDashboardCertificateRevocationState.canRender === true,
+      canLoadParticipantDashboardCertificateRevocation: participantDashboardCertificateRevocationState.canLoadCertificateRevocation === true,
+      hasParticipantDashboardCertificateRevocationData: participantDashboardCertificateRevocationState.hasCertificateRevocationData === true,
+      canShowParticipantDashboardCertificateRevocationButton: participantDashboardCertificateRevocationState.canShowCertificateRevocationButton === true,
+      canOpenParticipantDashboardCertificateRevocationDialog: participantDashboardCertificateRevocationState.canOpenCertificateRevocationDialog === true,
+      canRequestParticipantDashboardCertificateRevocation: participantDashboardCertificateRevocationState.canRequestCertificateRevocation === true,
+      canConfirmParticipantDashboardCertificateRevocation: participantDashboardCertificateRevocationState.canConfirmCertificateRevocation === true,
+      canCancelParticipantDashboardCertificateRevocation: participantDashboardCertificateRevocationState.canCancelCertificateRevocation === true,
+      canShowParticipantDashboardCertificateRevokedNotice: participantDashboardCertificateRevocationState.canShowCertificateRevokedNotice === true,
+      canBlockParticipantDashboardByCertificateRevocation: participantDashboardCertificateRevocationState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -2903,13 +2962,14 @@
     const participantDashboardCertificateVerificationState = getParticipantDashboardCertificateVerificationState();
     const participantDashboardCertificateQrCodeState = getParticipantDashboardCertificateQrCodeState();
     const participantDashboardCertificateValidityState = getParticipantDashboardCertificateValidityState();
+    const participantDashboardCertificateRevocationState = getParticipantDashboardCertificateRevocationState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.69a",
+      version: "v26.70a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -2982,6 +3042,7 @@
       participantDashboardCertificateVerificationState,
       participantDashboardCertificateQrCodeState,
       participantDashboardCertificateValidityState,
+      participantDashboardCertificateRevocationState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -2990,7 +3051,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.69a",
+    version: "v26.70a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -3051,6 +3112,7 @@
     getParticipantDashboardCertificateVerificationState,
     getParticipantDashboardCertificateQrCodeState,
     getParticipantDashboardCertificateValidityState,
+    getParticipantDashboardCertificateRevocationState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
