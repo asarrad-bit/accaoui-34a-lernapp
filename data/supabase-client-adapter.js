@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.66a
+// Stand: v26.67a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1952,6 +1952,50 @@
     };
   }
 
+  function getParticipantDashboardCertificateVerificationState() {
+    const participantDashboardCertificateShareState = getParticipantDashboardCertificateShareState();
+    const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
+
+    return {
+      version: "v26.67a",
+      status: "local_dashboard_certificate_verification_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateVerification: false,
+      hasCertificateVerificationData: false,
+      certificateVerificationEntries: [],
+      activeCertificateVerificationId: null,
+      latestCertificateVerificationCode: null,
+      latestCertificateVerificationUrl: null,
+      latestCertificateVerificationStatus: null,
+      latestCertificateVerificationExpiresAt: null,
+      recommendedCertificateVerificationAction: null,
+      canShowCertificateVerificationCard: false,
+      canShowCertificateVerificationButton: false,
+      canShowCertificateVerificationStatus: false,
+      canOpenCertificateVerificationDialog: false,
+      canCreateCertificateVerificationCode: false,
+      canCopyCertificateVerificationCode: false,
+      canOpenCertificateVerificationPage: false,
+      canVerifyCertificateOnline: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_verification_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_verification_visible_later",
+        "dashboard_certificate_verification_loading_later",
+        "dashboard_certificate_verification_ready_later",
+        "dashboard_certificate_verification_empty_later",
+        "dashboard_certificate_verification_expired_later",
+        "dashboard_certificate_verification_error_later"
+      ],
+      participantDashboardCertificateShareState,
+      participantDashboardCertificatePrintState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -2078,6 +2122,7 @@
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
     const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
     const participantDashboardCertificateShareState = getParticipantDashboardCertificateShareState();
+    const participantDashboardCertificateVerificationState = getParticipantDashboardCertificateVerificationState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -2656,6 +2701,18 @@
       canCreateParticipantDashboardCertificateShareLink: participantDashboardCertificateShareState.canCreateCertificateShareLink === true,
       canSendParticipantDashboardCertificateShareEmail: participantDashboardCertificateShareState.canSendCertificateShareEmail === true,
       canBlockParticipantDashboardByCertificateShare: participantDashboardCertificateShareState.canBlockDashboardAccess === true,
+      participantDashboardCertificateVerificationStatus: participantDashboardCertificateVerificationState.status,
+      isParticipantDashboardCertificateVerificationAvailable: participantDashboardCertificateVerificationState.isAvailable === true,
+      isParticipantDashboardCertificateVerificationVisible: participantDashboardCertificateVerificationState.isVisible === true,
+      canRenderParticipantDashboardCertificateVerification: participantDashboardCertificateVerificationState.canRender === true,
+      canLoadParticipantDashboardCertificateVerification: participantDashboardCertificateVerificationState.canLoadCertificateVerification === true,
+      hasParticipantDashboardCertificateVerificationData: participantDashboardCertificateVerificationState.hasCertificateVerificationData === true,
+      canShowParticipantDashboardCertificateVerificationButton: participantDashboardCertificateVerificationState.canShowCertificateVerificationButton === true,
+      canOpenParticipantDashboardCertificateVerificationDialog: participantDashboardCertificateVerificationState.canOpenCertificateVerificationDialog === true,
+      canCreateParticipantDashboardCertificateVerificationCode: participantDashboardCertificateVerificationState.canCreateCertificateVerificationCode === true,
+      canOpenParticipantDashboardCertificateVerificationPage: participantDashboardCertificateVerificationState.canOpenCertificateVerificationPage === true,
+      canVerifyParticipantDashboardCertificateOnline: participantDashboardCertificateVerificationState.canVerifyCertificateOnline === true,
+      canBlockParticipantDashboardByCertificateVerification: participantDashboardCertificateVerificationState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -2724,13 +2781,14 @@
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
     const participantDashboardCertificatePrintState = getParticipantDashboardCertificatePrintState();
     const participantDashboardCertificateShareState = getParticipantDashboardCertificateShareState();
+    const participantDashboardCertificateVerificationState = getParticipantDashboardCertificateVerificationState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.66a",
+      version: "v26.67a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -2800,6 +2858,7 @@
       participantDashboardCertificatePreviewState,
       participantDashboardCertificatePrintState,
       participantDashboardCertificateShareState,
+      participantDashboardCertificateVerificationState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -2808,7 +2867,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.66a",
+    version: "v26.67a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -2866,6 +2925,7 @@
     getParticipantDashboardCertificatePreviewState,
     getParticipantDashboardCertificatePrintState,
     getParticipantDashboardCertificateShareState,
+    getParticipantDashboardCertificateVerificationState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
