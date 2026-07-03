@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.70a
+// Stand: v26.71a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -2132,6 +2132,54 @@
     };
   }
 
+  function getParticipantDashboardCertificateAuditLogState() {
+    const participantDashboardCertificateRevocationState = getParticipantDashboardCertificateRevocationState();
+    const participantDashboardCertificateValidityState = getParticipantDashboardCertificateValidityState();
+
+    return {
+      version: "v26.71a",
+      status: "local_dashboard_certificate_audit_log_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateAuditLog: false,
+      hasCertificateAuditLogData: false,
+      certificateAuditLogEntries: [],
+      activeCertificateAuditLogId: null,
+      latestCertificateAuditLogAction: null,
+      latestCertificateAuditLogActor: null,
+      latestCertificateAuditLogCreatedAt: null,
+      latestCertificateAuditLogIpHint: null,
+      recommendedCertificateAuditLogAction: null,
+      canShowCertificateAuditLogCard: false,
+      canShowCertificateAuditLogButton: false,
+      canShowCertificateAuditLogList: false,
+      canOpenCertificateAuditLogDialog: false,
+      canRefreshCertificateAuditLog: false,
+      canExportCertificateAuditLog: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_audit_log_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_audit_log_visible_later",
+        "dashboard_certificate_audit_log_loading_later",
+        "dashboard_certificate_audit_log_ready_later",
+        "dashboard_certificate_audit_log_empty_later",
+        "dashboard_certificate_audit_log_error_later"
+      ],
+      plannedAuditActions: [
+        "certificate_issued_later",
+        "certificate_downloaded_later",
+        "certificate_shared_later",
+        "certificate_verified_later",
+        "certificate_revoked_later"
+      ],
+      participantDashboardCertificateRevocationState,
+      participantDashboardCertificateValidityState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -2262,6 +2310,7 @@
     const participantDashboardCertificateQrCodeState = getParticipantDashboardCertificateQrCodeState();
     const participantDashboardCertificateValidityState = getParticipantDashboardCertificateValidityState();
     const participantDashboardCertificateRevocationState = getParticipantDashboardCertificateRevocationState();
+    const participantDashboardCertificateAuditLogState = getParticipantDashboardCertificateAuditLogState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -2891,6 +2940,18 @@
       canCancelParticipantDashboardCertificateRevocation: participantDashboardCertificateRevocationState.canCancelCertificateRevocation === true,
       canShowParticipantDashboardCertificateRevokedNotice: participantDashboardCertificateRevocationState.canShowCertificateRevokedNotice === true,
       canBlockParticipantDashboardByCertificateRevocation: participantDashboardCertificateRevocationState.canBlockDashboardAccess === true,
+      participantDashboardCertificateAuditLogStatus: participantDashboardCertificateAuditLogState.status,
+      isParticipantDashboardCertificateAuditLogAvailable: participantDashboardCertificateAuditLogState.isAvailable === true,
+      isParticipantDashboardCertificateAuditLogVisible: participantDashboardCertificateAuditLogState.isVisible === true,
+      canRenderParticipantDashboardCertificateAuditLog: participantDashboardCertificateAuditLogState.canRender === true,
+      canLoadParticipantDashboardCertificateAuditLog: participantDashboardCertificateAuditLogState.canLoadCertificateAuditLog === true,
+      hasParticipantDashboardCertificateAuditLogData: participantDashboardCertificateAuditLogState.hasCertificateAuditLogData === true,
+      canShowParticipantDashboardCertificateAuditLogButton: participantDashboardCertificateAuditLogState.canShowCertificateAuditLogButton === true,
+      canShowParticipantDashboardCertificateAuditLogList: participantDashboardCertificateAuditLogState.canShowCertificateAuditLogList === true,
+      canOpenParticipantDashboardCertificateAuditLogDialog: participantDashboardCertificateAuditLogState.canOpenCertificateAuditLogDialog === true,
+      canRefreshParticipantDashboardCertificateAuditLog: participantDashboardCertificateAuditLogState.canRefreshCertificateAuditLog === true,
+      canExportParticipantDashboardCertificateAuditLog: participantDashboardCertificateAuditLogState.canExportCertificateAuditLog === true,
+      canBlockParticipantDashboardByCertificateAuditLog: participantDashboardCertificateAuditLogState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -2963,13 +3024,14 @@
     const participantDashboardCertificateQrCodeState = getParticipantDashboardCertificateQrCodeState();
     const participantDashboardCertificateValidityState = getParticipantDashboardCertificateValidityState();
     const participantDashboardCertificateRevocationState = getParticipantDashboardCertificateRevocationState();
+    const participantDashboardCertificateAuditLogState = getParticipantDashboardCertificateAuditLogState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.70a",
+      version: "v26.71a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -3043,6 +3105,7 @@
       participantDashboardCertificateQrCodeState,
       participantDashboardCertificateValidityState,
       participantDashboardCertificateRevocationState,
+      participantDashboardCertificateAuditLogState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -3051,7 +3114,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.70a",
+    version: "v26.71a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -3113,6 +3176,7 @@
     getParticipantDashboardCertificateQrCodeState,
     getParticipantDashboardCertificateValidityState,
     getParticipantDashboardCertificateRevocationState,
+    getParticipantDashboardCertificateAuditLogState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
