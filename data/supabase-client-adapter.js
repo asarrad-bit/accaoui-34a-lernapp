@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.74a
+// Stand: v26.75a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -2331,6 +2331,58 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataAccessState() {
+    const participantDashboardCertificateRetentionState = getParticipantDashboardCertificateRetentionState();
+    const participantDashboardCertificatePrivacyNoticeState = getParticipantDashboardCertificatePrivacyNoticeState();
+
+    return {
+      version: "v26.75a",
+      status: "local_dashboard_certificate_data_access_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataAccess: false,
+      hasCertificateDataAccessData: false,
+      certificateDataAccessEntries: [],
+      activeCertificateDataAccessRequestId: null,
+      latestCertificateDataAccessStatus: null,
+      latestCertificateDataAccessRequestedAt: null,
+      latestCertificateDataAccessPreparedAt: null,
+      latestCertificateDataAccessDownloadedAt: null,
+      latestCertificateDataAccessExpiresAt: null,
+      recommendedCertificateDataAccessAction: null,
+      canShowCertificateDataAccessCard: false,
+      canShowCertificateDataAccessButton: false,
+      canShowCertificateDataAccessStatus: false,
+      canOpenCertificateDataAccessDialog: false,
+      canRequestCertificateDataAccess: false,
+      canPrepareCertificateDataExport: false,
+      canDownloadCertificateDataExport: false,
+      canRefreshCertificateDataAccess: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_data_access_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_data_access_visible_later",
+        "dashboard_certificate_data_access_loading_later",
+        "dashboard_certificate_data_access_requested_later",
+        "dashboard_certificate_data_access_prepared_later",
+        "dashboard_certificate_data_access_download_ready_later",
+        "dashboard_certificate_data_access_expired_later",
+        "dashboard_certificate_data_access_error_later"
+      ],
+      plannedDataAccessActions: [
+        "certificate_data_access_request_later",
+        "certificate_data_export_prepare_later",
+        "certificate_data_export_download_later",
+        "certificate_data_export_expiry_later"
+      ],
+      participantDashboardCertificateRetentionState,
+      participantDashboardCertificatePrivacyNoticeState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -2465,6 +2517,7 @@
     const participantDashboardCertificateConsentState = getParticipantDashboardCertificateConsentState();
     const participantDashboardCertificatePrivacyNoticeState = getParticipantDashboardCertificatePrivacyNoticeState();
     const participantDashboardCertificateRetentionState = getParticipantDashboardCertificateRetentionState();
+    const participantDashboardCertificateDataAccessState = getParticipantDashboardCertificateDataAccessState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
@@ -3142,6 +3195,19 @@
       canConfirmParticipantDashboardCertificateDeletion: participantDashboardCertificateRetentionState.canConfirmCertificateDeletion === true,
       canRefreshParticipantDashboardCertificateRetention: participantDashboardCertificateRetentionState.canRefreshCertificateRetention === true,
       canBlockParticipantDashboardByCertificateRetention: participantDashboardCertificateRetentionState.canBlockDashboardAccess === true,
+      participantDashboardCertificateDataAccessStatus: participantDashboardCertificateDataAccessState.status,
+      isParticipantDashboardCertificateDataAccessAvailable: participantDashboardCertificateDataAccessState.isAvailable === true,
+      isParticipantDashboardCertificateDataAccessVisible: participantDashboardCertificateDataAccessState.isVisible === true,
+      canRenderParticipantDashboardCertificateDataAccess: participantDashboardCertificateDataAccessState.canRender === true,
+      canLoadParticipantDashboardCertificateDataAccess: participantDashboardCertificateDataAccessState.canLoadCertificateDataAccess === true,
+      hasParticipantDashboardCertificateDataAccessData: participantDashboardCertificateDataAccessState.hasCertificateDataAccessData === true,
+      canShowParticipantDashboardCertificateDataAccessButton: participantDashboardCertificateDataAccessState.canShowCertificateDataAccessButton === true,
+      canOpenParticipantDashboardCertificateDataAccessDialog: participantDashboardCertificateDataAccessState.canOpenCertificateDataAccessDialog === true,
+      canRequestParticipantDashboardCertificateDataAccess: participantDashboardCertificateDataAccessState.canRequestCertificateDataAccess === true,
+      canPrepareParticipantDashboardCertificateDataExport: participantDashboardCertificateDataAccessState.canPrepareCertificateDataExport === true,
+      canDownloadParticipantDashboardCertificateDataExport: participantDashboardCertificateDataAccessState.canDownloadCertificateDataExport === true,
+      canRefreshParticipantDashboardCertificateDataAccess: participantDashboardCertificateDataAccessState.canRefreshCertificateDataAccess === true,
+      canBlockParticipantDashboardByCertificateDataAccess: participantDashboardCertificateDataAccessState.canBlockDashboardAccess === true,
       failSafeStatus: failSafeState.status,
       configLoaderStatus: configLoaderState.status,
       configLoaderBootStatus: configLoaderBootState.status,
@@ -3218,13 +3284,14 @@
     const participantDashboardCertificateConsentState = getParticipantDashboardCertificateConsentState();
     const participantDashboardCertificatePrivacyNoticeState = getParticipantDashboardCertificatePrivacyNoticeState();
     const participantDashboardCertificateRetentionState = getParticipantDashboardCertificateRetentionState();
+    const participantDashboardCertificateDataAccessState = getParticipantDashboardCertificateDataAccessState();
     const failSafeState = getSupabaseFailSafeState();
     const configLoaderState = getSupabaseConfigLoaderState();
     const configLoaderBootState = getSupabaseConfigLoaderBootState();
     const safetySummary = getSupabaseSafetySummary();
 
     return {
-      version: "v26.74a",
+      version: "v26.75a",
       status: participantAccessState.status,
       isSupabaseLive: false,
       isLiveEnabled: isSupabaseLiveEnabled(),
@@ -3302,6 +3369,7 @@
       participantDashboardCertificateConsentState,
       participantDashboardCertificatePrivacyNoticeState,
       participantDashboardCertificateRetentionState,
+      participantDashboardCertificateDataAccessState,
       failSafeState,
       configLoaderState,
       configLoaderBootState,
@@ -3310,7 +3378,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.74a",
+    version: "v26.75a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -3376,6 +3444,7 @@
     getParticipantDashboardCertificateConsentState,
     getParticipantDashboardCertificatePrivacyNoticeState,
     getParticipantDashboardCertificateRetentionState,
+    getParticipantDashboardCertificateDataAccessState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
