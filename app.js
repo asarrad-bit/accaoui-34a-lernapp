@@ -206,17 +206,45 @@ function logSupabaseConfigState() {
 function getSupabaseAdapterHealthState() {
   const adapter = window.ACCAOUI_SUPABASE_ADAPTER;
 
-  if (!adapter || typeof adapter.getAdapterHealthState !== "function") {
+  if (!adapter) {
     return {
       status: "adapter_unavailable",
       isSupabaseLive: false,
       isLocalAccessAllowed: true,
-      reason: "adapter_health_state_missing"
+      reason: "adapter_missing"
     };
   }
 
   try {
-    return adapter.getAdapterHealthState();
+    const isLiveEnabled = typeof adapter.isSupabaseLiveEnabled === "function"
+      ? adapter.isSupabaseLiveEnabled() === true
+      : false;
+
+    if (!isLiveEnabled) {
+      return {
+        status: "supabase_local_safe_fast",
+        isSupabaseLive: false,
+        isLiveEnabled: false,
+        isLocalAccessAllowed: true,
+        canCreateClient: false,
+        canCheckSession: false,
+        canAccessParticipantData: false,
+        reason: "heavy_adapter_health_skipped_for_fast_local_startup",
+        source: "app_fast_adapter_health_v26_76a"
+      };
+    }
+
+    if (typeof adapter.getAdapterHealthState === "function") {
+      return adapter.getAdapterHealthState();
+    }
+
+    return {
+      status: "adapter_health_state_missing",
+      isSupabaseLive: false,
+      isLiveEnabled,
+      isLocalAccessAllowed: true,
+      reason: "adapter_health_state_missing"
+    };
   } catch (error) {
     console.warn("Supabase-Adapter-Health-State konnte nicht gelesen werden.", error);
 
