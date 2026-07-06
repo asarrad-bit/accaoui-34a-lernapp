@@ -2685,6 +2685,52 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportErrorState() {
+    const participantDashboardCertificateDataExportFileState = getParticipantDashboardCertificateDataExportFileState();
+    const participantDashboardCertificateDataExportDownloadLogState = getParticipantDashboardCertificateDataExportDownloadLogState();
+
+    return {
+      version: "v26.82a",
+      status: "local_dashboard_certificate_data_export_error_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportError: false,
+      hasCertificateDataExportErrorData: false,
+      certificateDataExportErrorEntries: [],
+      activeCertificateDataExportErrorId: null,
+      latestCertificateDataExportErrorStatus: null,
+      latestCertificateDataExportErrorCode: null,
+      latestCertificateDataExportErrorMessage: null,
+      latestCertificateDataExportErrorAt: null,
+      latestCertificateDataExportErrorResolvedAt: null,
+      recommendedCertificateDataExportErrorAction: null,
+      canShowCertificateDataExportErrorCard: false,
+      canShowCertificateDataExportErrorNotice: false,
+      canRecordCertificateDataExportError: false,
+      canResolveCertificateDataExportError: false,
+      canRefreshCertificateDataExportError: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_data_export_error_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_data_export_error_visible_later",
+        "dashboard_certificate_data_export_error_loading_later",
+        "dashboard_certificate_data_export_error_recorded_later",
+        "dashboard_certificate_data_export_error_resolved_later",
+        "dashboard_certificate_data_export_error_empty_later"
+      ],
+      plannedDataExportErrorActions: [
+        "certificate_data_export_error_record_later",
+        "certificate_data_export_error_resolve_later",
+        "certificate_data_export_error_refresh_later"
+      ],
+      participantDashboardCertificateDataExportFileState,
+      participantDashboardCertificateDataExportDownloadLogState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -3753,6 +3799,7 @@
     getParticipantDashboardCertificateDataExportFileState,
     getParticipantDashboardCertificateDataExportExpiryState,
     getParticipantDashboardCertificateDataExportDownloadLogState,
+    getParticipantDashboardCertificateDataExportErrorState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
