@@ -2495,6 +2495,53 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataDeletionConfirmationState() {
+    const participantDashboardCertificateDataDeletionRequestState = getParticipantDashboardCertificateDataDeletionRequestState();
+    const participantDashboardCertificateRetentionState = getParticipantDashboardCertificateRetentionState();
+
+    return {
+      version: "v26.78a",
+      status: "local_dashboard_certificate_data_deletion_confirmation_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataDeletionConfirmation: false,
+      hasCertificateDataDeletionConfirmationData: false,
+      certificateDataDeletionConfirmationEntries: [],
+      activeCertificateDataDeletionConfirmationId: null,
+      latestCertificateDataDeletionConfirmationStatus: null,
+      latestCertificateDataDeletionConfirmedAt: null,
+      latestCertificateDataDeletionConfirmedBy: null,
+      latestCertificateDataDeletionConfirmationReason: null,
+      recommendedCertificateDataDeletionConfirmationAction: null,
+      canShowCertificateDataDeletionConfirmationCard: false,
+      canShowCertificateDataDeletionConfirmationButton: false,
+      canShowCertificateDataDeletionConfirmationStatus: false,
+      canOpenCertificateDataDeletionConfirmationDialog: false,
+      canConfirmCertificateDataDeletion: false,
+      canDownloadCertificateDataDeletionConfirmation: false,
+      canRefreshCertificateDataDeletionConfirmation: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_data_deletion_confirmation_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_data_deletion_confirmation_visible_later",
+        "dashboard_certificate_data_deletion_confirmation_loading_later",
+        "dashboard_certificate_data_deletion_confirmed_later",
+        "dashboard_certificate_data_deletion_confirmation_download_ready_later",
+        "dashboard_certificate_data_deletion_confirmation_error_later"
+      ],
+      plannedDataDeletionConfirmationActions: [
+        "certificate_data_deletion_confirmation_later",
+        "certificate_data_deletion_confirmation_download_later",
+        "certificate_data_deletion_confirmation_refresh_later"
+      ],
+      participantDashboardCertificateDataDeletionRequestState,
+      participantDashboardCertificateRetentionState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -3559,6 +3606,7 @@
     getParticipantDashboardCertificateDataAccessState,
     getParticipantDashboardCertificateDataCorrectionState,
     getParticipantDashboardCertificateDataDeletionRequestState,
+    getParticipantDashboardCertificateDataDeletionConfirmationState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
