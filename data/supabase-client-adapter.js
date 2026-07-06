@@ -2776,6 +2776,52 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportStatusSummaryState() {
+    return {
+      version: "v26.84a",
+      status: "local_dashboard_certificate_data_export_status_summary_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportStatusSummary: false,
+      hasCertificateDataExportStatusSummaryData: false,
+      certificateDataExportStatusSummaryItems: [],
+      activeCertificateDataExportStatusSummaryId: null,
+      latestCertificateDataExportOverallStatus: null,
+      latestCertificateDataExportSummaryStatus: null,
+      latestCertificateDataExportSummaryUpdatedAt: null,
+      recommendedCertificateDataExportSummaryAction: null,
+      canShowCertificateDataExportStatusSummaryCard: false,
+      canShowCertificateDataExportStatusSummaryBadge: false,
+      canComputeCertificateDataExportStatusSummary: false,
+      canRefreshCertificateDataExportStatusSummary: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_data_export_status_summary_state_prepared_but_hidden_in_local_mode",
+      dependencyStatusMode: "reference_only_no_nested_state_execution",
+      plannedSummarySources: [
+        "certificate_data_export_file_state_later",
+        "certificate_data_export_expiry_state_later",
+        "certificate_data_export_download_log_state_later",
+        "certificate_data_export_error_state_later",
+        "certificate_data_export_retry_state_later"
+      ],
+      futureStatuses: [
+        "dashboard_certificate_data_export_status_summary_visible_later",
+        "dashboard_certificate_data_export_status_summary_loading_later",
+        "dashboard_certificate_data_export_status_summary_ready_later",
+        "dashboard_certificate_data_export_status_summary_empty_later",
+        "dashboard_certificate_data_export_status_summary_error_later"
+      ],
+      plannedDataExportStatusSummaryActions: [
+        "certificate_data_export_status_summary_compute_later",
+        "certificate_data_export_status_summary_refresh_later",
+        "certificate_data_export_status_summary_show_later"
+      ]
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -3846,6 +3892,7 @@
     getParticipantDashboardCertificateDataExportDownloadLogState,
     getParticipantDashboardCertificateDataExportErrorState,
     getParticipantDashboardCertificateDataExportRetryState,
+    getParticipantDashboardCertificateDataExportStatusSummaryState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
