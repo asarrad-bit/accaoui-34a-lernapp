@@ -2731,6 +2731,51 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportRetryState() {
+    const participantDashboardCertificateDataExportFileState = getParticipantDashboardCertificateDataExportFileState();
+    const participantDashboardCertificateDataExportErrorState = getParticipantDashboardCertificateDataExportErrorState();
+
+    return {
+      version: "v26.83a",
+      status: "local_dashboard_certificate_data_export_retry_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportRetry: false,
+      hasCertificateDataExportRetryData: false,
+      certificateDataExportRetryEntries: [],
+      activeCertificateDataExportRetryId: null,
+      latestCertificateDataExportRetryStatus: null,
+      latestCertificateDataExportRetryReason: null,
+      latestCertificateDataExportRetriedAt: null,
+      latestCertificateDataExportRetryResolvedAt: null,
+      recommendedCertificateDataExportRetryAction: null,
+      canShowCertificateDataExportRetryCard: false,
+      canShowCertificateDataExportRetryButton: false,
+      canRequestCertificateDataExportRetry: false,
+      canResolveCertificateDataExportRetry: false,
+      canRefreshCertificateDataExportRetry: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_data_export_retry_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_data_export_retry_visible_later",
+        "dashboard_certificate_data_export_retry_loading_later",
+        "dashboard_certificate_data_export_retry_requested_later",
+        "dashboard_certificate_data_export_retry_completed_later",
+        "dashboard_certificate_data_export_retry_error_later"
+      ],
+      plannedDataExportRetryActions: [
+        "certificate_data_export_retry_request_later",
+        "certificate_data_export_retry_resolve_later",
+        "certificate_data_export_retry_refresh_later"
+      ],
+      participantDashboardCertificateDataExportFileState,
+      participantDashboardCertificateDataExportErrorState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -3800,6 +3845,7 @@
     getParticipantDashboardCertificateDataExportExpiryState,
     getParticipantDashboardCertificateDataExportDownloadLogState,
     getParticipantDashboardCertificateDataExportErrorState,
+    getParticipantDashboardCertificateDataExportRetryState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
