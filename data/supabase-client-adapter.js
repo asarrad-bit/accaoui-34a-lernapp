@@ -2593,6 +2593,53 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportExpiryState() {
+    const participantDashboardCertificateDataExportFileState = getParticipantDashboardCertificateDataExportFileState();
+    const participantDashboardCertificateDataAccessState = getParticipantDashboardCertificateDataAccessState();
+
+    return {
+      version: "v26.80a",
+      status: "local_dashboard_certificate_data_export_expiry_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportExpiry: false,
+      hasCertificateDataExportExpiryData: false,
+      activeCertificateDataExportFileId: null,
+      latestCertificateDataExportExpiryStatus: null,
+      latestCertificateDataExportPreparedAt: null,
+      latestCertificateDataExportExpiresAt: null,
+      latestCertificateDataExportExpiredAt: null,
+      recommendedCertificateDataExportExpiryAction: null,
+      canShowCertificateDataExportExpiryCard: false,
+      canShowCertificateDataExportExpiryWarning: false,
+      canShowCertificateDataExportExpiredNotice: false,
+      canCheckCertificateDataExportExpiry: false,
+      canMarkCertificateDataExportExpired: false,
+      canRefreshCertificateDataExportExpiry: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_data_export_expiry_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_data_export_expiry_visible_later",
+        "dashboard_certificate_data_export_expiry_loading_later",
+        "dashboard_certificate_data_export_expiry_valid_later",
+        "dashboard_certificate_data_export_expiry_warning_later",
+        "dashboard_certificate_data_export_expired_later",
+        "dashboard_certificate_data_export_expiry_error_later"
+      ],
+      plannedDataExportExpiryActions: [
+        "certificate_data_export_expiry_check_later",
+        "certificate_data_export_expiry_warning_later",
+        "certificate_data_export_expired_mark_later",
+        "certificate_data_export_expiry_refresh_later"
+      ],
+      participantDashboardCertificateDataExportFileState,
+      participantDashboardCertificateDataAccessState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -3659,6 +3706,7 @@
     getParticipantDashboardCertificateDataDeletionRequestState,
     getParticipantDashboardCertificateDataDeletionConfirmationState,
     getParticipantDashboardCertificateDataExportFileState,
+    getParticipantDashboardCertificateDataExportExpiryState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
