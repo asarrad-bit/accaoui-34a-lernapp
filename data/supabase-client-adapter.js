@@ -2383,6 +2383,60 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataCorrectionState() {
+    const participantDashboardCertificateDataAccessState = getParticipantDashboardCertificateDataAccessState();
+    const participantDashboardCertificatePrivacyNoticeState = getParticipantDashboardCertificatePrivacyNoticeState();
+
+    return {
+      version: "v26.76a",
+      status: "local_dashboard_certificate_data_correction_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataCorrection: false,
+      hasCertificateDataCorrectionData: false,
+      certificateDataCorrectionEntries: [],
+      activeCertificateDataCorrectionRequestId: null,
+      latestCertificateDataCorrectionStatus: null,
+      latestCertificateDataCorrectionRequestedAt: null,
+      latestCertificateDataCorrectionReviewedAt: null,
+      latestCertificateDataCorrectionApprovedAt: null,
+      latestCertificateDataCorrectionRejectedAt: null,
+      latestCertificateDataCorrectionReason: null,
+      recommendedCertificateDataCorrectionAction: null,
+      canShowCertificateDataCorrectionCard: false,
+      canShowCertificateDataCorrectionButton: false,
+      canShowCertificateDataCorrectionStatus: false,
+      canOpenCertificateDataCorrectionDialog: false,
+      canRequestCertificateDataCorrection: false,
+      canReviewCertificateDataCorrection: false,
+      canApproveCertificateDataCorrection: false,
+      canRejectCertificateDataCorrection: false,
+      canRefreshCertificateDataCorrection: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      reason: "dashboard_certificate_data_correction_state_prepared_but_hidden_in_local_mode",
+      futureStatuses: [
+        "dashboard_certificate_data_correction_visible_later",
+        "dashboard_certificate_data_correction_loading_later",
+        "dashboard_certificate_data_correction_requested_later",
+        "dashboard_certificate_data_correction_reviewed_later",
+        "dashboard_certificate_data_correction_approved_later",
+        "dashboard_certificate_data_correction_rejected_later",
+        "dashboard_certificate_data_correction_error_later"
+      ],
+      plannedDataCorrectionActions: [
+        "certificate_data_correction_request_later",
+        "certificate_data_correction_review_later",
+        "certificate_data_correction_approval_later",
+        "certificate_data_correction_rejection_later"
+      ],
+      participantDashboardCertificateDataAccessState,
+      participantDashboardCertificatePrivacyNoticeState
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -3445,6 +3499,7 @@
     getParticipantDashboardCertificatePrivacyNoticeState,
     getParticipantDashboardCertificateRetentionState,
     getParticipantDashboardCertificateDataAccessState,
+    getParticipantDashboardCertificateDataCorrectionState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
