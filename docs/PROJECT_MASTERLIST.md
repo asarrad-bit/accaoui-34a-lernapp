@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v26.89c
+Stand: v26.90c
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -499,6 +499,9 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v26.89a | Teilnehmer-Dashboard-Zertifikats-Datenexport-Archivstatus-State vorbereitet: `getParticipantDashboardCertificateDataExportArchiveStatusState()`, `local_dashboard_certificate_data_export_archive_status_hidden`, lokal verborgen, keine echte Archivstatus-Prüfung, keine Teilnehmerdaten, kein UI-Blocker – **erledigt** |
 | v26.89b | Teilnehmer-Dashboard-Zertifikats-Datenexport-Archivstatus-State-Test dokumentiert: `isVisible=false`, `canRender=false`, `canTrackCertificateDataExportArchiveStatus=false`, `canRefreshCertificateDataExportArchiveStatus=false`, lokaler Zugriff bleibt erlaubt – **erledigt** |
 | v26.89c | Masterliste um Teilnehmer-Dashboard-Zertifikats-Datenexport-Archivstatus-State und Testdokument ergänzt – **erledigt** |
+| v26.90a | Teilnehmer-Dashboard-Zertifikats-Datenexport-Löschstatus-State vorbereitet: `getParticipantDashboardCertificateDataExportDeletionStatusState()`, `local_dashboard_certificate_data_export_deletion_status_hidden`, lokal verborgen, keine echte Löschstatus-Prüfung, keine Teilnehmerdaten, kein UI-Blocker – **erledigt** |
+| v26.90b | Teilnehmer-Dashboard-Zertifikats-Datenexport-Löschstatus-State-Test dokumentiert: `isVisible=false`, `canRender=false`, `canTrackCertificateDataExportDeletionStatus=false`, `canRefreshCertificateDataExportDeletionStatus=false`, lokaler Zugriff bleibt erlaubt – **erledigt** |
+| v26.90c | Masterliste um Teilnehmer-Dashboard-Zertifikats-Datenexport-Löschstatus-State und Testdokument ergänzt – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (kein SQL, keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
