@@ -3317,6 +3317,35 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportReceptionStatusState() {
+    return {
+      version: "v27.02a",
+      status: "local_dashboard_certificate_data_export_reception_status_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportReceptionStatus: false,
+      hasCertificateDataExportReceptionStatusData: false,
+      certificateDataExportReceptionStatusEntries: [],
+      activeCertificateDataExportReceptionStatusId: null,
+      latestCertificateDataExportReceptionStatus: null,
+      latestCertificateDataExportReceivedAt: null,
+      canShowCertificateDataExportReceptionStatusCard: false,
+      canTrackCertificateDataExportReceptionStatus: false,
+      canRefreshCertificateDataExportReceptionStatus: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      dependencyStatusMode: "reference_only_no_nested_state_execution",
+      reason: "dashboard_certificate_data_export_reception_status_state_prepared_but_hidden_in_local_mode",
+      plannedDataExportReceptionStatusActions: [
+        "certificate_data_export_reception_status_track_later",
+        "certificate_data_export_reception_status_refresh_later",
+        "certificate_data_export_reception_status_show_later"
+      ]
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -4405,6 +4434,7 @@
     getParticipantDashboardCertificateDataExportReviewStatusState,
     getParticipantDashboardCertificateDataExportFinalStatusState,
     getParticipantDashboardCertificateDataExportHandoverStatusState,
+    getParticipantDashboardCertificateDataExportReceptionStatusState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
