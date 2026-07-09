@@ -3491,6 +3491,35 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportCompletionProtocolStatusState() {
+    return {
+      version: "v27.08a",
+      status: "local_dashboard_certificate_data_export_completion_protocol_status_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportCompletionProtocolStatus: false,
+      hasCertificateDataExportCompletionProtocolStatusData: false,
+      certificateDataExportCompletionProtocolStatusEntries: [],
+      activeCertificateDataExportCompletionProtocolStatusId: null,
+      latestCertificateDataExportCompletionProtocolStatus: null,
+      latestCertificateDataExportCompletionProtocolUpdatedAt: null,
+      canShowCertificateDataExportCompletionProtocolStatusCard: false,
+      canTrackCertificateDataExportCompletionProtocolStatus: false,
+      canRefreshCertificateDataExportCompletionProtocolStatus: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      dependencyStatusMode: "reference_only_no_nested_state_execution",
+      reason: "dashboard_certificate_data_export_completion_protocol_status_state_prepared_but_hidden_in_local_mode",
+      plannedDataExportCompletionProtocolStatusActions: [
+        "certificate_data_export_completion_protocol_status_track_later",
+        "certificate_data_export_completion_protocol_status_refresh_later",
+        "certificate_data_export_completion_protocol_status_show_later"
+      ]
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -4585,6 +4614,7 @@
     getParticipantDashboardCertificateDataExportRetrievalStatusState,
     getParticipantDashboardCertificateDataExportProtocolStatusState,
     getParticipantDashboardCertificateDataExportHandoverProtocolStatusState,
+    getParticipantDashboardCertificateDataExportCompletionProtocolStatusState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
