@@ -3462,6 +3462,35 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportHandoverProtocolStatusState() {
+    return {
+      version: "v27.07a",
+      status: "local_dashboard_certificate_data_export_handover_protocol_status_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportHandoverProtocolStatus: false,
+      hasCertificateDataExportHandoverProtocolStatusData: false,
+      certificateDataExportHandoverProtocolStatusEntries: [],
+      activeCertificateDataExportHandoverProtocolStatusId: null,
+      latestCertificateDataExportHandoverProtocolStatus: null,
+      latestCertificateDataExportHandoverProtocolUpdatedAt: null,
+      canShowCertificateDataExportHandoverProtocolStatusCard: false,
+      canTrackCertificateDataExportHandoverProtocolStatus: false,
+      canRefreshCertificateDataExportHandoverProtocolStatus: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      dependencyStatusMode: "reference_only_no_nested_state_execution",
+      reason: "dashboard_certificate_data_export_handover_protocol_status_state_prepared_but_hidden_in_local_mode",
+      plannedDataExportHandoverProtocolStatusActions: [
+        "certificate_data_export_handover_protocol_status_track_later",
+        "certificate_data_export_handover_protocol_status_refresh_later",
+        "certificate_data_export_handover_protocol_status_show_later"
+      ]
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -4555,6 +4584,7 @@
     getParticipantDashboardCertificateDataExportReleaseStatusState,
     getParticipantDashboardCertificateDataExportRetrievalStatusState,
     getParticipantDashboardCertificateDataExportProtocolStatusState,
+    getParticipantDashboardCertificateDataExportHandoverProtocolStatusState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
