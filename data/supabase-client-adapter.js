@@ -3781,6 +3781,35 @@
     };
   }
 
+  function getParticipantDashboardCertificateDataExportProofReleaseCheckStatusState() {
+    return {
+      version: "v27.18a",
+      status: "local_dashboard_certificate_data_export_proof_release_check_status_hidden",
+      isAvailable: true,
+      isVisible: false,
+      canRender: false,
+      canLoadCertificateDataExportProofReleaseCheckStatus: false,
+      hasCertificateDataExportProofReleaseCheckStatusData: false,
+      certificateDataExportProofReleaseCheckStatusEntries: [],
+      activeCertificateDataExportProofReleaseCheckStatusId: null,
+      latestCertificateDataExportProofReleaseCheckStatus: null,
+      latestCertificateDataExportProofReleaseCheckUpdatedAt: null,
+      canShowCertificateDataExportProofReleaseCheckStatusCard: false,
+      canTrackCertificateDataExportProofReleaseCheckStatus: false,
+      canRefreshCertificateDataExportProofReleaseCheckStatus: false,
+      canBlockDashboardAccess: false,
+      isLoginRequired: false,
+      isLocalDashboardAccessAllowed: true,
+      dependencyStatusMode: "reference_only_no_nested_state_execution",
+      reason: "dashboard_certificate_data_export_proof_release_check_status_state_prepared_but_hidden_in_local_mode",
+      plannedDataExportProofReleaseCheckStatusActions: [
+        "certificate_data_export_proof_release_check_status_track_later",
+        "certificate_data_export_proof_release_check_status_refresh_later",
+        "certificate_data_export_proof_release_check_status_show_later"
+      ]
+    };
+  }
+
   function getParticipantAccessState() {
     return Promise.resolve(getParticipantAccessReadinessState());
   }
@@ -4885,6 +4914,7 @@
     getParticipantDashboardCertificateDataExportProofBlockStatusState,
     getParticipantDashboardCertificateDataExportProofCheckStatusState,
     getParticipantDashboardCertificateDataExportProofValidationStatusState,
+    getParticipantDashboardCertificateDataExportProofReleaseCheckStatusState,
     getParticipantAccessReadinessState,
     getParticipantAccessState,
     getAdapterHealthState
