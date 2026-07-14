@@ -7,6 +7,7 @@ MIGRATIONS = ROOT / "supabase" / "migrations"
 
 SCHEMA = "20260710_v2720b_mvp_schema.sql"
 RLS = "20260710_v2721a_mvp_rls_policies.sql"
+LOCKDOWN = "20260714_v2724b_exam_result_insert_lockdown.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -30,15 +31,19 @@ if not MIGRATIONS.is_dir():
 
 files = sorted(p.name for p in MIGRATIONS.glob("*.sql"))
 
-for required in (SCHEMA, RLS):
+for required in (SCHEMA, RLS, LOCKDOWN):
     if required not in files:
         fail(f"Migration fehlt: {required}")
 
 if files.index(SCHEMA) >= files.index(RLS):
     fail("RLS-Migration steht vor dem Grundschema.")
 
+if files.index(RLS) >= files.index(LOCKDOWN):
+    fail("Prüfungs-Lockdown steht vor der RLS-Migration.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
+lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
 
 tables = set(
     re.findall(
@@ -64,7 +69,27 @@ policies = re.findall(
 )
 
 if len(policies) != 17:
-    fail(f"Erwartet: 17 Policies, gefunden: {len(policies)}")
+    fail(f"Erwartet: 17 Basis-Policies, gefunden: {len(policies)}")
+
+required_drops = (
+    'drop policy if exists "exam_attempts_insert_own"',
+    'drop policy if exists "exam_answers_insert_own"',
+)
+
+for statement in required_drops:
+    if statement not in lockdown.lower():
+        fail(f"Lockdown-Anweisung fehlt: {statement}")
+
+if "create policy" in lockdown.lower():
+    fail("Lockdown darf keine neue Policy erstellen.")
+
+effective_policy_count = len(policies) - len(required_drops)
+
+if effective_policy_count != 15:
+    fail(
+        f"Erwartet: 15 effektive Policies, gefunden: "
+        f"{effective_policy_count}"
+    )
 
 unknown_policy_tables = set(policies) - EXPECTED_TABLES
 if unknown_policy_tables:
@@ -79,7 +104,17 @@ if len(re.findall(r"\bto\s+authenticated\b", rls, flags=re.IGNORECASE)) != 17:
 if "auth.uid()" not in rls:
     fail("auth.uid()-Prüfung fehlt.")
 
-sql_without_comments = re.sub(r"--.*?$", "", schema + "\n" + rls, flags=re.MULTILINE)
+all_sql = "\n".join(
+    (MIGRATIONS / name).read_text(encoding="utf-8")
+    for name in files
+)
+
+sql_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    all_sql,
+    flags=re.MULTILINE,
+)
 for forbidden in ("service_role", "SUPABASE_SERVICE_ROLE_KEY", "postgresql://", "postgres://"):
     if forbidden.lower() in sql_without_comments.lower():
         fail(f"Verbotener sensitiver Inhalt gefunden: {forbidden}")
@@ -87,6 +122,8 @@ for forbidden in ("service_role", "SUPABASE_SERVICE_ROLE_KEY", "postgresql://", 
 print("Supabase-Migrationsprüfung: OK")
 print(f"SQL-Dateien: {len(files)}")
 print(f"MVP-Tabellen: {len(EXPECTED_TABLES)}")
-print(f"RLS-Policies: {len(policies)}")
-print("Reihenfolge: Schema vor RLS")
+print(f"Basis-RLS-Policies: {len(policies)}")
+print(f"Effektive RLS-Policies: {effective_policy_count}")
+print("Direkte Prüfungs-Inserts für Teilnehmer: gesperrt")
+print("Reihenfolge: Schema vor RLS vor Prüfungs-Lockdown")
 print("Live-Ausführung: nein")
