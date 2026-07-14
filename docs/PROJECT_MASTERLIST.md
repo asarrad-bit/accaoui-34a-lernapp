@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.18c
+Stand: v27.21c
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -586,6 +586,13 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.18a | Teilnehmer-Dashboard-Zertifikats-Datenexport-Nachweisfreigabeprüfstatus-State vorbereitet: `getParticipantDashboardCertificateDataExportProofReleaseCheckStatusState()`, `local_dashboard_certificate_data_export_proof_release_check_status_hidden`, lokal verborgen, keine echte Nachweisfreigabeprüfung, keine Teilnehmerdaten, kein UI-Blocker – **erledigt** |
 | v27.18b | Teilnehmer-Dashboard-Zertifikats-Datenexport-Nachweisfreigabeprüfstatus-State-Test dokumentiert: `isVisible=false`, `canRender=false`, `canTrackCertificateDataExportProofReleaseCheckStatus=false`, `canRefreshCertificateDataExportProofReleaseCheckStatus=false`, lokaler Zugriff bleibt erlaubt – **erledigt** |
 | v27.18c | Masterliste um Teilnehmer-Dashboard-Zertifikats-Datenexport-Nachweisfreigabeprüfstatus-State und Testdokument ergänzt – **erledigt** |
+| v27.19a | MVP-Endspurt-Plan erstellt; MVP-Ziel, Qualitätsregeln, Phasen und Fertigdefinition festgelegt – **erledigt** |
+| v27.20a | Supabase-MVP-Tabellenplan für Teilnehmer, Kurse, Zuordnungen, Prüfungen, Zertifikate und Rollen dokumentiert – **erledigt** |
+| v27.20b | Supabase-MVP-Schema-Migration vorbereitet; Tabellen, Relationen, Prüfregeln, Indexe und RLS-Aktivierung angelegt, nicht live ausgeführt – **erledigt** |
+| v27.20c | Supabase-MVP-RLS-Policy-Plan mit Teilnehmer-, Admin-/Dozent-Rechten und Sicherheitsgrenzen dokumentiert – **erledigt** |
+| v27.21a | SQL-RLS-Migration mit Rollen-Helpern und tabellenspezifischen Policies vorbereitet, nicht live ausgeführt – **erledigt** |
+| v27.21b | SQL-RLS-Migration statisch geprüft und Testgrenzen für die spätere Live-Prüfung dokumentiert – **erledigt** |
+| v27.21c | Masterliste auf den vollständigen MVP-Endspurt-Stand v27.21c aktualisiert – **erledigt** |
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (kein SQL, keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
