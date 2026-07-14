@@ -23,6 +23,7 @@ if ALLOW:
     env["ACCAOUI_ALLOW_PROTECTED"] = ALLOW
     print("ACCAOUI_ALLOW_PROTECTED=" + ALLOW)
 
+run(["py", "-3", "tools/check-supabase-migrations.py"], env=env)
 run(["py", "-3", "tools/preflight.py"], env=env)
 run(["git", "diff", "--check"])
 run(["git", "status", "--short"])
