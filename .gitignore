@@ -11,3 +11,7 @@ Thumbs.db
 
 # Lokale Supabase-Konfiguration – niemals committen
 data/supabase-config.local.js
+
+# Python-Zwischenspeicher
+__pycache__/
+*.py[cod]
