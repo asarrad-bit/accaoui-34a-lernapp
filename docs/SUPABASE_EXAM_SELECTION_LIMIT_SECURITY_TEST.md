@@ -1,4 +1,4 @@
-# Supabase Auswahlbegrenzung – statischer Sicherheitcat > docs/SUPABASE_EXAM_SELECTION_LIMIT_SECURITY_TEST.md <<'stest
+# Supabase Auswahlbegrenzung – statischer Sicherheitstest
 
 Stand: v27.27e
 
