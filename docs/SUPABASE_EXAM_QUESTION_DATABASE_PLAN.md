@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.26c
+Stand: v27.26d
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -119,6 +119,10 @@ Geplante Felder:
 Regeln:
 
 - genau ein privater Lösungsschlüssel pro Versuchsfrage
+- Bewertungsregel: `per_correct_selection_no_penalty`
+- jede ausgewählte richtige Antwort ergibt einen Punkt
+- falsche Auswahlen ergeben keinen Punkt und keinen Punktabzug
+- Deckelung durch `max_points_snapshot`
 - Erstellung gemeinsam mit dem sichtbaren Fragen-Snapshot
 - spätere Änderungen am zentralen Lösungsschlüssel verändern
   bestehende Prüfungsversuche nicht
@@ -200,7 +204,7 @@ Vor einem Import wird geprüft:
 
 ## Nächster Schritt
 
-`v27.26d`
+`v27.26e`
 
 Fragenbankprüfer- und Helper-Integration dokumentieren.
 

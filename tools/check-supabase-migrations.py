@@ -11,6 +11,7 @@ LOCKDOWN = "20260714_v2724b_exam_result_insert_lockdown.sql"
 QUESTION_SCHEMA = "20260716_v2725c_exam_question_schema.sql"
 QUESTION_RLS = "20260716_v2725d_exam_question_rls.sql"
 ATTEMPT_KEY_SNAPSHOT = "20260716_v2726c_exam_attempt_answer_key_snapshot.sql"
+GRADING_RULE_FIX = "20260716_v2726d_exam_attempt_grading_rule_partial_points.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -48,6 +49,7 @@ for required in (
     QUESTION_SCHEMA,
     QUESTION_RLS,
     ATTEMPT_KEY_SNAPSHOT,
+    GRADING_RULE_FIX,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -67,6 +69,9 @@ if files.index(QUESTION_SCHEMA) >= files.index(QUESTION_RLS):
 if files.index(QUESTION_RLS) >= files.index(ATTEMPT_KEY_SNAPSHOT):
     fail("Versuchsschlüssel-Snapshot steht vor dem Fragen-RLS.")
 
+if files.index(ATTEMPT_KEY_SNAPSHOT) >= files.index(GRADING_RULE_FIX):
+    fail("Teilpunkte-Korrektur steht vor dem Versuchsschlüssel-Snapshot.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -80,8 +85,16 @@ attempt_key_snapshot = (
     MIGRATIONS / ATTEMPT_KEY_SNAPSHOT
 ).read_text(encoding="utf-8")
 
+grading_rule_fix = (
+    MIGRATIONS / GRADING_RULE_FIX
+).read_text(encoding="utf-8")
+
 question_schema_bundle = (
-    question_schema + "\n" + attempt_key_snapshot
+    question_schema
+    + "\n"
+    + attempt_key_snapshot
+    + "\n"
+    + grading_rule_fix
 )
 
 tables = set(
@@ -133,6 +146,11 @@ for table in QUESTION_TABLES:
         fail(f"RLS-Aktivierung fehlt für Prüfungstabelle: {table}")
 
 question_schema_lower = question_schema_bundle.lower()
+question_schema_compact = re.sub(
+    r"\s+",
+    " ",
+    question_schema_lower,
+)
 
 required_question_markers = (
     "unique (source_question_id, version)",
@@ -143,7 +161,12 @@ required_question_markers = (
     "jsonb_typeof(answer_options_snapshot) = 'array'",
     "jsonb_typeof(correct_answers_snapshot) = 'array'",
     "references exam_attempt_questions(id) on delete cascade",
-    "grading_rule in ('exact_set')",
+    "drop constraint if exists exam_attempt_question_answer_keys_grading_rule_check",
+    "alter column grading_rule",
+    "set default 'per_correct_selection_no_penalty'",
+    "set grading_rule = 'per_correct_selection_no_penalty'",
+    "where grading_rule = 'exact_set'",
+    "grading_rule in ('per_correct_selection_no_penalty')",
     "revoke all on table exam_attempt_question_answer_keys",
     "question_type in ('single', 'multiple', 'praxisfall', 'combination')",
     "question_type_snapshot in ('single', 'multiple', 'praxisfall', 'combination')",
@@ -151,7 +174,7 @@ required_question_markers = (
 )
 
 for marker in required_question_markers:
-    if marker not in question_schema_lower:
+    if marker not in question_schema_compact:
         fail(f"Fragen-Schema-Anweisung fehlt: {marker}")
 
 if "create policy" in question_schema_lower:
@@ -164,6 +187,14 @@ if "create policy" in attempt_key_snapshot_lower:
 
 if "grant " in attempt_key_snapshot_lower:
     fail("Privater Versuchsschlüssel darf keinen Direktgrant erhalten.")
+
+grading_rule_fix_lower = grading_rule_fix.lower()
+
+if "create policy" in grading_rule_fix_lower:
+    fail("Teilpunkte-Korrektur darf keine Policy erstellen.")
+
+if "grant " in grading_rule_fix_lower:
+    fail("Teilpunkte-Korrektur darf keinen Grant erstellen.")
 
 question_rls_lower = question_rls.lower()
 
@@ -310,9 +341,11 @@ print("Direkte Prüfungs-Inserts für Teilnehmer: gesperrt")
 print("Prüfungsinhalte: nur Admin/Dozent verwaltbar")
 print("Prüfungs-Snapshots: Teilnehmer nur lesend für eigene Versuche")
 print("Private Versuchsschlüssel: direkter Zugriff vollständig gesperrt")
+print("Bewertungsregel: Teilpunkte ohne Punktabzug")
 print(
     "Reihenfolge: Schema vor RLS vor Lockdown "
     "vor Fragen-Schema vor Fragen-RLS "
-    "vor Versuchsschlüssel-Snapshot"
+    "vor Versuchsschlüssel-Snapshot "
+    "vor Teilpunkte-Korrektur"
 )
 print("Live-Ausführung: nein")

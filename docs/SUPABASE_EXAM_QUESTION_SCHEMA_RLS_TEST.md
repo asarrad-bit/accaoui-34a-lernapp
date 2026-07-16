@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.26c
+Stand: v27.26d
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -9,6 +9,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260716_v2725c_exam_question_schema.sql`
 - `20260716_v2725d_exam_question_rls.sql`
 - `20260716_v2726c_exam_attempt_answer_key_snapshot.sql`
+- `20260716_v2726d_exam_attempt_grading_rule_partial_points.sql`
 
 ## Geprüfte Tabellen
 
@@ -25,6 +26,7 @@ Bestätigt wurden:
 - getrennte private Lösungsschlüssel
 - feste Prüfungsfrage-Snapshots
 - private Lösungsschlüssel-Snapshots pro Versuchsfrage
+- Teilpunkte: ein Punkt pro ausgewählter richtiger Antwort, kein Punktabzug
 - JSON-Array-Prüfungen
 - vier Fragetypen: `single`, `multiple`, `praxisfall`, `combination`
 - Punkte nur 1 oder 2
@@ -49,7 +51,7 @@ Bestätigt wurden:
 
 Erwarteter Stand:
 
-- 6 SQL-Dateien
+- 7 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
@@ -67,4 +69,4 @@ Migration wurde auf einer Live-Datenbank ausgeführt.
 Sichere Snapshot-Schreibvorgänge und Prüfungsbewertungen folgen
 später ausschließlich über geprüfte RPC-Funktionen.
 
-Status: Fragen-Schema, RLS und privater Versuchsschlüssel statisch bestätigt
+Status: Fragen-Schema, RLS, privater Versuchsschlüssel und Teilpunkte-Regel statisch bestätigt
