@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.26d
+Stand: v27.26e
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -129,15 +129,34 @@ Regeln:
 - kein direkter Teilnehmer-, Support- oder Browserzugriff
 - Lesen und Schreiben nur über geprüfte Bewertungs-RPCs
 
-## Anpassung der bestehenden exam_answers
+## Tabelle exam_answers nach Integritätsmigration v27.26e
 
-Später erforderlich:
+Vorbereitete Zielstruktur:
 
-- `question_id text` durch `attempt_question_id uuid` ersetzen
-- `correct_answers` aus der teilnehmerlesbaren Struktur entfernen
-- eindeutige Kombination aus Versuch und Prüfungsfrage
-- `earned_points` und `is_correct` nur durch den Bewertungs-RPC setzen
-- `selected_answers` muss ein gültiges JSON-Array sein
+- `exam_attempt_id uuid not null`
+- `attempt_question_id uuid not null`
+- `selected_answers jsonb not null`
+- `earned_points integer not null`
+- `max_points integer not null`
+- `is_correct boolean not null`
+- `created_at timestamptz not null`
+
+Entfernt:
+
+- freie `question_id text`
+- teilnehmerlesbare `correct_answers`
+
+Regeln:
+
+- genau eine Antwortzeile pro `attempt_question_id`
+- `attempt_question_id` muss zum gleichen `exam_attempt_id` gehören
+- `selected_answers` muss ein JSON-Array sein
+- `max_points` nur 1 oder 2
+- `earned_points` nur zwischen 0 und `max_points`
+- `is_correct=true` setzt die volle Punktzahl voraus
+- bestehende Altdaten werden nicht automatisch gelöscht
+- direkte Inserts, Updates und Deletes sind vollständig entzogen
+- Schreiben und Bewerten nur über geprüfte Security-Definer-RPCs
 
 ## Zugriffsregeln
 
@@ -204,8 +223,9 @@ Vor einem Import wird geprüft:
 
 ## Nächster Schritt
 
-`v27.26e`
+`v27.27a`
 
-Fragenbankprüfer- und Helper-Integration dokumentieren.
+Sicheren Prüfungsstart-RPC mit atomaren Fragen- und
+Lösungsschlüssel-Snapshots vorbereiten.
 
-Status: privater Lösungsschlüssel pro Prüfungsversuch festgelegt
+Status: Antwortspeicher manipulationsgeschützt vorbereitet

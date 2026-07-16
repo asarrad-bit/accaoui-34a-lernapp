@@ -12,6 +12,7 @@ QUESTION_SCHEMA = "20260716_v2725c_exam_question_schema.sql"
 QUESTION_RLS = "20260716_v2725d_exam_question_rls.sql"
 ATTEMPT_KEY_SNAPSHOT = "20260716_v2726c_exam_attempt_answer_key_snapshot.sql"
 GRADING_RULE_FIX = "20260716_v2726d_exam_attempt_grading_rule_partial_points.sql"
+EXAM_ANSWERS_INTEGRITY = "20260716_v2726e_exam_answers_integrity.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -50,6 +51,7 @@ for required in (
     QUESTION_RLS,
     ATTEMPT_KEY_SNAPSHOT,
     GRADING_RULE_FIX,
+    EXAM_ANSWERS_INTEGRITY,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -72,6 +74,9 @@ if files.index(QUESTION_RLS) >= files.index(ATTEMPT_KEY_SNAPSHOT):
 if files.index(ATTEMPT_KEY_SNAPSHOT) >= files.index(GRADING_RULE_FIX):
     fail("Teilpunkte-Korrektur steht vor dem Versuchsschlüssel-Snapshot.")
 
+if files.index(GRADING_RULE_FIX) >= files.index(EXAM_ANSWERS_INTEGRITY):
+    fail("Antwortintegrität steht vor der Teilpunkte-Korrektur.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -87,6 +92,10 @@ attempt_key_snapshot = (
 
 grading_rule_fix = (
     MIGRATIONS / GRADING_RULE_FIX
+).read_text(encoding="utf-8")
+
+exam_answers_integrity = (
+    MIGRATIONS / EXAM_ANSWERS_INTEGRITY
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -195,6 +204,42 @@ if "create policy" in grading_rule_fix_lower:
 
 if "grant " in grading_rule_fix_lower:
     fail("Teilpunkte-Korrektur darf keinen Grant erstellen.")
+
+exam_answers_integrity_lower = exam_answers_integrity.lower()
+exam_answers_integrity_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_answers_integrity_lower,
+)
+
+required_answer_integrity_markers = (
+    "if exists (select 1 from exam_answers limit 1)",
+    "unique (id, exam_attempt_id)",
+    "add column if not exists attempt_question_id uuid",
+    "drop column if exists correct_answers",
+    "drop column if exists question_id",
+    "alter column attempt_question_id set not null",
+    "alter column max_points drop default",
+    "unique (attempt_question_id)",
+    "foreign key (attempt_question_id, exam_attempt_id)",
+    "references exam_attempt_questions(id, exam_attempt_id) on delete cascade",
+    "jsonb_typeof(selected_answers) = 'array'",
+    "max_points in (1, 2)",
+    "earned_points between 0 and max_points",
+    "not is_correct or earned_points = max_points",
+    "revoke insert, update, delete on table exam_answers "
+    "from public, anon, authenticated",
+)
+
+for marker in required_answer_integrity_markers:
+    if marker not in exam_answers_integrity_compact:
+        fail(f"Antwortintegritäts-Anweisung fehlt: {marker}")
+
+if "create policy" in exam_answers_integrity_lower:
+    fail("Antwortintegrität darf keine neue RLS-Policy erstellen.")
+
+if "grant " in exam_answers_integrity_lower:
+    fail("Antwortintegrität darf keine Direktrechte vergeben.")
 
 question_rls_lower = question_rls.lower()
 
@@ -342,10 +387,14 @@ print("Prüfungsinhalte: nur Admin/Dozent verwaltbar")
 print("Prüfungs-Snapshots: Teilnehmer nur lesend für eigene Versuche")
 print("Private Versuchsschlüssel: direkter Zugriff vollständig gesperrt")
 print("Bewertungsregel: Teilpunkte ohne Punktabzug")
+print("Antwortspeicher: private Lösungsschlüssel entfernt")
+print("Antwortzuordnung: eindeutig und versuchsgebunden")
+print("Prüfungsantworten: nur RPC-Schreibzugriff")
 print(
     "Reihenfolge: Schema vor RLS vor Lockdown "
     "vor Fragen-Schema vor Fragen-RLS "
     "vor Versuchsschlüssel-Snapshot "
-    "vor Teilpunkte-Korrektur"
+    "vor Teilpunkte-Korrektur "
+    "vor Antwortintegrität"
 )
 print("Live-Ausführung: nein")
