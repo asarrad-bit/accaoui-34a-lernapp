@@ -12,7 +12,7 @@ create table if not exists exam_questions (
     check (version > 0),
   category text not null,
   question_type text not null
-    check (question_type in ('single', 'multiple')),
+    check (question_type in ('single', 'multiple', 'praxisfall', 'combination')),
   question_text text not null,
   answer_options jsonb not null
     check (
@@ -60,7 +60,7 @@ create table if not exists exam_attempt_questions (
     check (question_version_snapshot > 0),
   category_snapshot text not null,
   question_type_snapshot text not null
-    check (question_type_snapshot in ('single', 'multiple')),
+    check (question_type_snapshot in ('single', 'multiple', 'praxisfall', 'combination')),
   question_text_snapshot text not null,
   answer_options_snapshot jsonb not null
     check (

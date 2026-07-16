@@ -94,7 +94,7 @@ Interne Rohfragen – **nicht** für Export oder Teilnehmer-App.
 | `raw_correct_answer` | `text` | nein | Roh-Lösungshinweis |
 | `raw_model_answer` | `text` | nein | Roh-Musterantwort (mündlich) |
 | `points` | `smallint` | nein | Punktzahl aus Quelle (1 oder 2) |
-| `question_type` | `text` | nein | z. B. `single`, `multiple`, `combination` |
+| `question_type` | `text` | nein | z. B. `single`, `multiple`, `praxisfall`, `combination` |
 | `similarity_risk` | `text` | nein | `low`, `medium`, `high` (IHK-Ähnlichkeit) |
 | `status` | `text` | ja | Siehe Status-Stufen (Rohpfad: oft `imported` … `archived`) |
 | `linked_written_id` | `uuid` | nein | FK → `written_questions.id`, wenn daraus umformuliert |
@@ -116,7 +116,7 @@ Geprüfte schriftliche Accaoui-Fragen; entspricht langfristig `docs/WRITTEN_QUES
 | `mode` | `text` | ja | Konstant `written` |
 | `topic` | `text` | ja | Kanonisches Sachgebiet |
 | `subtopic` | `text` | nein | |
-| `question_type` | `text` | ja | `single`, `multiple`, `combination` |
+| `question_type` | `text` | ja | `single`, `multiple`, `praxisfall`, `combination` |
 | `points` | `smallint` | ja | `1` oder `2` |
 | `difficulty` | `text` | ja | z. B. `leicht`, `mittel`, `schwer` |
 | `exam_relevance` | `text` | ja | z. B. `niedrig`, `mittel`, `hoch` |

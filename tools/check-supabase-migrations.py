@@ -118,6 +118,8 @@ required_question_markers = (
     "jsonb_typeof(answer_options) = 'array'",
     "jsonb_typeof(correct_answers) = 'array'",
     "jsonb_typeof(answer_options_snapshot) = 'array'",
+    "question_type in ('single', 'multiple', 'praxisfall', 'combination')",
+    "question_type_snapshot in ('single', 'multiple', 'praxisfall', 'combination')",
     "revoke all on table exam_question_answer_keys",
 )
 

@@ -39,7 +39,9 @@ Geplante Felder:
 
 Regeln:
 
-- `question_type` nur `single` oder `multiple`
+- `question_type` nur `single`, `multiple`, `praxisfall` oder `combination`
+- `single` und `combination` haben genau eine richtige Antwort
+- `multiple` und `praxisfall` können mehrere richtige Antworten haben
 - `points` nur 1 oder 2
 - `core_position` nur 1 bis 82 oder null
 - Kombination aus `source_question_id` und `version` ist eindeutig

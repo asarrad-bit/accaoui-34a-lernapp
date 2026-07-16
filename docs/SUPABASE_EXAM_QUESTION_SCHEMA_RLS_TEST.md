@@ -23,6 +23,7 @@ Bestätigt wurden:
 - getrennte private Lösungsschlüssel
 - feste Prüfungsfrage-Snapshots
 - JSON-Array-Prüfungen
+- vier Fragetypen: `single`, `multiple`, `praxisfall`, `combination`
 - Punkte nur 1 oder 2
 - Core-Positionen nur 1 bis 82
 - eindeutige Fragenversionen
