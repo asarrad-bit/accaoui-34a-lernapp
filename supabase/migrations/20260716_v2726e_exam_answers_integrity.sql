@@ -29,11 +29,6 @@ add column if not exists attempt_question_id uuid;
 alter table exam_answers
 drop column if exists correct_answers;
 
-alter table exam column if not exists attempt_question_id uuid;
-
-alter table exam_answers
-drop column if exists correct_answers;
-
 alter table exam_answers
 drop column if exists question_id;
 

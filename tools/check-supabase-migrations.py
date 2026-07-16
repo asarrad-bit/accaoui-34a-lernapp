@@ -235,6 +235,25 @@ for marker in required_answer_integrity_markers:
     if marker not in exam_answers_integrity_compact:
         fail(f"Antwortintegritäts-Anweisung fehlt: {marker}")
 
+if "alter table exam column" in exam_answers_integrity_compact:
+    fail("Ungültige ALTER-TABLE-Anweisung in Antwortintegrität gefunden.")
+
+if (
+    exam_answers_integrity_compact.count(
+        "add column if not exists attempt_question_id uuid"
+    )
+    != 1
+):
+    fail("attempt_question_id muss genau einmal ergänzt werden.")
+
+if (
+    exam_answers_integrity_compact.count(
+        "drop column if exists correct_answers"
+    )
+    != 1
+):
+    fail("correct_answers muss genau einmal entfernt werden.")
+
 if "create policy" in exam_answers_integrity_lower:
     fail("Antwortintegrität darf keine neue RLS-Policy erstellen.")
 
