@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.27a
+Stand: v27.27c
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -218,6 +218,20 @@ Der vorbereitete RPC `accaoui_start_full_exam(p_course_id uuid)`:
 - ist nur für `authenticated` ausführbar
 - wurde noch nicht live ausgeführt
 
+## Antwortspeicher-RPC v27.27b / Korrektur v27.27c
+
+Der Antwortspeicher-RPC:
+
+- akzeptiert nur Versuchsfragen-ID und ausgewählte Indizes
+- prüft die eigene offene Vollsimulation
+- akzeptiert keine Browserpunkte oder Lösungsschlüssel
+- validiert und normalisiert alle Antwortindizes
+- erlaubt bei `single` und `combination` höchstens eine Auswahl
+- erlaubt bei `multiple` und `praxisfall` mehrere Auswahlen
+- koppelt die erlaubte Auswahlzahl nicht an den Punktewert
+- speichert bis zur Bewertung neutrale Ergebniswerte
+- wurde noch nicht live ausgeführt
+
 ## Sicherheitsgrenze
 
 - kein Import über den Browser
@@ -240,9 +254,9 @@ Der vorbereitete RPC `accaoui_start_full_exam(p_course_id uuid)`:
 
 ## Nächster Schritt
 
-`v27.27b`
+`v27.27d`
 
-Sicheren RPC zum Speichern ausgewählter Teilnehmerantworten
-vorbereiten, ohne Punkte oder Lösungsschlüssel anzunehmen.
+Sicheren Prüfungsabschluss-RPC mit serverseitiger Bewertung
+gegen die privaten Lösungsschlüssel-Snapshots vorbereiten.
 
-Status: Prüfungsstart-RPC atomar vorbereitet
+Status: Antwortspeicher-RPC fachlich korrigiert

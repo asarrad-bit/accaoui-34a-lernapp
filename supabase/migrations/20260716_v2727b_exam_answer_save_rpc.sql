@@ -22,6 +22,7 @@ declare
   v_exam_attempt_id uuid;
   v_course_id uuid;
   v_max_points integer;
+  v_question_type text;
   v_option_count integer;
   v_answer_count integer;
   v_distinct_count integer;
@@ -49,11 +50,13 @@ begin
     aq.exam_attempt_id,
     ea.course_id,
     aq.max_points_snapshot,
+    aq.question_type_snapshot,
     jsonb_array_length(aq.answer_options_snapshot)
   into
     v_exam_attempt_id,
     v_course_id,
     v_max_points,
+    v_question_type,
     v_option_count
   from public.exam_attempt_questions aq
   join public.exam_attempts ea
@@ -101,9 +104,17 @@ begin
 
   v_answer_count := jsonb_array_length(p_selected_answers);
 
-  if v_answer_count > v_max_points then
+  -- Punkte bestimmen die Bewertung, nicht die Zahl möglicher Kreuze.
+  if v_question_type in ('single', 'combination')
+     and v_answer_count > 1 then
     raise exception
-      'Es wurden mehr Antworten gewählt als für diese Frage erlaubt.'
+      'Bei diesem Fragetyp ist höchstens eine Antwort erlaubt.'
+      using errcode = '22023';
+  end if;
+
+  if v_answer_count > v_option_count then
+    raise exception
+      'Es wurden mehr Antworten als Antwortmöglichkeiten übermittelt.'
       using errcode = '22023';
   end if;
 

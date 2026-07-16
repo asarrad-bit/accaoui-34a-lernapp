@@ -375,7 +375,10 @@ required_answer_save_markers = (
     "e.access_status = 'allowed'",
     "e.access_starts_at is null",
     "e.access_ends_at is null",
-    "v_answer_count > v_max_points",
+    "aq.question_type_snapshot",
+    "v_question_type in ('single', 'combination')",
+    "v_answer_count > 1",
+    "v_answer_count > v_option_count",
     "(item.value #>> '{}') !~ '^[0-9]+$'",
     "(item.value #>> '{}')::integer >= v_option_count",
     "count(distinct item.value #>> '{}')",
@@ -399,6 +402,12 @@ required_answer_save_markers = (
 for marker in required_answer_save_markers:
     if marker not in exam_answer_save_rpc_compact:
         fail(f"Antwortspeicher-RPC-Anweisung fehlt: {marker}")
+
+if "v_answer_count > v_max_points" in exam_answer_save_rpc_compact:
+    fail(
+        "Antwortanzahl darf nicht durch die erreichbaren Punkte "
+        "begrenzt werden."
+    )
 
 signature_match = re.search(
     r"function\s+public\.accaoui_save_exam_answer\s*"
