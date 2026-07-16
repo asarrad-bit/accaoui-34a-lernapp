@@ -14,6 +14,7 @@ ATTEMPT_KEY_SNAPSHOT = "20260716_v2726c_exam_attempt_answer_key_snapshot.sql"
 GRADING_RULE_FIX = "20260716_v2726d_exam_attempt_grading_rule_partial_points.sql"
 EXAM_ANSWERS_INTEGRITY = "20260716_v2726e_exam_answers_integrity.sql"
 EXAM_START_RPC = "20260716_v2727a_exam_start_rpc.sql"
+EXAM_ANSWER_SAVE_RPC = "20260716_v2727b_exam_answer_save_rpc.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -54,6 +55,7 @@ for required in (
     GRADING_RULE_FIX,
     EXAM_ANSWERS_INTEGRITY,
     EXAM_START_RPC,
+    EXAM_ANSWER_SAVE_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -82,6 +84,9 @@ if files.index(GRADING_RULE_FIX) >= files.index(EXAM_ANSWERS_INTEGRITY):
 if files.index(EXAM_ANSWERS_INTEGRITY) >= files.index(EXAM_START_RPC):
     fail("Prüfungsstart-RPC steht vor der Antwortintegrität.")
 
+if files.index(EXAM_START_RPC) >= files.index(EXAM_ANSWER_SAVE_RPC):
+    fail("Antwortspeicher-RPC steht vor dem Prüfungsstart-RPC.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -105,6 +110,10 @@ exam_answers_integrity = (
 
 exam_start_rpc = (
     MIGRATIONS / EXAM_START_RPC
+).read_text(encoding="utf-8")
+
+exam_answer_save_rpc = (
+    MIGRATIONS / EXAM_ANSWER_SAVE_RPC
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -343,6 +352,138 @@ for forbidden in (
     if forbidden in exam_start_rpc_lower:
         fail(f"Unzulässige Prüfungsstart-RPC-Anweisung: {forbidden}")
 
+exam_answer_save_rpc_lower = exam_answer_save_rpc.lower()
+exam_answer_save_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_answer_save_rpc_lower,
+)
+
+required_answer_save_markers = (
+    "function public.accaoui_save_exam_answer(",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "jsonb_typeof(p_selected_answers) <> 'array'",
+    "and p.auth_user_id = v_auth_user_id",
+    "and p.status = 'active'",
+    "and ea.mode = 'full_simulation'",
+    "and ea.finished_at is null",
+    "for update of aq, ea",
+    "c.status = 'active'",
+    "e.access_status = 'allowed'",
+    "e.access_starts_at is null",
+    "e.access_ends_at is null",
+    "v_answer_count > v_max_points",
+    "(item.value #>> '{}') !~ '^[0-9]+$'",
+    "(item.value #>> '{}')::integer >= v_option_count",
+    "count(distinct item.value #>> '{}')",
+    "jsonb_agg(",
+    "insert into public.exam_answers (",
+    "on conflict (attempt_question_id)",
+    "selected_answers = excluded.selected_answers",
+    "earned_points = 0",
+    "max_points = excluded.max_points",
+    "is_correct = false",
+    "revoke all on function "
+    "public.accaoui_save_exam_answer(uuid, jsonb) from public",
+    "revoke all on function "
+    "public.accaoui_save_exam_answer(uuid, jsonb) from anon",
+    "revoke all on function "
+    "public.accaoui_save_exam_answer(uuid, jsonb) from authenticated",
+    "grant execute on function "
+    "public.accaoui_save_exam_answer(uuid, jsonb) to authenticated",
+)
+
+for marker in required_answer_save_markers:
+    if marker not in exam_answer_save_rpc_compact:
+        fail(f"Antwortspeicher-RPC-Anweisung fehlt: {marker}")
+
+signature_match = re.search(
+    r"function\s+public\.accaoui_save_exam_answer\s*"
+    r"\((.*?)\)\s*returns",
+    exam_answer_save_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not signature_match:
+    fail("Funktionsparameter des Antwortspeicher-RPC fehlen.")
+
+signature_parameters = re.sub(
+    r"\s+",
+    " ",
+    signature_match.group(1).strip().lower(),
+)
+
+expected_parameters = (
+    "p_attempt_question_id uuid, "
+    "p_selected_answers jsonb"
+)
+
+if signature_parameters != expected_parameters:
+    fail(
+        "Antwortspeicher-RPC besitzt unerwartete Parameter: "
+        f"{signature_parameters}"
+    )
+
+return_match = re.search(
+    r"returns\s+table\s*\((.*?)\)\s*language\s+plpgsql",
+    exam_answer_save_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not return_match:
+    fail("Rückgabestruktur des Antwortspeicher-RPC fehlt.")
+
+return_columns = re.sub(
+    r"\s+",
+    " ",
+    return_match.group(1).strip().lower(),
+)
+
+expected_return_columns = (
+    "attempt_question_id uuid, "
+    "selected_answers jsonb, "
+    "saved boolean"
+)
+
+if return_columns != expected_return_columns:
+    fail(
+        "Antwortspeicher-RPC gibt unerwartete Spalten zurück: "
+        f"{return_columns}"
+    )
+
+for forbidden_parameter in (
+    "p_exam_attempt_id",
+    "p_earned_points",
+    "p_max_points",
+    "p_is_correct",
+    "p_correct_answers",
+):
+    if forbidden_parameter in signature_parameters:
+        fail(
+            "Verbotener Browserparameter im Antwortspeicher-RPC: "
+            f"{forbidden_parameter}"
+        )
+
+for forbidden_content in (
+    "exam_question_answer_keys",
+    "exam_attempt_question_answer_keys",
+    "score_points",
+    "passed",
+    "create policy",
+    "grant select",
+    "grant insert",
+    "grant update",
+    "grant delete",
+):
+    if forbidden_content in exam_answer_save_rpc_lower:
+        fail(
+            "Unzulässiger Inhalt im Antwortspeicher-RPC: "
+            f"{forbidden_content}"
+        )
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -495,12 +636,16 @@ print("Prüfungsantworten: nur RPC-Schreibzugriff")
 print("Prüfungsstart-RPC: atomar und idempotent vorbereitet")
 print("Prüfungsstart-RPC: 82 Fragen und 120 Punkte erzwungen")
 print("Prüfungsstart-RPC: keine Lösungsschlüssel in der Rückgabe")
+print("Antwortspeicher-RPC: nur eigene offene Versuchsfragen")
+print("Antwortspeicher-RPC: Browser liefert keine Punkte oder Schlüssel")
+print("Antwortspeicher-RPC: Antwortindizes validiert und normalisiert")
 print(
     "Reihenfolge: Schema vor RLS vor Lockdown "
     "vor Fragen-Schema vor Fragen-RLS "
     "vor Versuchsschlüssel-Snapshot "
     "vor Teilpunkte-Korrektur "
     "vor Antwortintegrität "
-    "vor Prüfungsstart-RPC"
+    "vor Prüfungsstart-RPC "
+    "vor Antwortspeicher-RPC"
 )
 print("Live-Ausführung: nein")
