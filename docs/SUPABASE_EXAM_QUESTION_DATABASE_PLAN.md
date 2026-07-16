@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.27c
+Stand: v27.27d
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -232,6 +232,26 @@ Der Antwortspeicher-RPC:
 - speichert bis zur Bewertung neutrale Ergebniswerte
 - wurde noch nicht live ausgeführt
 
+## Prüfungsabschluss-RPC v27.27d
+
+Der vorbereitete RPC `accaoui_finish_full_exam(...)`:
+
+- akzeptiert ausschließlich die Prüfungsversuchs-ID
+- bestimmt den Teilnehmer über `auth.uid()`
+- erlaubt nur den eigenen Vollsimulationsversuch
+- sperrt den Versuch gegen parallele Abschlussaufrufe
+- behandelt wiederholte Abschlussaufrufe idempotent
+- verlangt vollständige 82/120-Fragen- und Schlüsselsnapshots
+- ergänzt unbeantwortete Fragen mit neutralen Antwortzeilen
+- bewertet ausschließlich gegen private Versuchsschlüssel-Snapshots
+- vergibt volle Punkte bei exakter Antwort
+- vergibt Teilpunkte pro richtigem Kreuz ohne Punktabzug
+- schreibt Punkte, Bestehensstatus und Abschlusszeit atomar
+- setzt die Bestehensgrenze auf 60 von 120 Punkten
+- gibt keine Lösungsschlüssel oder Erklärungen zurück
+- ist ausschließlich für `authenticated` ausführbar
+- wurde noch nicht live ausgeführt
+
 ## Sicherheitsgrenze
 
 - kein Import über den Browser
@@ -254,9 +274,9 @@ Der Antwortspeicher-RPC:
 
 ## Nächster Schritt
 
-`v27.27d`
+`v27.27e`
 
-Sicheren Prüfungsabschluss-RPC mit serverseitiger Bewertung
-gegen die privaten Lösungsschlüssel-Snapshots vorbereiten.
+Sicheren Ergebnisabruf-RPC für eigene abgeschlossene
+Prüfungsversuche ohne Lösungsschlüssel vorbereiten.
 
-Status: Antwortspeicher-RPC fachlich korrigiert
+Status: Prüfungsabschluss serverseitig vorbereitet

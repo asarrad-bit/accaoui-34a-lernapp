@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.27c
+Stand: v27.27d
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -13,6 +13,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260716_v2726e_exam_answers_integrity.sql`
 - `20260716_v2727a_exam_start_rpc.sql`
 - `20260716_v2727b_exam_answer_save_rpc.sql`
+- `20260716_v2727d_exam_finish_rpc.sql`
 
 ## Geprüfte Tabellen
 
@@ -84,11 +85,29 @@ Bestätigt wurden:
 - keine Begrenzung der Auswahlzahl durch den Punktewert
 - neutrale Ergebniswerte bis zur serverseitigen Bewertung
 
+## Prüfungsabschluss-RPC-Prüfung
+
+Bestätigt wurden:
+
+- ausschließlich eigener schriftlicher Vollsimulationsversuch
+- Teilnehmeridentität über `auth.uid()`
+- Sperre gegen parallele Abschlussaufrufe
+- idempotente Rückgabe bereits gespeicherter Ergebnisse
+- exakt 82 Fragen, 82 private Schlüssel und 120 Punkte
+- neutrale Antwortzeilen für unbeantwortete Fragen
+- serverseitige Bewertung gegen private Versuchsschlüssel
+- volle Punkte bei exakter Antwort
+- Teilpunkte ohne Punktabzug
+- Bestehensgrenze 60 von 120 Punkten
+- atomare Aktualisierung von Antworten und Prüfungsversuch
+- keine Punkte oder Ergebniswerte als Browserparameter
+- keine Lösungsschlüssel in der Rückgabe
+
 ## Automatische Migrationsprüfung
 
 Erwarteter Stand:
 
-- 10 SQL-Dateien
+- 11 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
@@ -106,4 +125,4 @@ Migration wurde auf einer Live-Datenbank ausgeführt.
 Sichere Snapshot-Schreibvorgänge und Prüfungsbewertungen folgen
 später ausschließlich über geprüfte RPC-Funktionen.
 
-Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität, Prüfungsstart-RPC und korrigierter Antwortspeicher-RPC statisch bestätigt
+Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC und serverseitiger Prüfungsabschluss statisch bestätigt

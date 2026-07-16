@@ -15,6 +15,7 @@ GRADING_RULE_FIX = "20260716_v2726d_exam_attempt_grading_rule_partial_points.sql
 EXAM_ANSWERS_INTEGRITY = "20260716_v2726e_exam_answers_integrity.sql"
 EXAM_START_RPC = "20260716_v2727a_exam_start_rpc.sql"
 EXAM_ANSWER_SAVE_RPC = "20260716_v2727b_exam_answer_save_rpc.sql"
+EXAM_FINISH_RPC = "20260716_v2727d_exam_finish_rpc.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -56,6 +57,7 @@ for required in (
     EXAM_ANSWERS_INTEGRITY,
     EXAM_START_RPC,
     EXAM_ANSWER_SAVE_RPC,
+    EXAM_FINISH_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -87,6 +89,9 @@ if files.index(EXAM_ANSWERS_INTEGRITY) >= files.index(EXAM_START_RPC):
 if files.index(EXAM_START_RPC) >= files.index(EXAM_ANSWER_SAVE_RPC):
     fail("Antwortspeicher-RPC steht vor dem Prüfungsstart-RPC.")
 
+if files.index(EXAM_ANSWER_SAVE_RPC) >= files.index(EXAM_FINISH_RPC):
+    fail("Prüfungsabschluss-RPC steht vor dem Antwortspeicher-RPC.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -114,6 +119,10 @@ exam_start_rpc = (
 
 exam_answer_save_rpc = (
     MIGRATIONS / EXAM_ANSWER_SAVE_RPC
+).read_text(encoding="utf-8")
+
+exam_finish_rpc = (
+    MIGRATIONS / EXAM_FINISH_RPC
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -493,6 +502,142 @@ for forbidden_content in (
             f"{forbidden_content}"
         )
 
+exam_finish_rpc_lower = exam_finish_rpc.lower()
+exam_finish_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_finish_rpc_lower,
+)
+
+required_exam_finish_markers = (
+    "function public.accaoui_finish_full_exam(",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "and p.auth_user_id = v_auth_user_id",
+    "and p.status = 'active'",
+    "and ea.mode = 'full_simulation'",
+    "for update of ea",
+    "v_recorded_finished_at is not null",
+    "c.status = 'active'",
+    "e.access_status = 'allowed'",
+    "v_snapshot_count <> 82",
+    "v_key_count <> 82",
+    "v_rule_count <> 82",
+    "v_snapshot_max <> 120",
+    "insert into public.exam_answers (",
+    "'[]'::jsonb",
+    "on conflict (attempt_question_id) do nothing",
+    "with grades as (",
+    "jsonb_array_elements_text(",
+    "correct_answers_snapshot",
+    "when g.is_exact then g.question_max_points",
+    "else least(",
+    "update public.exam_answers ans",
+    "earned_points = calculated.earned_points",
+    "is_correct = calculated.is_exact",
+    "v_graded_count <> 82",
+    "score_points = v_score",
+    "passed = (v_score >= 60)",
+    "finished_at = v_finished_at",
+    "revoke all on function "
+    "public.accaoui_finish_full_exam(uuid) from public",
+    "revoke all on function "
+    "public.accaoui_finish_full_exam(uuid) from anon",
+    "revoke all on function "
+    "public.accaoui_finish_full_exam(uuid) from authenticated",
+    "grant execute on function "
+    "public.accaoui_finish_full_exam(uuid) to authenticated",
+)
+
+for marker in required_exam_finish_markers:
+    if marker not in exam_finish_rpc_compact:
+        fail(f"Prüfungsabschluss-RPC-Anweisung fehlt: {marker}")
+
+signature_match = re.search(
+    r"function\s+public\.accaoui_finish_full_exam\s*"
+    r"\((.*?)\)\s*returns",
+    exam_finish_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not signature_match:
+    fail("Funktionsparameter des Prüfungsabschluss-RPC fehlen.")
+
+signature_parameters = re.sub(
+    r"\s+",
+    " ",
+    signature_match.group(1).strip().lower(),
+)
+
+if signature_parameters != "p_exam_attempt_id uuid":
+    fail(
+        "Prüfungsabschluss-RPC besitzt unerwartete Parameter: "
+        f"{signature_parameters}"
+    )
+
+return_match = re.search(
+    r"returns\s+table\s*\((.*?)\)\s*language\s+plpgsql",
+    exam_finish_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not return_match:
+    fail("Rückgabestruktur des Prüfungsabschluss-RPC fehlt.")
+
+return_columns = re.sub(
+    r"\s+",
+    " ",
+    return_match.group(1).strip().lower(),
+)
+
+expected_return_columns = (
+    "exam_attempt_id uuid, "
+    "answered_questions integer, "
+    "correct_questions integer, "
+    "score_points integer, "
+    "max_points integer, "
+    "passed boolean, "
+    "finished_at timestamptz, "
+    "already_finished boolean"
+)
+
+if return_columns != expected_return_columns:
+    fail(
+        "Prüfungsabschluss-RPC gibt unerwartete Spalten zurück: "
+        f"{return_columns}"
+    )
+
+for forbidden_parameter in (
+    "p_selected_answers",
+    "p_score_points",
+    "p_max_points",
+    "p_passed",
+    "p_earned_points",
+    "p_is_correct",
+    "p_correct_answers",
+):
+    if forbidden_parameter in signature_parameters:
+        fail(
+            "Verbotener Browserparameter im Prüfungsabschluss-RPC: "
+            f"{forbidden_parameter}"
+        )
+
+for forbidden_content in (
+    "public.exam_question_answer_keys",
+    "create policy",
+    "grant select",
+    "grant insert",
+    "grant update",
+    "grant delete",
+):
+    if forbidden_content in exam_finish_rpc_lower:
+        fail(
+            "Unzulässiger Inhalt im Prüfungsabschluss-RPC: "
+            f"{forbidden_content}"
+        )
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -655,6 +800,11 @@ print(
     "vor Teilpunkte-Korrektur "
     "vor Antwortintegrität "
     "vor Prüfungsstart-RPC "
-    "vor Antwortspeicher-RPC"
+    "vor Antwortspeicher-RPC "
+    "vor Prüfungsabschluss-RPC"
 )
+print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
+print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
+print("Prüfungsabschluss-RPC: Bestehensgrenze 60 von 120 Punkten")
+print("Prüfungsabschluss-RPC: idempotenter Abschluss")
 print("Live-Ausführung: nein")
