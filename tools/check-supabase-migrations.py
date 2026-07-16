@@ -13,6 +13,7 @@ QUESTION_RLS = "20260716_v2725d_exam_question_rls.sql"
 ATTEMPT_KEY_SNAPSHOT = "20260716_v2726c_exam_attempt_answer_key_snapshot.sql"
 GRADING_RULE_FIX = "20260716_v2726d_exam_attempt_grading_rule_partial_points.sql"
 EXAM_ANSWERS_INTEGRITY = "20260716_v2726e_exam_answers_integrity.sql"
+EXAM_START_RPC = "20260716_v2727a_exam_start_rpc.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -52,6 +53,7 @@ for required in (
     ATTEMPT_KEY_SNAPSHOT,
     GRADING_RULE_FIX,
     EXAM_ANSWERS_INTEGRITY,
+    EXAM_START_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -77,6 +79,9 @@ if files.index(ATTEMPT_KEY_SNAPSHOT) >= files.index(GRADING_RULE_FIX):
 if files.index(GRADING_RULE_FIX) >= files.index(EXAM_ANSWERS_INTEGRITY):
     fail("Antwortintegrität steht vor der Teilpunkte-Korrektur.")
 
+if files.index(EXAM_ANSWERS_INTEGRITY) >= files.index(EXAM_START_RPC):
+    fail("Prüfungsstart-RPC steht vor der Antwortintegrität.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -96,6 +101,10 @@ grading_rule_fix = (
 
 exam_answers_integrity = (
     MIGRATIONS / EXAM_ANSWERS_INTEGRITY
+).read_text(encoding="utf-8")
+
+exam_start_rpc = (
+    MIGRATIONS / EXAM_START_RPC
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -260,6 +269,80 @@ if "create policy" in exam_answers_integrity_lower:
 if "grant " in exam_answers_integrity_lower:
     fail("Antwortintegrität darf keine Direktrechte vergeben.")
 
+exam_start_rpc_lower = exam_start_rpc.lower()
+exam_start_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_start_rpc_lower,
+)
+
+required_exam_start_markers = (
+    "uq_exam_attempts_open_full_simulation",
+    "function public.accaoui_start_full_exam(",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "p.status = 'active'",
+    "pg_catalog.pg_advisory_xact_lock(",
+    "c.status = 'active'",
+    "e.access_status = 'allowed'",
+    "ea.finished_at is null",
+    "for share of q, k",
+    "v_question_count <> 82 or v_max_points <> 120",
+    "insert into public.exam_attempts (",
+    "insert into public.exam_attempt_questions (",
+    "insert into public.exam_attempt_question_answer_keys (",
+    "'per_correct_selection_no_penalty'",
+    "v_inserted_questions <> 82",
+    "v_inserted_keys <> 82",
+    "grant execute on function "
+    "public.accaoui_start_full_exam(uuid) to authenticated",
+)
+
+for marker in required_exam_start_markers:
+    if marker not in exam_start_rpc_compact:
+        fail(f"Prüfungsstart-RPC-Anweisung fehlt: {marker}")
+
+return_match = re.search(
+    r"returns\s+table\s*\((.*?)\)\s*language\s+plpgsql",
+    exam_start_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not return_match:
+    fail("Rückgabestruktur des Prüfungsstart-RPC fehlt.")
+
+return_columns = re.sub(
+    r"\s+",
+    " ",
+    return_match.group(1).strip().lower(),
+)
+
+expected_return_columns = (
+    "exam_attempt_id uuid, question_count integer, "
+    "max_points integer, resumed boolean"
+)
+
+if return_columns != expected_return_columns:
+    fail(
+        "Prüfungsstart-RPC gibt unerwartete Spalten zurück: "
+        f"{return_columns}"
+    )
+
+if "p_participant_id" in exam_start_rpc_lower:
+    fail("Teilnehmer-ID darf nicht als RPC-Parameter übergeben werden.")
+
+for forbidden in (
+    "create policy",
+    "grant select",
+    "grant insert",
+    "grant update",
+    "grant delete",
+):
+    if forbidden in exam_start_rpc_lower:
+        fail(f"Unzulässige Prüfungsstart-RPC-Anweisung: {forbidden}")
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -409,11 +492,15 @@ print("Bewertungsregel: Teilpunkte ohne Punktabzug")
 print("Antwortspeicher: private Lösungsschlüssel entfernt")
 print("Antwortzuordnung: eindeutig und versuchsgebunden")
 print("Prüfungsantworten: nur RPC-Schreibzugriff")
+print("Prüfungsstart-RPC: atomar und idempotent vorbereitet")
+print("Prüfungsstart-RPC: 82 Fragen und 120 Punkte erzwungen")
+print("Prüfungsstart-RPC: keine Lösungsschlüssel in der Rückgabe")
 print(
     "Reihenfolge: Schema vor RLS vor Lockdown "
     "vor Fragen-Schema vor Fragen-RLS "
     "vor Versuchsschlüssel-Snapshot "
     "vor Teilpunkte-Korrektur "
-    "vor Antwortintegrität"
+    "vor Antwortintegrität "
+    "vor Prüfungsstart-RPC"
 )
 print("Live-Ausführung: nein")

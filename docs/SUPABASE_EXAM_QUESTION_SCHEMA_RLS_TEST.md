@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.26e
+Stand: v27.27a
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -11,6 +11,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260716_v2726c_exam_attempt_answer_key_snapshot.sql`
 - `20260716_v2726d_exam_attempt_grading_rule_partial_points.sql`
 - `20260716_v2726e_exam_answers_integrity.sql`
+- `20260716_v2727a_exam_start_rpc.sql`
 
 ## Geprüfte Tabellen
 
@@ -54,11 +55,26 @@ Bestätigt wurden:
 - fester `search_path` für den Rollen-Helper
 - keine Live-Ausführung
 
+## Prüfungsstart-RPC-Prüfung
+
+Bestätigt wurden:
+
+- Teilnehmeridentität ausschließlich über `auth.uid()`
+- aktiver Teilnehmer-, Kurs- und Einschreibungszugang
+- Advisory Lock gegen parallele Doppelstarts
+- eindeutiger offener Versuch pro Teilnehmer und Kurs
+- idempotentes Fortsetzen vollständiger offener Versuche
+- exakt 82 Fragen und 120 Punkte
+- atomare sichtbare und private Snapshots
+- fester `search_path` und `row_security=off`
+- Ausführungsrecht ausschließlich für `authenticated`
+- keine Lösungsschlüssel in der RPC-Rückgabe
+
 ## Automatische Migrationsprüfung
 
 Erwarteter Stand:
 
-- 8 SQL-Dateien
+- 9 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
@@ -76,4 +92,4 @@ Migration wurde auf einer Live-Datenbank ausgeführt.
 Sichere Snapshot-Schreibvorgänge und Prüfungsbewertungen folgen
 später ausschließlich über geprüfte RPC-Funktionen.
 
-Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte und Antwortintegrität statisch bestätigt
+Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität und Prüfungsstart-RPC statisch bestätigt

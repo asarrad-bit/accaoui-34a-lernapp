@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.26e
+Stand: v27.27a
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -201,6 +201,23 @@ Vor einem Import wird geprüft:
 - Core-Auswahl enthält exakt 82 Positionen und 120 Punkte
 - jede importierte Version erhält einen Inhalts-Hash
 
+## Prüfungsstart-RPC v27.27a
+
+Der vorbereitete RPC `accaoui_start_full_exam(p_course_id uuid)`:
+
+- bestimmt den Teilnehmer ausschließlich über `auth.uid()`
+- prüft aktiven Teilnehmer-, Kurs- und Einschreibungsstatus
+- berücksichtigt Beginn und Ende des Kurszugangs
+- verhindert parallele doppelte Prüfungsstarts
+- setzt einen vollständigen offenen Versuch sicher fort
+- verlangt exakt 82 Core-Fragen und 120 Punkte
+- erstellt sichtbare und private Snapshots atomar
+- verwendet `per_correct_selection_no_penalty`
+- gibt keine Lösungsschlüssel oder Erklärungen zurück
+- besitzt einen festen `search_path`
+- ist nur für `authenticated` ausführbar
+- wurde noch nicht live ausgeführt
+
 ## Sicherheitsgrenze
 
 - kein Import über den Browser
@@ -223,9 +240,9 @@ Vor einem Import wird geprüft:
 
 ## Nächster Schritt
 
-`v27.27a`
+`v27.27b`
 
-Sicheren Prüfungsstart-RPC mit atomaren Fragen- und
-Lösungsschlüssel-Snapshots vorbereiten.
+Sicheren RPC zum Speichern ausgewählter Teilnehmerantworten
+vorbereiten, ohne Punkte oder Lösungsschlüssel anzunehmen.
 
-Status: Antwortspeicher manipulationsgeschützt vorbereitet
+Status: Prüfungsstart-RPC atomar vorbereitet
