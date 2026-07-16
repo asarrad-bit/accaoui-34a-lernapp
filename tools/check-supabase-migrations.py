@@ -9,6 +9,7 @@ SCHEMA = "20260710_v2720b_mvp_schema.sql"
 RLS = "20260710_v2721a_mvp_rls_policies.sql"
 LOCKDOWN = "20260714_v2724b_exam_result_insert_lockdown.sql"
 QUESTION_SCHEMA = "20260716_v2725c_exam_question_schema.sql"
+QUESTION_RLS = "20260716_v2725d_exam_question_rls.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -38,7 +39,7 @@ if not MIGRATIONS.is_dir():
 
 files = sorted(p.name for p in MIGRATIONS.glob("*.sql"))
 
-for required in (SCHEMA, RLS, LOCKDOWN, QUESTION_SCHEMA):
+for required in (SCHEMA, RLS, LOCKDOWN, QUESTION_SCHEMA, QUESTION_RLS):
     if required not in files:
         fail(f"Migration fehlt: {required}")
 
@@ -51,11 +52,17 @@ if files.index(RLS) >= files.index(LOCKDOWN):
 if files.index(LOCKDOWN) >= files.index(QUESTION_SCHEMA):
     fail("Fragen-Schema steht vor dem Prüfungs-Lockdown.")
 
+if files.index(QUESTION_SCHEMA) >= files.index(QUESTION_RLS):
+    fail("Fragen-RLS steht vor dem Fragen-Schema.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
 question_schema = (
     MIGRATIONS / QUESTION_SCHEMA
+).read_text(encoding="utf-8")
+question_rls = (
+    MIGRATIONS / QUESTION_RLS
 ).read_text(encoding="utf-8")
 
 tables = set(
@@ -120,6 +127,75 @@ for marker in required_question_markers:
 
 if "create policy" in question_schema_lower:
     fail("Fragen-Schema darf noch keine RLS-Policy erstellen.")
+
+question_rls_lower = question_rls.lower()
+
+expected_question_policies = {
+    (
+        "exam_questions_content_manager_manage",
+        "exam_questions",
+    ),
+    (
+        "exam_question_answer_keys_content_manager_manage",
+        "exam_question_answer_keys",
+    ),
+    (
+        "exam_attempt_questions_select_own_or_content_manager",
+        "exam_attempt_questions",
+    ),
+}
+
+question_policies = set(
+    re.findall(
+        r'create\s+policy\s+"([^"]+)"\s+'
+        r'on\s+(?:public\.)?([a-z_]+)',
+        question_rls,
+        flags=re.IGNORECASE,
+    )
+)
+
+if question_policies != expected_question_policies:
+    fail(
+        f"Unerwartete Fragen-RLS-Policies: "
+        f"{sorted(question_policies)}"
+    )
+
+required_rls_markers = (
+    "public.accaoui_is_exam_content_manager()",
+    "set search_path = pg_catalog, public",
+    "ap.role in ('admin', 'dozent')",
+    "grant execute",
+    "grant select, insert, update, delete",
+    "grant select\non table public.exam_attempt_questions",
+)
+
+for marker in required_rls_markers:
+    if marker not in question_rls_lower:
+        fail(f"Fragen-RLS-Anweisung fehlt: {marker}")
+
+if "'support'" in question_rls_lower:
+    fail("Support darf kein Prüfungsinhalts-Manager sein.")
+
+attempt_policy_marker = (
+    'create policy '
+    '"exam_attempt_questions_select_own_or_content_manager"\n'
+    "on public.exam_attempt_questions\n"
+    "for select"
+)
+
+if attempt_policy_marker not in question_rls_lower:
+    fail("Prüfungs-Snapshot-Policy ist nicht rein lesend.")
+
+for forbidden_action in ("insert", "update", "delete"):
+    pattern = (
+        rf"on\s+(?:public\.)?exam_attempt_questions"
+        rf"\s+for\s+{forbidden_action}"
+    )
+    if re.search(pattern, question_rls, flags=re.IGNORECASE):
+        fail(
+            "Teilnehmer-Schreibpolicy für Prüfungs-Snapshots gefunden: "
+            f"{forbidden_action}"
+        )
 
 policies = re.findall(
     r'create\s+policy\s+"[^"]+"\s+on\s+([a-z_]+)',
@@ -188,6 +264,16 @@ print(
 )
 print(f"Basis-RLS-Policies: {len(policies)}")
 print(f"Effektive RLS-Policies: {effective_policy_count}")
+print(f"Fragen-RLS-Policies: {len(question_policies)}")
+print(
+    f"Effektive Policies gesamt: "
+    f"{effective_policy_count + len(question_policies)}"
+)
 print("Direkte Prüfungs-Inserts für Teilnehmer: gesperrt")
-print("Reihenfolge: Schema vor RLS vor Lockdown vor Fragen-Schema")
+print("Prüfungsinhalte: nur Admin/Dozent verwaltbar")
+print("Prüfungs-Snapshots: Teilnehmer nur lesend für eigene Versuche")
+print(
+    "Reihenfolge: Schema vor RLS vor Lockdown "
+    "vor Fragen-Schema vor Fragen-RLS"
+)
 print("Live-Ausführung: nein")
