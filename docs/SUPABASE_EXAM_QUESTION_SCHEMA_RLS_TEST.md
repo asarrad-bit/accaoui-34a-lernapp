@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.27d
+Stand: v27.27e
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -14,6 +14,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260716_v2727a_exam_start_rpc.sql`
 - `20260716_v2727b_exam_answer_save_rpc.sql`
 - `20260716_v2727d_exam_finish_rpc.sql`
+- `20260716_v2727e_exam_selection_limit_security.sql`
 
 ## Geprüfte Tabellen
 
@@ -103,11 +104,25 @@ Bestätigt wurden:
 - keine Punkte oder Ergebniswerte als Browserparameter
 - keine Lösungsschlüssel in der Rückgabe
 
+## Auswahlbegrenzungs-Sicherheitsprüfung
+
+Bestätigt wurden:
+
+- Auswahlgrenze aus privatem Versuchsschlüssel
+- keine Offenlegung richtiger Antwortindizes
+- Trennung von Auswahlzahl und Fragepunktzahl
+- Sperre gegen Überauswahl beim Speichern
+- erneute Sperre gegen Überauswahl vor der Bewertung
+- gültige Lösungssnapshot-Grenzen
+- kontrolliertes Ersetzen beider RPC-Funktionen
+- feste `search_path`- und `row_security`-Einstellungen
+- Ausführungsrecht ausschließlich für `authenticated`
+
 ## Automatische Migrationsprüfung
 
 Erwarteter Stand:
 
-- 11 SQL-Dateien
+- 12 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
@@ -125,4 +140,4 @@ Migration wurde auf einer Live-Datenbank ausgeführt.
 Sichere Snapshot-Schreibvorgänge und Prüfungsbewertungen folgen
 später ausschließlich über geprüfte RPC-Funktionen.
 
-Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC und serverseitiger Prüfungsabschluss statisch bestätigt
+Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC, Prüfungsabschluss und serverseitige Auswahlbegrenzung statisch bestätigt

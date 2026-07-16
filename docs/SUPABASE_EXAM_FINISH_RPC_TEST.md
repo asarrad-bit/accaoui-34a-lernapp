@@ -1,6 +1,6 @@
 # Supabase Prüfungsabschluss-RPC – statischer Sicherheitstest
 
-Stand: v27.27d
+Stand: v27.27e
 
 Status: vorbereitet und statisch geprüft, nicht live ausgeführt
 
@@ -29,6 +29,8 @@ Status: vorbereitet und statisch geprüft, nicht live ausgeführt
 - teilrichtige Auswahlen erhalten Punkte je richtigem Kreuz
 - falsche Auswahlen erzeugen keinen Punktabzug
 - Teilpunkte werden durch die Fragepunktzahl gedeckelt
+- Lösungssnapshots werden auf eine gültige Auswahlgrenze geprüft
+- Überauswahlen werden vor jeder Bewertung erneut abgelehnt
 - alle 82 Antwortzeilen werden serverseitig bewertet
 - bestanden ab 60 von 120 Punkten
 - Bewertung und Abschluss erfolgen atomar

@@ -1,6 +1,6 @@
 # Supabase Antwortspeicher-RPC – statischer Sicherheitstest
 
-Stand: v27.27c
+Stand: v27.27e
 
 Status: vorbereitet und statisch geprüft, nicht live ausgeführt
 
@@ -28,8 +28,11 @@ p_selected_answers jsonb
 - nur ganzzahlige und vorhandene Antwortindizes sind erlaubt
 - doppelte Antwortindizes werden abgelehnt
 - Antwortindizes werden sortiert und normalisiert
+- die Auswahlgrenze wird aus dem privaten Lösungssnapshot bestimmt
+- richtige Antwortindizes werden dabei nicht zurückgegeben
 - bei `single` und `combination` ist höchstens ein Index erlaubt
 - bei `multiple` und `praxisfall` sind mehrere Indizes möglich
+- Überauswahlen werden serverseitig abgelehnt
 - die Punktzahl begrenzt nicht die Zahl auswählbarer Antworten
 - erneutes Speichern aktualisiert dieselbe Versuchsfrage
 - Punkte und Richtigkeitsstatus bleiben bis zur Bewertung neutral

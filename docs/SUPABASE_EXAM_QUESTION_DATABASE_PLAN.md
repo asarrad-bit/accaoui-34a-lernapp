@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.27d
+Stand: v27.27e
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -252,6 +252,19 @@ Der vorbereitete RPC `accaoui_finish_full_exam(...)`:
 - ist ausschließlich für `authenticated` ausführbar
 - wurde noch nicht live ausgeführt
 
+## Auswahlbegrenzungs-Korrektur v27.27e
+
+Die korrigierten Antwortspeicher- und Abschlussfunktionen:
+
+- leiten die erlaubte Auswahlzahl aus dem privaten Versuchsschlüssel ab
+- geben keine richtigen Antwortindizes an den Browser zurück
+- trennen Auswahlgrenze und erreichbare Punktzahl
+- sperren Überauswahlen bereits beim Speichern
+- prüfen Überauswahlen vor der Bewertung erneut
+- verhindern das automatische Erzielen von Punkten durch Auswahl aller Optionen
+- behalten die Teilpunktebewertung ohne Punktabzug bei
+- wurden noch nicht live ausgeführt
+
 ## Sicherheitsgrenze
 
 - kein Import über den Browser
@@ -274,9 +287,9 @@ Der vorbereitete RPC `accaoui_finish_full_exam(...)`:
 
 ## Nächster Schritt
 
-`v27.27e`
+`v27.27f`
 
 Sicheren Ergebnisabruf-RPC für eigene abgeschlossene
 Prüfungsversuche ohne Lösungsschlüssel vorbereiten.
 
-Status: Prüfungsabschluss serverseitig vorbereitet
+Status: Auswahlbegrenzung serverseitig abgesichert

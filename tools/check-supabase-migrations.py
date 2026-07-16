@@ -16,6 +16,7 @@ EXAM_ANSWERS_INTEGRITY = "20260716_v2726e_exam_answers_integrity.sql"
 EXAM_START_RPC = "20260716_v2727a_exam_start_rpc.sql"
 EXAM_ANSWER_SAVE_RPC = "20260716_v2727b_exam_answer_save_rpc.sql"
 EXAM_FINISH_RPC = "20260716_v2727d_exam_finish_rpc.sql"
+EXAM_SELECTION_LIMIT_SECURITY = "20260716_v2727e_exam_selection_limit_security.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -58,6 +59,7 @@ for required in (
     EXAM_START_RPC,
     EXAM_ANSWER_SAVE_RPC,
     EXAM_FINISH_RPC,
+    EXAM_SELECTION_LIMIT_SECURITY,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -92,6 +94,14 @@ if files.index(EXAM_START_RPC) >= files.index(EXAM_ANSWER_SAVE_RPC):
 if files.index(EXAM_ANSWER_SAVE_RPC) >= files.index(EXAM_FINISH_RPC):
     fail("Prüfungsabschluss-RPC steht vor dem Antwortspeicher-RPC.")
 
+if files.index(EXAM_FINISH_RPC) >= files.index(
+    EXAM_SELECTION_LIMIT_SECURITY
+):
+    fail(
+        "Auswahlbegrenzungs-Korrektur steht vor dem "
+        "Prüfungsabschluss-RPC."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -123,6 +133,10 @@ exam_answer_save_rpc = (
 
 exam_finish_rpc = (
     MIGRATIONS / EXAM_FINISH_RPC
+).read_text(encoding="utf-8")
+
+exam_selection_limit_security = (
+    MIGRATIONS / EXAM_SELECTION_LIMIT_SECURITY
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -638,6 +652,142 @@ for forbidden_content in (
             f"{forbidden_content}"
         )
 
+selection_security_lower = exam_selection_limit_security.lower()
+selection_security_compact = re.sub(
+    r"\s+",
+    " ",
+    selection_security_lower,
+)
+
+required_selection_security_markers = (
+    "function public.accaoui_save_exam_answer(",
+    "function public.accaoui_finish_full_exam(",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_selection_limit integer",
+    "join public.exam_attempt_question_answer_keys ak",
+    "jsonb_array_length(ak.correct_answers_snapshot)",
+    "v_selection_limit < 1",
+    "v_selection_limit > v_option_count",
+    "v_answer_count > v_selection_limit",
+    "es wurden zu viele antworten ausgewählt",
+    "ungültige oder überhöhte auswahlen dürfen niemals bewertet werden",
+    "jsonb_array_length(ans.selected_answers) > "
+    "jsonb_array_length(ak.correct_answers_snapshot)",
+    "mindestens eine prüfungsantwort enthält zu viele auswahlen",
+    "grant execute on function "
+    "public.accaoui_save_exam_answer(uuid, jsonb) to authenticated",
+    "grant execute on function "
+    "public.accaoui_finish_full_exam(uuid) to authenticated",
+)
+
+for marker in required_selection_security_markers:
+    if marker not in selection_security_compact:
+        fail(f"Auswahlbegrenzungs-Anweisung fehlt: {marker}")
+
+if selection_security_lower.count(
+    "create or replace function public.accaoui_save_exam_answer("
+) != 1:
+    fail("Antwortspeicher-Funktion muss genau einmal ersetzt werden.")
+
+if selection_security_lower.count(
+    "create or replace function public.accaoui_finish_full_exam("
+) != 1:
+    fail("Abschlussfunktion muss genau einmal ersetzt werden.")
+
+if selection_security_compact.count("security definer") != 2:
+    fail("Beide korrigierten Funktionen müssen Security Definer sein.")
+
+if selection_security_compact.count(
+    "set search_path = pg_catalog, public"
+) != 2:
+    fail("Beide korrigierten Funktionen brauchen festen search_path.")
+
+if selection_security_compact.count("set row_security = off") != 2:
+    fail("Beide korrigierten Funktionen brauchen row_security=off.")
+
+if "v_answer_count > v_max_points" in selection_security_compact:
+    fail("Punktewert darf die Auswahlzahl nicht begrenzen.")
+
+save_match = re.search(
+    r"function\s+public\.accaoui_save_exam_answer\s*"
+    r"\((.*?)\)\s*returns\s+table\s*"
+    r"\((.*?)\)\s*language\s+plpgsql",
+    exam_selection_limit_security,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not save_match:
+    fail("Korrigierte Antwortspeicher-Signatur fehlt.")
+
+save_parameters = re.sub(
+    r"\s+",
+    " ",
+    save_match.group(1).strip().lower(),
+)
+save_returns = re.sub(
+    r"\s+",
+    " ",
+    save_match.group(2).strip().lower(),
+)
+
+if save_parameters != (
+    "p_attempt_question_id uuid, p_selected_answers jsonb"
+):
+    fail(f"Unerwartete Antwortspeicher-Parameter: {save_parameters}")
+
+if save_returns != (
+    "attempt_question_id uuid, selected_answers jsonb, saved boolean"
+):
+    fail(f"Unerwartete Antwortspeicher-Rückgabe: {save_returns}")
+
+finish_match = re.search(
+    r"function\s+public\.accaoui_finish_full_exam\s*"
+    r"\((.*?)\)\s*returns\s+table\s*"
+    r"\((.*?)\)\s*language\s+plpgsql",
+    exam_selection_limit_security,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not finish_match:
+    fail("Korrigierte Abschlussfunktions-Signatur fehlt.")
+
+finish_parameters = re.sub(
+    r"\s+",
+    " ",
+    finish_match.group(1).strip().lower(),
+)
+finish_returns = re.sub(
+    r"\s+",
+    " ",
+    finish_match.group(2).strip().lower(),
+)
+
+if finish_parameters != "p_exam_attempt_id uuid":
+    fail(f"Unerwartete Abschlussparameter: {finish_parameters}")
+
+expected_finish_returns = (
+    "exam_attempt_id uuid, answered_questions integer, "
+    "correct_questions integer, score_points integer, "
+    "max_points integer, passed boolean, "
+    "finished_at timestamptz, already_finished boolean"
+)
+
+if finish_returns != expected_finish_returns:
+    fail(f"Unerwartete Abschlussrückgabe: {finish_returns}")
+
+for forbidden in (
+    "create policy",
+    "grant select",
+    "grant insert",
+    "grant update",
+    "grant delete",
+    "service_role",
+):
+    if forbidden in selection_security_lower:
+        fail(f"Unzulässiger Inhalt in v27.27e: {forbidden}")
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -801,10 +951,14 @@ print(
     "vor Antwortintegrität "
     "vor Prüfungsstart-RPC "
     "vor Antwortspeicher-RPC "
-    "vor Prüfungsabschluss-RPC"
+    "vor Prüfungsabschluss-RPC "
+    "vor Auswahlbegrenzungs-Korrektur"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
 print("Prüfungsabschluss-RPC: Bestehensgrenze 60 von 120 Punkten")
 print("Prüfungsabschluss-RPC: idempotenter Abschluss")
+print("Auswahlbegrenzung: aus privatem Versuchsschlüssel abgeleitet")
+print("Auswahlbegrenzung: Überauswahl beim Speichern gesperrt")
+print("Auswahlbegrenzung: Überauswahl vor Bewertung erneut gesperrt")
 print("Live-Ausführung: nein")
