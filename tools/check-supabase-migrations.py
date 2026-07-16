@@ -10,6 +10,7 @@ RLS = "20260710_v2721a_mvp_rls_policies.sql"
 LOCKDOWN = "20260714_v2724b_exam_result_insert_lockdown.sql"
 QUESTION_SCHEMA = "20260716_v2725c_exam_question_schema.sql"
 QUESTION_RLS = "20260716_v2725d_exam_question_rls.sql"
+ATTEMPT_KEY_SNAPSHOT = "20260716_v2726c_exam_attempt_answer_key_snapshot.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -26,6 +27,7 @@ QUESTION_TABLES = {
     "exam_questions",
     "exam_question_answer_keys",
     "exam_attempt_questions",
+    "exam_attempt_question_answer_keys",
 }
 
 
@@ -39,7 +41,14 @@ if not MIGRATIONS.is_dir():
 
 files = sorted(p.name for p in MIGRATIONS.glob("*.sql"))
 
-for required in (SCHEMA, RLS, LOCKDOWN, QUESTION_SCHEMA, QUESTION_RLS):
+for required in (
+    SCHEMA,
+    RLS,
+    LOCKDOWN,
+    QUESTION_SCHEMA,
+    QUESTION_RLS,
+    ATTEMPT_KEY_SNAPSHOT,
+):
     if required not in files:
         fail(f"Migration fehlt: {required}")
 
@@ -55,6 +64,9 @@ if files.index(LOCKDOWN) >= files.index(QUESTION_SCHEMA):
 if files.index(QUESTION_SCHEMA) >= files.index(QUESTION_RLS):
     fail("Fragen-RLS steht vor dem Fragen-Schema.")
 
+if files.index(QUESTION_RLS) >= files.index(ATTEMPT_KEY_SNAPSHOT):
+    fail("Versuchsschlüssel-Snapshot steht vor dem Fragen-RLS.")
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -64,6 +76,13 @@ question_schema = (
 question_rls = (
     MIGRATIONS / QUESTION_RLS
 ).read_text(encoding="utf-8")
+attempt_key_snapshot = (
+    MIGRATIONS / ATTEMPT_KEY_SNAPSHOT
+).read_text(encoding="utf-8")
+
+question_schema_bundle = (
+    question_schema + "\n" + attempt_key_snapshot
+)
 
 tables = set(
     re.findall(
@@ -85,7 +104,7 @@ for table in EXPECTED_TABLES:
 question_tables = set(
     re.findall(
         r"create\s+table\s+if\s+not\s+exists\s+([a-z_]+)",
-        question_schema,
+        question_schema_bundle,
         flags=re.IGNORECASE,
     )
 )
@@ -106,10 +125,14 @@ if unexpected_question_tables:
 
 for table in QUESTION_TABLES:
     pattern = rf"alter\s+table\s+{table}\s+enable\s+row\s+level\s+security"
-    if not re.search(pattern, question_schema, flags=re.IGNORECASE):
+    if not re.search(
+        pattern,
+        question_schema_bundle,
+        flags=re.IGNORECASE,
+    ):
         fail(f"RLS-Aktivierung fehlt für Prüfungstabelle: {table}")
 
-question_schema_lower = question_schema.lower()
+question_schema_lower = question_schema_bundle.lower()
 
 required_question_markers = (
     "unique (source_question_id, version)",
@@ -118,6 +141,10 @@ required_question_markers = (
     "jsonb_typeof(answer_options) = 'array'",
     "jsonb_typeof(correct_answers) = 'array'",
     "jsonb_typeof(answer_options_snapshot) = 'array'",
+    "jsonb_typeof(correct_answers_snapshot) = 'array'",
+    "references exam_attempt_questions(id) on delete cascade",
+    "grading_rule in ('exact_set')",
+    "revoke all on table exam_attempt_question_answer_keys",
     "question_type in ('single', 'multiple', 'praxisfall', 'combination')",
     "question_type_snapshot in ('single', 'multiple', 'praxisfall', 'combination')",
     "revoke all on table exam_question_answer_keys",
@@ -129,6 +156,14 @@ for marker in required_question_markers:
 
 if "create policy" in question_schema_lower:
     fail("Fragen-Schema darf noch keine RLS-Policy erstellen.")
+
+attempt_key_snapshot_lower = attempt_key_snapshot.lower()
+
+if "create policy" in attempt_key_snapshot_lower:
+    fail("Privater Versuchsschlüssel darf keine Direktpolicy erhalten.")
+
+if "grant " in attempt_key_snapshot_lower:
+    fail("Privater Versuchsschlüssel darf keinen Direktgrant erhalten.")
 
 question_rls_lower = question_rls.lower()
 
@@ -274,8 +309,10 @@ print(
 print("Direkte Prüfungs-Inserts für Teilnehmer: gesperrt")
 print("Prüfungsinhalte: nur Admin/Dozent verwaltbar")
 print("Prüfungs-Snapshots: Teilnehmer nur lesend für eigene Versuche")
+print("Private Versuchsschlüssel: direkter Zugriff vollständig gesperrt")
 print(
     "Reihenfolge: Schema vor RLS vor Lockdown "
-    "vor Fragen-Schema vor Fragen-RLS"
+    "vor Fragen-Schema vor Fragen-RLS "
+    "vor Versuchsschlüssel-Snapshot"
 )
 print("Live-Ausführung: nein")

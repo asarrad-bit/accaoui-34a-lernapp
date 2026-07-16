@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.25b
+Stand: v27.26c
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -102,6 +102,29 @@ Regeln:
 - spätere Änderungen der Fragenbank verändern laufende Versuche nicht
 - richtige Antworten werden nicht in dieser Tabelle gespeichert
 
+## Tabelle exam_attempt_question_answer_keys
+
+Diese private Tabelle friert den Lösungsschlüssel ein, der beim
+Start eines konkreten Prüfungsversuchs gültig war.
+
+Geplante Felder:
+
+- `attempt_question_id uuid primary key`
+- `correct_answers_snapshot jsonb not null`
+- `explanation_snapshot text`
+- `grading_rule text not null`
+- `answer_hash_snapshot text not null`
+- `created_at timestamptz not null`
+
+Regeln:
+
+- genau ein privater Lösungsschlüssel pro Versuchsfrage
+- Erstellung gemeinsam mit dem sichtbaren Fragen-Snapshot
+- spätere Änderungen am zentralen Lösungsschlüssel verändern
+  bestehende Prüfungsversuche nicht
+- kein direkter Teilnehmer-, Support- oder Browserzugriff
+- Lesen und Schreiben nur über geprüfte Bewertungs-RPCs
+
 ## Anpassung der bestehenden exam_answers
 
 Später erforderlich:
@@ -120,6 +143,7 @@ Teilnehmer erhalten:
 
 - keinen direkten Zugriff auf die gesamte Fragenbank
 - keinen Zugriff auf `exam_question_answer_keys`
+- keinen Zugriff auf `exam_attempt_question_answer_keys`
 - nur die festen Fragen ihres eigenen Prüfungsversuchs
 - keine direkten Insert-, Update- oder Delete-Rechte
 
@@ -144,13 +168,13 @@ Vor einem Import wird geprüft:
 
 - jede Fragen-ID ist eindeutig
 - Kategorie ist kanonisch
-- Typ ist `single` oder `multiple`
+- Typ ist `single`, `multiple`, `praxisfall` oder `combination`
 - Punktewert ist 1 oder 2
 - Antwortmöglichkeiten bilden ein JSON-Array
 - richtige Antwortindizes existieren tatsächlich
 - Indizes sind eindeutig
-- Single-Choice besitzt genau eine richtige Antwort
-- Multiple-Choice besitzt mindestens eine richtige Antwort
+- `single` und `combination` besitzen genau eine richtige Antwort
+- `multiple` und `praxisfall` besitzen mindestens eine richtige Antwort
 - Core-Auswahl enthält exakt 82 Positionen und 120 Punkte
 - jede importierte Version erhält einen Inhalts-Hash
 
@@ -165,7 +189,7 @@ Vor einem Import wird geprüft:
 
 ## Umsetzungsreihenfolge
 
-1. Schema-Migration für die drei neuen Tabellen
+1. Schema-Migration für die vier sicheren Prüfungstabellen
 2. RLS- und Rollenregeln
 3. lokales Import- und Validierungswerkzeug
 4. kontrollierter Fragenbank-Import
@@ -176,9 +200,8 @@ Vor einem Import wird geprüft:
 
 ## Nächster Schritt
 
-`v27.25c`
+`v27.26d`
 
-Schema-Migration für `exam_questions`,
-`exam_question_answer_keys` und `exam_attempt_questions` vorbereiten.
+Fragenbankprüfer- und Helper-Integration dokumentieren.
 
-Status: sicherer Fragen-Datenbankplan festgelegt
+Status: privater Lösungsschlüssel pro Prüfungsversuch festgelegt
