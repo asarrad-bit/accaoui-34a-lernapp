@@ -21,6 +21,9 @@ EXAM_RESULT_RPC = "20260717_v2727f_exam_result_rpc.sql"
 EXAM_ATTEMPT_INTEGRITY = (
     "20260717_v2728b_exam_attempt_integrity.sql"
 )
+FULL_EXAM_STATE_INTEGRITY = (
+    "20260717_v2728c_full_exam_state_integrity.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -66,6 +69,7 @@ for required in (
     EXAM_SELECTION_LIMIT_SECURITY,
     EXAM_RESULT_RPC,
     EXAM_ATTEMPT_INTEGRITY,
+    FULL_EXAM_STATE_INTEGRITY,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -124,6 +128,14 @@ if files.index(EXAM_RESULT_RPC) >= files.index(
         "Ergebnisabruf-RPC."
     )
 
+if files.index(EXAM_ATTEMPT_INTEGRITY) >= files.index(
+    FULL_EXAM_STATE_INTEGRITY
+):
+    fail(
+        "Vollsimulations-Zustandsintegrität steht vor der "
+        "Prüfungsversuch-Integrität."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -167,6 +179,10 @@ exam_result_rpc = (
 
 exam_attempt_integrity = (
     MIGRATIONS / EXAM_ATTEMPT_INTEGRITY
+).read_text(encoding="utf-8")
+
+full_exam_state_integrity = (
+    MIGRATIONS / FULL_EXAM_STATE_INTEGRITY
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -990,6 +1006,66 @@ for forbidden in (
         )
 
 
+full_exam_state_integrity_lower = (
+    full_exam_state_integrity.lower()
+)
+full_exam_state_integrity_compact = re.sub(
+    r"\s+",
+    " ",
+    full_exam_state_integrity_lower,
+)
+
+required_full_exam_state_markers = (
+    "where mode = 'full_simulation'",
+    "max_points <> 120",
+    "started_at is null",
+    "score_points <> 0",
+    "finished_at is not null",
+    "passed <> (score_points >= 60)",
+    "drop constraint if exists "
+    "exam_attempts_full_simulation_state_check",
+    "add constraint "
+    "exam_attempts_full_simulation_state_check",
+    "mode <> 'full_simulation'",
+    "max_points = 120",
+    "started_at is not null",
+    "finished_at is null",
+    "score_points = 0",
+    "not passed",
+    "passed = (score_points >= 60)",
+)
+
+for marker in required_full_exam_state_markers:
+    if marker not in full_exam_state_integrity_compact:
+        fail(
+            "Vollsimulations-Zustandsanweisung fehlt: "
+            f"{marker}"
+        )
+
+if full_exam_state_integrity_lower.count(
+    "add constraint "
+    "exam_attempts_full_simulation_state_check"
+) != 1:
+    fail(
+        "Vollsimulations-Zustandsconstraint muss "
+        "genau einmal ergänzt werden."
+    )
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "service_role",
+    "insert into",
+    "update public.",
+    "delete from",
+):
+    if forbidden in full_exam_state_integrity_lower:
+        fail(
+            "Unzulässiger Inhalt in "
+            f"Vollsimulations-Zustandsintegrität: {forbidden}"
+        )
+
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -1156,7 +1232,8 @@ print(
     "vor Prüfungsabschluss-RPC "
     "vor Auswahlbegrenzungs-Korrektur "
     "vor Ergebnisabruf-RPC "
-    "vor Prüfungsversuch-Integrität"
+    "vor Prüfungsversuch-Integrität "
+    "vor Vollsimulations-Zustandsintegrität"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -1172,4 +1249,6 @@ print("Ergebnisabruf-RPC: keine Lösungsschlüssel in der Rückgabe")
 print("Ergebnisabruf-RPC: historische Ergebnisse sicher abrufbar")
 print("Prüfungsversuch-Integrität: score_points <= max_points")
 print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
+print("Vollsimulation offen: 0 von 120 Punkten und nicht bestanden")
+print("Vollsimulation abgeschlossen: Bestehen entspricht mindestens 60 Punkten")
 print("Live-Ausführung: nein")

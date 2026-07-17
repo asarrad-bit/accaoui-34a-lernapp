@@ -1,6 +1,6 @@
 # Supabase Prüfungs-RPC-Flow – End-to-End-Sicherheitsaudit
 
-Stand: v27.28b
+Stand: v27.28c
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -114,6 +114,17 @@ Der Migrationsprüfer erzwingt zusätzlich ausdrücklich den Marker:
 
 Damit kann diese Ergebnisintegritätsprüfung nicht unbemerkt aus dem
 RPC entfernt werden.
+
+## Vollsimulations-Zustandsgrenze v27.28c
+
+Die Datenbank erzwingt zusätzlich:
+
+- Vollsimulationen verwenden exakt 120 Maximalpunkte
+- offene Versuche besitzen null Punkte und `passed=false`
+- abgeschlossene Versuche gleichen `passed` mit
+  `score_points >= 60` ab
+- jede Vollsimulation besitzt eine Startzeit
+- ungültige bestehende Zustände führen zum Migrationsabbruch
 
 ## Datenbank-Integritätsgrenzen v27.28b
 

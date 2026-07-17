@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Prüfungsintegrität Behebungsnachweis
 
-Stand: v27.28b
+Stand: v27.28c
 
 Status: ursprüngliche Befunde statisch behoben, nicht live ausgeführt
 
@@ -79,6 +79,17 @@ Der Prüfungsstart-RPC prüft serverseitig:
 | wiederholte Übermittlung | idempotente Start- und Abschlusslogik |
 | Überauswahl von Antworten | beim Speichern und vor Bewertung gesperrt |
 | Ergebnisdaten widersprüchlich | Ergebnis-RPC prüft 82/120 und Kategorien |
+
+## Vollsimulations-Zustand v27.28c
+
+Zusätzlich statisch abgesichert:
+
+- offener Vollsimulationsversuch: `0/120`, nicht bestanden
+- abgeschlossener Vollsimulationsversuch:
+  `passed = (score_points >= 60)`
+- Vollsimulationen besitzen immer eine Startzeit
+- Vollsimulationen besitzen exakt 120 Maximalpunkte
+- ungültige vorhandene Zustände brechen die Migration ab
 
 ## Geschlossener Prüfungsweg
 

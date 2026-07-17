@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.28b
+Stand: v27.28c
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -286,6 +286,23 @@ Der vorbereitete RPC
 - ist ausschließlich für `authenticated` ausführbar
 - wurde nicht live ausgeführt
 
+## Vollsimulations-Zustandsintegrität v27.28c
+
+Die zusätzliche Zustandsmigration erzwingt:
+
+- Vollsimulationen besitzen exakt 120 Maximalpunkte
+- jede Vollsimulation besitzt eine Startzeit
+- offene Versuche bleiben bei null Punkten und `passed=false`
+- abgeschlossene Versuche besitzen einen zur Punktzahl passenden
+  Bestehensstatus
+- ungültige bestehende Zustände brechen die Migration ab
+- bestehende Daten werden nicht automatisch verändert
+- keine Live-Ausführung
+
+Details:
+
+`docs/SUPABASE_FULL_EXAM_STATE_INTEGRITY_TEST.md`
+
 ## Prüfungsversuch-Integrität v27.28b
 
 Die zusätzliche Integritätsmigration:
@@ -342,8 +359,9 @@ Details:
 ## Nächster Schritt
 
 Nach vollständiger Prüfung, Commit, Push und GitHub-Bestätigung
-von `v27.28b` wird der nächste Versionsschritt anhand der
+von `v27.28c` wird der nächste Versionsschritt anhand der
 Projekt-Masterliste festgelegt.
 
-Status: Sicherer Prüfungs-RPC-Weg und Prüfungsversuch-Integrität
-statisch vorbereitet; keine Live-Ausführung
+Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität
+und Vollsimulations-Zustandsintegrität statisch vorbereitet;
+keine Live-Ausführung

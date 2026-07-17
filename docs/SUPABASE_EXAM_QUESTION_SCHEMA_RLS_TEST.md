@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.28b
+Stand: v27.28c
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -17,6 +17,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260716_v2727e_exam_selection_limit_security.sql`
 - `20260717_v2727f_exam_result_rpc.sql`
 - `20260717_v2728b_exam_attempt_integrity.sql`
+- `20260717_v2728c_full_exam_state_integrity.sql`
 
 ## Geprüfte Tabellen
 
@@ -156,6 +157,21 @@ Bestätigt wurden:
 - dokumentiert in
   `docs/SUPABASE_EXAM_ATTEMPT_INTEGRITY_TEST.md`
 
+## Vollsimulations-Zustandsintegrität v27.28c
+
+Bestätigt wurden:
+
+- Vollsimulationen besitzen immer exakt 120 Maximalpunkte
+- Startzeit ist für Vollsimulationen verpflichtend
+- offene Versuche besitzen null Punkte und sind nicht bestanden
+- abgeschlossene Versuche gleichen `passed` mit
+  `score_points >= 60` ab
+- bestehende ungültige Daten brechen die Migration ab
+- keine automatische Datenänderung oder Löschung
+- keine neue Policy und keine direkten Rechte
+- dokumentiert in
+  `docs/SUPABASE_FULL_EXAM_STATE_INTEGRITY_TEST.md`
+
 ## End-to-End-Prüferabdeckung v27.28a
 
 Zusätzlich statisch bestätigt:
@@ -173,7 +189,7 @@ Zusätzlich statisch bestätigt:
 
 Erwarteter Stand:
 
-- 14 SQL-Dateien
+- 15 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
@@ -191,4 +207,7 @@ Migration wurde auf einer Live-Datenbank ausgeführt.
 Sichere Snapshot-Schreibvorgänge und Prüfungsbewertungen folgen
 später ausschließlich über geprüfte RPC-Funktionen.
 
-Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC, Prüfungsabschluss, serverseitige Auswahlbegrenzung und sicherer Ergebnisabruf statisch bestätigt
+Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte,
+Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC,
+Prüfungsabschluss, Auswahlbegrenzung, Ergebnisabruf und
+Vollsimulations-Zustandsintegrität statisch bestätigt
