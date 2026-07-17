@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29e
+Stand: v27.29g
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -391,6 +391,23 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PAGE_AGGREGATOR_TEST.md`
 
+## Lokale Fixture-Tests v27.29g
+
+Normalizer und seitenbezogener Aggregator werden jetzt mit
+festen lokalen Beispieldaten tatsächlich ausgeführt.
+
+Geprüft werden gültige, leere und ungültige Ergebnislisten,
+Duplikate, `total_count`, 120/60-Punktelogik sowie alle
+seitenbezogenen Kennzahlen.
+
+Der Fixture-Test läuft isoliert ohne Supabase-Client,
+Netzwerkverbindung oder echte Teilnehmerdaten und ist in den
+Preflight eingebunden.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_FIXTURE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -481,13 +498,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29e` können lokale
-Fixture-Tests für Normalizer und Aggregator vorbereitet werden,
-weiterhin ohne Live-Daten oder sichtbares UI.
+Nach GitHub-Bestätigung von `v27.29g` kann ein sicherer
+lokaler Response-Mapper für spätere RPC-Ergebnisse vorbereitet
+werden, weiterhin ohne Live-Aufruf oder sichtbares UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
 Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
-lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung
-Ergebniszeilen-Normalizer und seitenbezogener Aggregator
-statisch vorbereitet; keine Live-Ausführung
+lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung,
+Ergebniszeilen-Normalizer, seitenbezogener Aggregator und
+lokale Fixture-Tests vorbereitet; keine Live-Ausführung

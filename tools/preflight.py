@@ -86,6 +86,23 @@ def check_exam_result_history_adapter():
         )
 
 
+def check_exam_result_history_fixtures():
+    code, stdout, stderr = run_command(
+        "node tools/test-supabase-exam-history-fixtures.js"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Ergebnishistorie-Fixture-Test fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -177,6 +194,7 @@ def main():
         "data/oral-sheets-bank.js",
         "tools/audit-categories.py",
         "tools/check-supabase-exam-history-adapter.py",
+        "tools/test-supabase-exam-history-fixtures.js",
     ]
 
     for file_path in required_files:
@@ -186,6 +204,7 @@ def main():
     check_index_versions()
     check_category_audit()
     check_exam_result_history_adapter()
+    check_exam_result_history_fixtures()
     check_git_diff_check()
     check_protected_core_files_v2356()
 
