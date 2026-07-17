@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.28a
+Stand: v27.28b
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -286,6 +286,22 @@ Der vorbereitete RPC
 - ist ausschließlich für `authenticated` ausführbar
 - wurde nicht live ausgeführt
 
+## Prüfungsversuch-Integrität v27.28b
+
+Die zusätzliche Integritätsmigration:
+
+- bricht bei vorhandenen ungültigen Punktewerten ab
+- erzwingt `score_points <= max_points`
+- bricht bei ungültigen Start-/Abschlusszeiten ab
+- verlangt bei abgeschlossenen Versuchen eine Startzeit
+- erzwingt `finished_at >= started_at`
+- verändert keine bestehenden Daten automatisch
+- wurde nicht live ausgeführt
+
+Details:
+
+`docs/SUPABASE_EXAM_ATTEMPT_INTEGRITY_TEST.md`
+
 ## End-to-End-Sicherheitsaudit v27.28a
 
 Der vollständige sichere Prüfungsweg wurde zusammenhängend geprüft:
@@ -326,7 +342,8 @@ Details:
 ## Nächster Schritt
 
 Nach vollständiger Prüfung, Commit, Push und GitHub-Bestätigung
-von `v27.28a` wird der nächste Versionsschritt anhand der
+von `v27.28b` wird der nächste Versionsschritt anhand der
 Projekt-Masterliste festgelegt.
 
-Status: Sicherer Ergebnisabruf-RPC statisch vorbereitet; keine Live-Ausführung
+Status: Sicherer Prüfungs-RPC-Weg und Prüfungsversuch-Integrität
+statisch vorbereitet; keine Live-Ausführung

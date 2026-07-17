@@ -18,6 +18,9 @@ EXAM_ANSWER_SAVE_RPC = "20260716_v2727b_exam_answer_save_rpc.sql"
 EXAM_FINISH_RPC = "20260716_v2727d_exam_finish_rpc.sql"
 EXAM_SELECTION_LIMIT_SECURITY = "20260716_v2727e_exam_selection_limit_security.sql"
 EXAM_RESULT_RPC = "20260717_v2727f_exam_result_rpc.sql"
+EXAM_ATTEMPT_INTEGRITY = (
+    "20260717_v2728b_exam_attempt_integrity.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -62,6 +65,7 @@ for required in (
     EXAM_FINISH_RPC,
     EXAM_SELECTION_LIMIT_SECURITY,
     EXAM_RESULT_RPC,
+    EXAM_ATTEMPT_INTEGRITY,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -112,6 +116,14 @@ if files.index(EXAM_SELECTION_LIMIT_SECURITY) >= files.index(
         "Auswahlbegrenzungs-Korrektur."
     )
 
+if files.index(EXAM_RESULT_RPC) >= files.index(
+    EXAM_ATTEMPT_INTEGRITY
+):
+    fail(
+        "Prüfungsversuch-Integrität steht vor dem "
+        "Ergebnisabruf-RPC."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -151,6 +163,10 @@ exam_selection_limit_security = (
 
 exam_result_rpc = (
     MIGRATIONS / EXAM_RESULT_RPC
+).read_text(encoding="utf-8")
+
+exam_attempt_integrity = (
+    MIGRATIONS / EXAM_ATTEMPT_INTEGRITY
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -927,6 +943,53 @@ for forbidden_content in (
             f"{forbidden_content}"
         )
 
+exam_attempt_integrity_lower = (
+    exam_attempt_integrity.lower()
+)
+exam_attempt_integrity_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_attempt_integrity_lower,
+)
+
+required_exam_attempt_integrity_markers = (
+    "where score_points > max_points",
+    "where finished_at is not null",
+    "started_at is null",
+    "finished_at < started_at",
+    "drop constraint if exists "
+    "exam_attempts_score_within_max_check",
+    "add constraint exam_attempts_score_within_max_check",
+    "check (score_points <= max_points)",
+    "drop constraint if exists "
+    "exam_attempts_finished_after_started_check",
+    "add constraint "
+    "exam_attempts_finished_after_started_check",
+    "finished_at >= started_at",
+)
+
+for marker in required_exam_attempt_integrity_markers:
+    if marker not in exam_attempt_integrity_compact:
+        fail(
+            "Prüfungsversuch-Integritätsanweisung fehlt: "
+            f"{marker}"
+        )
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "service_role",
+    "insert into",
+    "update public.",
+    "delete from",
+):
+    if forbidden in exam_attempt_integrity_lower:
+        fail(
+            "Unzulässiger Inhalt in "
+            f"Prüfungsversuch-Integrität: {forbidden}"
+        )
+
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -1092,7 +1155,8 @@ print(
     "vor Antwortspeicher-RPC "
     "vor Prüfungsabschluss-RPC "
     "vor Auswahlbegrenzungs-Korrektur "
-    "vor Ergebnisabruf-RPC"
+    "vor Ergebnisabruf-RPC "
+    "vor Prüfungsversuch-Integrität"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -1106,4 +1170,6 @@ print("Ergebnisabruf-RPC: gespeicherte 82/120-Daten gegengeprüft")
 print("Ergebnisabruf-RPC: Antwortkategorien ergeben zusammen 82")
 print("Ergebnisabruf-RPC: keine Lösungsschlüssel in der Rückgabe")
 print("Ergebnisabruf-RPC: historische Ergebnisse sicher abrufbar")
+print("Prüfungsversuch-Integrität: score_points <= max_points")
+print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
 print("Live-Ausführung: nein")

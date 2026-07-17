@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.28a
+Stand: v27.28b
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -16,6 +16,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260716_v2727d_exam_finish_rpc.sql`
 - `20260716_v2727e_exam_selection_limit_security.sql`
 - `20260717_v2727f_exam_result_rpc.sql`
+- `20260717_v2728b_exam_attempt_integrity.sql`
 
 ## Geprüfte Tabellen
 
@@ -141,6 +142,20 @@ Bestätigt wurden:
 
 
 
+## Prüfungsversuch-Integritätsprüfung v27.28b
+
+Bestätigt wurden:
+
+- bestehende ungültige Punktewerte brechen die Migration ab
+- bestehende ungültige Zeitwerte brechen die Migration ab
+- `score_points` darf `max_points` nicht überschreiten
+- abgeschlossene Versuche benötigen eine Startzeit
+- Abschlusszeit darf nicht vor der Startzeit liegen
+- keine automatische Datenänderung
+- keine neue Policy und keine direkten Rechte
+- dokumentiert in
+  `docs/SUPABASE_EXAM_ATTEMPT_INTEGRITY_TEST.md`
+
 ## End-to-End-Prüferabdeckung v27.28a
 
 Zusätzlich statisch bestätigt:
@@ -158,7 +173,7 @@ Zusätzlich statisch bestätigt:
 
 Erwarteter Stand:
 
-- 13 SQL-Dateien
+- 14 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt

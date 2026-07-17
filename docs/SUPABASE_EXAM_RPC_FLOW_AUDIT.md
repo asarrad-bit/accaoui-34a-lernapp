@@ -1,6 +1,6 @@
 # Supabase Prüfungs-RPC-Flow – End-to-End-Sicherheitsaudit
 
-Stand: v27.28a
+Stand: v27.28b
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -114,6 +114,16 @@ Der Migrationsprüfer erzwingt zusätzlich ausdrücklich den Marker:
 
 Damit kann diese Ergebnisintegritätsprüfung nicht unbemerkt aus dem
 RPC entfernt werden.
+
+## Datenbank-Integritätsgrenzen v27.28b
+
+Zusätzlich zum RPC-Weg erzwingt die Datenbank:
+
+- `score_points <= max_points`
+- abgeschlossene Versuche besitzen eine Startzeit
+- `finished_at >= started_at`
+- vorhandene ungültige Daten führen zum Migrationsabbruch
+- keine automatische Korrektur oder Löschung bestehender Daten
 
 ## Sicherheitsgrenze
 

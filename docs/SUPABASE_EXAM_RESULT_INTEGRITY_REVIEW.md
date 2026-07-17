@@ -1,113 +1,116 @@
-# Accaoui §34a Lern-App – Sicherheitsreview Prüfungsintegrität
+# Accaoui §34a Lern-App – Prüfungsintegrität Behebungsnachweis
 
-Stand: v27.24a
+Stand: v27.28b
 
-Status: Sicherheitsreview abgeschlossen, keine Live-Ausführung
+Status: ursprüngliche Befunde statisch behoben, nicht live ausgeführt
 
-## Geprüfte Dateien
+## Zweck
 
-- `supabase/migrations/20260710_v2720b_mvp_schema.sql`
-- `supabase/migrations/20260710_v2721a_mvp_rls_policies.sql`
+Dieses Dokument aktualisiert den ursprünglichen Sicherheitsreview
+aus v27.24a.
 
-## Kritischer Befund 1 – Prüfungsergebnis manipulierbar
+Die damaligen Befunde bleiben als historische Ausgangslage
+nachvollziehbar. Der heutige statische Behebungsstand wird getrennt
+davon dokumentiert.
 
-Die Tabelle `exam_attempts` enthält unter anderem:
+## Historische Ausgangsbefunde v27.24a
 
-- `score_points`
-- `max_points`
-- `passed`
-- `course_id`
-- `started_at`
-- `finished_at`
+1. Browser konnte autoritative Prüfungsergebnisse direkt speichern.
+2. Browser konnte Antwortpunkte und Richtig-/Falsch-Werte setzen.
+3. Lösungsschlüssel lagen in einer teilnehmerlesbaren Antworttabelle.
+4. Kurszugang und Einschreibung wurden beim Prüfungsstart nicht
+   ausreichend serverseitig geprüft.
+5. Zusätzliche Punkte-, Zeit-, JSON- und Eindeutigkeitsgrenzen fehlten.
 
-Die aktuelle Teilnehmer-Insert-Policy prüft nur, ob die verwendete
-`participant_id` zum angemeldeten Benutzer gehört.
+## Behebungsstand
 
-Sie verhindert nicht, dass der Browser selbst einen beliebigen Punktestand,
-eine beliebige Maximalpunktzahl oder einen beliebigen Bestehensstatus sendet.
+### Befund 1 – Prüfungsergebnis manipulierbar
 
-Risikostufe: kritisch
+Status: statisch behoben
 
-## Kritischer Befund 2 – Antwortbewertung manipulierbar
+- direkte Teilnehmer-Inserts in `exam_attempts` wurden gesperrt
+- Prüfungsversuche werden über einen geprüften Start-RPC erstellt
+- Punkte und Bestehensstatus werden serverseitig berechnet
+- der Browser übermittelt keine autoritativen Ergebniswerte
+- `score_points <= max_points` wird zusätzlich durch v27.28b erzwungen
 
-Die Tabelle `exam_answers` enthält unter anderem:
+### Befund 2 – Antwortbewertung manipulierbar
 
-- `selected_answers`
-- `correct_answers`
-- `earned_points`
-- `max_points`
-- `is_correct`
+Status: statisch behoben
 
-Die aktuelle Teilnehmer-Insert-Policy prüft nur, ob der Prüfungsversuch
-zum angemeldeten Teilnehmer gehört.
+- direkte Inserts, Updates und Deletes auf `exam_answers` sind entzogen
+- Antworten sind eindeutig an `attempt_question_id` gebunden
+- der Browser übermittelt nur ausgewählte Antwortindizes
+- Punkte und Richtig-/Falsch-Status werden serverseitig gesetzt
+- `earned_points` bleibt zwischen null und `max_points`
 
-Damit könnte ein Browser derzeit selbst richtige Antworten, erreichte Punkte
-und den Richtig-/Falsch-Status eintragen.
+### Befund 3 – Lösungsschlüssel sichtbar
 
-Risikostufe: kritisch
+Status: statisch behoben
 
-## Hoher Befund 3 – Lösungsschlüssel sichtbar
+- `correct_answers` wurde aus `exam_answers` entfernt
+- zentrale Lösungsschlüssel liegen in einer privaten Tabelle
+- jeder Prüfungsversuch besitzt einen privaten Schlüssel-Snapshot
+- private Schlüssel besitzen keine Teilnehmer-Policy
+- RPC-Rückgaben enthalten keine richtigen Indizes oder Erklärungen
 
-Teilnehmer dürfen eigene Datensätze aus `exam_answers` lesen.
+### Befund 4 – Kurszuordnung nicht geprüft
 
-Da `correct_answers` in derselben Tabelle gespeichert wird und keine
-Spaltenbegrenzung vorhanden ist, wäre auch der Lösungsschlüssel lesbar.
+Status: statisch behoben
 
-Während einer laufenden Prüfung darf der Lösungsschlüssel nicht ausgeliefert
-werden.
+Der Prüfungsstart-RPC prüft serverseitig:
 
-Risikostufe: hoch
+- Identität über `auth.uid()`
+- aktiven Teilnehmerstatus
+- aktive Kurseinschreibung
+- erlaubten Zugangsstatus
+- Beginn und Ende des Zugangszeitraums
+- aktiven Kursstatus
 
-## Hoher Befund 4 – Kurszuordnung nicht geprüft
+## Weitere ursprüngliche Integritätslücken
 
-Ein Teilnehmer kann beim Prüfungsversuch derzeit eine `course_id` angeben.
+| Ursprüngliche Lücke | Heutiger statischer Stand |
+|---|---|
+| `score_points <= max_points` | Constraint v27.28b |
+| `earned_points <= max_points` | Antwortintegrität v27.26e |
+| `finished_at >= started_at` | Constraint v27.28b |
+| nur eine Antwort pro Versuchsfrage | eindeutiger Constraint v27.26e |
+| JSON-Werte müssen Arrays sein | JSONB-Checks v27.25c/v27.26e |
+| wiederholte Übermittlung | idempotente Start- und Abschlusslogik |
+| Überauswahl von Antworten | beim Speichern und vor Bewertung gesperrt |
+| Ergebnisdaten widersprüchlich | Ergebnis-RPC prüft 82/120 und Kategorien |
 
-Die Insert-Policy prüft nicht:
+## Geschlossener Prüfungsweg
 
-- ob eine Einschreibung besteht
-- ob der Kurs aktiv ist
-- ob der Zugriff erlaubt oder noch gültig ist
+Der statisch vorbereitete Prüfungsweg besteht aus:
 
-Risikostufe: hoch
+1. `accaoui_start_full_exam(...)`
+2. `accaoui_save_exam_answer(...)`
+3. `accaoui_finish_full_exam(...)`
+4. `accaoui_get_full_exam_result(...)`
 
-## Weitere Integritätslücken
+Details:
 
-Noch nicht abgesichert:
+`docs/SUPABASE_EXAM_RPC_FLOW_AUDIT.md`
 
-- `score_points <= max_points`
-- `earned_points <= max_points`
-- `finished_at >= started_at`
-- nur eine Antwort pro Frage und Prüfungsversuch
-- JSON-Werte müssen tatsächlich Arrays sein
-- Schutz vor mehrfacher oder wiederholter Ergebnisübermittlung
+## Weiterhin keine Live-Freigabe
 
-## Verbindliche Sicherheitsentscheidung
+Die ursprünglichen Code- und Schema-Befunde sind statisch behoben.
 
-Vor jeder Live-Anbindung gilt:
+Eine Live-Freigabe erfolgt trotzdem erst nach:
 
-1. Teilnehmer dürfen keine autoritativen Ergebnisse direkt eintragen.
-2. `score_points`, `passed`, `earned_points`, `is_correct` und
-   `correct_answers` werden niemals aus dem Browser übernommen.
-3. Die Bewertung erfolgt über einen vertrauenswürdigen Server-/RPC-Weg.
-4. Eine Prüfung wird nur für einen gültig eingeschriebenen Teilnehmer angelegt.
-5. Lösungsschlüssel werden während einer laufenden Prüfung nicht ausgeliefert.
-6. Direkte Teilnehmer-Insert-Policies werden vor dem Live-Test gesperrt.
-7. Erst danach wird ein kontrollierter Speicher- und Bewertungsweg aufgebaut.
+- kontrollierter Ausführung in einer getrennten Dev-/Staging-Datenbank
+- echten RLS-Laufzeittests mit Testkonten
+- positiven und negativen RPC-Tests
+- Prüfung von Migration, Rollback und Backup
+- ausdrücklicher Freigabe für die Supabase-Anbindung
 
-## Nächster Umsetzungsschritt
+## Sicherheitsgrenze
 
-`v27.24b`
+- keine Live-Supabase-Ausführung
+- keine echten Supabase-Schlüssel
+- keine echten Teilnehmerdaten
+- keine Änderung an App-Code oder Fragenbeständen
 
-- direkte Teilnehmer-Inserts für `exam_attempts` und `exam_answers` entfernen
-- RLS-Migration und Migrationsprüftool anpassen
-- späteren geprüften RPC-Weg vorbereiten
-
-## Bewertung
-
-Die aktuelle Migration ist noch nicht für die Speicherung echter
-Prüfungsergebnisse freigegeben.
-
-Die festgestellten Risiken betreffen nur die vorbereitete, noch nicht live
-ausgeführte Supabase-Struktur. Der lokale App-Betrieb bleibt unverändert.
-
-Status: Review abgeschlossen – Live-Freigabe gesperrt
+Status: Ursprüngliche Prüfungsintegritätsbefunde statisch behoben;
+Live-Freigabe bleibt bis zu getrennten Laufzeittests gesperrt.
