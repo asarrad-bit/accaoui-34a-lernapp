@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29d
+// Stand: v27.29e
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1695,7 +1695,11 @@
       normalizerName: "normalizeParticipantFullExamResultRows",
       isNormalizerPrepared: true,
       canNormalizeRows: true,
+      aggregatorName: "aggregateParticipantFullExamResultRows",
+      isAggregatorPrepared: true,
+      canAggregateRows: true,
       normalizedEntries: [],
+      aggregate: null,
       normalizationError: null,
       request: {
         limit: rpcState.defaultLimit,
@@ -1739,6 +1743,10 @@
       dataSourceNormalizerName: participantDashboardExamHistoryDataSourceState.normalizerName,
       isDataSourceNormalizerPrepared: participantDashboardExamHistoryDataSourceState.isNormalizerPrepared === true,
       canNormalizeDataSourceRows: participantDashboardExamHistoryDataSourceState.canNormalizeRows === true,
+      dataSourceAggregatorName: participantDashboardExamHistoryDataSourceState.aggregatorName,
+      isDataSourceAggregatorPrepared: participantDashboardExamHistoryDataSourceState.isAggregatorPrepared === true,
+      canAggregateDataSourceRows: participantDashboardExamHistoryDataSourceState.canAggregateRows === true,
+      dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
       canLoadFromDataSource: participantDashboardExamHistoryDataSourceState.canLoad === true,
@@ -2032,6 +2040,156 @@
       isEmpty: false,
       entries,
       totalCount: expectedTotalCount,
+      invalidIndex: null,
+      reason: null
+    };
+  }
+
+  function aggregateParticipantFullExamResultRows(rows) {
+    const normalized =
+      normalizeParticipantFullExamResultRows(rows);
+
+    if (!normalized.isValid) {
+      return {
+        version: "v27.29e",
+        isValid: false,
+        isEmpty: false,
+        metricsScope: "page_only",
+        entries: [],
+        totalCount: null,
+        pageEntryCount: 0,
+        pagePassedCount: 0,
+        pageFailedCount: 0,
+        pageBestScore: null,
+        pageAverageScore: null,
+        pagePassRatePercent: null,
+        pageLatestFinishedAt: null,
+        pageLatestExamAttemptId: null,
+        canPopulateGlobalOutcomeCounts: false,
+        globalPassedCount: null,
+        globalFailedCount: null,
+        invalidIndex: normalized.invalidIndex,
+        reason: normalized.reason
+      };
+    }
+
+    if (normalized.isEmpty) {
+      return {
+        version: "v27.29e",
+        isValid: true,
+        isEmpty: true,
+        metricsScope: "page_only",
+        entries: [],
+        totalCount: null,
+        pageEntryCount: 0,
+        pagePassedCount: 0,
+        pageFailedCount: 0,
+        pageBestScore: null,
+        pageAverageScore: null,
+        pagePassRatePercent: null,
+        pageLatestFinishedAt: null,
+        pageLatestExamAttemptId: null,
+        canPopulateGlobalOutcomeCounts: false,
+        globalPassedCount: null,
+        globalFailedCount: null,
+        invalidIndex: null,
+        reason: null
+      };
+    }
+
+    let pagePassedCount = 0;
+    let pageFailedCount = 0;
+    let scoreSum = 0;
+    let pageBestScore = null;
+    let latestEntry = null;
+
+    for (const entry of normalized.entries) {
+      if (entry.passed) {
+        pagePassedCount += 1;
+      } else {
+        pageFailedCount += 1;
+      }
+
+      scoreSum += entry.scorePoints;
+
+      if (
+        pageBestScore === null ||
+        entry.scorePoints > pageBestScore
+      ) {
+        pageBestScore = entry.scorePoints;
+      }
+
+      if (
+        latestEntry === null ||
+        Date.parse(entry.finishedAt) >
+          Date.parse(latestEntry.finishedAt) ||
+        (
+          Date.parse(entry.finishedAt) ===
+            Date.parse(latestEntry.finishedAt) &&
+          entry.examAttemptId >
+            latestEntry.examAttemptId
+        )
+      ) {
+        latestEntry = entry;
+      }
+    }
+
+    const pageEntryCount = normalized.entries.length;
+
+    if (
+      pagePassedCount + pageFailedCount !==
+      pageEntryCount
+    ) {
+      return {
+        version: "v27.29e",
+        isValid: false,
+        isEmpty: false,
+        metricsScope: "page_only",
+        entries: [],
+        totalCount: null,
+        pageEntryCount: 0,
+        pagePassedCount: 0,
+        pageFailedCount: 0,
+        pageBestScore: null,
+        pageAverageScore: null,
+        pagePassRatePercent: null,
+        pageLatestFinishedAt: null,
+        pageLatestExamAttemptId: null,
+        canPopulateGlobalOutcomeCounts: false,
+        globalPassedCount: null,
+        globalFailedCount: null,
+        invalidIndex: null,
+        reason: "page_outcome_counts_inconsistent"
+      };
+    }
+
+    return {
+      version: "v27.29e",
+      isValid: true,
+      isEmpty: false,
+      metricsScope: "page_only",
+      entries: normalized.entries,
+      totalCount: normalized.totalCount,
+      pageEntryCount,
+      pagePassedCount,
+      pageFailedCount,
+      pageBestScore,
+      pageAverageScore: Number(
+        (scoreSum / pageEntryCount).toFixed(2)
+      ),
+      pagePassRatePercent: Number(
+        (
+          pagePassedCount /
+          pageEntryCount *
+          100
+        ).toFixed(2)
+      ),
+      pageLatestFinishedAt: latestEntry.finishedAt,
+      pageLatestExamAttemptId:
+        latestEntry.examAttemptId,
+      canPopulateGlobalOutcomeCounts: false,
+      globalPassedCount: null,
+      globalFailedCount: null,
       invalidIndex: null,
       reason: null
     };
@@ -4833,6 +4991,11 @@
       participantDashboardExamHistoryDataSourceNormalizerName: participantDashboardExamHistoryDataSourceState.normalizerName,
       isParticipantDashboardExamHistoryDataSourceNormalizerPrepared: participantDashboardExamHistoryDataSourceState.isNormalizerPrepared === true,
       canNormalizeParticipantDashboardExamHistoryRows: participantDashboardExamHistoryDataSourceState.canNormalizeRows === true,
+      participantDashboardExamHistoryDataSourceAggregatorName: participantDashboardExamHistoryDataSourceState.aggregatorName,
+      isParticipantDashboardExamHistoryDataSourceAggregatorPrepared: participantDashboardExamHistoryDataSourceState.isAggregatorPrepared === true,
+      canAggregateParticipantDashboardExamHistoryRows: participantDashboardExamHistoryDataSourceState.canAggregateRows === true,
+      participantDashboardExamHistoryMetricsScope: "page_only",
+      canPopulateParticipantDashboardGlobalExamOutcomeCounts: false,
       isParticipantDashboardExamHistoryDataSourceBlockedSafely: participantDashboardExamHistoryDataSourceState.isBlockedSafely === true,
       participantExamResultHistoryRpcStatus: participantExamResultHistoryRpcState.status,
       isParticipantExamResultHistoryRpcPrepared: participantExamResultHistoryRpcState.isRpcPrepared === true,
@@ -5219,7 +5382,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29d",
+    version: "v27.29e",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -5276,6 +5439,7 @@
     getParticipantExamResultHistoryRpcState,
     normalizeParticipantFullExamResultRow,
     normalizeParticipantFullExamResultRows,
+    aggregateParticipantFullExamResultRows,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,

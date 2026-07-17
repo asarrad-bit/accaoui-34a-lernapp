@@ -17,10 +17,11 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29d",
+    "// stand: v27.29e",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
+    'version: "v27.29e"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -93,6 +94,30 @@ required_markers = (
     "cannormalizeparticipantdashboardexamhistoryrows:",
     "normalizeparticipantfullexamresultrow,",
     "normalizeparticipantfullexamresultrows,",
+    "function aggregateparticipantfullexamresultrows(rows)",
+    'metricsscope: "page_only"',
+    "pageentrycount",
+    "pagepassedcount",
+    "pagefailedcount",
+    "pagebestscore",
+    "pageaveragescore",
+    "pagepassratepercent",
+    "pagelatestfinishedat",
+    "pagelatestexamattemptid",
+    "canpopulateglobaloutcomecounts: false",
+    "globalpassedcount: null",
+    "globalfailedcount: null",
+    'aggregatorname: "aggregateparticipantfullexamresultrows"',
+    "isaggregatorprepared: true",
+    "canaggregaterows: true",
+    "datasourceaggregatorname:",
+    "isdatasourceaggregatorprepared:",
+    "canaggregatedatasourcerows:",
+    "datasourcemetricsscope:",
+    "participantdashboardexamhistorydatasourceaggregatorname:",
+    "canaggregateparticipantdashboardexamhistoryrows:",
+    "canpopulateparticipantdashboardglobalexamoutcomecounts: false",
+    "aggregateparticipantfullexamresultrows,",
 )
 
 for marker in required_markers:
@@ -181,6 +206,61 @@ for required in (
         )
 
 
+if text.count(
+    "function aggregateParticipantFullExamResultRows(rows)"
+) != 1:
+    fail(
+        "Ergebnislisten-Aggregator muss genau einmal "
+        "vorhanden sein."
+    )
+
+aggregator_start = lower.index(
+    "function aggregateparticipantfullexamresultrows(rows)"
+)
+aggregator_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    aggregator_start,
+)
+aggregator_block = lower[
+    aggregator_start:aggregator_end
+]
+
+for required in (
+    "normalizeparticipantfullexamresultrows(rows)",
+    "pagepassedcount + pagefailedcount !==",
+    "scorepoints > pagebestscore",
+    "scoreSum / pageEntryCount".lower(),
+    "pagepassedcount /",
+    "metricsscope: "page_only"",
+    "canpopulateglobaloutcomecounts: false",
+    "globalpassedcount: null",
+    "globalfailedcount: null",
+):
+    if required not in aggregator_block:
+        fail(
+            "Aggregator-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    "participant_id",
+    "correct_answers",
+    "selected_answers",
+    "question_text",
+    "explanation",
+    "answer_hash",
+    ".rpc(",
+    "fetch(",
+    "window.supabase",
+    "service_role",
+):
+    if forbidden in aggregator_block:
+        fail(
+            "Unzulässiger Inhalt im Ergebnislisten-Aggregator: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -241,6 +321,8 @@ print("Live-RPC-Aufruf: nein")
 print("Dashboard-Datenquelle: vorbereitet und lokal gesperrt")
 print("Ergebniszeilen-Normalizer: 120/60-, UUID- und Zeitprüfung")
 print("Ergebnislisten-Normalizer: Duplikate und total_count geprüft")
+print("Ergebnislisten-Aggregator: sichere Seitenkennzahlen")
+print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
 print("Sichtbare Prüfungshistorie: unverändert verborgen")
 print("Lokaler Modus: sicher und nicht blockierend")

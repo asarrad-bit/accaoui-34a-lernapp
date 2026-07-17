@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29d
+Stand: v27.29e
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -369,6 +369,28 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_ROW_NORMALIZER_TEST.md`
 
+## Seitenbezogener Ergebnis-Aggregator v27.29e
+
+Normalisierte Ergebniszeilen können jetzt sicher zu Kennzahlen
+der aktuell geladenen Seite zusammengefasst werden.
+
+Berechnet werden ausschließlich:
+
+- Seitenanzahl
+- bestandene und nicht bestandene Seiteneinträge
+- Seitenbestwert
+- Seitendurchschnitt
+- Seitenbestehensquote
+- neuester Eintrag der Seite
+
+Wegen der Pagination werden keine Seitenwerte als globale
+Bestanden-, Nicht-bestanden-, Durchschnitts- oder Bestwertzahlen
+ausgegeben.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PAGE_AGGREGATOR_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -459,13 +481,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29d` kann ein sicherer
-Aggregator für Dashboard-Kennzahlen auf normalisierten Zeilen
-vorbereitet werden, weiterhin ohne Live-Daten oder sichtbares UI.
+Nach GitHub-Bestätigung von `v27.29e` können lokale
+Fixture-Tests für Normalizer und Aggregator vorbereitet werden,
+weiterhin ohne Live-Daten oder sichtbares UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
 Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
 lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung
-und Ergebniszeilen-Normalizer statisch vorbereitet;
-keine Live-Ausführung
+Ergebniszeilen-Normalizer und seitenbezogener Aggregator
+statisch vorbereitet; keine Live-Ausführung
