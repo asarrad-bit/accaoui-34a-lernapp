@@ -197,7 +197,7 @@ for required in (
     "total_count_inconsistent",
     "total_count_smaller_than_rows",
     "entries: []",
-    "invalidindex: index",
+    "return invalid(normalized.reason, index)",
 ):
     if required not in rows_normalizer_block:
         fail(
@@ -231,7 +231,7 @@ for required in (
     "scorepoints > pagebestscore",
     "scoreSum / pageEntryCount".lower(),
     "pagepassedcount /",
-    "metricsscope: "page_only"",
+    'metricsscope: "page_only"',
     "canpopulateglobaloutcomecounts: false",
     "globalpassedcount: null",
     "globalfailedcount: null",
