@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29c
+Stand: v27.29d
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -345,6 +345,30 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DASHBOARD_SOURCE_TEST.md`
 
+## Ergebniszeilen-Normalizer v27.29d
+
+Vor einer späteren Dashboard-Nutzung werden RPC-Ergebniszeilen
+streng normalisiert.
+
+Geprüft werden:
+
+- UUIDs
+- ausschließlich erlaubte Ergebnisfelder
+- exakt 120 Maximalpunkte
+- Punktebereich 0 bis 120
+- Bestehensgrenze 60 Punkte
+- gültige Start- und Abschlusszeiten
+- konsistentes `total_count`
+- doppelte Prüfungsversuchs-IDs
+
+Ungültige Listen werden vollständig geschlossen verworfen.
+
+Es gibt weiterhin keinen Live-RPC-Aufruf und kein sichtbares UI.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_ROW_NORMALIZER_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -435,12 +459,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29c` kann ein sicherer
-Normalizer für spätere RPC-Ergebniszeilen vorbereitet werden,
-weiterhin ohne Live-Daten oder sichtbares UI.
+Nach GitHub-Bestätigung von `v27.29d` kann ein sicherer
+Aggregator für Dashboard-Kennzahlen auf normalisierten Zeilen
+vorbereitet werden, weiterhin ohne Live-Daten oder sichtbares UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
 Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
-lokaler Adaptervertrag und Dashboard-Datenquellen-Zuordnung
-statisch vorbereitet; keine Live-Ausführung
+lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung
+und Ergebniszeilen-Normalizer statisch vorbereitet;
+keine Live-Ausführung

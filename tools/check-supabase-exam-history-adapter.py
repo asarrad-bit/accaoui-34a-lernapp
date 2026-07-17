@@ -17,9 +17,10 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29c",
+    "// stand: v27.29d",
     'version: "v27.29b"',
     'version: "v27.29c"',
+    'version: "v27.29d"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -61,6 +62,37 @@ required_markers = (
     "participantdashboardexamhistorydatasourcestatus:",
     "getparticipantdashboardexamhistorydatasourcestate,",
     "participantdashboardexamhistorydatasourcestate,",
+    "function normalizeparticipantfullexamresultrow(row)",
+    "function normalizeparticipantfullexamresultrows(rows)",
+    "row.exam_attempt_id",
+    "row.course_id",
+    "row.course_title",
+    "row.score_points",
+    "row.max_points",
+    "row.passed",
+    "row.started_at",
+    "row.finished_at",
+    "row.total_count",
+    "maxpoints !== 120",
+    "passed !== (scorepoints >= 60)",
+    "finishedatms < startedatms",
+    "number.issafeinteger(totalcount)",
+    "totalcount < 1",
+    "seenattemptids.has(entry.examattemptid)",
+    "entry.totalcount !== expectedtotalcount",
+    "expectedtotalcount < entries.length",
+    'normalizername: "normalizeparticipantfullexamresultrows"',
+    "isnormalizerprepared: true",
+    "cannormalizerows: true",
+    "normalizedentries: []",
+    "datasourcenormalizername:",
+    "isdatasourcenormalizerprepared:",
+    "cannormalizedatasourcerows:",
+    "participantdashboardexamhistorydatasourcenormalizername:",
+    "isparticipantdashboardexamhistorydatasourcenormalizerprepared:",
+    "cannormalizeparticipantdashboardexamhistoryrows:",
+    "normalizeparticipantfullexamresultrow,",
+    "normalizeparticipantfullexamresultrows,",
 )
 
 for marker in required_markers:
@@ -84,6 +116,70 @@ if text.count(
         "Dashboard-Datenquellen-State muss genau einmal "
         "vorhanden sein."
     )
+
+if text.count(
+    "function normalizeParticipantFullExamResultRow(row)"
+) != 1:
+    fail("Ergebniszeilen-Normalizer muss genau einmal vorhanden sein.")
+
+if text.count(
+    "function normalizeParticipantFullExamResultRows(rows)"
+) != 1:
+    fail("Ergebnislisten-Normalizer muss genau einmal vorhanden sein.")
+
+row_normalizer_start = lower.index(
+    "function normalizeparticipantfullexamresultrow(row)"
+)
+row_normalizer_end = lower.index(
+    "function normalizeparticipantfullexamresultrows(rows)",
+    row_normalizer_start,
+)
+row_normalizer_block = lower[
+    row_normalizer_start:row_normalizer_end
+]
+
+for forbidden in (
+    "correct_answers",
+    "selected_answers",
+    "answer_options",
+    "question_text",
+    "explanation",
+    "answer_hash",
+    "participant_id",
+    "service_role",
+    "...row",
+):
+    if forbidden in row_normalizer_block:
+        fail(
+            "Unzulässiger oder privater Inhalt "
+            f"im Ergebniszeilen-Normalizer: {forbidden}"
+        )
+
+rows_normalizer_start = lower.index(
+    "function normalizeparticipantfullexamresultrows(rows)"
+)
+rows_normalizer_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    rows_normalizer_start,
+)
+rows_normalizer_block = lower[
+    rows_normalizer_start:rows_normalizer_end
+]
+
+for required in (
+    "normalizeparticipantfullexamresultrow(rows[index])",
+    "duplicate_exam_attempt_id",
+    "total_count_inconsistent",
+    "total_count_smaller_than_rows",
+    "entries: []",
+    "invalidindex: index",
+):
+    if required not in rows_normalizer_block:
+        fail(
+            "Listen-Normalizer-Anweisung fehlt: "
+            f"{required}"
+        )
+
 
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
@@ -143,5 +239,8 @@ print("Pagination: Limit 1–50, Offset 0–10000")
 print("Teilnehmer-ID als Browserparameter: nein")
 print("Live-RPC-Aufruf: nein")
 print("Dashboard-Datenquelle: vorbereitet und lokal gesperrt")
+print("Ergebniszeilen-Normalizer: 120/60-, UUID- und Zeitprüfung")
+print("Ergebnislisten-Normalizer: Duplikate und total_count geprüft")
+print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
 print("Sichtbare Prüfungshistorie: unverändert verborgen")
 print("Lokaler Modus: sicher und nicht blockierend")

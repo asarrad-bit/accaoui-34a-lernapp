@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29c
+// Stand: v27.29d
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1692,6 +1692,11 @@
       hasData: false,
       sourceType: "supabase_rpc",
       rpcName: rpcState.rpcName,
+      normalizerName: "normalizeParticipantFullExamResultRows",
+      isNormalizerPrepared: true,
+      canNormalizeRows: true,
+      normalizedEntries: [],
+      normalizationError: null,
       request: {
         limit: rpcState.defaultLimit,
         offset: 0
@@ -1731,6 +1736,9 @@
       dataSourceStatus: participantDashboardExamHistoryDataSourceState.status,
       dataSourceType: participantDashboardExamHistoryDataSourceState.sourceType,
       dataSourceRpcName: participantDashboardExamHistoryDataSourceState.rpcName,
+      dataSourceNormalizerName: participantDashboardExamHistoryDataSourceState.normalizerName,
+      isDataSourceNormalizerPrepared: participantDashboardExamHistoryDataSourceState.isNormalizerPrepared === true,
+      canNormalizeDataSourceRows: participantDashboardExamHistoryDataSourceState.canNormalizeRows === true,
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
       canLoadFromDataSource: participantDashboardExamHistoryDataSourceState.canLoad === true,
@@ -1798,6 +1806,234 @@
       clientState,
       authState,
       participantSessionState
+    };
+  }
+
+  function normalizeParticipantFullExamResultRow(row) {
+    const invalid = (reason) => ({
+      version: "v27.29d",
+      isValid: false,
+      entry: null,
+      reason
+    });
+
+    if (
+      !row ||
+      typeof row !== "object" ||
+      Array.isArray(row)
+    ) {
+      return invalid("result_row_must_be_object");
+    }
+
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+    const examAttemptId =
+      typeof row.exam_attempt_id === "string"
+        ? row.exam_attempt_id.trim()
+        : "";
+
+    const courseId =
+      row.course_id === null
+        ? null
+        : typeof row.course_id === "string"
+          ? row.course_id.trim()
+          : "";
+
+    const courseTitle =
+      row.course_title === null
+        ? null
+        : typeof row.course_title === "string"
+          ? row.course_title.trim()
+          : "";
+
+    const scorePoints = row.score_points;
+    const maxPoints = row.max_points;
+    const passed = row.passed;
+
+    const startedAt =
+      typeof row.started_at === "string"
+        ? row.started_at.trim()
+        : "";
+
+    const finishedAt =
+      typeof row.finished_at === "string"
+        ? row.finished_at.trim()
+        : "";
+
+    const rawTotalCount = row.total_count;
+
+    const totalCount =
+      typeof rawTotalCount === "string" &&
+      /^[0-9]+$/.test(rawTotalCount.trim())
+        ? Number(rawTotalCount.trim())
+        : rawTotalCount;
+
+    if (!uuidPattern.test(examAttemptId)) {
+      return invalid("exam_attempt_id_invalid");
+    }
+
+    if (
+      courseId !== null &&
+      !uuidPattern.test(courseId)
+    ) {
+      return invalid("course_id_invalid");
+    }
+
+    if (
+      courseTitle !== null &&
+      (
+        courseTitle.length < 1 ||
+        courseTitle.length > 300
+      )
+    ) {
+      return invalid("course_title_invalid");
+    }
+
+    if (
+      !Number.isInteger(scorePoints) ||
+      scorePoints < 0 ||
+      scorePoints > 120
+    ) {
+      return invalid("score_points_invalid");
+    }
+
+    if (maxPoints !== 120) {
+      return invalid("max_points_must_equal_120");
+    }
+
+    if (
+      typeof passed !== "boolean" ||
+      passed !== (scorePoints >= 60)
+    ) {
+      return invalid("passed_status_invalid");
+    }
+
+    const startedAtMs = Date.parse(startedAt);
+    const finishedAtMs = Date.parse(finishedAt);
+
+    if (
+      !startedAt ||
+      Number.isNaN(startedAtMs)
+    ) {
+      return invalid("started_at_invalid");
+    }
+
+    if (
+      !finishedAt ||
+      Number.isNaN(finishedAtMs)
+    ) {
+      return invalid("finished_at_invalid");
+    }
+
+    if (finishedAtMs < startedAtMs) {
+      return invalid("finished_at_before_started_at");
+    }
+
+    if (
+      !Number.isSafeInteger(totalCount) ||
+      totalCount < 1
+    ) {
+      return invalid("total_count_invalid");
+    }
+
+    return {
+      version: "v27.29d",
+      isValid: true,
+      entry: {
+        examAttemptId,
+        courseId,
+        courseTitle,
+        scorePoints,
+        maxPoints,
+        passed,
+        startedAt,
+        finishedAt,
+        totalCount
+      },
+      reason: null
+    };
+  }
+
+  function normalizeParticipantFullExamResultRows(rows) {
+    const invalid = (
+      reason,
+      invalidIndex = null
+    ) => ({
+      version: "v27.29d",
+      isValid: false,
+      isEmpty: false,
+      entries: [],
+      totalCount: null,
+      invalidIndex,
+      reason
+    });
+
+    if (!Array.isArray(rows)) {
+      return invalid("result_rows_must_be_array");
+    }
+
+    if (rows.length === 0) {
+      return {
+        version: "v27.29d",
+        isValid: true,
+        isEmpty: true,
+        entries: [],
+        totalCount: null,
+        invalidIndex: null,
+        reason: null
+      };
+    }
+
+    const entries = [];
+    const seenAttemptIds = new Set();
+    let expectedTotalCount = null;
+
+    for (let index = 0; index < rows.length; index += 1) {
+      const normalized =
+        normalizeParticipantFullExamResultRow(rows[index]);
+
+      if (!normalized.isValid) {
+        return invalid(normalized.reason, index);
+      }
+
+      const entry = normalized.entry;
+
+      if (seenAttemptIds.has(entry.examAttemptId)) {
+        return invalid(
+          "duplicate_exam_attempt_id",
+          index
+        );
+      }
+
+      seenAttemptIds.add(entry.examAttemptId);
+
+      if (expectedTotalCount === null) {
+        expectedTotalCount = entry.totalCount;
+      } else if (
+        entry.totalCount !== expectedTotalCount
+      ) {
+        return invalid(
+          "total_count_inconsistent",
+          index
+        );
+      }
+
+      entries.push(entry);
+    }
+
+    if (expectedTotalCount < entries.length) {
+      return invalid("total_count_smaller_than_rows");
+    }
+
+    return {
+      version: "v27.29d",
+      isValid: true,
+      isEmpty: false,
+      entries,
+      totalCount: expectedTotalCount,
+      invalidIndex: null,
+      reason: null
     };
   }
 
@@ -4594,6 +4830,9 @@
       hasParticipantDashboardExamHistoryDataSourceData: participantDashboardExamHistoryDataSourceState.hasData === true,
       participantDashboardExamHistoryDataSourceType: participantDashboardExamHistoryDataSourceState.sourceType,
       participantDashboardExamHistoryDataSourceRpcName: participantDashboardExamHistoryDataSourceState.rpcName,
+      participantDashboardExamHistoryDataSourceNormalizerName: participantDashboardExamHistoryDataSourceState.normalizerName,
+      isParticipantDashboardExamHistoryDataSourceNormalizerPrepared: participantDashboardExamHistoryDataSourceState.isNormalizerPrepared === true,
+      canNormalizeParticipantDashboardExamHistoryRows: participantDashboardExamHistoryDataSourceState.canNormalizeRows === true,
       isParticipantDashboardExamHistoryDataSourceBlockedSafely: participantDashboardExamHistoryDataSourceState.isBlockedSafely === true,
       participantExamResultHistoryRpcStatus: participantExamResultHistoryRpcState.status,
       isParticipantExamResultHistoryRpcPrepared: participantExamResultHistoryRpcState.isRpcPrepared === true,
@@ -4980,7 +5219,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29c",
+    version: "v27.29d",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -5035,6 +5274,8 @@
     getParticipantDashboardExamHistoryDataSourceState,
     getParticipantDashboardExamHistoryState,
     getParticipantExamResultHistoryRpcState,
+    normalizeParticipantFullExamResultRow,
+    normalizeParticipantFullExamResultRows,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,
