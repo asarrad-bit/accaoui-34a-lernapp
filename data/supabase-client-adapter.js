@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29b
+// Stand: v27.29c
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1678,9 +1678,46 @@
     };
   }
 
+  function getParticipantDashboardExamHistoryDataSourceState() {
+    const rpcState = getParticipantExamResultHistoryRpcState();
+
+    return {
+      version: "v27.29c",
+      status: "local_dashboard_exam_history_data_source_blocked",
+      isAvailable: true,
+      isPrepared: true,
+      isVisible: false,
+      canRender: false,
+      canLoad: false,
+      hasData: false,
+      sourceType: "supabase_rpc",
+      rpcName: rpcState.rpcName,
+      request: {
+        limit: rpcState.defaultLimit,
+        offset: 0
+      },
+      entries: [],
+      totalCount: null,
+      isLiveCall: false,
+      isBlockedSafely: true,
+      isLoginRequired: false,
+      isLocalAccessAllowed: true,
+      reason: "exam_result_history_rpc_prepared_but_local_mode_blocks_loading",
+      futureStatuses: [
+        "dashboard_exam_history_data_source_ready_later",
+        "dashboard_exam_history_data_source_loading_later",
+        "dashboard_exam_history_data_source_success_later",
+        "dashboard_exam_history_data_source_empty_later",
+        "dashboard_exam_history_data_source_error_later"
+      ],
+      rpcState
+    };
+  }
+
   function getParticipantDashboardExamHistoryState() {
     const participantDashboardSampleQuestionsDetailsState = getParticipantDashboardSampleQuestionsDetailsState();
     const participantDashboardExamSimulationDetailsState = getParticipantDashboardExamSimulationDetailsState();
+    const participantDashboardExamHistoryDataSourceState = getParticipantDashboardExamHistoryDataSourceState();
 
     return {
       version: "v26.63a",
@@ -1691,6 +1728,13 @@
       canLoadExamHistory: false,
       hasExamHistoryData: false,
       examHistoryEntries: [],
+      dataSourceStatus: participantDashboardExamHistoryDataSourceState.status,
+      dataSourceType: participantDashboardExamHistoryDataSourceState.sourceType,
+      dataSourceRpcName: participantDashboardExamHistoryDataSourceState.rpcName,
+      dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
+      isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
+      canLoadFromDataSource: participantDashboardExamHistoryDataSourceState.canLoad === true,
+      isDataSourceBlockedSafely: participantDashboardExamHistoryDataSourceState.isBlockedSafely === true,
       totalExamHistoryCount: null,
       passedExamHistoryCount: null,
       failedExamHistoryCount: null,
@@ -1718,7 +1762,8 @@
         "dashboard_exam_history_error_later"
       ],
       participantDashboardSampleQuestionsDetailsState,
-      participantDashboardExamSimulationDetailsState
+      participantDashboardExamSimulationDetailsState,
+      participantDashboardExamHistoryDataSourceState
     };
   }
 
@@ -4040,6 +4085,7 @@
     const participantDashboardFlashcardsDetailsState = getParticipantDashboardFlashcardsDetailsState();
     const participantDashboardSampleQuestionsDetailsState = getParticipantDashboardSampleQuestionsDetailsState();
     const participantDashboardExamHistoryState = getParticipantDashboardExamHistoryState();
+    const participantDashboardExamHistoryDataSourceState = getParticipantDashboardExamHistoryDataSourceState();
     const participantExamResultHistoryRpcState = getParticipantExamResultHistoryRpcState();
     const participantDashboardCertificateHistoryState = getParticipantDashboardCertificateHistoryState();
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
@@ -4542,6 +4588,13 @@
       canShowParticipantDashboardExamHistoryBestScore: participantDashboardExamHistoryState.canShowExamHistoryBestScore === true,
       canOpenParticipantDashboardExamHistoryAttemptReview: participantDashboardExamHistoryState.canOpenExamHistoryAttemptReview === true,
       canBlockParticipantDashboardByExamHistory: participantDashboardExamHistoryState.canBlockDashboardAccess === true,
+      participantDashboardExamHistoryDataSourceStatus: participantDashboardExamHistoryDataSourceState.status,
+      isParticipantDashboardExamHistoryDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
+      canLoadParticipantDashboardExamHistoryDataSource: participantDashboardExamHistoryDataSourceState.canLoad === true,
+      hasParticipantDashboardExamHistoryDataSourceData: participantDashboardExamHistoryDataSourceState.hasData === true,
+      participantDashboardExamHistoryDataSourceType: participantDashboardExamHistoryDataSourceState.sourceType,
+      participantDashboardExamHistoryDataSourceRpcName: participantDashboardExamHistoryDataSourceState.rpcName,
+      isParticipantDashboardExamHistoryDataSourceBlockedSafely: participantDashboardExamHistoryDataSourceState.isBlockedSafely === true,
       participantExamResultHistoryRpcStatus: participantExamResultHistoryRpcState.status,
       isParticipantExamResultHistoryRpcPrepared: participantExamResultHistoryRpcState.isRpcPrepared === true,
       canCallParticipantExamResultHistoryRpc: participantExamResultHistoryRpcState.canCallRpc === true,
@@ -4816,6 +4869,7 @@
     const participantDashboardFlashcardsDetailsState = getParticipantDashboardFlashcardsDetailsState();
     const participantDashboardSampleQuestionsDetailsState = getParticipantDashboardSampleQuestionsDetailsState();
     const participantDashboardExamHistoryState = getParticipantDashboardExamHistoryState();
+    const participantDashboardExamHistoryDataSourceState = getParticipantDashboardExamHistoryDataSourceState();
     const participantExamResultHistoryRpcState = getParticipantExamResultHistoryRpcState();
     const participantDashboardCertificateHistoryState = getParticipantDashboardCertificateHistoryState();
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
@@ -4902,6 +4956,7 @@
       participantDashboardFlashcardsDetailsState,
       participantDashboardSampleQuestionsDetailsState,
       participantDashboardExamHistoryState,
+      participantDashboardExamHistoryDataSourceState,
       participantExamResultHistoryRpcState,
       participantDashboardCertificateHistoryState,
       participantDashboardCertificateDownloadState,
@@ -4925,7 +4980,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29b",
+    version: "v27.29c",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -4977,6 +5032,7 @@
     getParticipantDashboardOralExamDetailsState,
     getParticipantDashboardFlashcardsDetailsState,
     getParticipantDashboardSampleQuestionsDetailsState,
+    getParticipantDashboardExamHistoryDataSourceState,
     getParticipantDashboardExamHistoryState,
     getParticipantExamResultHistoryRpcState,
     listParticipantFullExamResults,

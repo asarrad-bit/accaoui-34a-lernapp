@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29b
+Stand: v27.29c
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -326,6 +326,25 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_ADAPTER_TEST.md`
 
+## Dashboard-Datenquellen-Zuordnung v27.29c
+
+Der vorbereitete Ergebnislisten-RPC ist jetzt als zukünftige
+Datenquelle der bestehenden Dashboard-Prüfungshistorie zugeordnet.
+
+Dabei gilt weiterhin:
+
+- keine sichtbare Prüfungshistorie
+- kein echter RPC-Aufruf
+- keine Netzwerkverbindung
+- leeres Ergebnisarray
+- keine Teilnehmer-ID als Parameter
+- keine Blockierung des lokalen Betriebs
+- vorhandener RPC- und Paginationvertrag bleibt unverändert
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DASHBOARD_SOURCE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -416,11 +435,12 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29b` kann die spätere
-Zuordnung der sicheren Ergebnisliste zum Teilnehmer-Dashboard
-geplant werden, weiterhin ohne sichtbares UI und Live-Verbindung.
+Nach GitHub-Bestätigung von `v27.29c` kann ein sicherer
+Normalizer für spätere RPC-Ergebniszeilen vorbereitet werden,
+weiterhin ohne Live-Daten oder sichtbares UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
-Mitarbeiter-Rollentrennung und sichere Prüfungsergebnisliste
+Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
+lokaler Adaptervertrag und Dashboard-Datenquellen-Zuordnung
 statisch vorbereitet; keine Live-Ausführung
