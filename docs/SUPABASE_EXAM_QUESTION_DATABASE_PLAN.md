@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.27e
+Stand: v27.27f
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -265,6 +265,27 @@ Die korrigierten Antwortspeicher- und Abschlussfunktionen:
 - behalten die Teilpunktebewertung ohne Punktabzug bei
 - wurden noch nicht live ausgeführt
 
+## Prüfungsergebnis-RPC v27.27f
+
+Der vorbereitete RPC
+`public.accaoui_get_full_exam_result(p_exam_attempt_id uuid)`:
+
+- bestimmt den Teilnehmer ausschließlich über `auth.uid()`
+- erlaubt nur den eigenen abgeschlossenen Vollsimulationsversuch
+- erlaubt historische Ergebnisse für `active`, `expired` und `completed`
+- schließt den Teilnehmerstatus `blocked` aus
+- verlangt exakt 82 Fragen-Snapshots und 120 Gesamtpunkte
+- verlangt exakt 82 gespeicherte Antwortzeilen
+- gleicht die gespeicherten Antwortpunkte mit `score_points` ab
+- gleicht `passed` mit `score_points >= 60` ab
+- prüft beantwortete und unbeantwortete Fragen auf insgesamt 82
+- prüft richtige, teilweise richtige, falsche und unbeantwortete Fragen auf insgesamt 82
+- gibt nur eine sichere Ergebniszusammenfassung zurück
+- gibt keine Lösungsschlüssel, Erklärungen oder richtigen Antwortindizes zurück
+- liest keine privaten Versuchsschlüssel-Tabellen
+- ist ausschließlich für `authenticated` ausführbar
+- wurde nicht live ausgeführt
+
 ## Sicherheitsgrenze
 
 - kein Import über den Browser
@@ -287,9 +308,8 @@ Die korrigierten Antwortspeicher- und Abschlussfunktionen:
 
 ## Nächster Schritt
 
-`v27.27f`
+Nach vollständiger Prüfung, Commit, Push und GitHub-Bestätigung
+von `v27.27f` wird der nächste Versionsschritt anhand der
+Projekt-Masterliste festgelegt.
 
-Sicheren Ergebnisabruf-RPC für eigene abgeschlossene
-Prüfungsversuche ohne Lösungsschlüssel vorbereiten.
-
-Status: Auswahlbegrenzung serverseitig abgesichert
+Status: Sicherer Ergebnisabruf-RPC statisch vorbereitet; keine Live-Ausführung

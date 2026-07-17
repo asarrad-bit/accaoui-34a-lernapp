@@ -17,6 +17,7 @@ EXAM_START_RPC = "20260716_v2727a_exam_start_rpc.sql"
 EXAM_ANSWER_SAVE_RPC = "20260716_v2727b_exam_answer_save_rpc.sql"
 EXAM_FINISH_RPC = "20260716_v2727d_exam_finish_rpc.sql"
 EXAM_SELECTION_LIMIT_SECURITY = "20260716_v2727e_exam_selection_limit_security.sql"
+EXAM_RESULT_RPC = "20260717_v2727f_exam_result_rpc.sql"
 
 EXPECTED_TABLES = {
     "participants",
@@ -60,6 +61,7 @@ for required in (
     EXAM_ANSWER_SAVE_RPC,
     EXAM_FINISH_RPC,
     EXAM_SELECTION_LIMIT_SECURITY,
+    EXAM_RESULT_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -102,6 +104,14 @@ if files.index(EXAM_FINISH_RPC) >= files.index(
         "Prüfungsabschluss-RPC."
     )
 
+if files.index(EXAM_SELECTION_LIMIT_SECURITY) >= files.index(
+    EXAM_RESULT_RPC
+):
+    fail(
+        "Ergebnisabruf-RPC steht vor der "
+        "Auswahlbegrenzungs-Korrektur."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -137,6 +147,10 @@ exam_finish_rpc = (
 
 exam_selection_limit_security = (
     MIGRATIONS / EXAM_SELECTION_LIMIT_SECURITY
+).read_text(encoding="utf-8")
+
+exam_result_rpc = (
+    MIGRATIONS / EXAM_RESULT_RPC
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -788,6 +802,129 @@ for forbidden in (
     if forbidden in selection_security_lower:
         fail(f"Unzulässiger Inhalt in v27.27e: {forbidden}")
 
+exam_result_rpc_lower = exam_result_rpc.lower()
+exam_result_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_result_rpc_lower,
+)
+
+required_exam_result_markers = (
+    "function public.accaoui_get_full_exam_result(",
+    "language plpgsql",
+    "stable",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "and p.auth_user_id = v_auth_user_id",
+    "p.status in ('active', 'expired', 'completed')",
+    "and ea.mode = 'full_simulation'",
+    "and ea.finished_at is not null",
+    "v_snapshot_count <> 82",
+    "v_snapshot_max <> 120",
+    "v_answer_count <> 82",
+    "v_answer_max <> 120",
+    "v_score not between 0 and 120",
+    "v_answer_score <> v_score",
+    "v_passed <> (v_score >= 60)",
+    "v_point_mismatch_count <> 0",
+    "v_invalid_unanswered_count <> 0",
+    "v_answered_count + v_unanswered_count <> 82",
+    "revoke all on function "
+    "public.accaoui_get_full_exam_result(uuid) from public",
+    "revoke all on function "
+    "public.accaoui_get_full_exam_result(uuid) from anon",
+    "revoke all on function "
+    "public.accaoui_get_full_exam_result(uuid) from authenticated",
+    "grant execute on function "
+    "public.accaoui_get_full_exam_result(uuid) to authenticated",
+)
+
+for marker in required_exam_result_markers:
+    if marker not in exam_result_rpc_compact:
+        fail(f"Ergebnisabruf-RPC-Anweisung fehlt: {marker}")
+
+result_match = re.search(
+    r"function\s+public\.accaoui_get_full_exam_result\s*"
+    r"\((.*?)\)\s*returns\s+table\s*"
+    r"\((.*?)\)\s*language\s+plpgsql",
+    exam_result_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not result_match:
+    fail("Signatur des Ergebnisabruf-RPC fehlt.")
+
+result_parameters = re.sub(
+    r"\s+",
+    " ",
+    result_match.group(1).strip().lower(),
+)
+
+if result_parameters != "p_exam_attempt_id uuid":
+    fail(
+        "Ergebnisabruf-RPC besitzt unerwartete Parameter: "
+        f"{result_parameters}"
+    )
+
+result_returns = re.sub(
+    r"\s+",
+    " ",
+    result_match.group(2).strip().lower(),
+)
+
+expected_result_returns = (
+    "exam_attempt_id uuid, course_id uuid, course_title text, "
+    "score_points integer, max_points integer, passed boolean, "
+    "started_at timestamptz, finished_at timestamptz, "
+    "total_questions integer, answered_questions integer, "
+    "correct_questions integer, partial_questions integer, "
+    "wrong_questions integer, unanswered_questions integer"
+)
+
+if result_returns != expected_result_returns:
+    fail(
+        "Ergebnisabruf-RPC gibt unerwartete Spalten zurück: "
+        f"{result_returns}"
+    )
+
+for forbidden_parameter in (
+    "p_participant_id",
+    "p_score_points",
+    "p_max_points",
+    "p_passed",
+    "p_correct_answers",
+    "p_selected_answers",
+):
+    if forbidden_parameter in result_parameters:
+        fail(
+            "Verbotener Browserparameter im Ergebnisabruf-RPC: "
+            f"{forbidden_parameter}"
+        )
+
+for forbidden_content in (
+    "exam_question_answer_keys",
+    "exam_attempt_question_answer_keys",
+    "correct_answers_snapshot",
+    "explanation_snapshot",
+    "answer_hash_snapshot",
+    "insert into",
+    "update public.",
+    "delete from",
+    "create policy",
+    "grant select",
+    "grant insert",
+    "grant update",
+    "grant delete",
+    "service_role",
+):
+    if forbidden_content in exam_result_rpc_lower:
+        fail(
+            "Unzulässiger Inhalt im Ergebnisabruf-RPC: "
+            f"{forbidden_content}"
+        )
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -952,7 +1089,8 @@ print(
     "vor Prüfungsstart-RPC "
     "vor Antwortspeicher-RPC "
     "vor Prüfungsabschluss-RPC "
-    "vor Auswahlbegrenzungs-Korrektur"
+    "vor Auswahlbegrenzungs-Korrektur "
+    "vor Ergebnisabruf-RPC"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -961,4 +1099,8 @@ print("Prüfungsabschluss-RPC: idempotenter Abschluss")
 print("Auswahlbegrenzung: aus privatem Versuchsschlüssel abgeleitet")
 print("Auswahlbegrenzung: Überauswahl beim Speichern gesperrt")
 print("Auswahlbegrenzung: Überauswahl vor Bewertung erneut gesperrt")
+print("Ergebnisabruf-RPC: nur eigene abgeschlossene Vollsimulation")
+print("Ergebnisabruf-RPC: gespeicherte 82/120-Daten gegengeprüft")
+print("Ergebnisabruf-RPC: keine Lösungsschlüssel in der Rückgabe")
+print("Ergebnisabruf-RPC: historische Ergebnisse sicher abrufbar")
 print("Live-Ausführung: nein")

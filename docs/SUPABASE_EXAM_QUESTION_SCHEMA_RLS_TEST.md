@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.27e
+Stand: v27.27f
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -15,6 +15,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260716_v2727b_exam_answer_save_rpc.sql`
 - `20260716_v2727d_exam_finish_rpc.sql`
 - `20260716_v2727e_exam_selection_limit_security.sql`
+- `20260717_v2727f_exam_result_rpc.sql`
 
 ## Geprüfte Tabellen
 
@@ -118,11 +119,31 @@ Bestätigt wurden:
 - feste `search_path`- und `row_security`-Einstellungen
 - Ausführungsrecht ausschließlich für `authenticated`
 
-## Automatische Migrationsprüfung
+## Automatische Migrationsprüfung## Prüfungsergebnis-RPC-Prüfung
+
+Bestätigt wurden:
+
+- ausschließlich eigener abgeschlossener Vollsimulationsversuch
+- Teilnehmeridentität ausschließlich über `auth.uid()`
+- historische Ergebnisse für `active`, `expired` und `completed`
+- Teilnehmerstatus `blocked` ausgeschlossen
+- exakt 82 Fragen-Snapshots und 120 Gesamtpunkte
+- exakt 82 gespeicherte Antwortzeilen
+- Punkteabgleich zwischen Antworten und Prüfungsversuch
+- Bestehensabgleich mit `score_points >= 60`
+- beantwortete und unbeantwortete Fragen ergeben zusammen 82
+- richtige, teilweise richtige, falsche und unbeantwortete Fragen ergeben zusammen 82
+- sichere Ergebniszusammenfassung ohne Lösungsschlüssel
+- keine Erklärungen oder richtigen Antwortindizes
+- keine privaten Versuchsschlüssel-Tabellen im RPC
+- keine Schreiboperationen
+- Ausführungsrecht ausschließlich für `authenticated`
+
+
 
 Erwarteter Stand:
 
-- 12 SQL-Dateien
+- 13 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
@@ -140,4 +161,4 @@ Migration wurde auf einer Live-Datenbank ausgeführt.
 Sichere Snapshot-Schreibvorgänge und Prüfungsbewertungen folgen
 später ausschließlich über geprüfte RPC-Funktionen.
 
-Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC, Prüfungsabschluss und serverseitige Auswahlbegrenzung statisch bestätigt
+Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte, Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC, Prüfungsabschluss, serverseitige Auswahlbegrenzung und sicherer Ergebnisabruf statisch bestätigt
