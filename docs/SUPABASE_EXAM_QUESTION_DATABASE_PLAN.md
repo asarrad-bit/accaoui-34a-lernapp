@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29a
+Stand: v27.29b
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -307,6 +307,25 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_RPC_TEST.md`
 
+## Ergebnislisten-Adaptervertrag v27.29b
+
+Der lokale Supabase-Adapter enthält jetzt:
+
+- einen klaren State für den RPC
+  `accaoui_list_full_exam_results`
+- ausschließlich `p_limit` und `p_offset` als spätere Parameter
+- lokale Prüfung der Pagination
+- einen stabilen leeren Rückgabevertrag
+- einen sicheren Blockierungsgrund im lokalen Modus
+- keine Teilnehmer-ID als Browserparameter
+- keinen echten RPC-, Client- oder Netzwerkaufruf
+
+Die bestehende Prüfungshistorie bleibt lokal verborgen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_ADAPTER_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -397,9 +416,9 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29a` kann die lokale
-Supabase-Adapter-Schicht für die spätere Ergebnislisten-Abfrage
-vorbereitet werden, weiterhin ohne Live-Verbindung.
+Nach GitHub-Bestätigung von `v27.29b` kann die spätere
+Zuordnung der sicheren Ergebnisliste zum Teilnehmer-Dashboard
+geplant werden, weiterhin ohne sichtbares UI und Live-Verbindung.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,

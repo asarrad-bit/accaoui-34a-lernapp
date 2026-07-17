@@ -68,6 +68,24 @@ def check_category_audit():
     if code != 0:
         errors.append("Kategorien-Audit fehlgeschlagen")
 
+def check_exam_result_history_adapter():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-exam-history-adapter.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Ergebnislisten-Adapterprüfung fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -158,6 +176,7 @@ def main():
         "data/oral-question-bank.js",
         "data/oral-sheets-bank.js",
         "tools/audit-categories.py",
+        "tools/check-supabase-exam-history-adapter.py",
     ]
 
     for file_path in required_files:
@@ -166,6 +185,7 @@ def main():
     check_json("questions.json")
     check_index_versions()
     check_category_audit()
+    check_exam_result_history_adapter()
     check_git_diff_check()
     check_protected_core_files_v2356()
 

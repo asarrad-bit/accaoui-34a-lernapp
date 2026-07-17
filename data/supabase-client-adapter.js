@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v26.75a
+// Stand: v27.29b
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1720,6 +1720,115 @@
       participantDashboardSampleQuestionsDetailsState,
       participantDashboardExamSimulationDetailsState
     };
+  }
+
+  function getParticipantExamResultHistoryRpcState() {
+    const clientState = getClientReadinessState();
+    const authState = getAuthReadinessState();
+    const participantSessionState = getParticipantSessionState();
+
+    return {
+      version: "v27.29b",
+      status: "exam_result_history_rpc_prepared_local_blocked",
+      isAvailable: true,
+      isRpcPrepared: true,
+      rpcName: "accaoui_list_full_exam_results",
+      rpcParameterNames: ["p_limit", "p_offset"],
+      defaultLimit: 20,
+      maxLimit: 50,
+      maxOffset: 10000,
+      canCallRpc: false,
+      isLiveCallImplemented: false,
+      isBlockedSafely: true,
+      isLoginRequired: false,
+      isLocalAccessAllowed: true,
+      reason: "supabase_client_not_ready_live_call_disabled",
+      futureStatuses: [
+        "exam_result_history_rpc_ready_later",
+        "exam_result_history_rpc_loading_later",
+        "exam_result_history_rpc_success_later",
+        "exam_result_history_rpc_empty_later",
+        "exam_result_history_rpc_error_later"
+      ],
+      clientState,
+      authState,
+      participantSessionState
+    };
+  }
+
+  function normalizeParticipantExamResultHistoryPagination(options) {
+    const source =
+      options && typeof options === "object"
+        ? options
+        : {};
+
+    const limit =
+      source.limit === undefined
+        ? 20
+        : Number(source.limit);
+
+    const offset =
+      source.offset === undefined
+        ? 0
+        : Number(source.offset);
+
+    const isLimitValid =
+      Number.isInteger(limit) &&
+      limit >= 1 &&
+      limit <= 50;
+
+    const isOffsetValid =
+      Number.isInteger(offset) &&
+      offset >= 0 &&
+      offset <= 10000;
+
+    return {
+      isValid: isLimitValid && isOffsetValid,
+      limit,
+      offset,
+      isLimitValid,
+      isOffsetValid
+    };
+  }
+
+  function listParticipantFullExamResults(options) {
+    const rpcState = getParticipantExamResultHistoryRpcState();
+    const pagination =
+      normalizeParticipantExamResultHistoryPagination(options);
+
+    if (!pagination.isValid) {
+      return Promise.resolve({
+        version: "v27.29b",
+        status: "exam_result_history_pagination_invalid",
+        ok: false,
+        isLiveCall: false,
+        results: [],
+        totalCount: null,
+        request: null,
+        reason: !pagination.isLimitValid
+          ? "limit_must_be_integer_between_1_and_50"
+          : "offset_must_be_integer_between_0_and_10000",
+        rpcState
+      });
+    }
+
+    return Promise.resolve({
+      version: "v27.29b",
+      status: "exam_result_history_rpc_blocked_safe_local_mode",
+      ok: false,
+      isLiveCall: false,
+      results: [],
+      totalCount: null,
+      request: {
+        rpcName: rpcState.rpcName,
+        parameters: {
+          p_limit: pagination.limit,
+          p_offset: pagination.offset
+        }
+      },
+      reason: rpcState.reason,
+      rpcState
+    });
   }
 
   function getParticipantDashboardCertificateHistoryState() {
@@ -3931,6 +4040,7 @@
     const participantDashboardFlashcardsDetailsState = getParticipantDashboardFlashcardsDetailsState();
     const participantDashboardSampleQuestionsDetailsState = getParticipantDashboardSampleQuestionsDetailsState();
     const participantDashboardExamHistoryState = getParticipantDashboardExamHistoryState();
+    const participantExamResultHistoryRpcState = getParticipantExamResultHistoryRpcState();
     const participantDashboardCertificateHistoryState = getParticipantDashboardCertificateHistoryState();
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
@@ -4432,6 +4542,14 @@
       canShowParticipantDashboardExamHistoryBestScore: participantDashboardExamHistoryState.canShowExamHistoryBestScore === true,
       canOpenParticipantDashboardExamHistoryAttemptReview: participantDashboardExamHistoryState.canOpenExamHistoryAttemptReview === true,
       canBlockParticipantDashboardByExamHistory: participantDashboardExamHistoryState.canBlockDashboardAccess === true,
+      participantExamResultHistoryRpcStatus: participantExamResultHistoryRpcState.status,
+      isParticipantExamResultHistoryRpcPrepared: participantExamResultHistoryRpcState.isRpcPrepared === true,
+      canCallParticipantExamResultHistoryRpc: participantExamResultHistoryRpcState.canCallRpc === true,
+      participantExamResultHistoryRpcName: participantExamResultHistoryRpcState.rpcName,
+      participantExamResultHistoryDefaultLimit: participantExamResultHistoryRpcState.defaultLimit,
+      participantExamResultHistoryMaxLimit: participantExamResultHistoryRpcState.maxLimit,
+      participantExamResultHistoryMaxOffset: participantExamResultHistoryRpcState.maxOffset,
+      isParticipantExamResultHistoryRpcBlockedSafely: participantExamResultHistoryRpcState.isBlockedSafely === true,
       participantDashboardCertificateHistoryStatus: participantDashboardCertificateHistoryState.status,
       isParticipantDashboardCertificateHistoryAvailable: participantDashboardCertificateHistoryState.isAvailable === true,
       isParticipantDashboardCertificateHistoryVisible: participantDashboardCertificateHistoryState.isVisible === true,
@@ -4698,6 +4816,7 @@
     const participantDashboardFlashcardsDetailsState = getParticipantDashboardFlashcardsDetailsState();
     const participantDashboardSampleQuestionsDetailsState = getParticipantDashboardSampleQuestionsDetailsState();
     const participantDashboardExamHistoryState = getParticipantDashboardExamHistoryState();
+    const participantExamResultHistoryRpcState = getParticipantExamResultHistoryRpcState();
     const participantDashboardCertificateHistoryState = getParticipantDashboardCertificateHistoryState();
     const participantDashboardCertificateDownloadState = getParticipantDashboardCertificateDownloadState();
     const participantDashboardCertificatePreviewState = getParticipantDashboardCertificatePreviewState();
@@ -4783,6 +4902,7 @@
       participantDashboardFlashcardsDetailsState,
       participantDashboardSampleQuestionsDetailsState,
       participantDashboardExamHistoryState,
+      participantExamResultHistoryRpcState,
       participantDashboardCertificateHistoryState,
       participantDashboardCertificateDownloadState,
       participantDashboardCertificatePreviewState,
@@ -4805,7 +4925,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v26.75a",
+    version: "v27.29b",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -4858,6 +4978,8 @@
     getParticipantDashboardFlashcardsDetailsState,
     getParticipantDashboardSampleQuestionsDetailsState,
     getParticipantDashboardExamHistoryState,
+    getParticipantExamResultHistoryRpcState,
+    listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,
     getParticipantDashboardCertificatePreviewState,
