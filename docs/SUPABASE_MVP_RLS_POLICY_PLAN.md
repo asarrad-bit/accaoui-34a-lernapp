@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Supabase MVP RLS-Policy-Plan
 
-Stand: v27.20c  
+Stand: v27.28d
 Status: Planungsdokument, keine Live-Ausführung, keine echten Keys.
 
 ---
@@ -74,7 +74,7 @@ Teilnehmer darf nicht:
 Teilnehmer darf:
 
 - eigene Prüfungsergebnisse lesen
-- eigene Prüfungsergebnisse erstellen
+- eigene Prüfungsergebnisse ausschließlich über geprüfte RPCs erzeugen
 
 Teilnehmer darf nicht:
 
@@ -89,7 +89,7 @@ Teilnehmer darf nicht:
 Teilnehmer darf:
 
 - eigene Antworten über eigene exam_attempts lesen
-- eigene Antworten zu eigenen exam_attempts erstellen
+- eigene Antworten ausschließlich über geprüfte RPCs speichern
 
 Teilnehmer darf nicht:
 
@@ -137,15 +137,30 @@ Admin/Dozent darf nur aktiv sein, wenn:
 | participants | eigene Daten | begrenzt | ja | ja |
 | courses | aktive Kurse | nein | ja | ja |
 | enrollments | eigene Daten | nein | ja | ja |
-| exam_attempts | eigene Daten | eigene neue Versuche | ja | begrenzt |
-| exam_answers | eigene Daten | eigene neue Antworten | ja | begrenzt |
+| exam_attempts | eigene Daten | nur über RPC | ja | nur über geprüfte RPCs |
+| exam_answers | eigene Daten | nur über RPC | ja | nur über geprüfte RPCs |
 | certificates | eigene Daten | nein | ja | ja |
 | admin_profiles | nein | nein | eigene Rolle | admin |
 | audit_logs | nein | automatisch | ja | automatisch |
 
 ---
 
-## 6. Sicherheitsrisiken
+## 6. Aktueller Sicherheits-Override v27.28d
+
+Die ursprüngliche MVP-Planung wurde nach dem
+Prüfungsintegritätsreview verschärft.
+
+Für `exam_attempts` und `exam_answers` gilt jetzt:
+
+- keine App-Rolle besitzt direkte Schreibrechte
+- Teilnehmer schreiben ausschließlich über Prüfungs-RPCs
+- Admin, Dozent und Support schreiben nicht direkt in die Tabellen
+- Support besitzt nur den erforderlichen Lesezugriff
+- administrative Korrekturen benötigen später einen eigenen
+  geprüften und protokollierten Admin-RPC
+- die alten Mitarbeiter-Policies mit `FOR ALL` wurden entfernt
+
+## 7. Sicherheitsrisiken
 
 Besonders kritisch:
 
@@ -158,7 +173,7 @@ Besonders kritisch:
 
 ---
 
-## 7. MVP-Policy-Reihenfolge
+## 8. MVP-Policy-Reihenfolge
 
 1. Admin-Helper-Funktion planen
 2. Teilnehmer-Select-Policies planen
@@ -170,7 +185,7 @@ Besonders kritisch:
 
 ---
 
-## 8. Qualitätsentscheidung
+## 9. Qualitätsentscheidung
 
 Keine Policy wird live genutzt, bevor sie geprüft ist.
 

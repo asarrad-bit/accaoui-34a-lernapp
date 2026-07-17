@@ -24,6 +24,9 @@ EXAM_ATTEMPT_INTEGRITY = (
 FULL_EXAM_STATE_INTEGRITY = (
     "20260717_v2728c_full_exam_state_integrity.sql"
 )
+EXAM_DIRECT_WRITE_LOCKDOWN = (
+    "20260717_v2728d_exam_direct_write_lockdown.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -70,6 +73,7 @@ for required in (
     EXAM_RESULT_RPC,
     EXAM_ATTEMPT_INTEGRITY,
     FULL_EXAM_STATE_INTEGRITY,
+    EXAM_DIRECT_WRITE_LOCKDOWN,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -136,6 +140,14 @@ if files.index(EXAM_ATTEMPT_INTEGRITY) >= files.index(
         "Prüfungsversuch-Integrität."
     )
 
+if files.index(FULL_EXAM_STATE_INTEGRITY) >= files.index(
+    EXAM_DIRECT_WRITE_LOCKDOWN
+):
+    fail(
+        "Direkte Prüfungs-Schreibsperre steht vor der "
+        "Vollsimulations-Zustandsintegrität."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -183,6 +195,10 @@ exam_attempt_integrity = (
 
 full_exam_state_integrity = (
     MIGRATIONS / FULL_EXAM_STATE_INTEGRITY
+).read_text(encoding="utf-8")
+
+exam_direct_write_lockdown = (
+    MIGRATIONS / EXAM_DIRECT_WRITE_LOCKDOWN
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -1066,6 +1082,50 @@ for forbidden in (
         )
 
 
+exam_direct_write_lockdown_lower = (
+    exam_direct_write_lockdown.lower()
+)
+exam_direct_write_lockdown_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_direct_write_lockdown_lower,
+)
+
+required_exam_direct_write_lockdown_markers = (
+    'drop policy if exists "exam_attempts_staff_manage" '
+    "on public.exam_attempts",
+    'drop policy if exists "exam_answers_staff_manage" '
+    "on public.exam_answers",
+    "revoke insert, update, delete "
+    "on table public.exam_attempts "
+    "from public, anon, authenticated",
+    "revoke insert, update, delete "
+    "on table public.exam_answers "
+    "from public, anon, authenticated",
+)
+
+for marker in required_exam_direct_write_lockdown_markers:
+    if marker not in exam_direct_write_lockdown_compact:
+        fail(
+            "Direkte Prüfungs-Schreibsperre fehlt: "
+            f"{marker}"
+        )
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "service_role",
+    "insert into",
+    "update public.",
+    "delete from",
+):
+    if forbidden in exam_direct_write_lockdown_lower:
+        fail(
+            "Unzulässiger Inhalt in direkter "
+            f"Prüfungs-Schreibsperre: {forbidden}"
+        )
+
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -1156,11 +1216,27 @@ for statement in required_drops:
 if "create policy" in lockdown.lower():
     fail("Lockdown darf keine neue Policy erstellen.")
 
-effective_policy_count = len(policies) - len(required_drops)
+direct_write_policy_drops = (
+    'drop policy if exists "exam_attempts_staff_manage"',
+    'drop policy if exists "exam_answers_staff_manage"',
+)
 
-if effective_policy_count != 15:
+for statement in direct_write_policy_drops:
+    if statement not in exam_direct_write_lockdown_lower:
+        fail(
+            "Direkte Mitarbeiter-Schreibpolicy nicht entfernt: "
+            f"{statement}"
+        )
+
+effective_policy_count = (
+    len(policies)
+    - len(required_drops)
+    - len(direct_write_policy_drops)
+)
+
+if effective_policy_count != 13:
     fail(
-        f"Erwartet: 15 effektive Policies, gefunden: "
+        f"Erwartet: 13 effektive Policies, gefunden: "
         f"{effective_policy_count}"
     )
 
@@ -1233,7 +1309,8 @@ print(
     "vor Auswahlbegrenzungs-Korrektur "
     "vor Ergebnisabruf-RPC "
     "vor Prüfungsversuch-Integrität "
-    "vor Vollsimulations-Zustandsintegrität"
+    "vor Vollsimulations-Zustandsintegrität "
+    "vor direkter Prüfungs-Schreibsperre"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -1251,4 +1328,6 @@ print("Prüfungsversuch-Integrität: score_points <= max_points")
 print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
 print("Vollsimulation offen: 0 von 120 Punkten und nicht bestanden")
 print("Vollsimulation abgeschlossen: Bestehen entspricht mindestens 60 Punkten")
+print("Prüfungsdaten: direkte Schreibrechte für alle App-Rollen gesperrt")
+print("Prüfungsdaten: Schreiben ausschließlich über geprüfte RPCs")
 print("Live-Ausführung: nein")

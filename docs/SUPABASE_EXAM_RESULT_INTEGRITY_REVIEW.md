@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Prüfungsintegrität Behebungsnachweis
 
-Stand: v27.28c
+Stand: v27.28d
 
 Status: ursprüngliche Befunde statisch behoben, nicht live ausgeführt
 
@@ -79,6 +79,18 @@ Der Prüfungsstart-RPC prüft serverseitig:
 | wiederholte Übermittlung | idempotente Start- und Abschlusslogik |
 | Überauswahl von Antworten | beim Speichern und vor Bewertung gesperrt |
 | Ergebnisdaten widersprüchlich | Ergebnis-RPC prüft 82/120 und Kategorien |
+
+## Direkte Mitarbeiter-Schreibrechte v27.28d
+
+Zusätzlich statisch behoben:
+
+- `exam_attempts_staff_manage` wurde entfernt
+- `exam_answers_staff_manage` wurde entfernt
+- `INSERT`, `UPDATE` und `DELETE` wurden für alle App-Rollen entzogen
+- Support kann Prüfungsdaten nicht direkt verändern
+- Admin und Dozent umgehen den RPC-Weg ebenfalls nicht
+- spätere administrative Korrekturen benötigen einen
+  eigenen sicheren und protokollierten RPC
 
 ## Vollsimulations-Zustand v27.28c
 

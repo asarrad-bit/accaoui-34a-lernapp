@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.28c
+Stand: v27.28d
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -286,6 +286,24 @@ Der vorbereitete RPC
 - ist ausschließlich für `authenticated` ausführbar
 - wurde nicht live ausgeführt
 
+## Direkte Prüfungs-Schreibsperre v27.28d
+
+Die zusätzliche Lockdown-Migration:
+
+- entfernt direkte Mitarbeiter-Schreibpolicies für Prüfungsversuche
+- entfernt direkte Mitarbeiter-Schreibpolicies für Prüfungsantworten
+- entzieht `INSERT`, `UPDATE` und `DELETE` für alle App-Rollen
+- lässt geprüfte Lesezugriffe bestehen
+- zwingt alle Schreibvorgänge durch den sicheren RPC-Weg
+- verhindert direkte Ergebnisänderungen durch Support
+- verlangt für spätere administrative Korrekturen einen
+  eigenen geprüften Admin-RPC
+- wurde nicht live ausgeführt
+
+Details:
+
+`docs/SUPABASE_EXAM_DIRECT_WRITE_LOCKDOWN_TEST.md`
+
 ## Vollsimulations-Zustandsintegrität v27.28c
 
 Die zusätzliche Zustandsmigration erzwingt:
@@ -359,9 +377,9 @@ Details:
 ## Nächster Schritt
 
 Nach vollständiger Prüfung, Commit, Push und GitHub-Bestätigung
-von `v27.28c` wird der nächste Versionsschritt anhand der
+von `v27.28d` wird der nächste Versionsschritt anhand der
 Projekt-Masterliste festgelegt.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität
-und Vollsimulations-Zustandsintegrität statisch vorbereitet;
-keine Live-Ausführung
+Vollsimulations-Zustandsintegrität und vollständige direkte
+Prüfungs-Schreibsperre statisch vorbereitet; keine Live-Ausführung

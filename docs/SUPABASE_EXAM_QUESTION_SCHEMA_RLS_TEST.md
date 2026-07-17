@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.28c
+Stand: v27.28d
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -18,6 +18,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260717_v2727f_exam_result_rpc.sql`
 - `20260717_v2728b_exam_attempt_integrity.sql`
 - `20260717_v2728c_full_exam_state_integrity.sql`
+- `20260717_v2728d_exam_direct_write_lockdown.sql`
 
 ## Geprüfte Tabellen
 
@@ -172,6 +173,21 @@ Bestätigt wurden:
 - dokumentiert in
   `docs/SUPABASE_FULL_EXAM_STATE_INTEGRITY_TEST.md`
 
+## Direkte Prüfungs-Schreibsperre v27.28d
+
+Bestätigt wurden:
+
+- alte `FOR ALL`-Mitarbeiter-Policy für `exam_attempts` entfernt
+- alte `FOR ALL`-Mitarbeiter-Policy für `exam_answers` entfernt
+- keine direkten Inserts, Updates oder Deletes auf Prüfungsversuche
+- keine direkten Inserts, Updates oder Deletes auf Prüfungsantworten
+- Sperre gilt für `public`, `anon` und `authenticated`
+- Teilnehmer- und Mitarbeiter-Lesezugriff bleibt getrennt erhalten
+- Schreiben ausschließlich über geprüfte Security-Definer-RPCs
+- Support besitzt keine direkten Prüfungs-Schreibrechte
+- dokumentiert in
+  `docs/SUPABASE_EXAM_DIRECT_WRITE_LOCKDOWN_TEST.md`
+
 ## End-to-End-Prüferabdeckung v27.28a
 
 Zusätzlich statisch bestätigt:
@@ -189,13 +205,13 @@ Zusätzlich statisch bestätigt:
 
 Erwarteter Stand:
 
-- 15 SQL-Dateien
+- 16 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
-- 15 effektive Basis-Policies
+- 13 effektive Basis-Policies
 - 3 Fragen-RLS-Policies
-- 18 effektive Policies insgesamt
+- 16 effektive Policies insgesamt
 
 ## Sicherheitsgrenze
 
@@ -209,5 +225,6 @@ später ausschließlich über geprüfte RPC-Funktionen.
 
 Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte,
 Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC,
-Prüfungsabschluss, Auswahlbegrenzung, Ergebnisabruf und
-Vollsimulations-Zustandsintegrität statisch bestätigt
+Prüfungsabschluss, Auswahlbegrenzung, Ergebnisabruf,
+Vollsimulations-Zustandsintegrität und vollständige direkte
+Prüfungs-Schreibsperre statisch bestätigt

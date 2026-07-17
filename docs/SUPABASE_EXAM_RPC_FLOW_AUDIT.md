@@ -1,6 +1,6 @@
 # Supabase Prüfungs-RPC-Flow – End-to-End-Sicherheitsaudit
 
-Stand: v27.28c
+Stand: v27.28d
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -114,6 +114,19 @@ Der Migrationsprüfer erzwingt zusätzlich ausdrücklich den Marker:
 
 Damit kann diese Ergebnisintegritätsprüfung nicht unbemerkt aus dem
 RPC entfernt werden.
+
+## Direkte Schreibsperre v27.28d
+
+Zusätzlich gilt für `exam_attempts` und `exam_answers`:
+
+- keine direkten Inserts durch Teilnehmer oder Mitarbeiterrollen
+- keine direkten Updates durch Teilnehmer oder Mitarbeiterrollen
+- keine direkten Deletes durch Teilnehmer oder Mitarbeiterrollen
+- Support besitzt keine direkten Prüfungs-Schreibrechte
+- Admin und Dozent verwenden ebenfalls den geprüften RPC-Weg
+- Lesen bleibt über getrennte Select-Policies möglich
+- spätere administrative Korrekturen benötigen einen
+  eigenen protokollierten Admin-RPC
 
 ## Vollsimulations-Zustandsgrenze v27.28c
 
