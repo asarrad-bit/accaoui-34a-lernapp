@@ -119,7 +119,7 @@ Bestätigt wurden:
 - feste `search_path`- und `row_security`-Einstellungen
 - Ausführungsrecht ausschließlich für `authenticated`
 
-## Automatische Migrationsprüfung## Prüfungsergebnis-RPC-Prüfung
+## Prüfungsergebnis-RPC-Prüfung
 
 Bestätigt wurden:
 
@@ -140,6 +140,8 @@ Bestätigt wurden:
 - Ausführungsrecht ausschließlich für `authenticated`
 
 
+
+## Automatische Migrationsprüfung
 
 Erwarteter Stand:
 
