@@ -1,6 +1,6 @@
 # Supabase Prüfungsdaten-Schreibsperre – statischer Test
 
-Stand: v27.28d
+Stand: v27.28e
 
 Status: vorbereitet und statisch geprüft, nicht live ausgeführt
 
@@ -57,6 +57,15 @@ Betroffene Tabellen:
 - Antworten bleiben ausschließlich RPC-gebunden
 - spätere administrative Korrekturen benötigen einen eigenen
   geprüften und protokollierten Admin-RPC
+
+## Ergänzende Rollenabgrenzung v27.28e
+
+- Support besitzt weiterhin nur erforderliche Lesezugriffe
+- Admin und Dozent bleiben die einzigen Verwaltungsrollen
+- Support ist aus dem Verwaltungs-Helper ausgeschlossen
+- Prüfungs-Schreibrechte bleiben für alle App-Rollen gesperrt
+- spätere administrative Korrekturen benötigen weiterhin einen
+  eigenen geprüften und protokollierten Admin-RPC
 
 ## Sicherheitsgrenze
 

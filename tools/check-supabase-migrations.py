@@ -27,6 +27,9 @@ FULL_EXAM_STATE_INTEGRITY = (
 EXAM_DIRECT_WRITE_LOCKDOWN = (
     "20260717_v2728d_exam_direct_write_lockdown.sql"
 )
+STAFF_ROLE_BOUNDARY = (
+    "20260717_v2728e_staff_role_boundary.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -74,6 +77,7 @@ for required in (
     EXAM_ATTEMPT_INTEGRITY,
     FULL_EXAM_STATE_INTEGRITY,
     EXAM_DIRECT_WRITE_LOCKDOWN,
+    STAFF_ROLE_BOUNDARY,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -148,6 +152,14 @@ if files.index(FULL_EXAM_STATE_INTEGRITY) >= files.index(
         "Vollsimulations-Zustandsintegrität."
     )
 
+if files.index(EXAM_DIRECT_WRITE_LOCKDOWN) >= files.index(
+    STAFF_ROLE_BOUNDARY
+):
+    fail(
+        "Mitarbeiter-Rollentrennung steht vor der "
+        "direkten Prüfungs-Schreibsperre."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -199,6 +211,10 @@ full_exam_state_integrity = (
 
 exam_direct_write_lockdown = (
     MIGRATIONS / EXAM_DIRECT_WRITE_LOCKDOWN
+).read_text(encoding="utf-8")
+
+staff_role_boundary = (
+    MIGRATIONS / STAFF_ROLE_BOUNDARY
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -1126,6 +1142,141 @@ for forbidden in (
         )
 
 
+staff_role_boundary_lower = staff_role_boundary.lower()
+staff_role_boundary_compact = re.sub(
+    r"\s+",
+    " ",
+    staff_role_boundary_lower,
+)
+
+required_staff_role_markers = (
+    "function public.accaoui_is_active_staff()",
+    "function public.accaoui_is_admin_or_dozent()",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "revoke all on function "
+    "public.accaoui_is_active_staff() from public",
+    "revoke all on function "
+    "public.accaoui_is_active_staff() from anon",
+    "grant execute on function "
+    "public.accaoui_is_active_staff() to authenticated",
+    "revoke all on function "
+    "public.accaoui_is_admin_or_dozent() from public",
+    "revoke all on function "
+    "public.accaoui_is_admin_or_dozent() from anon",
+    "grant execute on function "
+    "public.accaoui_is_admin_or_dozent() to authenticated",
+)
+
+for marker in required_staff_role_markers:
+    if marker not in staff_role_boundary_compact:
+        fail(
+            "Mitarbeiter-Rollentrennung fehlt: "
+            f"{marker}"
+        )
+
+
+def get_role_helper_body(function_name: str) -> str:
+    match = re.search(
+        rf"function\s+public\.{function_name}\s*"
+        rf"\(\)\s*returns\s+boolean.*?"
+        rf"as\s+\$\$(.*?)\$\$;",
+        staff_role_boundary,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+
+    if not match:
+        fail(f"Rollen-Helper fehlt: {function_name}")
+
+    return re.sub(
+        r"\s+",
+        " ",
+        match.group(1).strip().lower(),
+    )
+
+
+active_staff_body = get_role_helper_body(
+    "accaoui_is_active_staff"
+)
+admin_dozent_body = get_role_helper_body(
+    "accaoui_is_admin_or_dozent"
+)
+
+if "ap.role in ('admin', 'dozent', 'support')" not in active_staff_body:
+    fail("Aktiver Mitarbeiter-Helper enthält nicht alle Leserollen.")
+
+if "ap.role in ('admin', 'dozent')" not in admin_dozent_body:
+    fail("Admin-/Dozent-Helper enthält nicht beide Verwaltungsrollen.")
+
+if "'support'" in admin_dozent_body:
+    fail("Support darf keine Verwaltungsrolle besitzen.")
+
+expected_staff_select_policies = {
+    ("participants_select_own_or_staff", "participants"),
+    ("courses_select_authenticated", "courses"),
+    ("enrollments_select_own_or_staff", "enrollments"),
+    ("exam_attempts_select_own_or_staff", "exam_attempts"),
+    ("exam_answers_select_own_or_staff", "exam_answers"),
+    ("certificates_select_own_or_staff", "certificates"),
+}
+
+staff_select_policies = set(
+    re.findall(
+        r'create\s+policy\s+"([^"]+)"\s+'
+        r'on\s+public\.([a-z_]+)\s+for\s+select',
+        staff_role_boundary,
+        flags=re.IGNORECASE,
+    )
+)
+
+if staff_select_policies != expected_staff_select_policies:
+    fail(
+        "Unerwartete Mitarbeiter-Select-Policies: "
+        f"{sorted(staff_select_policies)}"
+    )
+
+for policy_name, table_name in expected_staff_select_policies:
+    policy_match = re.search(
+        rf'create\s+policy\s+"{re.escape(policy_name)}"\s+'
+        rf'on\s+public\.{re.escape(table_name)}\s+'
+        rf'for\s+select\s+to\s+authenticated\s+'
+        rf'using\s*\((.*?)\);',
+        staff_role_boundary,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+
+    if not policy_match:
+        fail(
+            "Mitarbeiter-Select-Policy fehlt oder ist nicht "
+            f"rein lesend: {policy_name}"
+        )
+
+    if "public.accaoui_is_active_staff()" not in (
+        policy_match.group(1).lower()
+    ):
+        fail(
+            "Mitarbeiter-Select-Policy verwendet nicht den "
+            f"reinen Lese-Helper: {policy_name}"
+        )
+
+for forbidden in (
+    "for all",
+    "for insert",
+    "for update",
+    "for delete",
+    "grant select",
+    "grant insert",
+    "grant update",
+    "grant delete",
+    "service_role",
+):
+    if forbidden in staff_role_boundary_lower:
+        fail(
+            "Unzulässiger Inhalt in Mitarbeiter-Rollentrennung: "
+            f"{forbidden}"
+        )
+
+
 question_rls_lower = question_rls.lower()
 
 expected_question_policies = {
@@ -1310,7 +1461,8 @@ print(
     "vor Ergebnisabruf-RPC "
     "vor Prüfungsversuch-Integrität "
     "vor Vollsimulations-Zustandsintegrität "
-    "vor direkter Prüfungs-Schreibsperre"
+    "vor direkter Prüfungs-Schreibsperre "
+    "vor Mitarbeiter-Rollentrennung"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -1330,4 +1482,6 @@ print("Vollsimulation offen: 0 von 120 Punkten und nicht bestanden")
 print("Vollsimulation abgeschlossen: Bestehen entspricht mindestens 60 Punkten")
 print("Prüfungsdaten: direkte Schreibrechte für alle App-Rollen gesperrt")
 print("Prüfungsdaten: Schreiben ausschließlich über geprüfte RPCs")
+print("Mitarbeiterrollen: Support nur lesend")
+print("Mitarbeiterrollen: Verwaltung nur Admin/Dozent")
 print("Live-Ausführung: nein")

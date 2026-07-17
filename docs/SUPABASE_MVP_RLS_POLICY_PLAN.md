@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Supabase MVP RLS-Policy-Plan
 
-Stand: v27.28d
+Stand: v27.28e
 Status: Planungsdokument, keine Live-Ausführung, keine echten Keys.
 
 ---
@@ -112,27 +112,35 @@ Teilnehmer darf nicht:
 
 ---
 
-## 4. Admin-/Dozent-Regeln
+## 4. Mitarbeiterrollen
 
-Admin/Dozent darf:
+Aktive Mitarbeiter-Leserollen:
 
-- Teilnehmerliste lesen
-- Kurszuordnungen lesen
-- Prüfungsergebnisse lesen
-- Zertifikatsstatus lesen
-- Teilnehmerstatus verwalten
+- Admin
+- Dozent
+- Support
 
-Admin/Dozent darf nur aktiv sein, wenn:
+Sie dürfen nur die für ihre Tätigkeit erforderlichen Daten lesen.
 
-- admin_profiles.auth_user_id = auth.uid()
-- admin_profiles.status = active
-- role in admin, dozent, support
+Verwaltungsrollen:
+
+- Admin
+- Dozent
+
+Verwaltung ist nur erlaubt, wenn:
+
+- `admin_profiles.auth_user_id = auth.uid()`
+- `admin_profiles.status = active`
+- `role in ('admin', 'dozent')`
+
+Support besitzt keine Teilnehmer-, Kurs-, Einschreibungs-,
+Zertifikats- oder Prüfungsverwaltungsrechte.
 
 ---
 
 ## 5. Tabellen-Policy-Übersicht
 
-| Tabelle | Teilnehmer lesen | Teilnehmer schreiben | Admin/Dozent lesen | Admin/Dozent schreiben |
+| Tabelle | Teilnehmer lesen | Teilnehmer schreiben | Mitarbeiter lesen | Admin/Dozent verwalten |
 |---|---:|---:|---:|---:|
 | participants | eigene Daten | begrenzt | ja | ja |
 | courses | aktive Kurse | nein | ja | ja |
@@ -160,7 +168,19 @@ Für `exam_attempts` und `exam_answers` gilt jetzt:
   geprüften und protokollierten Admin-RPC
 - die alten Mitarbeiter-Policies mit `FOR ALL` wurden entfernt
 
-## 7. Sicherheitsrisiken
+## 7. Rollenabgrenzung v27.28e
+
+Die Mitarbeiterrollen wurden technisch getrennt:
+
+- `accaoui_is_active_staff()` erlaubt notwendige Lesezugriffe für
+  Admin, Dozent und Support
+- `accaoui_is_admin_or_dozent()` erlaubt Verwaltung ausschließlich
+  für Admin und Dozent
+- Support bleibt aus allen Verwaltungs-Policies ausgeschlossen
+- bestehende Teilnehmer-Eigenzugriffe bleiben unverändert
+- direkte Prüfungs-Schreibzugriffe bleiben vollständig gesperrt
+
+## 8. Sicherheitsrisiken
 
 Besonders kritisch:
 
@@ -173,7 +193,7 @@ Besonders kritisch:
 
 ---
 
-## 8. MVP-Policy-Reihenfolge
+## 9. MVP-Policy-Reihenfolge
 
 1. Admin-Helper-Funktion planen
 2. Teilnehmer-Select-Policies planen
@@ -185,13 +205,14 @@ Besonders kritisch:
 
 ---
 
-## 9. Qualitätsentscheidung
+## 10. Qualitätsentscheidung
 
 Keine Policy wird live genutzt, bevor sie geprüft ist.
 
-Nächster technischer Schritt:
+Aktueller statischer Stand:
 
-- SQL-RLS-Migration vorbereiten
+- Mitarbeiter-Lesen und Verwaltung sind getrennt
+- Prüfungs-Schreibzugriffe erfolgen ausschließlich über RPCs
 - keine Live-Ausführung
 - keine echten Teilnehmerdaten
 
