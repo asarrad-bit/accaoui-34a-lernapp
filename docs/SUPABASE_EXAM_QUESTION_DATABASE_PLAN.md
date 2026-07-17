@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.28d
+Stand: v27.29a
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -286,6 +286,27 @@ Der vorbereitete RPC
 - ist ausschließlich für `authenticated` ausführbar
 - wurde nicht live ausgeführt
 
+## Prüfungsergebnisliste v27.29a
+
+Der vorbereitete RPC
+`public.accaoui_list_full_exam_results(p_limit, p_offset)`:
+
+- bestimmt den Teilnehmer ausschließlich über `auth.uid()`
+- lädt nur eigene abgeschlossene Vollsimulationen
+- erlaubt historische Ergebnisse für `active`, `expired` und `completed`
+- schließt `blocked` aus
+- begrenzt das Limit auf 1 bis 50
+- begrenzt den Offset auf 0 bis 10000
+- sortiert deterministisch nach Abschlusszeit und Versuchs-ID
+- liefert die Gesamtzahl über `total_count`
+- gibt keine Antworten, Schlüssel oder Erklärungen zurück
+- ist ausschließlich für `authenticated` ausführbar
+- wurde nicht live ausgeführt
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_RPC_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -376,10 +397,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach vollständiger Prüfung, Commit, Push und GitHub-Bestätigung
-von `v27.28d` wird der nächste Versionsschritt anhand der
-Projekt-Masterliste festgelegt.
+Nach GitHub-Bestätigung von `v27.29a` kann die lokale
+Supabase-Adapter-Schicht für die spätere Ergebnislisten-Abfrage
+vorbereitet werden, weiterhin ohne Live-Verbindung.
 
-Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität
-Vollsimulations-Zustandsintegrität und vollständige direkte
-Prüfungs-Schreibsperre statisch vorbereitet; keine Live-Ausführung
+Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
+Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
+Mitarbeiter-Rollentrennung und sichere Prüfungsergebnisliste
+statisch vorbereitet; keine Live-Ausführung

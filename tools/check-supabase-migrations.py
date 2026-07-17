@@ -30,6 +30,9 @@ EXAM_DIRECT_WRITE_LOCKDOWN = (
 STAFF_ROLE_BOUNDARY = (
     "20260717_v2728e_staff_role_boundary.sql"
 )
+EXAM_RESULT_HISTORY_RPC = (
+    "20260717_v2729a_exam_result_history_rpc.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -78,6 +81,7 @@ for required in (
     FULL_EXAM_STATE_INTEGRITY,
     EXAM_DIRECT_WRITE_LOCKDOWN,
     STAFF_ROLE_BOUNDARY,
+    EXAM_RESULT_HISTORY_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -160,6 +164,14 @@ if files.index(EXAM_DIRECT_WRITE_LOCKDOWN) >= files.index(
         "direkten Prüfungs-Schreibsperre."
     )
 
+if files.index(STAFF_ROLE_BOUNDARY) >= files.index(
+    EXAM_RESULT_HISTORY_RPC
+):
+    fail(
+        "Prüfungsergebnisliste steht vor der "
+        "Mitarbeiter-Rollentrennung."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -215,6 +227,10 @@ exam_direct_write_lockdown = (
 
 staff_role_boundary = (
     MIGRATIONS / STAFF_ROLE_BOUNDARY
+).read_text(encoding="utf-8")
+
+exam_result_history_rpc = (
+    MIGRATIONS / EXAM_RESULT_HISTORY_RPC
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -991,6 +1007,146 @@ for forbidden_content in (
             f"{forbidden_content}"
         )
 
+exam_result_history_rpc_lower = (
+    exam_result_history_rpc.lower()
+)
+exam_result_history_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    exam_result_history_rpc_lower,
+)
+
+required_history_markers = (
+    "function public.accaoui_list_full_exam_results(",
+    "p_limit integer default 20",
+    "p_offset integer default 0",
+    "language plpgsql",
+    "stable",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "p_limit not between 1 and 50",
+    "p_offset not between 0 and 10000",
+    "p.status in ('active', 'expired', 'completed')",
+    "ea.mode = 'full_simulation'",
+    "ea.finished_at is not null",
+    "ea.max_points <> 120",
+    "ea.score_points not between 0 and 120",
+    "ea.passed <> (ea.score_points >= 60)",
+    "ea.started_at is null",
+    "ea.finished_at < ea.started_at",
+    "count(*) over ()",
+    "order by ea.finished_at desc, ea.id desc",
+    "limit p_limit",
+    "offset p_offset",
+    "revoke all on function "
+    "public.accaoui_list_full_exam_results(integer, integer) "
+    "from public",
+    "revoke all on function "
+    "public.accaoui_list_full_exam_results(integer, integer) "
+    "from anon",
+    "revoke all on function "
+    "public.accaoui_list_full_exam_results(integer, integer) "
+    "from authenticated",
+    "grant execute on function "
+    "public.accaoui_list_full_exam_results(integer, integer) "
+    "to authenticated",
+)
+
+for marker in required_history_markers:
+    if marker not in exam_result_history_rpc_compact:
+        fail(
+            "Prüfungsergebnislisten-RPC-Anweisung fehlt: "
+            f"{marker}"
+        )
+
+history_match = re.search(
+    r"function\s+public\.accaoui_list_full_exam_results\s*"
+    r"\((.*?)\)\s*returns\s+table\s*"
+    r"\((.*?)\)\s*language\s+plpgsql",
+    exam_result_history_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not history_match:
+    fail("Signatur des Prüfungsergebnislisten-RPC fehlt.")
+
+history_parameters = re.sub(
+    r"\s+",
+    " ",
+    history_match.group(1).strip().lower(),
+)
+
+expected_history_parameters = (
+    "p_limit integer default 20, "
+    "p_offset integer default 0"
+)
+
+if history_parameters != expected_history_parameters:
+    fail(
+        "Prüfungsergebnislisten-RPC besitzt unerwartete Parameter: "
+        f"{history_parameters}"
+    )
+
+history_returns = re.sub(
+    r"\s+",
+    " ",
+    history_match.group(2).strip().lower(),
+)
+
+expected_history_returns = (
+    "exam_attempt_id uuid, course_id uuid, course_title text, "
+    "score_points integer, max_points integer, passed boolean, "
+    "started_at timestamptz, finished_at timestamptz, "
+    "total_count bigint"
+)
+
+if history_returns != expected_history_returns:
+    fail(
+        "Prüfungsergebnislisten-RPC gibt unerwartete Spalten zurück: "
+        f"{history_returns}"
+    )
+
+for forbidden_parameter in (
+    "p_participant_id",
+    "p_exam_attempt_id",
+    "p_score_points",
+    "p_max_points",
+    "p_passed",
+):
+    if forbidden_parameter in history_parameters:
+        fail(
+            "Verbotener Browserparameter in Prüfungsergebnisliste: "
+            f"{forbidden_parameter}"
+        )
+
+for forbidden_content in (
+    "exam_answers",
+    "exam_attempt_questions",
+    "exam_question_answer_keys",
+    "exam_attempt_question_answer_keys",
+    "correct_answers",
+    "selected_answers",
+    "explanation_snapshot",
+    "answer_hash_snapshot",
+    "insert into",
+    "update public.",
+    "delete from",
+    "create policy",
+    "grant select",
+    "grant insert",
+    "grant update",
+    "grant delete",
+    "service_role",
+):
+    if forbidden_content in exam_result_history_rpc_lower:
+        fail(
+            "Unzulässiger Inhalt in Prüfungsergebnisliste: "
+            f"{forbidden_content}"
+        )
+
+
 exam_attempt_integrity_lower = (
     exam_attempt_integrity.lower()
 )
@@ -1462,7 +1618,8 @@ print(
     "vor Prüfungsversuch-Integrität "
     "vor Vollsimulations-Zustandsintegrität "
     "vor direkter Prüfungs-Schreibsperre "
-    "vor Mitarbeiter-Rollentrennung"
+    "vor Mitarbeiter-Rollentrennung "
+    "vor Prüfungsergebnisliste"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -1476,6 +1633,8 @@ print("Ergebnisabruf-RPC: gespeicherte 82/120-Daten gegengeprüft")
 print("Ergebnisabruf-RPC: Antwortkategorien ergeben zusammen 82")
 print("Ergebnisabruf-RPC: keine Lösungsschlüssel in der Rückgabe")
 print("Ergebnisabruf-RPC: historische Ergebnisse sicher abrufbar")
+print("Prüfungsergebnisliste: nur eigene abgeschlossene Versuche")
+print("Prüfungsergebnisliste: sichere begrenzte Pagination")
 print("Prüfungsversuch-Integrität: score_points <= max_points")
 print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
 print("Vollsimulation offen: 0 von 120 Punkten und nicht bestanden")

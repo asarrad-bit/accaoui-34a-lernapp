@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.28e
+Stand: v27.29a
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -20,6 +20,7 @@ Status: statisch geprüft, nicht live ausgeführt
 - `20260717_v2728c_full_exam_state_integrity.sql`
 - `20260717_v2728d_exam_direct_write_lockdown.sql`
 - `20260717_v2728e_staff_role_boundary.sql`
+- `20260717_v2729a_exam_result_history_rpc.sql`
 
 ## Geprüfte Tabellen
 
@@ -205,6 +206,24 @@ Bestätigt wurden:
 - dokumentiert in
   `docs/SUPABASE_STAFF_ROLE_BOUNDARY_TEST.md`
 
+## Prüfungsergebnisliste v27.29a
+
+Bestätigt wurden:
+
+- sichere Liste eigener abgeschlossener Vollsimulationen
+- Teilnehmeridentität ausschließlich über `auth.uid()`
+- historische Ergebnisse für `active`, `expired` und `completed`
+- Teilnehmerstatus `blocked` ausgeschlossen
+- begrenztes Limit von 1 bis 50
+- begrenzter Offset von 0 bis 10000
+- deterministische Reihenfolge
+- Gesamtzahl über `total_count`
+- keine Antworten, Lösungsschlüssel oder Erklärungen
+- keine Schreiboperationen
+- Ausführungsrecht ausschließlich für `authenticated`
+- dokumentiert in
+  `docs/SUPABASE_EXAM_RESULT_HISTORY_RPC_TEST.md`
+
 ## End-to-End-Prüferabdeckung v27.28a
 
 Zusätzlich statisch bestätigt:
@@ -222,7 +241,7 @@ Zusätzlich statisch bestätigt:
 
 Erwarteter Stand:
 
-- 17 SQL-Dateien
+- 18 SQL-Dateien
 - 8 MVP-Tabellen
 - 4 sichere Prüfungstabellen
 - 12 Tabellen insgesamt
@@ -244,5 +263,5 @@ Status: Fragen-Schema, RLS, private Versuchsschlüssel, Teilpunkte,
 Antwortintegrität, Prüfungsstart-RPC, Antwortspeicher-RPC,
 Prüfungsabschluss, Auswahlbegrenzung, Ergebnisabruf,
 Vollsimulations-Zustandsintegrität, vollständige direkte
-Prüfungs-Schreibsperre und Mitarbeiter-Rollentrennung
-statisch bestätigt
+Prüfungs-Schreibsperre, Mitarbeiter-Rollentrennung und
+sichere Prüfungsergebnisliste statisch bestätigt
