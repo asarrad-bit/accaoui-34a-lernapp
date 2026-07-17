@@ -831,6 +831,8 @@ required_exam_result_markers = (
     "v_point_mismatch_count <> 0",
     "v_invalid_unanswered_count <> 0",
     "v_answered_count + v_unanswered_count <> 82",
+    "v_correct_count + v_partial_count + v_wrong_count "
+    "+ v_unanswered_count ) <> 82",
     "revoke all on function "
     "public.accaoui_get_full_exam_result(uuid) from public",
     "revoke all on function "
@@ -1101,6 +1103,7 @@ print("Auswahlbegrenzung: Überauswahl beim Speichern gesperrt")
 print("Auswahlbegrenzung: Überauswahl vor Bewertung erneut gesperrt")
 print("Ergebnisabruf-RPC: nur eigene abgeschlossene Vollsimulation")
 print("Ergebnisabruf-RPC: gespeicherte 82/120-Daten gegengeprüft")
+print("Ergebnisabruf-RPC: Antwortkategorien ergeben zusammen 82")
 print("Ergebnisabruf-RPC: keine Lösungsschlüssel in der Rückgabe")
 print("Ergebnisabruf-RPC: historische Ergebnisse sicher abrufbar")
 print("Live-Ausführung: nein")

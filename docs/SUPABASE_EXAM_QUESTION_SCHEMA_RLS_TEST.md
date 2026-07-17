@@ -1,6 +1,6 @@
 # Supabase Prüfungsfragen Schema- und RLS-Test
 
-Stand: v27.27f
+Stand: v27.28a
 
 Status: statisch geprüft, nicht live ausgeführt
 
@@ -140,6 +140,19 @@ Bestätigt wurden:
 - Ausführungsrecht ausschließlich für `authenticated`
 
 
+
+## End-to-End-Prüferabdeckung v27.28a
+
+Zusätzlich statisch bestätigt:
+
+- Start, Antwortspeicherung, Abschluss und Ergebnisabruf bilden
+  einen geschlossenen serverseitigen Prüfungsweg
+- Browserparameter enthalten keine autoritativen Ergebniswerte
+- private Versuchsschlüssel bleiben außerhalb der Rückgaben
+- der Migrationsprüfer erzwingt ausdrücklich, dass richtige,
+  teilweise richtige, falsche und unbeantwortete Fragen
+  zusammen exakt 82 ergeben
+- dokumentiert in `docs/SUPABASE_EXAM_RPC_FLOW_AUDIT.md`
 
 ## Automatische Migrationsprüfung
 

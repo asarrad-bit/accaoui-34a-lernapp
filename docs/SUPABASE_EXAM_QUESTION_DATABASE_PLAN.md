@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.27f
+Stand: v27.28a
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -286,6 +286,23 @@ Der vorbereitete RPC
 - ist ausschließlich für `authenticated` ausführbar
 - wurde nicht live ausgeführt
 
+## End-to-End-Sicherheitsaudit v27.28a
+
+Der vollständige sichere Prüfungsweg wurde zusammenhängend geprüft:
+
+1. Prüfungsstart erzeugt feste sichtbare und private Snapshots
+2. Antwortspeicherung akzeptiert nur gültige eigene Versuchsfragen
+3. Prüfungsabschluss bewertet ausschließlich serverseitig
+4. Ergebnisabruf liefert nur eine sichere Zusammenfassung
+
+Der Migrationsprüfer erzwingt zusätzlich ausdrücklich, dass
+richtige, teilweise richtige, falsche und unbeantwortete Fragen
+zusammen exakt 82 ergeben.
+
+Details:
+
+`docs/SUPABASE_EXAM_RPC_FLOW_AUDIT.md`
+
 ## Sicherheitsgrenze
 
 - kein Import über den Browser
@@ -309,7 +326,7 @@ Der vorbereitete RPC
 ## Nächster Schritt
 
 Nach vollständiger Prüfung, Commit, Push und GitHub-Bestätigung
-von `v27.27f` wird der nächste Versionsschritt anhand der
+von `v27.28a` wird der nächste Versionsschritt anhand der
 Projekt-Masterliste festgelegt.
 
 Status: Sicherer Ergebnisabruf-RPC statisch vorbereitet; keine Live-Ausführung
