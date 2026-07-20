@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29p
+Stand: v27.29q
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -527,6 +527,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_REQUEST_LIFECYCLE_TRANSITION_TEST.md`
 
+## Anfrage-Controller-State v27.29q
+
+Navigation, Anfrageidentität, Lebenszyklus, Zustandsübergänge
+und Response-Annahme werden jetzt in einem sicheren lokalen
+Controller-State verbunden.
+
+Der Controller kann Anfragen initialisieren, starten,
+abschließen, navigieren und kontrolliert verwerfen. Veraltete
+Responses werden weiterhin vor dem Lesen ignoriert.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_REQUEST_CONTROLLER_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -617,10 +631,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29p` kann ein sicherer
-lokaler Anfrage-Controller-State vorbereitet werden, der
-Navigation, Identität, Lebenszyklus und Response-Annahme
-verbindet, weiterhin ohne Live-RPC oder UI.
+Nach GitHub-Bestätigung von `v27.29q` kann ein sicherer
+lokaler Controller-Snapshot-Normalizer vorbereitet werden, der
+gespeicherte Controllerzustände vor einer Wiederaufnahme prüft,
+weiterhin ohne Live-RPC oder UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -630,5 +644,5 @@ Normalizer, Seitenaggregator, Fixture-Tests, sicherer
 Response-Mapper, Ladezustands-Mapper, Pagination-State,
 Datenquellen-Orchestrator, Navigations-Intent-State,
 Anfrage-Identitätsstate, Response-Annahme-Guard,
-Anfrage-Lebenszyklus-State und Lebenszyklus-Übergangs-Guard
-vorbereitet; keine Live-Ausführung
+Anfrage-Lebenszyklus-State, Lebenszyklus-Übergangs-Guard
+und Anfrage-Controller-State vorbereitet; keine Live-Ausführung

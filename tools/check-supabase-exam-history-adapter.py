@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29p",
+    "// stand: v27.29q",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -31,6 +31,7 @@ required_markers = (
     'version: "v27.29n"',
     'version: "v27.29o"',
     'version: "v27.29p"',
+    'version: "v27.29q"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -279,6 +280,30 @@ required_markers = (
     "canguarddatasourcerequestlifecycletransitions:",
     "datasourceinitialrequestlifecycletransitionstate:",
     "guardparticipantfullexamresulthistoryrequestlifecycletransition,",
+    "function mapparticipantfullexamresulthistoryrequestcontrollerstate(input)",
+    '"initialize"',
+    '"start"',
+    '"accept"',
+    '"navigate"',
+    '"discard"',
+    '"exam_result_history_request_controller_prepared"',
+    '"exam_result_history_request_controller_pending"',
+    '"exam_result_history_request_controller_completed"',
+    '"exam_result_history_request_controller_navigation_ready"',
+    '"exam_result_history_request_controller_discarded"',
+    '"exam_result_history_request_controller_stale_ignored"',
+    '"exam_result_history_request_controller_blocked"',
+    '"exam_result_history_request_controller_error"',
+    '"exam_result_history_request_controller_invalid"',
+    "isrequestcontrollermapperonly: true",
+    "requestcontrollermappername:",
+    "isrequestcontrollermapperprepared: true",
+    "canmaprequestcontrollerstates: true",
+    "datasourcerequestcontrollermappername:",
+    "isdatasourcerequestcontrollermapperprepared:",
+    "canmapdatasourcerequestcontrollerstates:",
+    "datasourceinitialrequestcontrollerstate:",
+    "mapparticipantfullexamresulthistoryrequestcontrollerstate,",
 )
 
 for marker in required_markers:
@@ -1065,6 +1090,90 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryRequestControllerState(input)"
+) != 1:
+    fail(
+        "Anfrage-Controller-State muss genau einmal "
+        "vorhanden sein."
+    )
+
+controller_start = lower.index(
+    "function mapparticipantfullexamresulthistoryrequestcontrollerstate(input)"
+)
+controller_end = lower.index(
+    "function guardparticipantfullexamresulthistoryrequestlifecycletransition(input)",
+    controller_start,
+)
+controller_block = lower[
+    controller_start:controller_end
+]
+
+for required in (
+    'allowedactions = [',
+    '"initialize"',
+    '"start"',
+    '"accept"',
+    '"navigate"',
+    '"discard"',
+    "mapparticipantfullexamresulthistoryrequestlifecycle({",
+    "mapparticipantfullexamresulthistoryrequestidentity({",
+    "guardparticipantfullexamresulthistoryrequestlifecycletransition({",
+    "guardparticipantfullexamresulthistoryresponseacceptance(",
+    "mapparticipantfullexamresulthistorynavigationintent({",
+    "object.defineproperty(",
+    '"response"',
+    "request_controller_action_invalid",
+    "request_controller_lifecycle_state_missing",
+    "request_controller_lifecycle_state_invalid",
+    "request_controller_lifecycle_identity_invalid",
+    "request_controller_accept_requires_pending",
+    "request_controller_navigation_requires_completed",
+    "request_controller_data_source_request_mismatch",
+    "request_controller_next_request_sequence_invalid",
+    "exam_result_history_request_controller_prepared",
+    "exam_result_history_request_controller_pending",
+    "exam_result_history_request_controller_completed",
+    "exam_result_history_request_controller_navigation_ready",
+    "exam_result_history_request_controller_discarded",
+    "exam_result_history_request_controller_stale_ignored",
+    "exam_result_history_request_controller_blocked",
+    "exam_result_history_request_controller_error",
+    "exam_result_history_request_controller_invalid",
+    "isrequestcontrollermapperonly: true",
+    "islivecall: false",
+):
+    if required not in controller_block:
+        fail(
+            "Anfrage-Controller-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response.error",
+    "source.response.message",
+    "source.response.details",
+    "source.response.hint",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+):
+    if forbidden in controller_block:
+        fail(
+            "Unzulässiger Inhalt im Anfrage-Controller: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1135,6 +1244,7 @@ print("Anfrage-Identitätsstate: aktuelle und veraltete Antworten getrennt")
 print("Response-Annahme-Guard: nur aktive Anfrageantworten werden verarbeitet")
 print("Anfrage-Lebenszyklus: vorbereitet, ausstehend, abgeschlossen und verworfen")
 print("Lebenszyklus-Übergangs-Guard: nur zulässige Zustandswechsel")
+print("Anfrage-Controller: Navigation, Identität, Lebenszyklus und Annahme verbunden")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

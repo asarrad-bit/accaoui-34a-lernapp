@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29p
+// Stand: v27.29q
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29p",
+  "v27.29q",
   "Adapterversion"
 );
 
@@ -128,6 +128,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryNavigationIntent",
   "mapParticipantFullExamResultHistoryRequestIdentity",
   "mapParticipantFullExamResultHistoryRequestLifecycle",
+  "mapParticipantFullExamResultHistoryRequestControllerState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -1788,6 +1789,189 @@ expectEqual(
   "Manipulierte aktuelle Anfrageidentität"
 );
 
+const controllerInitialized =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState({
+    action: "initialize",
+    requestSequence: 21,
+    request: {
+      limit: 20,
+      offset: 0
+    }
+  });
+
+assert(
+  controllerInitialized.status ===
+    "exam_result_history_request_controller_prepared" &&
+  controllerInitialized.isPrepared === true &&
+  controllerInitialized.requestIdentity ===
+    "exam_history_request:21:20:0",
+  "Initialisierter Anfrage-Controller ist unstabil"
+);
+
+const controllerStarted =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState({
+    action: "start",
+    currentLifecycleState:
+      controllerInitialized.lifecycleState
+  });
+
+assert(
+  controllerStarted.status ===
+    "exam_result_history_request_controller_pending" &&
+  controllerStarted.isPending === true &&
+  controllerStarted.lifecycleState.isPending ===
+    true,
+  "Gestarteter Anfrage-Controller ist unstabil"
+);
+
+const controllerAccepted =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState({
+    action: "accept",
+    currentLifecycleState:
+      controllerStarted.lifecycleState,
+    responseIdentity:
+      "exam_history_request:21:20:0",
+    response: {
+      data: [
+        {
+          ...firstRow,
+          total_count: 45
+        },
+        {
+          ...secondRow,
+          total_count: 45
+        }
+      ],
+      error: null
+    }
+  });
+
+assert(
+  controllerAccepted.status ===
+    "exam_result_history_request_controller_completed" &&
+  controllerAccepted.isCompleted === true &&
+  controllerAccepted.didAcceptResponse === true &&
+  controllerAccepted.results.length === 2 &&
+  controllerAccepted.totalCount === 45,
+  "Abgeschlossener Anfrage-Controller ist unstabil"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    controllerAccepted,
+    "response"
+  ),
+  "Rohe Response wurde im Anfrage-Controller offengelegt"
+);
+
+const controllerNavigation =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState({
+    action: "navigate",
+    currentLifecycleState:
+      controllerAccepted.lifecycleState,
+    currentDataSourceState:
+      orchestratedSuccess,
+    navigationIntent: "next",
+    nextRequestSequence: 22
+  });
+
+assert(
+  controllerNavigation.status ===
+    "exam_result_history_request_controller_navigation_ready" &&
+  controllerNavigation.isNavigationReady === true &&
+  controllerNavigation.isPrepared === true &&
+  controllerNavigation.request.offset === 20 &&
+  controllerNavigation.requestSequence === 22 &&
+  controllerNavigation.previousRequestIdentity ===
+    "exam_history_request:21:20:0",
+  "Controller-Navigation ist unstabil"
+);
+
+let controllerStaleResponseWasRead = false;
+
+const controllerStaleInput = {
+  action: "accept",
+  currentLifecycleState:
+    controllerStarted.lifecycleState,
+  responseIdentity:
+    "exam_history_request:20:20:0"
+};
+
+Object.defineProperty(
+  controllerStaleInput,
+  "response",
+  {
+    enumerable: true,
+    get() {
+      controllerStaleResponseWasRead = true;
+      throw new Error(
+        "Veraltete Controller-Response darf nicht gelesen werden."
+      );
+    }
+  }
+);
+
+const controllerStale =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState(
+    controllerStaleInput
+  );
+
+assert(
+  controllerStale.status ===
+    "exam_result_history_request_controller_stale_ignored" &&
+  controllerStale.shouldIgnoreResponse === true &&
+  controllerStaleResponseWasRead === false,
+  "Veraltete Controller-Response wurde nicht ungelesen ignoriert"
+);
+
+const controllerDiscarded =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState({
+    action: "discard",
+    currentLifecycleState:
+      controllerStarted.lifecycleState,
+    discardReason:
+      "cancelled_before_response"
+  });
+
+assert(
+  controllerDiscarded.status ===
+    "exam_result_history_request_controller_discarded" &&
+  controllerDiscarded.isDiscarded === true &&
+  controllerDiscarded.lifecycleState.discardReason ===
+    "cancelled_before_response",
+  "Verworfener Anfrage-Controller ist unstabil"
+);
+
+const controllerBlockedRestart =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState({
+    action: "start",
+    currentLifecycleState:
+      controllerAccepted.lifecycleState
+  });
+
+expectEqual(
+  controllerBlockedRestart.reason,
+  "request_transition_terminal_state",
+  "Neustart aus abgeschlossenem Controller"
+);
+
+const controllerInvalidSequence =
+  adapter.mapParticipantFullExamResultHistoryRequestControllerState({
+    action: "navigate",
+    currentLifecycleState:
+      controllerAccepted.lifecycleState,
+    currentDataSourceState:
+      orchestratedSuccess,
+    navigationIntent: "next",
+    nextRequestSequence: 21
+  });
+
+expectEqual(
+  controllerInvalidSequence.reason,
+  "request_controller_next_request_sequence_invalid",
+  "Ungültige nächste Controller-Anfragefolge"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -1823,6 +2007,9 @@ console.log(
 );
 console.log(
   "Übergangs-Fixtures: zulässig, blockiert, terminal und manipuliert"
+);
+console.log(
+  "Controller-Fixtures: initialisiert, gestartet, angenommen, navigiert und verworfen"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29p
+// Stand: v27.29q
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1779,6 +1779,19 @@
       isRequestLifecycleTransitionGuardPrepared: true,
       canGuardRequestLifecycleTransitions: true,
       initialRequestLifecycleTransitionState: null,
+      requestControllerMapperName:
+        "mapParticipantFullExamResultHistoryRequestControllerState",
+      isRequestControllerMapperPrepared: true,
+      canMapRequestControllerStates: true,
+      initialRequestControllerState:
+        mapParticipantFullExamResultHistoryRequestControllerState({
+          action: "initialize",
+          requestSequence: 1,
+          request: {
+            limit: rpcState.defaultLimit,
+            offset: 0
+          }
+        }),
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1864,6 +1877,10 @@
       isDataSourceRequestLifecycleTransitionGuardPrepared: participantDashboardExamHistoryDataSourceState.isRequestLifecycleTransitionGuardPrepared === true,
       canGuardDataSourceRequestLifecycleTransitions: participantDashboardExamHistoryDataSourceState.canGuardRequestLifecycleTransitions === true,
       dataSourceInitialRequestLifecycleTransitionState: participantDashboardExamHistoryDataSourceState.initialRequestLifecycleTransitionState,
+      dataSourceRequestControllerMapperName: participantDashboardExamHistoryDataSourceState.requestControllerMapperName,
+      isDataSourceRequestControllerMapperPrepared: participantDashboardExamHistoryDataSourceState.isRequestControllerMapperPrepared === true,
+      canMapDataSourceRequestControllerStates: participantDashboardExamHistoryDataSourceState.canMapRequestControllerStates === true,
+      dataSourceInitialRequestControllerState: participantDashboardExamHistoryDataSourceState.initialRequestControllerState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3155,6 +3172,490 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistoryRequestControllerState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const action =
+      typeof source.action === "string"
+        ? source.action.trim()
+        : "";
+
+    const allowedActions = [
+      "initialize",
+      "start",
+      "accept",
+      "navigate",
+      "discard"
+    ];
+
+    const invalid = (reason) => ({
+      version: "v27.29q",
+      status: "exam_result_history_request_controller_invalid",
+      action,
+      isValid: false,
+      isRequestControllerMapperOnly: true,
+      isLiveCall: false,
+      isPrepared: false,
+      isPending: false,
+      isCompleted: false,
+      isDiscarded: false,
+      isNavigationReady: false,
+      didAcceptResponse: false,
+      shouldIgnoreResponse: false,
+      hasError: false,
+      canRetry: false,
+      request: null,
+      requestSequence: null,
+      requestIdentity: null,
+      previousRequestIdentity: null,
+      lifecycleState: null,
+      transitionStatus: null,
+      acceptanceStatus: null,
+      navigationStatus: null,
+      navigationIntent: null,
+      results: [],
+      totalCount: null,
+      pageMetrics: null,
+      paginationState: null,
+      reason
+    });
+
+    if (!allowedActions.includes(action)) {
+      return invalid(
+        "request_controller_action_invalid"
+      );
+    }
+
+    const createState = (overrides) => ({
+      version: "v27.29q",
+      status: "exam_result_history_request_controller_prepared",
+      action,
+      isValid: true,
+      isRequestControllerMapperOnly: true,
+      isLiveCall: false,
+      isPrepared: false,
+      isPending: false,
+      isCompleted: false,
+      isDiscarded: false,
+      isNavigationReady: false,
+      didAcceptResponse: false,
+      shouldIgnoreResponse: false,
+      hasError: false,
+      canRetry: false,
+      request: null,
+      requestSequence: null,
+      requestIdentity: null,
+      previousRequestIdentity: null,
+      lifecycleState: null,
+      transitionStatus: null,
+      acceptanceStatus: null,
+      navigationStatus: null,
+      navigationIntent: null,
+      results: [],
+      totalCount: null,
+      pageMetrics: null,
+      paginationState: null,
+      reason: null,
+      ...overrides
+    });
+
+    if (action === "initialize") {
+      const lifecycleState =
+        mapParticipantFullExamResultHistoryRequestLifecycle({
+          phase: "prepared",
+          requestSequence:
+            source.requestSequence,
+          request:
+            source.request
+        });
+
+      if (!lifecycleState.isValid) {
+        return invalid(lifecycleState.reason);
+      }
+
+      return createState({
+        status:
+          "exam_result_history_request_controller_prepared",
+        isPrepared: true,
+        request:
+          lifecycleState.request,
+        requestSequence:
+          lifecycleState.requestSequence,
+        requestIdentity:
+          lifecycleState.requestIdentity,
+        lifecycleState
+      });
+    }
+
+    const currentLifecycleState =
+      source.currentLifecycleState &&
+      typeof source.currentLifecycleState === "object" &&
+      !Array.isArray(source.currentLifecycleState)
+        ? source.currentLifecycleState
+        : null;
+
+    if (!currentLifecycleState) {
+      return invalid(
+        "request_controller_lifecycle_state_missing"
+      );
+    }
+
+    if (
+      currentLifecycleState.isRequestLifecycleMapperOnly !== true ||
+      currentLifecycleState.isValid !== true
+    ) {
+      return invalid(
+        "request_controller_lifecycle_state_invalid"
+      );
+    }
+
+    const currentIdentityState =
+      mapParticipantFullExamResultHistoryRequestIdentity({
+        mode: "create",
+        requestSequence:
+          currentLifecycleState.requestSequence,
+        request:
+          currentLifecycleState.request
+      });
+
+    if (
+      !currentIdentityState.isValid ||
+      currentIdentityState.requestIdentity !==
+        currentLifecycleState.requestIdentity
+    ) {
+      return invalid(
+        "request_controller_lifecycle_identity_invalid"
+      );
+    }
+
+    const currentBase = {
+      request:
+        currentIdentityState.request,
+      requestSequence:
+        currentIdentityState.requestSequence,
+      requestIdentity:
+        currentIdentityState.requestIdentity,
+      lifecycleState:
+        currentLifecycleState
+    };
+
+    if (action === "start") {
+      const transitionState =
+        guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+          currentState:
+            currentLifecycleState,
+          targetPhase: "pending"
+        });
+
+      if (!transitionState.isValid) {
+        return invalid(transitionState.reason);
+      }
+
+      if (!transitionState.canTransition) {
+        return createState({
+          ...currentBase,
+          status:
+            "exam_result_history_request_controller_blocked",
+          transitionStatus:
+            transitionState.status,
+          reason:
+            transitionState.reason
+        });
+      }
+
+      return createState({
+        status:
+          "exam_result_history_request_controller_pending",
+        isPending: true,
+        request:
+          transitionState.nextState.request,
+        requestSequence:
+          transitionState.nextState.requestSequence,
+        requestIdentity:
+          transitionState.nextState.requestIdentity,
+        lifecycleState:
+          transitionState.nextState,
+        transitionStatus:
+          transitionState.status
+      });
+    }
+
+    if (action === "discard") {
+      const transitionState =
+        guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+          currentState:
+            currentLifecycleState,
+          targetPhase: "discarded",
+          discardReason:
+            source.discardReason
+        });
+
+      if (!transitionState.isValid) {
+        return invalid(transitionState.reason);
+      }
+
+      if (!transitionState.canTransition) {
+        return createState({
+          ...currentBase,
+          status:
+            "exam_result_history_request_controller_blocked",
+          transitionStatus:
+            transitionState.status,
+          reason:
+            transitionState.reason
+        });
+      }
+
+      return createState({
+        status:
+          "exam_result_history_request_controller_discarded",
+        isDiscarded: true,
+        request:
+          transitionState.nextState.request,
+        requestSequence:
+          transitionState.nextState.requestSequence,
+        requestIdentity:
+          transitionState.nextState.requestIdentity,
+        lifecycleState:
+          transitionState.nextState,
+        transitionStatus:
+          transitionState.status,
+        reason:
+          transitionState.nextState.discardReason
+      });
+    }
+
+    if (action === "accept") {
+      if (currentLifecycleState.isPending !== true) {
+        return createState({
+          ...currentBase,
+          status:
+            "exam_result_history_request_controller_blocked",
+          reason:
+            "request_controller_accept_requires_pending"
+        });
+      }
+
+      const guardInput = {
+        requestSequence:
+          currentIdentityState.requestSequence,
+        request:
+          currentIdentityState.request,
+        responseIdentity:
+          source.responseIdentity
+      };
+
+      Object.defineProperty(
+        guardInput,
+        "response",
+        {
+          enumerable: true,
+          get() {
+            return source.response;
+          }
+        }
+      );
+
+      const acceptanceState =
+        guardParticipantFullExamResultHistoryResponseAcceptance(
+          guardInput
+        );
+
+      if (acceptanceState.shouldIgnoreResponse) {
+        return createState({
+          ...currentBase,
+          status:
+            "exam_result_history_request_controller_stale_ignored",
+          shouldIgnoreResponse: true,
+          acceptanceStatus:
+            acceptanceState.status,
+          reason:
+            acceptanceState.reason
+        });
+      }
+
+      if (
+        !acceptanceState.isValid ||
+        acceptanceState.hasError ||
+        acceptanceState.didAcceptResponse !== true
+      ) {
+        return createState({
+          ...currentBase,
+          status:
+            "exam_result_history_request_controller_error",
+          hasError: true,
+          canRetry:
+            acceptanceState.canRetry === true,
+          acceptanceStatus:
+            acceptanceState.status,
+          reason:
+            acceptanceState.reason
+        });
+      }
+
+      const transitionState =
+        guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+          currentState:
+            currentLifecycleState,
+          targetPhase: "completed",
+          acceptanceState
+        });
+
+      if (
+        !transitionState.isValid ||
+        !transitionState.canTransition
+      ) {
+        return createState({
+          ...currentBase,
+          status:
+            "exam_result_history_request_controller_error",
+          hasError: true,
+          transitionStatus:
+            transitionState.status,
+          acceptanceStatus:
+            acceptanceState.status,
+          reason:
+            transitionState.reason
+        });
+      }
+
+      return createState({
+        status:
+          "exam_result_history_request_controller_completed",
+        isCompleted: true,
+        didAcceptResponse: true,
+        request:
+          transitionState.nextState.request,
+        requestSequence:
+          transitionState.nextState.requestSequence,
+        requestIdentity:
+          transitionState.nextState.requestIdentity,
+        lifecycleState:
+          transitionState.nextState,
+        transitionStatus:
+          transitionState.status,
+        acceptanceStatus:
+          acceptanceState.status,
+        results:
+          acceptanceState.results,
+        totalCount:
+          acceptanceState.totalCount,
+        pageMetrics:
+          acceptanceState.pageMetrics,
+        paginationState:
+          acceptanceState.paginationState
+      });
+    }
+
+    if (currentLifecycleState.isCompleted !== true) {
+      return createState({
+        ...currentBase,
+        status:
+          "exam_result_history_request_controller_blocked",
+        reason:
+          "request_controller_navigation_requires_completed"
+      });
+    }
+
+    const currentDataSourceState =
+      source.currentDataSourceState &&
+      typeof source.currentDataSourceState === "object" &&
+      !Array.isArray(source.currentDataSourceState)
+        ? source.currentDataSourceState
+        : null;
+
+    if (
+      !currentDataSourceState ||
+      !currentDataSourceState.request ||
+      currentDataSourceState.request.limit !==
+        currentIdentityState.request.limit ||
+      currentDataSourceState.request.offset !==
+        currentIdentityState.request.offset
+    ) {
+      return invalid(
+        "request_controller_data_source_request_mismatch"
+      );
+    }
+
+    const navigationState =
+      mapParticipantFullExamResultHistoryNavigationIntent({
+        intent:
+          source.navigationIntent,
+        currentState:
+          currentDataSourceState
+      });
+
+    if (!navigationState.isValid) {
+      return invalid(navigationState.reason);
+    }
+
+    if (!navigationState.canNavigate) {
+      return createState({
+        ...currentBase,
+        status:
+          "exam_result_history_request_controller_blocked",
+        navigationStatus:
+          navigationState.status,
+        navigationIntent:
+          source.navigationIntent,
+        reason:
+          navigationState.reason
+      });
+    }
+
+    if (
+      !Number.isSafeInteger(
+        source.nextRequestSequence
+      ) ||
+      source.nextRequestSequence <=
+        currentIdentityState.requestSequence ||
+      source.nextRequestSequence > 1000000000
+    ) {
+      return invalid(
+        "request_controller_next_request_sequence_invalid"
+      );
+    }
+
+    const nextLifecycleState =
+      mapParticipantFullExamResultHistoryRequestLifecycle({
+        phase: "prepared",
+        requestSequence:
+          source.nextRequestSequence,
+        request:
+          navigationState.request
+      });
+
+    if (!nextLifecycleState.isValid) {
+      return invalid(nextLifecycleState.reason);
+    }
+
+    return createState({
+      status:
+        "exam_result_history_request_controller_navigation_ready",
+      isPrepared: true,
+      isNavigationReady: true,
+      request:
+        nextLifecycleState.request,
+      requestSequence:
+        nextLifecycleState.requestSequence,
+      requestIdentity:
+        nextLifecycleState.requestIdentity,
+      previousRequestIdentity:
+        currentIdentityState.requestIdentity,
+      lifecycleState:
+        nextLifecycleState,
+      navigationStatus:
+        navigationState.status,
+      navigationIntent:
+        source.navigationIntent
+    });
   }
 
   function guardParticipantFullExamResultHistoryRequestLifecycleTransition(input) {
@@ -7144,7 +7645,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29p",
+    version: "v27.29q",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -7209,6 +7710,7 @@
     mapParticipantFullExamResultHistoryNavigationIntent,
     mapParticipantFullExamResultHistoryRequestIdentity,
     mapParticipantFullExamResultHistoryRequestLifecycle,
+    mapParticipantFullExamResultHistoryRequestControllerState,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
