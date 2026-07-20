@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29l
+// Stand: v27.29m
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1743,6 +1743,19 @@
               offset: 0
             })
         }),
+      requestIdentityMapperName:
+        "mapParticipantFullExamResultHistoryRequestIdentity",
+      isRequestIdentityMapperPrepared: true,
+      canMapRequestIdentities: true,
+      initialRequestIdentityState:
+        mapParticipantFullExamResultHistoryRequestIdentity({
+          mode: "create",
+          requestSequence: 1,
+          request: {
+            limit: rpcState.defaultLimit,
+            offset: 0
+          }
+        }),
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1812,6 +1825,10 @@
       isDataSourceNavigationIntentMapperPrepared: participantDashboardExamHistoryDataSourceState.isNavigationIntentMapperPrepared === true,
       canMapDataSourceNavigationIntents: participantDashboardExamHistoryDataSourceState.canMapNavigationIntents === true,
       dataSourceInitialNavigationIntentState: participantDashboardExamHistoryDataSourceState.initialNavigationIntentState,
+      dataSourceRequestIdentityMapperName: participantDashboardExamHistoryDataSourceState.requestIdentityMapperName,
+      isDataSourceRequestIdentityMapperPrepared: participantDashboardExamHistoryDataSourceState.isRequestIdentityMapperPrepared === true,
+      canMapDataSourceRequestIdentities: participantDashboardExamHistoryDataSourceState.canMapRequestIdentities === true,
+      dataSourceInitialRequestIdentityState: participantDashboardExamHistoryDataSourceState.initialRequestIdentityState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3103,6 +3120,218 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistoryRequestIdentity(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const mode =
+      typeof source.mode === "string"
+        ? source.mode.trim()
+        : "create";
+
+    const allowedModes = [
+      "create",
+      "compare"
+    ];
+
+    const invalid = (reason) => ({
+      version: "v27.29m",
+      status: "exam_result_history_request_identity_invalid",
+      mode,
+      isValid: false,
+      isRequestIdentityMapperOnly: true,
+      isLiveCall: false,
+      canApplyResponse: false,
+      isCurrentResponse: false,
+      isStaleResponse: false,
+      request: null,
+      requestSequence: null,
+      requestIdentity: null,
+      responseIdentity: null,
+      reason
+    });
+
+    if (!allowedModes.includes(mode)) {
+      return invalid(
+        "request_identity_mode_invalid"
+      );
+    }
+
+    const request =
+      source.request &&
+      typeof source.request === "object" &&
+      !Array.isArray(source.request)
+        ? source.request
+        : null;
+
+    if (!request) {
+      return invalid(
+        "request_identity_request_missing"
+      );
+    }
+
+    const normalizedRequest =
+      normalizeParticipantExamResultHistoryPagination({
+        limit: request.limit,
+        offset: request.offset
+      });
+
+    if (
+      !normalizedRequest.isValid ||
+      normalizedRequest.offset %
+        normalizedRequest.limit !== 0
+    ) {
+      return invalid(
+        "request_identity_request_invalid"
+      );
+    }
+
+    if (
+      !Number.isSafeInteger(
+        source.requestSequence
+      ) ||
+      source.requestSequence < 1 ||
+      source.requestSequence > 1000000000
+    ) {
+      return invalid(
+        "request_sequence_invalid"
+      );
+    }
+
+    const requestSequence =
+      source.requestSequence;
+
+    const requestIdentity =
+      "exam_history_request:" +
+      requestSequence +
+      ":" +
+      normalizedRequest.limit +
+      ":" +
+      normalizedRequest.offset;
+
+    if (mode === "create") {
+      return {
+        version: "v27.29m",
+        status: "exam_result_history_request_identity_ready",
+        mode,
+        isValid: true,
+        isRequestIdentityMapperOnly: true,
+        isLiveCall: false,
+        canApplyResponse: false,
+        isCurrentResponse: false,
+        isStaleResponse: false,
+        request: {
+          limit: normalizedRequest.limit,
+          offset: normalizedRequest.offset
+        },
+        requestSequence,
+        requestIdentity,
+        responseIdentity: null,
+        reason: null
+      };
+    }
+
+    const responseIdentity =
+      typeof source.responseIdentity === "string"
+        ? source.responseIdentity.trim()
+        : "";
+
+    const responseIdentityMatch =
+      /^exam_history_request:(\d{1,10}):(\d{1,2}):(\d{1,5})$/
+        .exec(responseIdentity);
+
+    if (!responseIdentityMatch) {
+      return invalid(
+        "response_identity_format_invalid"
+      );
+    }
+
+    const responseSequence =
+      Number(responseIdentityMatch[1]);
+
+    const responseLimit =
+      Number(responseIdentityMatch[2]);
+
+    const responseOffset =
+      Number(responseIdentityMatch[3]);
+
+    if (
+      !Number.isSafeInteger(responseSequence) ||
+      responseSequence < 1 ||
+      responseSequence > 1000000000
+    ) {
+      return invalid(
+        "response_identity_sequence_invalid"
+      );
+    }
+
+    const normalizedResponseRequest =
+      normalizeParticipantExamResultHistoryPagination({
+        limit: responseLimit,
+        offset: responseOffset
+      });
+
+    if (
+      !normalizedResponseRequest.isValid ||
+      normalizedResponseRequest.offset %
+        normalizedResponseRequest.limit !== 0
+    ) {
+      return invalid(
+        "response_identity_request_invalid"
+      );
+    }
+
+    const canonicalResponseIdentity =
+      "exam_history_request:" +
+      responseSequence +
+      ":" +
+      normalizedResponseRequest.limit +
+      ":" +
+      normalizedResponseRequest.offset;
+
+    if (
+      canonicalResponseIdentity !==
+      responseIdentity
+    ) {
+      return invalid(
+        "response_identity_noncanonical"
+      );
+    }
+
+    const isCurrentResponse =
+      responseIdentity === requestIdentity;
+
+    return {
+      version: "v27.29m",
+      status:
+        isCurrentResponse
+          ? "exam_result_history_response_identity_current"
+          : "exam_result_history_response_identity_stale",
+      mode,
+      isValid: true,
+      isRequestIdentityMapperOnly: true,
+      isLiveCall: false,
+      canApplyResponse: isCurrentResponse,
+      isCurrentResponse,
+      isStaleResponse: !isCurrentResponse,
+      request: {
+        limit: normalizedRequest.limit,
+        offset: normalizedRequest.offset
+      },
+      requestSequence,
+      requestIdentity,
+      responseIdentity,
+      reason:
+        isCurrentResponse
+          ? null
+          : "response_identity_does_not_match_active_request"
+    };
   }
 
   function normalizeParticipantExamResultHistoryPagination(options) {
@@ -6292,7 +6521,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29l",
+    version: "v27.29m",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -6355,6 +6584,7 @@
     mapParticipantFullExamResultHistoryPaginationState,
     orchestrateParticipantFullExamResultHistoryDataSourceState,
     mapParticipantFullExamResultHistoryNavigationIntent,
+    mapParticipantFullExamResultHistoryRequestIdentity,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,

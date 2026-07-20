@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29l
+// Stand: v27.29m
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29l",
+  "v27.29m",
   "Adapterversion"
 );
 
@@ -125,7 +125,8 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryLoadState",
   "mapParticipantFullExamResultHistoryPaginationState",
   "orchestrateParticipantFullExamResultHistoryDataSourceState",
-  "mapParticipantFullExamResultHistoryNavigationIntent"
+  "mapParticipantFullExamResultHistoryNavigationIntent",
+  "mapParticipantFullExamResultHistoryRequestIdentity"
 ]) {
   assert(
     typeof adapter[functionName] === "function",
@@ -1151,6 +1152,163 @@ expectEqual(
   "Fehlender Navigations-Ausgangszustand"
 );
 
+const activeRequestIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "create",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    privateField: "nicht übernehmen"
+  });
+
+assert(
+  activeRequestIdentity.status ===
+    "exam_result_history_request_identity_ready" &&
+  activeRequestIdentity.isValid === true &&
+  activeRequestIdentity.requestIdentity ===
+    "exam_history_request:7:20:20",
+  "Aktive Anfrage-Identität ist unstabil"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    activeRequestIdentity,
+    "privateField"
+  ),
+  "Unbekanntes Identitätsfeld wurde übernommen"
+);
+
+const currentResponseIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "compare",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      activeRequestIdentity.requestIdentity
+  });
+
+assert(
+  currentResponseIdentity.status ===
+    "exam_result_history_response_identity_current" &&
+  currentResponseIdentity.canApplyResponse === true &&
+  currentResponseIdentity.isCurrentResponse === true &&
+  currentResponseIdentity.isStaleResponse === false,
+  "Aktuelle Seitenantwort wurde nicht erkannt"
+);
+
+const staleSequenceIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "compare",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      "exam_history_request:6:20:20"
+  });
+
+assert(
+  staleSequenceIdentity.status ===
+    "exam_result_history_response_identity_stale" &&
+  staleSequenceIdentity.canApplyResponse === false &&
+  staleSequenceIdentity.isCurrentResponse === false &&
+  staleSequenceIdentity.isStaleResponse === true,
+  "Veraltete Anfragefolge wurde nicht verworfen"
+);
+
+const stalePageIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "compare",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      "exam_history_request:7:20:0"
+  });
+
+assert(
+  stalePageIdentity.isStaleResponse === true &&
+  stalePageIdentity.reason ===
+    "response_identity_does_not_match_active_request",
+  "Veraltete Seitenantwort wurde nicht verworfen"
+);
+
+const invalidSequenceIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "create",
+    requestSequence: 0,
+    request: {
+      limit: 20,
+      offset: 0
+    }
+  });
+
+expectEqual(
+  invalidSequenceIdentity.reason,
+  "request_sequence_invalid",
+  "Ungültige Anfragefolge"
+);
+
+const invalidRequestIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "create",
+    requestSequence: 1,
+    request: {
+      limit: 20,
+      offset: 10
+    }
+  });
+
+expectEqual(
+  invalidRequestIdentity.reason,
+  "request_identity_request_invalid",
+  "Nicht ausgerichtete Identitätsanfrage"
+);
+
+const noncanonicalResponseIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "compare",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      "exam_history_request:07:20:20"
+  });
+
+expectEqual(
+  noncanonicalResponseIdentity.reason,
+  "response_identity_noncanonical",
+  "Nicht kanonische Response-Identität"
+);
+
+const malformedResponseIdentity =
+  adapter.mapParticipantFullExamResultHistoryRequestIdentity({
+    mode: "compare",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      "falsches-format"
+  });
+
+expectEqual(
+  malformedResponseIdentity.reason,
+  "response_identity_format_invalid",
+  "Ungültiges Response-Identitätsformat"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -1174,6 +1332,9 @@ console.log(
 );
 console.log(
   "Navigations-Fixtures: erste, vorherige, nächste, blockiert und Retry"
+);
+console.log(
+  "Identitäts-Fixtures: aktiv, aktuell, veraltet und ungültig"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

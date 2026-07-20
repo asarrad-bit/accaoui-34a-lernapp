@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29l",
+    "// stand: v27.29m",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -27,6 +27,7 @@ required_markers = (
     'version: "v27.29j"',
     'version: "v27.29k"',
     'version: "v27.29l"',
+    'version: "v27.29m"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -210,6 +211,25 @@ required_markers = (
     "canmapdatasourcenavigationintents:",
     "datasourceinitialnavigationintentstate:",
     "mapparticipantfullexamresulthistorynavigationintent,",
+    "function mapparticipantfullexamresulthistoryrequestidentity(input)",
+    '"create"',
+    '"compare"',
+    '"exam_result_history_request_identity_ready"',
+    '"exam_result_history_request_identity_invalid"',
+    '"exam_result_history_response_identity_current"',
+    '"exam_result_history_response_identity_stale"',
+    "isrequestidentitymapperonly: true",
+    "canapplyresponse: false",
+    "iscurrentresponse: false",
+    "isstaleresponse: false",
+    "requestidentitymappername:",
+    "isrequestidentitymapperprepared: true",
+    "canmaprequestidentities: true",
+    "datasourcerequestidentitymappername:",
+    "isdatasourcerequestidentitymapperprepared:",
+    "canmapdatasourcerequestidentities:",
+    "datasourceinitialrequestidentitystate:",
+    "mapparticipantfullexamresulthistoryrequestidentity,",
 )
 
 for marker in required_markers:
@@ -679,6 +699,84 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryRequestIdentity(input)"
+) != 1:
+    fail(
+        "Anfrage-Identitätsstate-Mapper muss genau einmal "
+        "vorhanden sein."
+    )
+
+identity_start = lower.index(
+    "function mapparticipantfullexamresulthistoryrequestidentity(input)"
+)
+identity_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    identity_start,
+)
+identity_block = lower[
+    identity_start:identity_end
+]
+
+for required in (
+    'allowedmodes = [',
+    '"create"',
+    '"compare"',
+    "normalizeparticipantexamresulthistorypagination({",
+    "number.issafeinteger(",
+    "source.requestsequence < 1",
+    "source.requestsequence > 1000000000",
+    '"exam_history_request:"',
+    "responseidentity === requestidentity",
+    "request_identity_mode_invalid",
+    "request_identity_request_missing",
+    "request_identity_request_invalid",
+    "request_sequence_invalid",
+    "response_identity_format_invalid",
+    "response_identity_sequence_invalid",
+    "response_identity_request_invalid",
+    "response_identity_noncanonical",
+    "response_identity_does_not_match_active_request",
+    "exam_result_history_request_identity_ready",
+    "exam_result_history_request_identity_invalid",
+    "exam_result_history_response_identity_current",
+    "exam_result_history_response_identity_stale",
+    "canapplyresponse: iscurrentresponse",
+    "isrequestidentitymapperonly: true",
+    "islivecall: false",
+):
+    if required not in identity_block:
+        fail(
+            "Anfrage-Identitätsstate-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response.",
+    "source.response[",
+    "source.response &&",
+    "source.response ||",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "randomuuid",
+    "...source",
+    "...input",
+):
+    if forbidden in identity_block:
+        fail(
+            "Unzulässiger Inhalt im Anfrage-Identitätsstate: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -745,6 +843,7 @@ print("Ladezustands-Mapper: vorbereitet, lädt, Erfolg, leer und Fehler")
 print("Pagination-Navigationsstate: erste, mittlere, letzte und unbekannte Seite")
 print("Datenquellen-Orchestrator: Ladezustand, Response und Pagination sicher verbunden")
 print("Navigations-Intent-State: erste, vorherige, nächste und Retry-Anfrage")
+print("Anfrage-Identitätsstate: aktuelle und veraltete Antworten getrennt")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
