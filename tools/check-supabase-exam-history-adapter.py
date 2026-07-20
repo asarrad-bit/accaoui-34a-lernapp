@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29s",
+    "// stand: v27.29t",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -34,6 +34,7 @@ required_markers = (
     'version: "v27.29q"',
     'version: "v27.29r"',
     'version: "v27.29s"',
+    'version: "v27.29t"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -334,6 +335,19 @@ required_markers = (
     "canmapdatasourcesnapshotresumestates:",
     "datasourceinitialsnapshotresumestate:",
     "mapparticipantfullexamresulthistorysnapshotresumestate,",
+    "function mapparticipantfullexamresulthistorysnapshotcreationstate(input)",
+    '"exam_result_history_snapshot_creation_ready"',
+    '"exam_result_history_snapshot_creation_blocked"',
+    '"exam_result_history_snapshot_creation_invalid"',
+    "issnapshotcreationmapperonly: true",
+    "snapshotcreationmappername:",
+    "issnapshotcreationmapperprepared: true",
+    "canmapsnapshotcreationstates: true",
+    "datasourcesnapshotcreationmappername:",
+    "isdatasourcesnapshotcreationmapperprepared:",
+    "canmapdatasourcesnapshotcreationstates:",
+    "datasourceinitialsnapshotcreationstate:",
+    "mapparticipantfullexamresulthistorysnapshotcreationstate,",
 )
 
 for marker in required_markers:
@@ -1355,6 +1369,75 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotCreationState(input)"
+) != 1:
+    fail(
+        "Snapshot-Erstellungsstate muss genau einmal "
+        "vorhanden sein."
+    )
+
+creation_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotcreationstate(input)"
+)
+creation_end = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotresumestate(input)",
+    creation_start,
+)
+creation_block = lower[
+    creation_start:creation_end
+]
+
+for required in (
+    "normalizeparticipantfullexamresulthistorycontrollersnapshot({",
+    "snapshotversion: 1",
+    "mapparticipantfullexamresulthistoryrequestcontrollerstate({",
+    'action: "initialize"',
+    'action: "start"',
+    "snapshot_creation_controller_state_missing",
+    "snapshot_creation_state_not_resumable",
+    "snapshot_creation_controller_reconstruction_invalid",
+    "snapshot_creation_pending_reconstruction_invalid",
+    "snapshot_creation_phase_invalid",
+    "snapshot_creation_round_trip_invalid",
+    "exam_result_history_snapshot_creation_ready",
+    "exam_result_history_snapshot_creation_blocked",
+    "exam_result_history_snapshot_creation_invalid",
+    "issnapshotcreationmapperonly: true",
+    "canpersistlater: true",
+    "canwritestorage: false",
+    "snapshotpayload",
+):
+    if required not in creation_block:
+        fail(
+            "Snapshot-Erstellungs-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+):
+    if forbidden in creation_block:
+        fail(
+            "Unzulässiger Inhalt im Snapshot-Erstellungsstate: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1428,6 +1511,7 @@ print("Lebenszyklus-Übergangs-Guard: nur zulässige Zustandswechsel")
 print("Anfrage-Controller: Navigation, Identität, Lebenszyklus und Annahme verbunden")
 print("Controller-Snapshot: gespeicherte Zustände sicher normalisiert")
 print("Snapshot-Wiederaufnahme: nur normalisierte Zustände rekonstruiert")
+print("Snapshot-Erstellung: nur wiederaufnehmbare Zustände datensparsam versioniert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

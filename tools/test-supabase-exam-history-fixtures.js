@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29s
+// Stand: v27.29t
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29s",
+  "v27.29t",
   "Adapterversion"
 );
 
@@ -131,6 +131,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryRequestControllerState",
   "normalizeParticipantFullExamResultHistoryControllerSnapshot",
   "mapParticipantFullExamResultHistorySnapshotResumeState",
+  "mapParticipantFullExamResultHistorySnapshotCreationState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -2252,6 +2253,155 @@ expectEqual(
   "Ungültiger Snapshot im Wiederaufnahme-State"
 );
 
+const createdPreparedSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotCreationState({
+    controllerState: {
+      ...controllerInitialized,
+      privateField:
+        "nicht übernehmen"
+    }
+  });
+
+assert(
+  createdPreparedSnapshot.status ===
+    "exam_result_history_snapshot_creation_ready" &&
+  createdPreparedSnapshot.canCreateSnapshot === true &&
+  createdPreparedSnapshot.canPersistLater === true &&
+  createdPreparedSnapshot.canWriteStorage === false &&
+  createdPreparedSnapshot.snapshotPayload.snapshotVersion ===
+    1,
+  "Vorbereiteter Snapshot wurde nicht sicher erstellt"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    createdPreparedSnapshot.snapshotPayload.controllerState,
+    "privateField"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    createdPreparedSnapshot.snapshotPayload.controllerState,
+    "results"
+  ),
+  "Unzulässige Controllerdaten wurden im Snapshot gespeichert"
+);
+
+const createdPreparedResume =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot:
+      createdPreparedSnapshot.snapshotPayload
+  });
+
+assert(
+  createdPreparedResume.canResume === true &&
+  createdPreparedResume.isPrepared === true &&
+  createdPreparedResume.requestIdentity ===
+    createdPreparedSnapshot.requestIdentity,
+  "Erstellter vorbereiteter Snapshot ist nicht wiederaufnehmbar"
+);
+
+const createdPendingSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotCreationState({
+    controllerState:
+      controllerStarted
+  });
+
+const createdPendingResume =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot:
+      createdPendingSnapshot.snapshotPayload
+  });
+
+assert(
+  createdPendingSnapshot.canCreateSnapshot === true &&
+  createdPendingResume.canResume === true &&
+  createdPendingResume.isPending === true &&
+  createdPendingResume.resumeAction ===
+    "retry_pending_request",
+  "Ausstehender Snapshot wurde nicht sicher erstellt"
+);
+
+const createdNavigationSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotCreationState({
+    controllerState:
+      controllerNavigation
+  });
+
+const createdNavigationResume =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot:
+      createdNavigationSnapshot.snapshotPayload
+  });
+
+assert(
+  createdNavigationSnapshot.canCreateSnapshot === true &&
+  createdNavigationResume.isNavigationResume === true &&
+  createdNavigationResume.navigationIntent ===
+    "next" &&
+  createdNavigationResume.previousRequestIdentity ===
+    "exam_history_request:21:20:0",
+  "Navigations-Snapshot wurde nicht sicher erstellt"
+);
+
+const repeatedPreparedSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotCreationState({
+    controllerState:
+      controllerInitialized
+  });
+
+expectEqual(
+  JSON.stringify(
+    repeatedPreparedSnapshot.snapshotPayload
+  ),
+  JSON.stringify(
+    createdPreparedSnapshot.snapshotPayload
+  ),
+  "Deterministische Snapshot-Erstellung"
+);
+
+const blockedCompletedCreation =
+  adapter.mapParticipantFullExamResultHistorySnapshotCreationState({
+    controllerState:
+      controllerAccepted
+  });
+
+assert(
+  blockedCompletedCreation.status ===
+    "exam_result_history_snapshot_creation_blocked" &&
+  blockedCompletedCreation.canCreateSnapshot === false &&
+  blockedCompletedCreation.isTerminal === true &&
+  blockedCompletedCreation.snapshotPayload ===
+    null,
+  "Abgeschlossener Controller wurde als Snapshot vorbereitet"
+);
+
+const blockedDiscardedCreation =
+  adapter.mapParticipantFullExamResultHistorySnapshotCreationState({
+    controllerState:
+      controllerDiscarded
+  });
+
+assert(
+  blockedDiscardedCreation.status ===
+    "exam_result_history_snapshot_creation_blocked" &&
+  blockedDiscardedCreation.isTerminal === true,
+  "Verworfener Controller wurde als Snapshot vorbereitet"
+);
+
+const invalidSnapshotCreation =
+  adapter.mapParticipantFullExamResultHistorySnapshotCreationState({
+    controllerState: {
+      ...controllerStarted,
+      requestIdentity:
+        "exam_history_request:999:20:0"
+    }
+  });
+
+expectEqual(
+  invalidSnapshotCreation.reason,
+  "controller_snapshot_identity_invalid",
+  "Manipulierter Controller im Snapshot-Erstellungsstate"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -2296,6 +2446,9 @@ console.log(
 );
 console.log(
   "Wiederaufnahme-Fixtures: vorbereitet, ausstehend, navigiert und terminal"
+);
+console.log(
+  "Erstellungs-Fixtures: vorbereitet, ausstehend, navigiert, terminal und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
