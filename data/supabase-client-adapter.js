@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29w
+// Stand: v27.29x
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1822,6 +1822,11 @@
       isSnapshotPersistenceContractPrepared: true,
       canMapSnapshotPersistenceIntents: true,
       initialSnapshotPersistenceState: null,
+      snapshotStorageAdapterReadinessMapperName:
+        "mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness",
+      isSnapshotStorageAdapterReadinessPrepared: true,
+      canInspectSnapshotStorageAdapters: true,
+      initialSnapshotStorageAdapterReadinessState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1935,6 +1940,10 @@
       isDataSourceSnapshotPersistenceContractPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceContractPrepared === true,
       canMapDataSourceSnapshotPersistenceIntents: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceIntents === true,
       dataSourceInitialSnapshotPersistenceState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceState,
+      dataSourceSnapshotStorageAdapterReadinessMapperName: participantDashboardExamHistoryDataSourceState.snapshotStorageAdapterReadinessMapperName,
+      isDataSourceSnapshotStorageAdapterReadinessPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotStorageAdapterReadinessPrepared === true,
+      canInspectDataSourceSnapshotStorageAdapters: participantDashboardExamHistoryDataSourceState.canInspectSnapshotStorageAdapters === true,
+      dataSourceInitialSnapshotStorageAdapterReadinessState: participantDashboardExamHistoryDataSourceState.initialSnapshotStorageAdapterReadinessState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3226,6 +3235,310 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const expectedAdapterKind =
+      "accaoui_exam_history_snapshot_storage_adapter_v1";
+
+    const expectedContractVersion = 1;
+
+    const requiredCapabilities = [
+      "read",
+      "write",
+      "delete"
+    ];
+
+    const invalid = (reason) => ({
+      version: "v27.29x",
+      status:
+        "exam_result_history_storage_adapter_readiness_invalid",
+      isValid: false,
+      isSnapshotStorageAdapterReadinessOnly: true,
+      isLiveCall: false,
+      canInspectAdapter: false,
+      canExecuteStorage: false,
+      isAdapterReady: false,
+      isPartiallyReady: false,
+      adapterKind: null,
+      contractVersion: null,
+      requiredCapabilities:
+        requiredCapabilities.slice(),
+      availableCapabilities: [],
+      missingCapabilities:
+        requiredCapabilities.slice(),
+      availableCapabilityCount: 0,
+      canRead: false,
+      canWrite: false,
+      canDelete: false,
+      reason
+    });
+
+    const inspectOwnDataProperty = (
+      target,
+      propertyName
+    ) => {
+      try {
+        const descriptor =
+          Object.getOwnPropertyDescriptor(
+            target,
+            propertyName
+          );
+
+        if (!descriptor) {
+          return {
+            isSafe: true,
+            exists: false,
+            isAccessor: false,
+            value: null
+          };
+        }
+
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            descriptor,
+            "value"
+          )
+        ) {
+          return {
+            isSafe: true,
+            exists: true,
+            isAccessor: true,
+            value: null
+          };
+        }
+
+        return {
+          isSafe: true,
+          exists: true,
+          isAccessor: false,
+          value:
+            descriptor.value
+        };
+      } catch (_error) {
+        return {
+          isSafe: false,
+          exists: false,
+          isAccessor: false,
+          value: null
+        };
+      }
+    };
+
+    const adapterProperty =
+      inspectOwnDataProperty(
+        source,
+        "storageAdapter"
+      );
+
+    if (!adapterProperty.isSafe) {
+      return invalid(
+        "storage_adapter_property_inspection_failed"
+      );
+    }
+
+    if (!adapterProperty.exists) {
+      return invalid(
+        "storage_adapter_missing"
+      );
+    }
+
+    if (adapterProperty.isAccessor) {
+      return invalid(
+        "storage_adapter_property_accessor_not_allowed"
+      );
+    }
+
+    const storageAdapter =
+      adapterProperty.value;
+
+    if (
+      !storageAdapter ||
+      typeof storageAdapter !== "object" ||
+      Array.isArray(storageAdapter)
+    ) {
+      return invalid(
+        "storage_adapter_must_be_object"
+      );
+    }
+
+    const kindProperty =
+      inspectOwnDataProperty(
+        storageAdapter,
+        "adapterKind"
+      );
+
+    const versionProperty =
+      inspectOwnDataProperty(
+        storageAdapter,
+        "contractVersion"
+      );
+
+    if (
+      !kindProperty.isSafe ||
+      !versionProperty.isSafe
+    ) {
+      return invalid(
+        "storage_adapter_metadata_inspection_failed"
+      );
+    }
+
+    if (
+      !kindProperty.exists ||
+      kindProperty.isAccessor ||
+      kindProperty.value !==
+        expectedAdapterKind
+    ) {
+      return invalid(
+        "storage_adapter_kind_invalid"
+      );
+    }
+
+    if (
+      !versionProperty.exists ||
+      versionProperty.isAccessor ||
+      versionProperty.value !==
+        expectedContractVersion
+    ) {
+      return invalid(
+        "storage_adapter_contract_version_invalid"
+      );
+    }
+
+    const capabilityStates =
+      requiredCapabilities.map(
+        (capabilityName) => {
+          const capabilityProperty =
+            inspectOwnDataProperty(
+              storageAdapter,
+              capabilityName
+            );
+
+          return {
+            name:
+              capabilityName,
+            isSafe:
+              capabilityProperty.isSafe,
+            isAccessor:
+              capabilityProperty.isAccessor,
+            isAvailable:
+              capabilityProperty.isSafe &&
+              capabilityProperty.exists &&
+              !capabilityProperty.isAccessor &&
+              typeof capabilityProperty.value ===
+                "function"
+          };
+        }
+      );
+
+    if (
+      capabilityStates.some(
+        (state) => !state.isSafe
+      )
+    ) {
+      return invalid(
+        "storage_adapter_capability_inspection_failed"
+      );
+    }
+
+    if (
+      capabilityStates.some(
+        (state) => state.isAccessor
+      )
+    ) {
+      return invalid(
+        "storage_adapter_capability_accessor_not_allowed"
+      );
+    }
+
+    const availableCapabilities =
+      capabilityStates
+        .filter(
+          (state) => state.isAvailable
+        )
+        .map(
+          (state) => state.name
+        );
+
+    const missingCapabilities =
+      capabilityStates
+        .filter(
+          (state) => !state.isAvailable
+        )
+        .map(
+          (state) => state.name
+        );
+
+    const canRead =
+      availableCapabilities.includes(
+        "read"
+      );
+
+    const canWrite =
+      availableCapabilities.includes(
+        "write"
+      );
+
+    const canDelete =
+      availableCapabilities.includes(
+        "delete"
+      );
+
+    const isAdapterReady =
+      canRead &&
+      canWrite &&
+      canDelete;
+
+    const isPartiallyReady =
+      !isAdapterReady &&
+      availableCapabilities.length > 0;
+
+    const status =
+      isAdapterReady
+        ? "exam_result_history_storage_adapter_readiness_ready"
+        : isPartiallyReady
+          ? "exam_result_history_storage_adapter_readiness_partial"
+          : "exam_result_history_storage_adapter_readiness_unavailable";
+
+    const reason =
+      isAdapterReady
+        ? null
+        : isPartiallyReady
+          ? "storage_adapter_capabilities_partial"
+          : "storage_adapter_capabilities_unavailable";
+
+    return {
+      version: "v27.29x",
+      status,
+      isValid: true,
+      isSnapshotStorageAdapterReadinessOnly: true,
+      isLiveCall: false,
+      canInspectAdapter: true,
+      canExecuteStorage: false,
+      isAdapterReady,
+      isPartiallyReady,
+      adapterKind:
+        expectedAdapterKind,
+      contractVersion:
+        expectedContractVersion,
+      requiredCapabilities:
+        requiredCapabilities.slice(),
+      availableCapabilities,
+      missingCapabilities,
+      availableCapabilityCount:
+        availableCapabilities.length,
+      canRead,
+      canWrite,
+      canDelete,
+      reason
+    };
   }
 
   function mapParticipantFullExamResultHistorySnapshotPersistenceContract(input) {
@@ -9429,7 +9742,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29w",
+    version: "v27.29x",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -9501,6 +9814,7 @@
     mapParticipantFullExamResultHistorySnapshotSerializationState,
     mapParticipantFullExamResultHistorySnapshotDeserializationState,
     mapParticipantFullExamResultHistorySnapshotPersistenceContract,
+    mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,

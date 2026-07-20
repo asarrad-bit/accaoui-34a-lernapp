@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29w",
+    "// stand: v27.29x",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -38,6 +38,7 @@ required_markers = (
     'version: "v27.29u"',
     'version: "v27.29v"',
     'version: "v27.29w"',
+    'version: "v27.29x"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -394,6 +395,20 @@ required_markers = (
     "canmapdatasourcesnapshotpersistenceintents:",
     "datasourceinitialsnapshotpersistencestate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecontract,",
+    "function mapparticipantfullexamresulthistorysnapshotstorageadapterreadiness(input)",
+    '"exam_result_history_storage_adapter_readiness_ready"',
+    '"exam_result_history_storage_adapter_readiness_partial"',
+    '"exam_result_history_storage_adapter_readiness_unavailable"',
+    '"exam_result_history_storage_adapter_readiness_invalid"',
+    "issnapshotstorageadapterreadinessonly: true",
+    "snapshotstorageadapterreadinessmappername:",
+    "issnapshotstorageadapterreadinessprepared: true",
+    "caninspectsnapshotstorageadapters: true",
+    "datasourcesnapshotstorageadapterreadinessmappername:",
+    "isdatasourcesnapshotstorageadapterreadinessprepared:",
+    "caninspectdatasourcesnapshotstorageadapters:",
+    "datasourceinitialsnapshotstorageadapterreadinessstate:",
+    "mapparticipantfullexamresulthistorysnapshotstorageadapterreadiness,",
 )
 
 for marker in required_markers:
@@ -1733,6 +1748,89 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness(input)"
+) != 1:
+    fail(
+        "Persistenz-Adapter-Readiness-State muss genau einmal "
+        "vorhanden sein."
+    )
+
+readiness_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotstorageadapterreadiness(input)"
+)
+readiness_end = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecontract(input)",
+    readiness_start,
+)
+readiness_block = lower[
+    readiness_start:readiness_end
+]
+
+for required in (
+    '"accaoui_exam_history_snapshot_storage_adapter_v1"',
+    "const expectedcontractversion = 1",
+    'requiredcapabilities = [',
+    '"read"',
+    '"write"',
+    '"delete"',
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "storage_adapter_missing",
+    "storage_adapter_must_be_object",
+    "storage_adapter_kind_invalid",
+    "storage_adapter_contract_version_invalid",
+    "storage_adapter_capability_inspection_failed",
+    "storage_adapter_capability_accessor_not_allowed",
+    "storage_adapter_capabilities_partial",
+    "storage_adapter_capabilities_unavailable",
+    "exam_result_history_storage_adapter_readiness_ready",
+    "exam_result_history_storage_adapter_readiness_partial",
+    "exam_result_history_storage_adapter_readiness_unavailable",
+    "exam_result_history_storage_adapter_readiness_invalid",
+    "issnapshotstorageadapterreadinessonly: true",
+    "canexecutestorage: false",
+    "canread",
+    "canwrite",
+    "candelete",
+):
+    if required not in readiness_block:
+        fail(
+            "Persistenz-Adapter-Readiness-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in readiness_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Adapter-Readiness-State: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1810,6 +1908,7 @@ print("Snapshot-Erstellung: nur wiederaufnehmbare Zustände datensparsam version
 print("Snapshot-Serialisierung: kanonisches JSON, Größenlimit und Strukturprüfung")
 print("Snapshot-Deserialisierung: Größe vor Parsing begrenzt und Struktur erneut geprüft")
 print("Snapshot-Persistenzvertrag: Save, Load und Delete sicher vorbereitet")
+print("Persistenz-Adapter-Readiness: Read, Write und Delete ohne Aufruf geprüft")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

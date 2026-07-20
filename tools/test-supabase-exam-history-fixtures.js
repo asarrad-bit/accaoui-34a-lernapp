@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29w
+// Stand: v27.29x
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29w",
+  "v27.29x",
   "Adapterversion"
 );
 
@@ -135,6 +135,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotSerializationState",
   "mapParticipantFullExamResultHistorySnapshotDeserializationState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceContract",
+  "mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -2802,6 +2803,161 @@ expectEqual(
   "Ungültiger Persistenz-Intent"
 );
 
+let storageAdapterOperationCalls = 0;
+
+const fullStorageAdapter = {
+  adapterKind:
+    "accaoui_exam_history_snapshot_storage_adapter_v1",
+  contractVersion: 1,
+  read() {
+    storageAdapterOperationCalls += 1;
+    throw new Error(
+      "Readiness darf read nicht aufrufen."
+    );
+  },
+  write() {
+    storageAdapterOperationCalls += 1;
+    throw new Error(
+      "Readiness darf write nicht aufrufen."
+    );
+  },
+  delete() {
+    storageAdapterOperationCalls += 1;
+    throw new Error(
+      "Readiness darf delete nicht aufrufen."
+    );
+  }
+};
+
+const fullStorageReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness({
+    storageAdapter:
+      fullStorageAdapter,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  fullStorageReadiness.status ===
+    "exam_result_history_storage_adapter_readiness_ready" &&
+  fullStorageReadiness.isValid === true &&
+  fullStorageReadiness.isAdapterReady === true &&
+  fullStorageReadiness.canRead === true &&
+  fullStorageReadiness.canWrite === true &&
+  fullStorageReadiness.canDelete === true &&
+  fullStorageReadiness.availableCapabilityCount ===
+    3 &&
+  fullStorageReadiness.canExecuteStorage === false &&
+  storageAdapterOperationCalls === 0,
+  "Vollständiger Storage-Adapter wurde nicht sicher geprüft"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    fullStorageReadiness,
+    "storageAdapter"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    fullStorageReadiness,
+    "privateField"
+  ),
+  "Storage-Adapter wurde im Readiness-State offengelegt"
+);
+
+const partialStorageReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness({
+    storageAdapter: {
+      adapterKind:
+        "accaoui_exam_history_snapshot_storage_adapter_v1",
+      contractVersion: 1,
+      read() {}
+    }
+  });
+
+assert(
+  partialStorageReadiness.status ===
+    "exam_result_history_storage_adapter_readiness_partial" &&
+  partialStorageReadiness.isPartiallyReady === true &&
+  partialStorageReadiness.canRead === true &&
+  partialStorageReadiness.canWrite === false &&
+  partialStorageReadiness.canDelete === false,
+  "Teilweiser Storage-Adapter wurde nicht erkannt"
+);
+
+const unavailableStorageReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness({
+    storageAdapter: {
+      adapterKind:
+        "accaoui_exam_history_snapshot_storage_adapter_v1",
+      contractVersion: 1
+    }
+  });
+
+assert(
+  unavailableStorageReadiness.status ===
+    "exam_result_history_storage_adapter_readiness_unavailable" &&
+  unavailableStorageReadiness.isAdapterReady === false &&
+  unavailableStorageReadiness.availableCapabilityCount ===
+    0,
+  "Storage-Adapter ohne Fähigkeiten wurde nicht erkannt"
+);
+
+let storageAccessorReads = 0;
+
+const accessorStorageAdapter = {
+  adapterKind:
+    "accaoui_exam_history_snapshot_storage_adapter_v1",
+  contractVersion: 1,
+  write() {},
+  delete() {}
+};
+
+Object.defineProperty(
+  accessorStorageAdapter,
+  "read",
+  {
+    enumerable: true,
+    get() {
+      storageAccessorReads += 1;
+      throw new Error(
+        "Readiness darf Capability-Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorStorageReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness({
+    storageAdapter:
+      accessorStorageAdapter
+  });
+
+assert(
+  accessorStorageReadiness.isValid === false &&
+  accessorStorageReadiness.reason ===
+    "storage_adapter_capability_accessor_not_allowed" &&
+  storageAccessorReads === 0,
+  "Capability-Accessor wurde nicht geschlossen abgelehnt"
+);
+
+const invalidStorageReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness({
+    storageAdapter: {
+      adapterKind:
+        "falscher_adapter",
+      contractVersion: 1,
+      read() {},
+      write() {},
+      delete() {}
+    }
+  });
+
+expectEqual(
+  invalidStorageReadiness.reason,
+  "storage_adapter_kind_invalid",
+  "Ungültiger Storage-Adapter-Marker"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -2858,6 +3014,9 @@ console.log(
 );
 console.log(
   "Persistenz-Fixtures: Save, Load, Delete, blockiert und ungültig"
+);
+console.log(
+  "Storage-Readiness-Fixtures: vollständig, teilweise, nicht verfügbar und ungültig"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
