@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29t
+// Stand: v27.29u
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29t",
+  "v27.29u",
   "Adapterversion"
 );
 
@@ -132,6 +132,7 @@ for (const functionName of [
   "normalizeParticipantFullExamResultHistoryControllerSnapshot",
   "mapParticipantFullExamResultHistorySnapshotResumeState",
   "mapParticipantFullExamResultHistorySnapshotCreationState",
+  "mapParticipantFullExamResultHistorySnapshotSerializationState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -2402,6 +2403,143 @@ expectEqual(
   "Manipulierter Controller im Snapshot-Erstellungsstate"
 );
 
+const serializedPreparedSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotSerializationState({
+    creationState:
+      createdPreparedSnapshot,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  serializedPreparedSnapshot.status ===
+    "exam_result_history_snapshot_serialization_ready" &&
+  serializedPreparedSnapshot.isValid === true &&
+  serializedPreparedSnapshot.canSerialize === true &&
+  serializedPreparedSnapshot.canPersistLater === true &&
+  serializedPreparedSnapshot.canWriteStorage === false &&
+  typeof serializedPreparedSnapshot.serializedJson ===
+    "string" &&
+  serializedPreparedSnapshot.serializedByteLength > 0 &&
+  serializedPreparedSnapshot.serializedByteLength <=
+    serializedPreparedSnapshot.maximumSerializedBytes,
+  "Vorbereiteter Snapshot wurde nicht sicher serialisiert"
+);
+
+assert(
+  !serializedPreparedSnapshot.serializedJson.includes(
+    "privateField"
+  ) &&
+  !serializedPreparedSnapshot.serializedJson.includes(
+    "results"
+  ),
+  "Unzulässige Felder wurden serialisiert"
+);
+
+const parsedPreparedSnapshot =
+  JSON.parse(
+    serializedPreparedSnapshot.serializedJson
+  );
+
+const serializedPreparedResume =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot:
+      parsedPreparedSnapshot
+  });
+
+assert(
+  serializedPreparedResume.canResume === true &&
+  serializedPreparedResume.isPrepared === true &&
+  serializedPreparedResume.requestIdentity ===
+    serializedPreparedSnapshot.requestIdentity,
+  "Serialisierter vorbereiteter Snapshot ist nicht wiederaufnehmbar"
+);
+
+const serializedPendingSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotSerializationState({
+    creationState:
+      createdPendingSnapshot
+  });
+
+const serializedPendingResume =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot:
+      JSON.parse(
+        serializedPendingSnapshot.serializedJson
+      )
+  });
+
+assert(
+  serializedPendingSnapshot.canSerialize === true &&
+  serializedPendingResume.canResume === true &&
+  serializedPendingResume.isPending === true,
+  "Ausstehender Snapshot wurde nicht sicher serialisiert"
+);
+
+const serializedNavigationSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotSerializationState({
+    creationState:
+      createdNavigationSnapshot
+  });
+
+const serializedNavigationResume =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot:
+      JSON.parse(
+        serializedNavigationSnapshot.serializedJson
+      )
+  });
+
+assert(
+  serializedNavigationSnapshot.canSerialize === true &&
+  serializedNavigationResume.isNavigationResume === true &&
+  serializedNavigationResume.navigationIntent ===
+    "next",
+  "Navigations-Snapshot wurde nicht sicher serialisiert"
+);
+
+const repeatedSerializedSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotSerializationState({
+    creationState:
+      repeatedPreparedSnapshot
+  });
+
+expectEqual(
+  repeatedSerializedSnapshot.serializedJson,
+  serializedPreparedSnapshot.serializedJson,
+  "Kanonische Snapshot-Serialisierung"
+);
+
+const blockedSnapshotSerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotSerializationState({
+    creationState:
+      blockedCompletedCreation
+  });
+
+assert(
+  blockedSnapshotSerialization.status ===
+    "exam_result_history_snapshot_serialization_blocked" &&
+  blockedSnapshotSerialization.canSerialize === false &&
+  blockedSnapshotSerialization.serializedJson === null &&
+  blockedSnapshotSerialization.reason ===
+    "snapshot_serialization_creation_state_not_ready",
+  "Blockierter Erstellungsstate wurde serialisiert"
+);
+
+const invalidSnapshotSerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotSerializationState({
+    creationState:
+      invalidSnapshotCreation
+  });
+
+assert(
+  invalidSnapshotSerialization.isValid === false &&
+  invalidSnapshotSerialization.serializedJson === null &&
+  invalidSnapshotSerialization.reason ===
+    "controller_snapshot_identity_invalid",
+  "Ungültiger Erstellungsstate wurde serialisiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -2449,6 +2587,9 @@ console.log(
 );
 console.log(
   "Erstellungs-Fixtures: vorbereitet, ausstehend, navigiert, terminal und manipuliert"
+);
+console.log(
+  "Serialisierungs-Fixtures: kanonisch, begrenzt, wiederaufnehmbar und blockiert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

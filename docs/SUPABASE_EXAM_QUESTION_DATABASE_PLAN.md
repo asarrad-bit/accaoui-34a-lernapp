@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29t
+Stand: v27.29u
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -583,6 +583,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_SNAPSHOT_CREATION_TEST.md`
 
+## Snapshot-Serialisierungsstate v27.29u
+
+Kanonisch erzeugte Snapshots können jetzt deterministisch als
+JSON serialisiert werden.
+
+Die serialisierte Struktur besitzt eine feste Begrenzung von
+4096 UTF-8-Bytes, wird erneut geparst und muss anschließend den
+Snapshot-Normalizer mit unveränderter Identität, Phase und
+unverändertem Controllerstatus bestehen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_SNAPSHOT_SERIALIZATION_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -673,10 +687,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29t` kann ein sicherer
-lokaler Snapshot-Serialisierungsstate vorbereitet werden, der
-kanonisches JSON, eine feste Größenbegrenzung und eine erneute
-Strukturprüfung erzwingt, weiterhin ohne Speicherung oder UI.
+Nach GitHub-Bestätigung von `v27.29u` kann ein sicherer
+lokaler Snapshot-Deserialisierungsstate vorbereitet werden, der
+Größe und JSON-Struktur vor dem Parsen begrenzt und nur vollständig
+normalisierte Snapshots freigibt, weiterhin ohne Speicherung oder UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -688,5 +702,5 @@ Datenquellen-Orchestrator, Navigations-Intent-State,
 Anfrage-Identitätsstate, Response-Annahme-Guard,
 Anfrage-Lebenszyklus-State, Lebenszyklus-Übergangs-Guard,
 Anfrage-Controller-State, Controller-Snapshot-Normalizer,
-Snapshot-Wiederaufnahme-State und Snapshot-Erstellungsstate
-vorbereitet; keine Live-Ausführung
+Snapshot-Wiederaufnahme-State, Snapshot-Erstellungsstate und
+Snapshot-Serialisierungsstate vorbereitet; keine Live-Ausführung
