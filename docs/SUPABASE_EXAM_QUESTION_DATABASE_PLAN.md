@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29i
+Stand: v27.29j
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -434,6 +434,21 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_LOAD_STATE_MAPPER_TEST.md`
 
+## Pagination-Navigationsstate v27.29j
+
+Die lokale Prüfungsergebnishistorie kann jetzt erste, mittlere,
+letzte und leere Seiten sowie eine noch unbekannte Gesamtzahl
+stabil abbilden.
+
+Vorherige und nächste Offsets werden ausschließlich aus validem
+Limit, ausgerichtetem Offset, Seiteneintragszahl und bekannter
+Gesamtzahl berechnet. Die technische Offset-Grenze 10000 wird
+nicht überschritten.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PAGINATION_STATE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -524,14 +539,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29i` kann ein sicherer
-lokaler Pagination-Navigationsstate vorbereitet werden,
-weiterhin ohne Live-RPC oder sichtbares UI.
+Nach GitHub-Bestätigung von `v27.29j` kann ein sicherer
+lokaler Datenquellen-Orchestrator für Ladezustand, Response und
+Pagination vorbereitet werden, weiterhin ohne Live-RPC oder UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
 Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
 lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung,
 Normalizer, Seitenaggregator, Fixture-Tests, sicherer
-Response-Mapper und Ladezustands-Mapper vorbereitet;
-keine Live-Ausführung
+Response-Mapper, Ladezustands-Mapper und sicherer
+Pagination-Navigationsstate vorbereitet; keine Live-Ausführung

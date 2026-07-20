@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29i
+// Stand: v27.29j
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1708,6 +1708,17 @@
         mapParticipantFullExamResultHistoryLoadState({
           phase: "prepared"
         }),
+      paginationStateMapperName:
+        "mapParticipantFullExamResultHistoryPaginationState",
+      isPaginationStateMapperPrepared: true,
+      canMapPaginationStates: true,
+      initialPaginationState:
+        mapParticipantFullExamResultHistoryPaginationState({
+          limit: rpcState.defaultLimit,
+          offset: 0,
+          totalCount: null,
+          pageEntryCount: 0
+        }),
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1765,6 +1776,10 @@
       isDataSourceLoadStateMapperPrepared: participantDashboardExamHistoryDataSourceState.isLoadStateMapperPrepared === true,
       canMapDataSourceLoadStates: participantDashboardExamHistoryDataSourceState.canMapLoadStates === true,
       dataSourceInitialLoadState: participantDashboardExamHistoryDataSourceState.initialLoadState,
+      dataSourcePaginationStateMapperName: participantDashboardExamHistoryDataSourceState.paginationStateMapperName,
+      isDataSourcePaginationStateMapperPrepared: participantDashboardExamHistoryDataSourceState.isPaginationStateMapperPrepared === true,
+      canMapDataSourcePaginationStates: participantDashboardExamHistoryDataSourceState.canMapPaginationStates === true,
+      dataSourceInitialPaginationState: participantDashboardExamHistoryDataSourceState.initialPaginationState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -2432,6 +2447,233 @@
       canRetry: false,
       reason: "load_phase_invalid"
     });
+  }
+
+  function mapParticipantFullExamResultHistoryPaginationState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const pagination =
+      normalizeParticipantExamResultHistoryPagination({
+        limit: source.limit,
+        offset: source.offset
+      });
+
+    const invalid = (reason) => ({
+      version: "v27.29j",
+      status: "exam_result_history_pagination_invalid",
+      isValid: false,
+      isPaginationStateMapperOnly: true,
+      isLiveCall: false,
+      limit: pagination.limit,
+      offset: pagination.offset,
+      totalCount: null,
+      pageEntryCount: 0,
+      currentPage: null,
+      totalPages: null,
+      isFirstPage: false,
+      isLastPage: false,
+      canGoPrevious: false,
+      canGoNext: false,
+      previousOffset: null,
+      nextOffset: null,
+      isTotalCountKnown: false,
+      isNavigationCapped: false,
+      reason
+    });
+
+    if (!pagination.isValid) {
+      return invalid(
+        !pagination.isLimitValid
+          ? "limit_must_be_integer_between_1_and_50"
+          : "offset_must_be_integer_between_0_and_10000"
+      );
+    }
+
+    if (
+      pagination.offset %
+      pagination.limit !== 0
+    ) {
+      return invalid(
+        "offset_must_align_to_limit"
+      );
+    }
+
+    const totalCount =
+      source.totalCount === null ||
+      source.totalCount === undefined
+        ? null
+        : source.totalCount;
+
+    const pageEntryCount =
+      source.pageEntryCount === undefined
+        ? 0
+        : source.pageEntryCount;
+
+    if (
+      !Number.isInteger(pageEntryCount) ||
+      pageEntryCount < 0 ||
+      pageEntryCount > pagination.limit
+    ) {
+      return invalid(
+        "page_entry_count_invalid"
+      );
+    }
+
+    const previousOffset =
+      pagination.offset > 0
+        ? Math.max(
+            0,
+            pagination.offset - pagination.limit
+          )
+        : null;
+
+    const currentPage =
+      Math.floor(
+        pagination.offset / pagination.limit
+      ) + 1;
+
+    if (totalCount === null) {
+      return {
+        version: "v27.29j",
+        status: "exam_result_history_pagination_prepared",
+        isValid: true,
+        isPaginationStateMapperOnly: true,
+        isLiveCall: false,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        totalCount: null,
+        pageEntryCount,
+        currentPage,
+        totalPages: null,
+        isFirstPage: pagination.offset === 0,
+        isLastPage: false,
+        canGoPrevious: pagination.offset > 0,
+        canGoNext: false,
+        previousOffset,
+        nextOffset: null,
+        isTotalCountKnown: false,
+        isNavigationCapped: false,
+        reason: "total_count_not_loaded"
+      };
+    }
+
+    if (
+      !Number.isSafeInteger(totalCount) ||
+      totalCount < 0
+    ) {
+      return invalid(
+        "total_count_invalid"
+      );
+    }
+
+    if (totalCount === 0) {
+      if (
+        pagination.offset !== 0 ||
+        pageEntryCount !== 0
+      ) {
+        return invalid(
+          "empty_result_pagination_invalid"
+        );
+      }
+
+      return {
+        version: "v27.29j",
+        status: "exam_result_history_pagination_empty",
+        isValid: true,
+        isPaginationStateMapperOnly: true,
+        isLiveCall: false,
+        limit: pagination.limit,
+        offset: 0,
+        totalCount: 0,
+        pageEntryCount: 0,
+        currentPage: 0,
+        totalPages: 0,
+        isFirstPage: true,
+        isLastPage: true,
+        canGoPrevious: false,
+        canGoNext: false,
+        previousOffset: null,
+        nextOffset: null,
+        isTotalCountKnown: true,
+        isNavigationCapped: false,
+        reason: null
+      };
+    }
+
+    if (pagination.offset >= totalCount) {
+      return invalid(
+        "offset_out_of_range_for_total_count"
+      );
+    }
+
+    const maximumPageEntryCount =
+      Math.min(
+        pagination.limit,
+        totalCount - pagination.offset
+      );
+
+    if (
+      pageEntryCount < 1 ||
+      pageEntryCount > maximumPageEntryCount
+    ) {
+      return invalid(
+        "page_entry_count_invalid_for_total_count"
+      );
+    }
+
+    const totalPages =
+      Math.ceil(
+        totalCount / pagination.limit
+      );
+
+    const hasMoreEntries =
+      pagination.offset + pageEntryCount <
+      totalCount;
+
+    const rawNextOffset =
+      pagination.offset + pagination.limit;
+
+    const isNavigationCapped =
+      hasMoreEntries &&
+      rawNextOffset > 10000;
+
+    const canGoNext =
+      hasMoreEntries &&
+      !isNavigationCapped;
+
+    return {
+      version: "v27.29j",
+      status: "exam_result_history_pagination_ready",
+      isValid: true,
+      isPaginationStateMapperOnly: true,
+      isLiveCall: false,
+      limit: pagination.limit,
+      offset: pagination.offset,
+      totalCount,
+      pageEntryCount,
+      currentPage,
+      totalPages,
+      isFirstPage: pagination.offset === 0,
+      isLastPage: !hasMoreEntries,
+      canGoPrevious: pagination.offset > 0,
+      canGoNext,
+      previousOffset,
+      nextOffset:
+        canGoNext
+          ? rawNextOffset
+          : null,
+      isTotalCountKnown: true,
+      isNavigationCapped,
+      reason:
+        isNavigationCapped
+          ? "maximum_offset_reached"
+          : null
+    };
   }
 
   function normalizeParticipantExamResultHistoryPagination(options) {
@@ -5621,7 +5863,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29i",
+    version: "v27.29j",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -5681,6 +5923,7 @@
     aggregateParticipantFullExamResultRows,
     mapParticipantFullExamResultHistoryResponse,
     mapParticipantFullExamResultHistoryLoadState,
+    mapParticipantFullExamResultHistoryPaginationState,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,

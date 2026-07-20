@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29i
+// Stand: v27.29j
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29i",
+  "v27.29j",
   "Adapterversion"
 );
 
@@ -122,7 +122,8 @@ for (const functionName of [
   "normalizeParticipantFullExamResultRows",
   "aggregateParticipantFullExamResultRows",
   "mapParticipantFullExamResultHistoryResponse",
-  "mapParticipantFullExamResultHistoryLoadState"
+  "mapParticipantFullExamResultHistoryLoadState",
+  "mapParticipantFullExamResultHistoryPaginationState"
 ]) {
   assert(
     typeof adapter[functionName] === "function",
@@ -682,6 +683,142 @@ assert(
   "Ungültige Ladephase wurde nicht geschlossen verworfen"
 );
 
+const paginationPrepared =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 20,
+    offset: 20,
+    totalCount: null,
+    pageEntryCount: 0
+  });
+
+assert(
+  paginationPrepared.status ===
+    "exam_result_history_pagination_prepared" &&
+  paginationPrepared.currentPage === 2 &&
+  paginationPrepared.canGoPrevious === true &&
+  paginationPrepared.previousOffset === 0 &&
+  paginationPrepared.canGoNext === false,
+  "Pagination mit unbekannter Gesamtzahl ist unstabil"
+);
+
+const paginationFirst =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 20,
+    offset: 0,
+    totalCount: 45,
+    pageEntryCount: 20
+  });
+
+assert(
+  paginationFirst.status ===
+    "exam_result_history_pagination_ready" &&
+  paginationFirst.currentPage === 1 &&
+  paginationFirst.totalPages === 3 &&
+  paginationFirst.isFirstPage === true &&
+  paginationFirst.canGoPrevious === false &&
+  paginationFirst.canGoNext === true &&
+  paginationFirst.nextOffset === 20,
+  "Erste Pagination-Seite ist unstabil"
+);
+
+const paginationMiddle =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 20,
+    offset: 20,
+    totalCount: 45,
+    pageEntryCount: 20
+  });
+
+assert(
+  paginationMiddle.currentPage === 2 &&
+  paginationMiddle.canGoPrevious === true &&
+  paginationMiddle.previousOffset === 0 &&
+  paginationMiddle.canGoNext === true &&
+  paginationMiddle.nextOffset === 40,
+  "Mittlere Pagination-Seite ist unstabil"
+);
+
+const paginationLast =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 20,
+    offset: 40,
+    totalCount: 45,
+    pageEntryCount: 5
+  });
+
+assert(
+  paginationLast.currentPage === 3 &&
+  paginationLast.totalPages === 3 &&
+  paginationLast.isLastPage === true &&
+  paginationLast.canGoNext === false &&
+  paginationLast.nextOffset === null,
+  "Letzte Pagination-Seite ist unstabil"
+);
+
+const paginationEmpty =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 20,
+    offset: 0,
+    totalCount: 0,
+    pageEntryCount: 0
+  });
+
+assert(
+  paginationEmpty.status ===
+    "exam_result_history_pagination_empty" &&
+  paginationEmpty.currentPage === 0 &&
+  paginationEmpty.totalPages === 0 &&
+  paginationEmpty.isFirstPage === true &&
+  paginationEmpty.isLastPage === true,
+  "Leere Pagination ist unstabil"
+);
+
+const paginationMisaligned =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 20,
+    offset: 10,
+    totalCount: 45,
+    pageEntryCount: 20
+  });
+
+expectEqual(
+  paginationMisaligned.reason,
+  "offset_must_align_to_limit",
+  "Nicht ausgerichteter Offset"
+);
+
+const paginationInvalidCount =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 20,
+    offset: 0,
+    totalCount: 45,
+    pageEntryCount: 21
+  });
+
+expectEqual(
+  paginationInvalidCount.reason,
+  "page_entry_count_invalid",
+  "Ungültige Seiteneintragszahl"
+);
+
+const paginationCapped =
+  adapter.mapParticipantFullExamResultHistoryPaginationState({
+    limit: 50,
+    offset: 10000,
+    totalCount: 10051,
+    pageEntryCount: 50
+  });
+
+assert(
+  paginationCapped.isValid === true &&
+  paginationCapped.isNavigationCapped === true &&
+  paginationCapped.canGoNext === false &&
+  paginationCapped.isLastPage === false &&
+  paginationCapped.reason ===
+    "maximum_offset_reached",
+  "Maximaler Pagination-Offset ist unstabil"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -696,6 +833,9 @@ console.log(
 );
 console.log(
   "Ladezustands-Fixtures: vorbereitet, lädt, Erfolg, leer und Fehler"
+);
+console.log(
+  "Pagination-Fixtures: unbekannt, erste, mittlere, letzte, leer und begrenzt"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

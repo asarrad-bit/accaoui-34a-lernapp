@@ -17,13 +17,14 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29i",
+    "// stand: v27.29j",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
     'version: "v27.29e"',
     'version: "v27.29h"',
     'version: "v27.29i"',
+    'version: "v27.29j"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -152,6 +153,28 @@ required_markers = (
     "canmapdatasourceloadstates:",
     "datasourceinitialloadstate:",
     "mapparticipantfullexamresulthistoryloadstate,",
+    "function mapparticipantfullexamresulthistorypaginationstate(input)",
+    '"exam_result_history_pagination_prepared"',
+    '"exam_result_history_pagination_empty"',
+    '"exam_result_history_pagination_ready"',
+    '"exam_result_history_pagination_invalid"',
+    "ispaginationstatemapperonly: true",
+    "currentpage:",
+    "totalpages:",
+    "cangoprevious:",
+    "cangonext:",
+    "previousoffset:",
+    "nextoffset:",
+    "istotalcountknown:",
+    "isnavigationcapped:",
+    'paginationstatemappername:',
+    "ispaginationstatemapperprepared: true",
+    "canmappaginationstates: true",
+    "datasourcepaginationstatemappername:",
+    "isdatasourcepaginationstatemapperprepared:",
+    "canmapdatasourcepaginationstates:",
+    "datasourceinitialpaginationstate:",
+    "mapparticipantfullexamresulthistorypaginationstate,",
 )
 
 for marker in required_markers:
@@ -419,6 +442,70 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryPaginationState(input)"
+) != 1:
+    fail(
+        "Pagination-Navigationsstate-Mapper muss genau einmal "
+        "vorhanden sein."
+    )
+
+pagination_mapper_start = lower.index(
+    "function mapparticipantfullexamresulthistorypaginationstate(input)"
+)
+pagination_mapper_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    pagination_mapper_start,
+)
+pagination_mapper_block = lower[
+    pagination_mapper_start:pagination_mapper_end
+]
+
+for required in (
+    "normalizeparticipantexamresulthistorypagination({",
+    "pagination.offset %",
+    "pagination.limit !== 0",
+    "number.isinteger(pageentrycount)",
+    "number.issafeinteger(totalcount)",
+    "math.ceil(",
+    "totalcount / pagination.limit",
+    "rawnextoffset > 10000",
+    "offset_must_align_to_limit",
+    "page_entry_count_invalid",
+    "total_count_invalid",
+    "offset_out_of_range_for_total_count",
+    "maximum_offset_reached",
+    "exam_result_history_pagination_prepared",
+    "exam_result_history_pagination_empty",
+    "exam_result_history_pagination_ready",
+    "exam_result_history_pagination_invalid",
+    "islivecall: false",
+):
+    if required not in pagination_mapper_block:
+        fail(
+            "Pagination-Navigationsstate-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.error",
+    "...source",
+    "...input",
+):
+    if forbidden in pagination_mapper_block:
+        fail(
+            "Unzulässiger Inhalt im Pagination-Navigationsstate: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -482,6 +569,7 @@ print("Ergebnislisten-Normalizer: Duplikate und total_count geprüft")
 print("Ergebnislisten-Aggregator: sichere Seitenkennzahlen")
 print("Response-Mapper: Erfolg, leer, ungültig und Fehler sicher getrennt")
 print("Ladezustands-Mapper: vorbereitet, lädt, Erfolg, leer und Fehler")
+print("Pagination-Navigationsstate: erste, mittlere, letzte und unbekannte Seite")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
