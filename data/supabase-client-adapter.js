@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29e
+// Stand: v27.29h
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1698,9 +1698,14 @@
       aggregatorName: "aggregateParticipantFullExamResultRows",
       isAggregatorPrepared: true,
       canAggregateRows: true,
+      responseMapperName: "mapParticipantFullExamResultHistoryResponse",
+      isResponseMapperPrepared: true,
+      canMapResponses: true,
       normalizedEntries: [],
       aggregate: null,
+      mappedResponse: null,
       normalizationError: null,
+      responseMappingError: null,
       request: {
         limit: rpcState.defaultLimit,
         offset: 0
@@ -1746,6 +1751,9 @@
       dataSourceAggregatorName: participantDashboardExamHistoryDataSourceState.aggregatorName,
       isDataSourceAggregatorPrepared: participantDashboardExamHistoryDataSourceState.isAggregatorPrepared === true,
       canAggregateDataSourceRows: participantDashboardExamHistoryDataSourceState.canAggregateRows === true,
+      dataSourceResponseMapperName: participantDashboardExamHistoryDataSourceState.responseMapperName,
+      isDataSourceResponseMapperPrepared: participantDashboardExamHistoryDataSourceState.isResponseMapperPrepared === true,
+      canMapDataSourceResponses: participantDashboardExamHistoryDataSourceState.canMapResponses === true,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -2190,6 +2198,115 @@
       canPopulateGlobalOutcomeCounts: false,
       globalPassedCount: null,
       globalFailedCount: null,
+      invalidIndex: null,
+      reason: null
+    };
+  }
+
+  function mapParticipantFullExamResultHistoryResponse(response) {
+    const invalid = (
+      status,
+      reason,
+      invalidIndex = null
+    ) => ({
+      version: "v27.29h",
+      status,
+      ok: false,
+      isEmpty: false,
+      isMapperOnly: true,
+      isLiveCall: false,
+      results: [],
+      totalCount: null,
+      pageMetrics: null,
+      invalidIndex,
+      reason
+    });
+
+    if (
+      !response ||
+      typeof response !== "object" ||
+      Array.isArray(response)
+    ) {
+      return invalid(
+        "exam_result_history_response_invalid",
+        "rpc_response_must_be_object"
+      );
+    }
+
+    if (
+      response.error !== null &&
+      response.error !== undefined
+    ) {
+      return invalid(
+        "exam_result_history_response_error",
+        "rpc_response_error"
+      );
+    }
+
+    if (!Array.isArray(response.data)) {
+      return invalid(
+        "exam_result_history_response_invalid",
+        "rpc_response_data_must_be_array"
+      );
+    }
+
+    const aggregate =
+      aggregateParticipantFullExamResultRows(
+        response.data
+      );
+
+    if (!aggregate.isValid) {
+      return invalid(
+        "exam_result_history_response_invalid",
+        aggregate.reason,
+        aggregate.invalidIndex
+      );
+    }
+
+    const pageMetrics = {
+      metricsScope: aggregate.metricsScope,
+      pageEntryCount: aggregate.pageEntryCount,
+      pagePassedCount: aggregate.pagePassedCount,
+      pageFailedCount: aggregate.pageFailedCount,
+      pageBestScore: aggregate.pageBestScore,
+      pageAverageScore: aggregate.pageAverageScore,
+      pagePassRatePercent:
+        aggregate.pagePassRatePercent,
+      pageLatestFinishedAt:
+        aggregate.pageLatestFinishedAt,
+      pageLatestExamAttemptId:
+        aggregate.pageLatestExamAttemptId,
+      canPopulateGlobalOutcomeCounts: false,
+      globalPassedCount: null,
+      globalFailedCount: null
+    };
+
+    if (aggregate.isEmpty) {
+      return {
+        version: "v27.29h",
+        status: "exam_result_history_response_empty",
+        ok: true,
+        isEmpty: true,
+        isMapperOnly: true,
+        isLiveCall: false,
+        results: [],
+        totalCount: null,
+        pageMetrics,
+        invalidIndex: null,
+        reason: null
+      };
+    }
+
+    return {
+      version: "v27.29h",
+      status: "exam_result_history_response_ready",
+      ok: true,
+      isEmpty: false,
+      isMapperOnly: true,
+      isLiveCall: false,
+      results: aggregate.entries,
+      totalCount: aggregate.totalCount,
+      pageMetrics,
       invalidIndex: null,
       reason: null
     };
@@ -5382,7 +5499,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29e",
+    version: "v27.29h",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -5440,6 +5557,7 @@
     normalizeParticipantFullExamResultRow,
     normalizeParticipantFullExamResultRows,
     aggregateParticipantFullExamResultRows,
+    mapParticipantFullExamResultHistoryResponse,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,

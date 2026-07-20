@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29g
+Stand: v27.29h
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -408,6 +408,19 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_FIXTURE_TEST.md`
 
+## Sicherer Response-Mapper v27.29h
+
+Spätere Antworten des Ergebnislisten-RPC werden lokal auf einen
+stabilen und datensparsamen Vertrag reduziert.
+
+Erfolg, leere Ergebnisse, ungültige Daten und RPC-Fehler werden
+sicher getrennt. Rohe Backend-Fehlerdetails und unbekannte
+Transportfelder werden nicht übernommen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_RESPONSE_MAPPER_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -498,13 +511,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29g` kann ein sicherer
-lokaler Response-Mapper für spätere RPC-Ergebnisse vorbereitet
-werden, weiterhin ohne Live-Aufruf oder sichtbares UI.
+Nach GitHub-Bestätigung von `v27.29h` kann ein sicherer
+lokaler Ladezustands-Mapper vorbereitet werden, weiterhin ohne
+Live-RPC oder sichtbares UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
 Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
 lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung,
-Ergebniszeilen-Normalizer, seitenbezogener Aggregator und
-lokale Fixture-Tests vorbereitet; keine Live-Ausführung
+Normalizer, Seitenaggregator, Fixture-Tests und sicherer
+Response-Mapper vorbereitet; keine Live-Ausführung

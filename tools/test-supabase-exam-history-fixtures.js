@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29g
+// Stand: v27.29h
 
 const fs = require("fs");
 const path = require("path");
@@ -113,14 +113,15 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29e",
+  "v27.29h",
   "Adapterversion"
 );
 
 for (const functionName of [
   "normalizeParticipantFullExamResultRow",
   "normalizeParticipantFullExamResultRows",
-  "aggregateParticipantFullExamResultRows"
+  "aggregateParticipantFullExamResultRows",
+  "mapParticipantFullExamResultHistoryResponse"
 ]) {
   assert(
     typeof adapter[functionName] === "function",
@@ -414,6 +415,136 @@ assert(
   "Ungültige Liste wurde nicht geschlossen verworfen"
 );
 
+const mappedSuccess =
+  adapter.mapParticipantFullExamResultHistoryResponse({
+    data: [firstRow, secondRow],
+    error: null,
+    privateTransportField: "nicht übernehmen"
+  });
+
+assert(
+  mappedSuccess.ok === true &&
+  mappedSuccess.isEmpty === false,
+  "Gültige RPC-Antwort wurde nicht gemappt"
+);
+
+expectEqual(
+  mappedSuccess.status,
+  "exam_result_history_response_ready",
+  "Response-Mapper-Erfolgsstatus"
+);
+
+expectEqual(
+  mappedSuccess.results.length,
+  2,
+  "Gemappte Ergebnisanzahl"
+);
+
+expectEqual(
+  mappedSuccess.totalCount,
+  2,
+  "Gemappte Gesamtzahl"
+);
+
+expectEqual(
+  mappedSuccess.pageMetrics.pageAverageScore,
+  60,
+  "Gemappter Seitendurchschnitt"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    mappedSuccess,
+    "privateTransportField"
+  ),
+  "Unbekanntes Transportfeld wurde übernommen"
+);
+
+const mappedEmpty =
+  adapter.mapParticipantFullExamResultHistoryResponse({
+    data: [],
+    error: null
+  });
+
+assert(
+  mappedEmpty.ok === true &&
+  mappedEmpty.isEmpty === true &&
+  mappedEmpty.results.length === 0,
+  "Leere RPC-Antwort ist nicht stabil"
+);
+
+const mappedInvalid =
+  adapter.mapParticipantFullExamResultHistoryResponse({
+    data: [
+      makeRow({
+        passed: false
+      })
+    ],
+    error: null
+  });
+
+expectEqual(
+  mappedInvalid.reason,
+  "passed_status_invalid",
+  "Ungültige RPC-Ergebniszeile"
+);
+
+expectEqual(
+  mappedInvalid.invalidIndex,
+  0,
+  "Ungültiger Zeilenindex"
+);
+
+const mappedError =
+  adapter.mapParticipantFullExamResultHistoryResponse({
+    data: null,
+    error: {
+      message: "sensitive database message",
+      details: "sensitive database details",
+      hint: "sensitive database hint"
+    }
+  });
+
+expectEqual(
+  mappedError.status,
+  "exam_result_history_response_error",
+  "Sicherer RPC-Fehlerstatus"
+);
+
+expectEqual(
+  mappedError.reason,
+  "rpc_response_error",
+  "Sicherer RPC-Fehlergrund"
+);
+
+assert(
+  !JSON.stringify(mappedError).includes("sensitive"),
+  "Rohe RPC-Fehlerdetails wurden offengelegt"
+);
+
+const mappedMalformed =
+  adapter.mapParticipantFullExamResultHistoryResponse({
+    data: {},
+    error: null
+  });
+
+expectEqual(
+  mappedMalformed.reason,
+  "rpc_response_data_must_be_array",
+  "Ungültige RPC-Datenstruktur"
+);
+
+const mappedNonObject =
+  adapter.mapParticipantFullExamResultHistoryResponse(
+    null
+  );
+
+expectEqual(
+  mappedNonObject.reason,
+  "rpc_response_must_be_object",
+  "Ungültige RPC-Antwortstruktur"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -422,6 +553,12 @@ console.log(
 );
 console.log(
   "Aggregator-Fixtures: Seitenwerte, leerer Zustand und Fehlerfall"
+);
+console.log(
+  "Response-Mapper-Fixtures: Erfolg, leer, ungültig und RPC-Fehler"
+);
+console.log(
+  "Rohe RPC-Fehlerdetails: ausgeschlossen"
 );
 console.log(
   "Live-RPC- oder Netzwerkaufrufe: keine"

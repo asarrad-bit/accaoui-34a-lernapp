@@ -17,11 +17,12 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29e",
+    "// stand: v27.29h",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
     'version: "v27.29e"',
+    'version: "v27.29h"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -118,6 +119,19 @@ required_markers = (
     "canaggregateparticipantdashboardexamhistoryrows:",
     "canpopulateparticipantdashboardglobalexamoutcomecounts: false",
     "aggregateparticipantfullexamresultrows,",
+    "function mapparticipantfullexamresulthistoryresponse(response)",
+    '"exam_result_history_response_error"',
+    '"exam_result_history_response_invalid"',
+    '"exam_result_history_response_empty"',
+    '"exam_result_history_response_ready"',
+    "ismapperonly: true",
+    "responsemappername:",
+    "isresponsemapperprepared: true",
+    "canmapresponses: true",
+    "datasourceresponsemappername:",
+    "isdatasourceresponsemapperprepared:",
+    "canmapdatasourceresponses:",
+    "mapparticipantfullexamresulthistoryresponse,",
 )
 
 for marker in required_markers:
@@ -261,6 +275,65 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryResponse(response)"
+) != 1:
+    fail(
+        "Ergebnislisten-Response-Mapper muss genau einmal "
+        "vorhanden sein."
+    )
+
+mapper_start = lower.index(
+    "function mapparticipantfullexamresulthistoryresponse(response)"
+)
+mapper_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    mapper_start,
+)
+mapper_block = lower[
+    mapper_start:mapper_end
+]
+
+for required in (
+    "aggregateparticipantfullexamresultrows(",
+    "response.data",
+    "rpc_response_must_be_object",
+    "rpc_response_error",
+    "rpc_response_data_must_be_array",
+    "exam_result_history_response_empty",
+    "exam_result_history_response_ready",
+    "results: aggregate.entries",
+    "totalcount: aggregate.totalcount",
+    "canpopulateglobaloutcomecounts: false",
+    "globalpassedcount: null",
+    "globalfailedcount: null",
+):
+    if required not in mapper_block:
+        fail(
+            "Response-Mapper-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "response.error.message",
+    "response.error.details",
+    "response.error.hint",
+    "...response",
+):
+    if forbidden in mapper_block:
+        fail(
+            "Unzulässiger Inhalt im Response-Mapper: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -322,6 +395,8 @@ print("Dashboard-Datenquelle: vorbereitet und lokal gesperrt")
 print("Ergebniszeilen-Normalizer: 120/60-, UUID- und Zeitprüfung")
 print("Ergebnislisten-Normalizer: Duplikate und total_count geprüft")
 print("Ergebnislisten-Aggregator: sichere Seitenkennzahlen")
+print("Response-Mapper: Erfolg, leer, ungültig und Fehler sicher getrennt")
+print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
 print("Sichtbare Prüfungshistorie: unverändert verborgen")
