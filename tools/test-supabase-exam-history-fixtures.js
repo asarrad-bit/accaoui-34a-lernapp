@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29o
+// Stand: v27.29p
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29o",
+  "v27.29p",
   "Adapterversion"
 );
 
@@ -128,6 +128,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryNavigationIntent",
   "mapParticipantFullExamResultHistoryRequestIdentity",
   "mapParticipantFullExamResultHistoryRequestLifecycle",
+  "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
   assert(
@@ -1634,6 +1635,159 @@ expectEqual(
   "Veralteter Annahme-State"
 );
 
+const transitionPreparedToPending =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState:
+      lifecyclePrepared,
+    targetPhase: "pending"
+  });
+
+assert(
+  transitionPreparedToPending.status ===
+    "exam_result_history_request_transition_ready" &&
+  transitionPreparedToPending.canTransition === true &&
+  transitionPreparedToPending.didTransition === true &&
+  transitionPreparedToPending.fromPhase ===
+    "prepared" &&
+  transitionPreparedToPending.toPhase ===
+    "pending" &&
+  transitionPreparedToPending.nextState.isPending ===
+    true,
+  "Übergang vorbereitet zu ausstehend ist unstabil"
+);
+
+const transitionPendingToCompleted =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState:
+      adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+        phase: "pending",
+        requestSequence: 7,
+        request: {
+          limit: 20,
+          offset: 20
+        }
+      }),
+    targetPhase: "completed",
+    acceptanceState:
+      acceptedResponseGuard
+  });
+
+assert(
+  transitionPendingToCompleted.status ===
+    "exam_result_history_request_transition_ready" &&
+  transitionPendingToCompleted.isTerminalTransition ===
+    true &&
+  transitionPendingToCompleted.nextState.isCompleted ===
+    true &&
+  transitionPendingToCompleted.nextState.acceptedEntryCount ===
+    2,
+  "Übergang ausstehend zu abgeschlossen ist unstabil"
+);
+
+const transitionPendingToDiscarded =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState:
+      lifecyclePending,
+    targetPhase: "discarded",
+    discardReason:
+      "superseded_by_new_request"
+  });
+
+assert(
+  transitionPendingToDiscarded.canTransition ===
+    true &&
+  transitionPendingToDiscarded.nextState.isDiscarded ===
+    true &&
+  transitionPendingToDiscarded.nextState.discardReason ===
+    "superseded_by_new_request",
+  "Übergang ausstehend zu verworfen ist unstabil"
+);
+
+const blockedPreparedToCompleted =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState:
+      lifecyclePrepared,
+    targetPhase: "completed",
+    acceptanceState:
+      acceptedResponseGuard
+  });
+
+expectEqual(
+  blockedPreparedToCompleted.reason,
+  "request_transition_not_allowed",
+  "Direkter Übergang vorbereitet zu abgeschlossen"
+);
+
+const blockedCompletedToPending =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState:
+      lifecycleCompleted,
+    targetPhase: "pending"
+  });
+
+assert(
+  blockedCompletedToPending.status ===
+    "exam_result_history_request_transition_blocked" &&
+  blockedCompletedToPending.canTransition ===
+    false &&
+  blockedCompletedToPending.reason ===
+    "request_transition_terminal_state",
+  "Übergang aus abgeschlossenem Endzustand wurde nicht blockiert"
+);
+
+const blockedSamePhase =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState:
+      lifecyclePending,
+    targetPhase: "pending"
+  });
+
+expectEqual(
+  blockedSamePhase.reason,
+  "request_transition_not_allowed",
+  "Übergang in denselben Zustand"
+);
+
+const invalidTransitionAcceptance =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState:
+      adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+        phase: "pending",
+        requestSequence: 7,
+        request: {
+          limit: 20,
+          offset: 20
+        }
+      }),
+    targetPhase: "completed",
+    acceptanceState:
+      staleResponseGuard
+  });
+
+expectEqual(
+  invalidTransitionAcceptance.reason,
+  "request_lifecycle_acceptance_state_invalid",
+  "Übergang mit veralteter Antwortannahme"
+);
+
+const invalidTransitionState =
+  adapter.guardParticipantFullExamResultHistoryRequestLifecycleTransition({
+    currentState: {
+      ...lifecyclePending,
+      requestIdentity:
+        "exam_history_request:999:20:0"
+    },
+    targetPhase: "discarded",
+    discardReason:
+      "cancelled_before_response"
+  });
+
+expectEqual(
+  invalidTransitionState.reason,
+  "request_transition_current_identity_invalid",
+  "Manipulierte aktuelle Anfrageidentität"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -1666,6 +1820,9 @@ console.log(
 );
 console.log(
   "Lebenszyklus-Fixtures: vorbereitet, ausstehend, abgeschlossen und verworfen"
+);
+console.log(
+  "Übergangs-Fixtures: zulässig, blockiert, terminal und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

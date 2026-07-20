@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29o",
+    "// stand: v27.29p",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -30,6 +30,7 @@ required_markers = (
     'version: "v27.29m"',
     'version: "v27.29n"',
     'version: "v27.29o"',
+    'version: "v27.29p"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -265,6 +266,19 @@ required_markers = (
     "canmapdatasourcerequestlifecycles:",
     "datasourceinitialrequestlifecyclestate:",
     "mapparticipantfullexamresulthistoryrequestlifecycle,",
+    "function guardparticipantfullexamresulthistoryrequestlifecycletransition(input)",
+    '"exam_result_history_request_transition_ready"',
+    '"exam_result_history_request_transition_blocked"',
+    '"exam_result_history_request_transition_invalid"',
+    "isrequestlifecycletransitionguardonly: true",
+    "requestlifecycletransitionguardname:",
+    "isrequestlifecycletransitionguardprepared: true",
+    "canguardrequestlifecycletransitions: true",
+    "datasourcerequestlifecycletransitionguardname:",
+    "isdatasourcerequestlifecycletransitionguardprepared:",
+    "canguarddatasourcerequestlifecycletransitions:",
+    "datasourceinitialrequestlifecycletransitionstate:",
+    "guardparticipantfullexamresulthistoryrequestlifecycletransition,",
 )
 
 for marker in required_markers:
@@ -979,6 +993,78 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistoryRequestLifecycleTransition(input)"
+) != 1:
+    fail(
+        "Lebenszyklus-Übergangs-Guard muss genau einmal "
+        "vorhanden sein."
+    )
+
+transition_start = lower.index(
+    "function guardparticipantfullexamresulthistoryrequestlifecycletransition(input)"
+)
+transition_end = lower.index(
+    "function mapparticipantfullexamresulthistoryrequestlifecycle(input)",
+    transition_start,
+)
+transition_block = lower[
+    transition_start:transition_end
+]
+
+for required in (
+    "mapparticipantfullexamresulthistoryrequestidentity({",
+    'mode: "create"',
+    "mapparticipantfullexamresulthistoryrequestlifecycle(",
+    "allowedtransitions = {",
+    'prepared: [',
+    '"pending"',
+    '"completed"',
+    '"discarded"',
+    "request_transition_current_state_missing",
+    "request_transition_current_state_invalid",
+    "request_transition_current_identity_invalid",
+    "request_transition_phase_invalid",
+    "request_transition_current_flags_invalid",
+    "request_transition_terminal_state",
+    "request_transition_not_allowed",
+    "request_transition_next_identity_mismatch",
+    "exam_result_history_request_transition_ready",
+    "exam_result_history_request_transition_blocked",
+    "exam_result_history_request_transition_invalid",
+    "isrequestlifecycletransitionguardonly: true",
+    "islivecall: false",
+    "cantransition: true",
+    "didtransition: true",
+):
+    if required not in transition_block:
+        fail(
+            "Lebenszyklus-Übergangs-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+):
+    if forbidden in transition_block:
+        fail(
+            "Unzulässiger Inhalt im Lebenszyklus-Übergangs-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1048,6 +1134,7 @@ print("Navigations-Intent-State: erste, vorherige, nächste und Retry-Anfrage")
 print("Anfrage-Identitätsstate: aktuelle und veraltete Antworten getrennt")
 print("Response-Annahme-Guard: nur aktive Anfrageantworten werden verarbeitet")
 print("Anfrage-Lebenszyklus: vorbereitet, ausstehend, abgeschlossen und verworfen")
+print("Lebenszyklus-Übergangs-Guard: nur zulässige Zustandswechsel")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

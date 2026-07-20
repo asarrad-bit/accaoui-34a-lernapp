@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29o
+// Stand: v27.29p
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1774,6 +1774,11 @@
             offset: 0
           }
         }),
+      requestLifecycleTransitionGuardName:
+        "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
+      isRequestLifecycleTransitionGuardPrepared: true,
+      canGuardRequestLifecycleTransitions: true,
+      initialRequestLifecycleTransitionState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1855,6 +1860,10 @@
       isDataSourceRequestLifecycleMapperPrepared: participantDashboardExamHistoryDataSourceState.isRequestLifecycleMapperPrepared === true,
       canMapDataSourceRequestLifecycles: participantDashboardExamHistoryDataSourceState.canMapRequestLifecycles === true,
       dataSourceInitialRequestLifecycleState: participantDashboardExamHistoryDataSourceState.initialRequestLifecycleState,
+      dataSourceRequestLifecycleTransitionGuardName: participantDashboardExamHistoryDataSourceState.requestLifecycleTransitionGuardName,
+      isDataSourceRequestLifecycleTransitionGuardPrepared: participantDashboardExamHistoryDataSourceState.isRequestLifecycleTransitionGuardPrepared === true,
+      canGuardDataSourceRequestLifecycleTransitions: participantDashboardExamHistoryDataSourceState.canGuardRequestLifecycleTransitions === true,
+      dataSourceInitialRequestLifecycleTransitionState: participantDashboardExamHistoryDataSourceState.initialRequestLifecycleTransitionState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3146,6 +3155,231 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function guardParticipantFullExamResultHistoryRequestLifecycleTransition(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const targetPhase =
+      typeof source.targetPhase === "string"
+        ? source.targetPhase.trim()
+        : "";
+
+    const invalid = (reason) => ({
+      version: "v27.29p",
+      status: "exam_result_history_request_transition_invalid",
+      isValid: false,
+      isRequestLifecycleTransitionGuardOnly: true,
+      isLiveCall: false,
+      canTransition: false,
+      didTransition: false,
+      isTerminalTransition: false,
+      fromPhase: null,
+      toPhase: targetPhase || null,
+      requestIdentity: null,
+      nextState: null,
+      reason
+    });
+
+    const currentState =
+      source.currentState &&
+      typeof source.currentState === "object" &&
+      !Array.isArray(source.currentState)
+        ? source.currentState
+        : null;
+
+    if (!currentState) {
+      return invalid(
+        "request_transition_current_state_missing"
+      );
+    }
+
+    if (
+      currentState.isRequestLifecycleMapperOnly !== true ||
+      currentState.isValid !== true
+    ) {
+      return invalid(
+        "request_transition_current_state_invalid"
+      );
+    }
+
+    const identityState =
+      mapParticipantFullExamResultHistoryRequestIdentity({
+        mode: "create",
+        requestSequence:
+          currentState.requestSequence,
+        request:
+          currentState.request
+      });
+
+    if (
+      !identityState.isValid ||
+      identityState.requestIdentity !==
+        currentState.requestIdentity
+    ) {
+      return invalid(
+        "request_transition_current_identity_invalid"
+      );
+    }
+
+    const fromPhase =
+      typeof currentState.phase === "string"
+        ? currentState.phase.trim()
+        : "";
+
+    const allowedPhases = [
+      "prepared",
+      "pending",
+      "completed",
+      "discarded"
+    ];
+
+    if (
+      !allowedPhases.includes(fromPhase) ||
+      !allowedPhases.includes(targetPhase)
+    ) {
+      return invalid(
+        "request_transition_phase_invalid"
+      );
+    }
+
+    const phaseFlagsAreValid =
+      (
+        fromPhase === "prepared" &&
+        currentState.isPrepared === true &&
+        currentState.isPending === false &&
+        currentState.isCompleted === false &&
+        currentState.isDiscarded === false
+      ) ||
+      (
+        fromPhase === "pending" &&
+        currentState.isPrepared === false &&
+        currentState.isPending === true &&
+        currentState.isCompleted === false &&
+        currentState.isDiscarded === false
+      ) ||
+      (
+        fromPhase === "completed" &&
+        currentState.isPrepared === false &&
+        currentState.isPending === false &&
+        currentState.isCompleted === true &&
+        currentState.isDiscarded === false
+      ) ||
+      (
+        fromPhase === "discarded" &&
+        currentState.isPrepared === false &&
+        currentState.isPending === false &&
+        currentState.isCompleted === false &&
+        currentState.isDiscarded === true
+      );
+
+    if (!phaseFlagsAreValid) {
+      return invalid(
+        "request_transition_current_flags_invalid"
+      );
+    }
+
+    const allowedTransitions = {
+      prepared: [
+        "pending",
+        "discarded"
+      ],
+      pending: [
+        "completed",
+        "discarded"
+      ],
+      completed: [],
+      discarded: []
+    };
+
+    if (
+      !allowedTransitions[fromPhase].includes(
+        targetPhase
+      )
+    ) {
+      return {
+        version: "v27.29p",
+        status: "exam_result_history_request_transition_blocked",
+        isValid: true,
+        isRequestLifecycleTransitionGuardOnly: true,
+        isLiveCall: false,
+        canTransition: false,
+        didTransition: false,
+        isTerminalTransition:
+          fromPhase === "completed" ||
+          fromPhase === "discarded",
+        fromPhase,
+        toPhase: targetPhase,
+        requestIdentity:
+          identityState.requestIdentity,
+        nextState: null,
+        reason:
+          fromPhase === "completed" ||
+          fromPhase === "discarded"
+            ? "request_transition_terminal_state"
+            : "request_transition_not_allowed"
+      };
+    }
+
+    const lifecycleInput = {
+      phase: targetPhase,
+      requestSequence:
+        identityState.requestSequence,
+      request:
+        identityState.request
+    };
+
+    if (targetPhase === "completed") {
+      lifecycleInput.acceptanceState =
+        source.acceptanceState;
+    }
+
+    if (targetPhase === "discarded") {
+      lifecycleInput.discardReason =
+        source.discardReason;
+    }
+
+    const nextState =
+      mapParticipantFullExamResultHistoryRequestLifecycle(
+        lifecycleInput
+      );
+
+    if (!nextState.isValid) {
+      return invalid(nextState.reason);
+    }
+
+    if (
+      nextState.requestIdentity !==
+      identityState.requestIdentity
+    ) {
+      return invalid(
+        "request_transition_next_identity_mismatch"
+      );
+    }
+
+    return {
+      version: "v27.29p",
+      status: "exam_result_history_request_transition_ready",
+      isValid: true,
+      isRequestLifecycleTransitionGuardOnly: true,
+      isLiveCall: false,
+      canTransition: true,
+      didTransition: true,
+      isTerminalTransition:
+        targetPhase === "completed" ||
+        targetPhase === "discarded",
+      fromPhase,
+      toPhase: targetPhase,
+      requestIdentity:
+        identityState.requestIdentity,
+      nextState,
+      reason: null
+    };
   }
 
   function mapParticipantFullExamResultHistoryRequestLifecycle(input) {
@@ -6910,7 +7144,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29o",
+    version: "v27.29p",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -6975,6 +7209,7 @@
     mapParticipantFullExamResultHistoryNavigationIntent,
     mapParticipantFullExamResultHistoryRequestIdentity,
     mapParticipantFullExamResultHistoryRequestLifecycle,
+    guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
