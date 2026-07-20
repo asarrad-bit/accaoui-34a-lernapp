@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29u",
+    "// stand: v27.29v",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -36,6 +36,7 @@ required_markers = (
     'version: "v27.29s"',
     'version: "v27.29t"',
     'version: "v27.29u"',
+    'version: "v27.29v"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -363,6 +364,19 @@ required_markers = (
     "canmapdatasourcesnapshotserializationstates:",
     "datasourceinitialsnapshotserializationstate:",
     "mapparticipantfullexamresulthistorysnapshotserializationstate,",
+    "function mapparticipantfullexamresulthistorysnapshotdeserializationstate(input)",
+    '"exam_result_history_snapshot_deserialization_ready"',
+    '"exam_result_history_snapshot_deserialization_too_large"',
+    '"exam_result_history_snapshot_deserialization_invalid"',
+    "issnapshotdeserializationmapperonly: true",
+    "snapshotdeserializationmappername:",
+    "issnapshotdeserializationmapperprepared: true",
+    "canmapsnapshotdeserializationstates: true",
+    "datasourcesnapshotdeserializationmappername:",
+    "isdatasourcesnapshotdeserializationmapperprepared:",
+    "canmapdatasourcesnapshotdeserializationstates:",
+    "datasourceinitialsnapshotdeserializationstate:",
+    "mapparticipantfullexamresulthistorysnapshotdeserializationstate,",
 )
 
 for marker in required_markers:
@@ -1539,6 +1553,86 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotDeserializationState(input)"
+) != 1:
+    fail(
+        "Snapshot-Deserialisierungsstate muss genau einmal "
+        "vorhanden sein."
+    )
+
+deserialization_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotdeserializationstate(input)"
+)
+deserialization_end = lower.index(
+    "function getparticipantfullexamresulthistorysnapshotutf8bytelength(value)",
+    deserialization_start,
+)
+deserialization_block = lower[
+    deserialization_start:deserialization_end
+]
+
+for required in (
+    "const maximumserializedbytes = 4096",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "json.parse(",
+    "json.stringify(",
+    "serializedjson.trim() !== serializedjson",
+    "normalizeparticipantfullexamresulthistorycontrollersnapshot(",
+    "mapparticipantfullexamresulthistorysnapshotcreationstate({",
+    "mapparticipantfullexamresulthistorysnapshotserializationstate({",
+    "mapparticipantfullexamresulthistorysnapshotresumestate({",
+    "snapshot_deserialization_input_invalid",
+    "snapshot_deserialization_json_invalid",
+    "snapshot_deserialization_byte_length_invalid",
+    "snapshot_deserialization_size_limit_exceeded",
+    "snapshot_deserialization_json_not_canonical",
+    "snapshot_deserialization_json_parse_failed",
+    "snapshot_deserialization_structure_invalid",
+    "snapshot_deserialization_canonical_creation_invalid",
+    "snapshot_deserialization_round_trip_mismatch",
+    "snapshot_deserialization_identity_mismatch",
+    "snapshot_deserialization_resume_state_invalid",
+    "exam_result_history_snapshot_deserialization_ready",
+    "exam_result_history_snapshot_deserialization_too_large",
+    "exam_result_history_snapshot_deserialization_invalid",
+    "issnapshotdeserializationmapperonly: true",
+    "canwritestorage: false",
+):
+    if required not in deserialization_block:
+        fail(
+            "Snapshot-Deserialisierungs-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "eval(",
+    "new function(",
+):
+    if forbidden in deserialization_block:
+        fail(
+            "Unzulässiger Inhalt im Snapshot-Deserialisierungsstate: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1614,6 +1708,7 @@ print("Controller-Snapshot: gespeicherte Zustände sicher normalisiert")
 print("Snapshot-Wiederaufnahme: nur normalisierte Zustände rekonstruiert")
 print("Snapshot-Erstellung: nur wiederaufnehmbare Zustände datensparsam versioniert")
 print("Snapshot-Serialisierung: kanonisches JSON, Größenlimit und Strukturprüfung")
+print("Snapshot-Deserialisierung: Größe vor Parsing begrenzt und Struktur erneut geprüft")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

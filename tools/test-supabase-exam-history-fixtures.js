@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29u
+// Stand: v27.29v
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29u",
+  "v27.29v",
   "Adapterversion"
 );
 
@@ -133,6 +133,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotResumeState",
   "mapParticipantFullExamResultHistorySnapshotCreationState",
   "mapParticipantFullExamResultHistorySnapshotSerializationState",
+  "mapParticipantFullExamResultHistorySnapshotDeserializationState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -2540,6 +2541,134 @@ assert(
   "Ungültiger Erstellungsstate wurde serialisiert"
 );
 
+const deserializedPreparedSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotDeserializationState({
+    serializedJson:
+      serializedPreparedSnapshot.serializedJson,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  deserializedPreparedSnapshot.status ===
+    "exam_result_history_snapshot_deserialization_ready" &&
+  deserializedPreparedSnapshot.isValid === true &&
+  deserializedPreparedSnapshot.canDeserialize === true &&
+  deserializedPreparedSnapshot.canResume === true &&
+  deserializedPreparedSnapshot.canWriteStorage === false &&
+  deserializedPreparedSnapshot.resumeState.isPrepared ===
+    true &&
+  deserializedPreparedSnapshot.requestIdentity ===
+    serializedPreparedSnapshot.requestIdentity,
+  "Vorbereiteter Snapshot wurde nicht sicher deserialisiert"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    deserializedPreparedSnapshot,
+    "serializedJson"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    deserializedPreparedSnapshot,
+    "privateField"
+  ),
+  "Roher Serialisierungsinhalt wurde übernommen"
+);
+
+const deserializedPendingSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotDeserializationState({
+    serializedJson:
+      serializedPendingSnapshot.serializedJson
+  });
+
+assert(
+  deserializedPendingSnapshot.canDeserialize === true &&
+  deserializedPendingSnapshot.canResume === true &&
+  deserializedPendingSnapshot.resumeState.isPending ===
+    true &&
+  deserializedPendingSnapshot.resumeState.resumeAction ===
+    "retry_pending_request",
+  "Ausstehender Snapshot wurde nicht sicher deserialisiert"
+);
+
+const deserializedNavigationSnapshot =
+  adapter.mapParticipantFullExamResultHistorySnapshotDeserializationState({
+    serializedJson:
+      serializedNavigationSnapshot.serializedJson
+  });
+
+assert(
+  deserializedNavigationSnapshot.canDeserialize === true &&
+  deserializedNavigationSnapshot.resumeState.isNavigationResume ===
+    true &&
+  deserializedNavigationSnapshot.resumeState.navigationIntent ===
+    "next",
+  "Navigations-Snapshot wurde nicht sicher deserialisiert"
+);
+
+const nonCanonicalDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotDeserializationState({
+    serializedJson:
+      serializedPreparedSnapshot.serializedJson + " "
+  });
+
+expectEqual(
+  nonCanonicalDeserialization.reason,
+  "snapshot_deserialization_json_not_canonical",
+  "Nicht kanonisches Snapshot-JSON"
+);
+
+const oversizedDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotDeserializationState({
+    serializedJson:
+      "x".repeat(4097)
+  });
+
+assert(
+  oversizedDeserialization.status ===
+    "exam_result_history_snapshot_deserialization_too_large" &&
+  oversizedDeserialization.canDeserialize === false &&
+  oversizedDeserialization.serializedByteLength ===
+    4097 &&
+  oversizedDeserialization.reason ===
+    "snapshot_deserialization_size_limit_exceeded",
+  "Zu großer Snapshot wurde vor dem Parsing nicht blockiert"
+);
+
+const malformedDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotDeserializationState({
+    serializedJson:
+      '{"snapshotVersion":1'
+  });
+
+expectEqual(
+  malformedDeserialization.reason,
+  "snapshot_deserialization_json_parse_failed",
+  "Fehlerhaftes Snapshot-JSON"
+);
+
+const tamperedDeserializationPayload =
+  JSON.parse(
+    serializedPreparedSnapshot.serializedJson
+  );
+
+tamperedDeserializationPayload.controllerState.requestIdentity =
+  "exam_history_request:999:20:0";
+
+const tamperedDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotDeserializationState({
+    serializedJson:
+      JSON.stringify(
+        tamperedDeserializationPayload
+      )
+  });
+
+expectEqual(
+  tamperedDeserialization.reason,
+  "controller_snapshot_identity_invalid",
+  "Manipulierte deserialisierte Anfrageidentität"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -2590,6 +2719,9 @@ console.log(
 );
 console.log(
   "Serialisierungs-Fixtures: kanonisch, begrenzt, wiederaufnehmbar und blockiert"
+);
+console.log(
+  "Deserialisierungs-Fixtures: gültig, kanonisch, begrenzt, fehlerhaft und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
