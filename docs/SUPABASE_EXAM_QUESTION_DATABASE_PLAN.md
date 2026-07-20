@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29x
+Stand: v27.29y
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -638,6 +638,18 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_STORAGE_ADAPTER_READINESS_TEST.md`
 
+## Persistenz-Operationsplan-State v27.29y
+
+Persistenzvertrag und Storage-Adapter-Readiness werden jetzt
+in einem sicheren lokalen Operationsplan verbunden.
+
+Save benötigt Write, Load benötigt Read und Delete benötigt
+Delete. Die jeweils geplante Methode wird dabei nicht aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_OPERATION_PLAN_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -728,10 +740,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29x` kann ein sicherer
-lokaler Persistenz-Operationsplan-State vorbereitet werden, der
-Persistenzvertrag und Adapter-Readiness verbindet, ohne eine
-Read-, Write- oder Delete-Methode aufzurufen.
+Nach GitHub-Bestätigung von `v27.29y` kann ein sicherer
+lokaler Persistenz-Operationsfreigabe-State vorbereitet werden,
+der nur einen gültigen Operationsplan und dieselbe unveränderte
+Adapter-Readiness akzeptiert, weiterhin ohne Methodenaufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -745,5 +757,6 @@ Anfrage-Lebenszyklus-State, Lebenszyklus-Übergangs-Guard,
 Anfrage-Controller-State, Controller-Snapshot-Normalizer,
 Snapshot-Wiederaufnahme-State, Snapshot-Erstellungsstate,
 Snapshot-Serialisierungsstate, Snapshot-Deserialisierungsstate,
-Snapshot-Persistenzvertrag und Persistenz-Adapter-Readiness-State
-vorbereitet; keine Live-Ausführung
+Snapshot-Persistenzvertrag, Persistenz-Adapter-Readiness-State
+und Persistenz-Operationsplan-State vorbereitet;
+keine Live-Ausführung

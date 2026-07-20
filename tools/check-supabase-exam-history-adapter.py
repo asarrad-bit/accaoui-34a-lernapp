@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29x",
+    "// stand: v27.29y",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -39,6 +39,7 @@ required_markers = (
     'version: "v27.29v"',
     'version: "v27.29w"',
     'version: "v27.29x"',
+    'version: "v27.29y"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -409,6 +410,19 @@ required_markers = (
     "caninspectdatasourcesnapshotstorageadapters:",
     "datasourceinitialsnapshotstorageadapterreadinessstate:",
     "mapparticipantfullexamresulthistorysnapshotstorageadapterreadiness,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceoperationplan(input)",
+    '"exam_result_history_persistence_operation_plan_ready"',
+    '"exam_result_history_persistence_operation_plan_blocked"',
+    '"exam_result_history_persistence_operation_plan_invalid"',
+    "issnapshotpersistenceoperationplanonly: true",
+    "snapshotpersistenceoperationplanmappername:",
+    "issnapshotpersistenceoperationplanprepared: true",
+    "canmapsnapshotpersistenceoperationplans: true",
+    "datasourcesnapshotpersistenceoperationplanmappername:",
+    "isdatasourcesnapshotpersistenceoperationplanprepared:",
+    "canmapdatasourcesnapshotpersistenceoperationplans:",
+    "datasourceinitialsnapshotpersistenceoperationplanstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceoperationplan,",
 )
 
 for marker in required_markers:
@@ -1831,6 +1845,84 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan(input)"
+) != 1:
+    fail(
+        "Persistenz-Operationsplan-State muss genau einmal "
+        "vorhanden sein."
+    )
+
+operation_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceoperationplan(input)"
+)
+operation_end = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotstorageadapterreadiness(input)",
+    operation_start,
+)
+operation_block = lower[
+    operation_start:operation_end
+]
+
+for required in (
+    "mapparticipantfullexamresulthistorysnapshotpersistencecontract({",
+    "mapparticipantfullexamresulthistorysnapshotdeserializationstate({",
+    '"write"',
+    '"read"',
+    '"delete"',
+    "persistence_operation_plan_persistence_state_missing",
+    "persistence_operation_plan_persistence_state_invalid",
+    "persistence_operation_plan_readiness_state_missing",
+    "persistence_operation_plan_readiness_state_invalid",
+    "persistence_operation_plan_intent_invalid",
+    "persistence_operation_plan_contract_not_ready",
+    "persistence_operation_plan_storage_key_invalid",
+    "persistence_operation_plan_save_payload_invalid",
+    "persistence_operation_plan_load_state_invalid",
+    "persistence_operation_plan_capability_unavailable",
+    "exam_result_history_persistence_operation_plan_ready",
+    "exam_result_history_persistence_operation_plan_blocked",
+    "exam_result_history_persistence_operation_plan_invalid",
+    "issnapshotpersistenceoperationplanonly: true",
+    "canexecutestorage: false",
+):
+    if required not in operation_block:
+        fail(
+            "Persistenz-Operationsplan-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in operation_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Operationsplan: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1909,6 +2001,7 @@ print("Snapshot-Serialisierung: kanonisches JSON, Größenlimit und Strukturprü
 print("Snapshot-Deserialisierung: Größe vor Parsing begrenzt und Struktur erneut geprüft")
 print("Snapshot-Persistenzvertrag: Save, Load und Delete sicher vorbereitet")
 print("Persistenz-Adapter-Readiness: Read, Write und Delete ohne Aufruf geprüft")
+print("Persistenz-Operationsplan: Vertrag und Adapterfähigkeit ohne Aufruf verbunden")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

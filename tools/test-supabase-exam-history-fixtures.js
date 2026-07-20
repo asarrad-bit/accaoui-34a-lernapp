@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29x
+// Stand: v27.29y
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29x",
+  "v27.29y",
   "Adapterversion"
 );
 
@@ -136,6 +136,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotDeserializationState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceContract",
   "mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -2958,6 +2959,141 @@ expectEqual(
   "Ungültiger Storage-Adapter-Marker"
 );
 
+const persistenceWritePlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan({
+    persistenceState:
+      persistenceSave,
+    adapterReadinessState:
+      fullStorageReadiness,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceWritePlan.status ===
+    "exam_result_history_persistence_operation_plan_ready" &&
+  persistenceWritePlan.canPlanOperation === true &&
+  persistenceWritePlan.canExecuteStorage === false &&
+  persistenceWritePlan.operation ===
+    "write" &&
+  persistenceWritePlan.requiredCapability ===
+    "write" &&
+  persistenceWritePlan.serializedJson ===
+    persistenceSave.serializedJson &&
+  storageAdapterOperationCalls === 0,
+  "Write-Operationsplan wurde nicht sicher erstellt"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWritePlan,
+    "privateField"
+  ),
+  "Unbekanntes Operationsplan-Feld wurde übernommen"
+);
+
+const readOnlyStorageReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness({
+    storageAdapter: {
+      adapterKind:
+        "accaoui_exam_history_snapshot_storage_adapter_v1",
+      contractVersion: 1,
+      read() {
+        storageAdapterOperationCalls += 1;
+      }
+    }
+  });
+
+const persistenceReadPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan({
+    persistenceState:
+      persistenceLoad,
+    adapterReadinessState:
+      readOnlyStorageReadiness
+  });
+
+assert(
+  persistenceReadPlan.status ===
+    "exam_result_history_persistence_operation_plan_ready" &&
+  persistenceReadPlan.operation ===
+    "read" &&
+  persistenceReadPlan.requiredCapability ===
+    "read" &&
+  persistenceReadPlan.hasValidatedLoadState ===
+    true &&
+  persistenceReadPlan.serializedJson ===
+    null &&
+  storageAdapterOperationCalls === 0,
+  "Read-Operationsplan wurde nicht sicher erstellt"
+);
+
+const persistenceDeletePlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan({
+    persistenceState:
+      persistenceDelete,
+    adapterReadinessState:
+      fullStorageReadiness
+  });
+
+assert(
+  persistenceDeletePlan.canPlanOperation ===
+    true &&
+  persistenceDeletePlan.operation ===
+    "delete" &&
+  persistenceDeletePlan.requiredCapability ===
+    "delete" &&
+  storageAdapterOperationCalls === 0,
+  "Delete-Operationsplan wurde nicht sicher erstellt"
+);
+
+const blockedDeletePlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan({
+    persistenceState:
+      persistenceDelete,
+    adapterReadinessState:
+      readOnlyStorageReadiness
+  });
+
+assert(
+  blockedDeletePlan.status ===
+    "exam_result_history_persistence_operation_plan_blocked" &&
+  blockedDeletePlan.canPlanOperation ===
+    false &&
+  blockedDeletePlan.operation ===
+    "delete" &&
+  blockedDeletePlan.reason ===
+    "persistence_operation_plan_capability_unavailable",
+  "Fehlende Delete-Fähigkeit wurde nicht blockiert"
+);
+
+const invalidPersistencePlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan({
+    persistenceState:
+      persistenceInvalidKey,
+    adapterReadinessState:
+      fullStorageReadiness
+  });
+
+expectEqual(
+  invalidPersistencePlan.reason,
+  "persistence_operation_plan_persistence_state_invalid",
+  "Ungültiger Persistenzstate im Operationsplan"
+);
+
+const invalidReadinessPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan({
+    persistenceState:
+      persistenceSave,
+    adapterReadinessState:
+      invalidStorageReadiness
+  });
+
+expectEqual(
+  invalidReadinessPlan.reason,
+  "persistence_operation_plan_readiness_state_invalid",
+  "Ungültiger Readiness-State im Operationsplan"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -3017,6 +3153,9 @@ console.log(
 );
 console.log(
   "Storage-Readiness-Fixtures: vollständig, teilweise, nicht verfügbar und ungültig"
+);
+console.log(
+  "Operationsplan-Fixtures: Write, Read, Delete, blockiert und ungültig"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
