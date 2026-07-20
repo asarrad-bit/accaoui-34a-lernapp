@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29q",
+    "// stand: v27.29r",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -32,6 +32,7 @@ required_markers = (
     'version: "v27.29o"',
     'version: "v27.29p"',
     'version: "v27.29q"',
+    'version: "v27.29r"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -304,6 +305,19 @@ required_markers = (
     "canmapdatasourcerequestcontrollerstates:",
     "datasourceinitialrequestcontrollerstate:",
     "mapparticipantfullexamresulthistoryrequestcontrollerstate,",
+    "function normalizeparticipantfullexamresulthistorycontrollersnapshot(input)",
+    '"exam_result_history_controller_snapshot_resumable"',
+    '"exam_result_history_controller_snapshot_terminal"',
+    '"exam_result_history_controller_snapshot_invalid"',
+    "iscontrollersnapshotnormalizeronly: true",
+    "controllersnapshotnormalizername:",
+    "iscontrollersnapshotnormalizerprepared: true",
+    "cannormalizecontrollersnapshots: true",
+    "datasourcecontrollersnapshotnormalizername:",
+    "isdatasourcecontrollersnapshotnormalizerprepared:",
+    "cannormalizedatasourcecontrollersnapshots:",
+    "datasourceinitialcontrollersnapshotstate:",
+    "normalizeparticipantfullexamresulthistorycontrollersnapshot,",
 )
 
 for marker in required_markers:
@@ -1174,6 +1188,83 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function normalizeParticipantFullExamResultHistoryControllerSnapshot(input)"
+) != 1:
+    fail(
+        "Controller-Snapshot-Normalizer muss genau einmal "
+        "vorhanden sein."
+    )
+
+snapshot_start = lower.index(
+    "function normalizeparticipantfullexamresulthistorycontrollersnapshot(input)"
+)
+snapshot_end = lower.index(
+    "function mapparticipantfullexamresulthistoryrequestcontrollerstate(input)",
+    snapshot_start,
+)
+snapshot_block = lower[
+    snapshot_start:snapshot_end
+]
+
+for required in (
+    "source.snapshotversion !== 1",
+    "mapparticipantfullexamresulthistoryrequestidentity({",
+    'mode: "create"',
+    "mapparticipantfullexamresulthistoryrequestlifecycle(",
+    "mapparticipantfullexamresulthistorypaginationstate({",
+    "normalizeparticipantexamresulthistorypagination({",
+    "controller_snapshot_version_invalid",
+    "controller_snapshot_state_missing",
+    "controller_snapshot_state_invalid",
+    "controller_snapshot_status_not_resumable",
+    "controller_snapshot_identity_invalid",
+    "controller_snapshot_lifecycle_invalid",
+    "controller_snapshot_flags_invalid",
+    "controller_snapshot_completion_invalid",
+    "controller_snapshot_total_count_invalid",
+    "controller_snapshot_pagination_mismatch",
+    "controller_snapshot_navigation_invalid",
+    "controller_snapshot_previous_identity_invalid",
+    "controller_snapshot_lifecycle_mismatch",
+    "controller_snapshot_completion_mismatch",
+    "exam_result_history_controller_snapshot_resumable",
+    "exam_result_history_controller_snapshot_terminal",
+    "exam_result_history_controller_snapshot_invalid",
+    "retrypendingrequest".replace("pending", "_pending_"),
+    "start_prepared_request",
+    "iscontrollersnapshotnormalizeronly: true",
+    "islivecall: false",
+):
+    if required not in snapshot_block:
+        fail(
+            "Controller-Snapshot-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "controllerstate,",
+):
+    if forbidden in snapshot_block:
+        fail(
+            "Unzulässiger Inhalt im Controller-Snapshot: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1245,6 +1336,7 @@ print("Response-Annahme-Guard: nur aktive Anfrageantworten werden verarbeitet")
 print("Anfrage-Lebenszyklus: vorbereitet, ausstehend, abgeschlossen und verworfen")
 print("Lebenszyklus-Übergangs-Guard: nur zulässige Zustandswechsel")
 print("Anfrage-Controller: Navigation, Identität, Lebenszyklus und Annahme verbunden")
+print("Controller-Snapshot: gespeicherte Zustände sicher normalisiert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

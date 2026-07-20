@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29q
+// Stand: v27.29r
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29q",
+  "v27.29r",
   "Adapterversion"
 );
 
@@ -129,6 +129,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryRequestIdentity",
   "mapParticipantFullExamResultHistoryRequestLifecycle",
   "mapParticipantFullExamResultHistoryRequestControllerState",
+  "normalizeParticipantFullExamResultHistoryControllerSnapshot",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -1972,6 +1973,154 @@ expectEqual(
   "Ungültige nächste Controller-Anfragefolge"
 );
 
+const preparedSnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 1,
+    controllerState:
+      controllerInitialized,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  preparedSnapshot.status ===
+    "exam_result_history_controller_snapshot_resumable" &&
+  preparedSnapshot.canResume === true &&
+  preparedSnapshot.resumeAction ===
+    "start_prepared_request" &&
+  preparedSnapshot.requestIdentity ===
+    "exam_history_request:21:20:0",
+  "Vorbereiteter Controller-Snapshot ist unstabil"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    preparedSnapshot,
+    "privateField"
+  ),
+  "Unbekanntes Snapshot-Feld wurde übernommen"
+);
+
+const pendingSnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 1,
+    controllerState:
+      controllerStarted
+  });
+
+assert(
+  pendingSnapshot.canResume === true &&
+  pendingSnapshot.phase === "pending" &&
+  pendingSnapshot.resumeAction ===
+    "retry_pending_request",
+  "Ausstehender Controller-Snapshot ist unstabil"
+);
+
+const completedSnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 1,
+    controllerState:
+      controllerAccepted
+  });
+
+assert(
+  completedSnapshot.status ===
+    "exam_result_history_controller_snapshot_terminal" &&
+  completedSnapshot.isTerminal === true &&
+  completedSnapshot.canResume === false &&
+  completedSnapshot.acceptedEntryCount === 2 &&
+  completedSnapshot.totalCount === 45 &&
+  completedSnapshot.paginationState.isValid ===
+    true,
+  "Abgeschlossener Controller-Snapshot ist unstabil"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    completedSnapshot,
+    "results"
+  ),
+  "Ergebniszeilen wurden im Snapshot offengelegt"
+);
+
+const navigationSnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 1,
+    controllerState:
+      controllerNavigation
+  });
+
+assert(
+  navigationSnapshot.canResume === true &&
+  navigationSnapshot.phase === "prepared" &&
+  navigationSnapshot.navigationIntent ===
+    "next" &&
+  navigationSnapshot.previousRequestIdentity ===
+    "exam_history_request:21:20:0" &&
+  navigationSnapshot.requestSequence === 22,
+  "Navigations-Snapshot ist unstabil"
+);
+
+const discardedSnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 1,
+    controllerState:
+      controllerDiscarded
+  });
+
+assert(
+  discardedSnapshot.isTerminal === true &&
+  discardedSnapshot.canResume === false &&
+  discardedSnapshot.discardReason ===
+    "cancelled_before_response",
+  "Verworfener Controller-Snapshot ist unstabil"
+);
+
+const tamperedIdentitySnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 1,
+    controllerState: {
+      ...controllerStarted,
+      requestIdentity:
+        "exam_history_request:999:20:0"
+    }
+  });
+
+expectEqual(
+  tamperedIdentitySnapshot.reason,
+  "controller_snapshot_identity_invalid",
+  "Manipulierte Snapshot-Identität"
+);
+
+const tamperedPaginationSnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 1,
+    controllerState: {
+      ...controllerAccepted,
+      totalCount: 1
+    }
+  });
+
+assert(
+  tamperedPaginationSnapshot.isValid === false &&
+  tamperedPaginationSnapshot.reason ===
+    "controller_snapshot_total_count_invalid",
+  "Manipulierter Snapshot-Gesamtwert wurde nicht verworfen"
+);
+
+const invalidVersionSnapshot =
+  adapter.normalizeParticipantFullExamResultHistoryControllerSnapshot({
+    snapshotVersion: 2,
+    controllerState:
+      controllerInitialized
+  });
+
+expectEqual(
+  invalidVersionSnapshot.reason,
+  "controller_snapshot_version_invalid",
+  "Ungültige Snapshot-Version"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -2010,6 +2159,9 @@ console.log(
 );
 console.log(
   "Controller-Fixtures: initialisiert, gestartet, angenommen, navigiert und verworfen"
+);
+console.log(
+  "Snapshot-Fixtures: vorbereitet, ausstehend, abgeschlossen, navigiert und verworfen"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29q
+// Stand: v27.29r
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1792,6 +1792,11 @@
             offset: 0
           }
         }),
+      controllerSnapshotNormalizerName:
+        "normalizeParticipantFullExamResultHistoryControllerSnapshot",
+      isControllerSnapshotNormalizerPrepared: true,
+      canNormalizeControllerSnapshots: true,
+      initialControllerSnapshotState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1881,6 +1886,10 @@
       isDataSourceRequestControllerMapperPrepared: participantDashboardExamHistoryDataSourceState.isRequestControllerMapperPrepared === true,
       canMapDataSourceRequestControllerStates: participantDashboardExamHistoryDataSourceState.canMapRequestControllerStates === true,
       dataSourceInitialRequestControllerState: participantDashboardExamHistoryDataSourceState.initialRequestControllerState,
+      dataSourceControllerSnapshotNormalizerName: participantDashboardExamHistoryDataSourceState.controllerSnapshotNormalizerName,
+      isDataSourceControllerSnapshotNormalizerPrepared: participantDashboardExamHistoryDataSourceState.isControllerSnapshotNormalizerPrepared === true,
+      canNormalizeDataSourceControllerSnapshots: participantDashboardExamHistoryDataSourceState.canNormalizeControllerSnapshots === true,
+      dataSourceInitialControllerSnapshotState: participantDashboardExamHistoryDataSourceState.initialControllerSnapshotState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3172,6 +3181,492 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function normalizeParticipantFullExamResultHistoryControllerSnapshot(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const invalid = (reason) => ({
+      version: "v27.29r",
+      status: "exam_result_history_controller_snapshot_invalid",
+      snapshotVersion: null,
+      isValid: false,
+      isControllerSnapshotNormalizerOnly: true,
+      isLiveCall: false,
+      canResume: false,
+      isTerminal: false,
+      resumeAction: null,
+      controllerStatus: null,
+      phase: null,
+      request: null,
+      requestSequence: null,
+      requestIdentity: null,
+      previousRequestIdentity: null,
+      lifecycleState: null,
+      navigationIntent: null,
+      acceptedEntryCount: 0,
+      totalCount: null,
+      paginationState: null,
+      discardReason: null,
+      reason
+    });
+
+    if (source.snapshotVersion !== 1) {
+      return invalid(
+        "controller_snapshot_version_invalid"
+      );
+    }
+
+    const controllerState =
+      source.controllerState &&
+      typeof source.controllerState === "object" &&
+      !Array.isArray(source.controllerState)
+        ? source.controllerState
+        : null;
+
+    if (!controllerState) {
+      return invalid(
+        "controller_snapshot_state_missing"
+      );
+    }
+
+    if (
+      controllerState.isRequestControllerMapperOnly !== true ||
+      controllerState.isValid !== true
+    ) {
+      return invalid(
+        "controller_snapshot_state_invalid"
+      );
+    }
+
+    const allowedStatuses = [
+      "exam_result_history_request_controller_prepared",
+      "exam_result_history_request_controller_pending",
+      "exam_result_history_request_controller_completed",
+      "exam_result_history_request_controller_navigation_ready",
+      "exam_result_history_request_controller_discarded"
+    ];
+
+    if (!allowedStatuses.includes(controllerState.status)) {
+      return invalid(
+        "controller_snapshot_status_not_resumable"
+      );
+    }
+
+    const identityState =
+      mapParticipantFullExamResultHistoryRequestIdentity({
+        mode: "create",
+        requestSequence:
+          controllerState.requestSequence,
+        request:
+          controllerState.request
+      });
+
+    if (
+      !identityState.isValid ||
+      identityState.requestIdentity !==
+        controllerState.requestIdentity
+    ) {
+      return invalid(
+        "controller_snapshot_identity_invalid"
+      );
+    }
+
+    const storedLifecycleState =
+      controllerState.lifecycleState &&
+      typeof controllerState.lifecycleState === "object" &&
+      !Array.isArray(controllerState.lifecycleState)
+        ? controllerState.lifecycleState
+        : null;
+
+    if (
+      !storedLifecycleState ||
+      storedLifecycleState.isRequestLifecycleMapperOnly !== true ||
+      storedLifecycleState.isValid !== true ||
+      storedLifecycleState.requestIdentity !==
+        identityState.requestIdentity
+    ) {
+      return invalid(
+        "controller_snapshot_lifecycle_invalid"
+      );
+    }
+
+    const isPreparedStatus =
+      controllerState.status ===
+      "exam_result_history_request_controller_prepared";
+
+    const isPendingStatus =
+      controllerState.status ===
+      "exam_result_history_request_controller_pending";
+
+    const isCompletedStatus =
+      controllerState.status ===
+      "exam_result_history_request_controller_completed";
+
+    const isNavigationStatus =
+      controllerState.status ===
+      "exam_result_history_request_controller_navigation_ready";
+
+    const isDiscardedStatus =
+      controllerState.status ===
+      "exam_result_history_request_controller_discarded";
+
+    const flagsAreValid =
+      (
+        isPreparedStatus &&
+        controllerState.isPrepared === true &&
+        controllerState.isPending === false &&
+        controllerState.isCompleted === false &&
+        controllerState.isDiscarded === false &&
+        controllerState.isNavigationReady === false
+      ) ||
+      (
+        isPendingStatus &&
+        controllerState.isPrepared === false &&
+        controllerState.isPending === true &&
+        controllerState.isCompleted === false &&
+        controllerState.isDiscarded === false &&
+        controllerState.isNavigationReady === false
+      ) ||
+      (
+        isCompletedStatus &&
+        controllerState.isPrepared === false &&
+        controllerState.isPending === false &&
+        controllerState.isCompleted === true &&
+        controllerState.isDiscarded === false &&
+        controllerState.isNavigationReady === false
+      ) ||
+      (
+        isNavigationStatus &&
+        controllerState.isPrepared === true &&
+        controllerState.isPending === false &&
+        controllerState.isCompleted === false &&
+        controllerState.isDiscarded === false &&
+        controllerState.isNavigationReady === true
+      ) ||
+      (
+        isDiscardedStatus &&
+        controllerState.isPrepared === false &&
+        controllerState.isPending === false &&
+        controllerState.isCompleted === false &&
+        controllerState.isDiscarded === true &&
+        controllerState.isNavigationReady === false
+      );
+
+    if (!flagsAreValid) {
+      return invalid(
+        "controller_snapshot_flags_invalid"
+      );
+    }
+
+    const phase =
+      isPreparedStatus || isNavigationStatus
+        ? "prepared"
+        : isPendingStatus
+          ? "pending"
+          : isCompletedStatus
+            ? "completed"
+            : "discarded";
+
+    let lifecycleInput = {
+      phase,
+      requestSequence:
+        identityState.requestSequence,
+      request:
+        identityState.request
+    };
+
+    let acceptedEntryCount = 0;
+    let totalCount = null;
+    let paginationState = null;
+    let discardReason = null;
+    let previousRequestIdentity = null;
+    let navigationIntent = null;
+
+    if (isCompletedStatus) {
+      const allowedAcceptanceStatuses = [
+        "exam_result_history_response_acceptance_accepted",
+        "exam_result_history_response_acceptance_accepted_empty"
+      ];
+
+      if (
+        controllerState.didAcceptResponse !== true ||
+        !allowedAcceptanceStatuses.includes(
+          controllerState.acceptanceStatus
+        ) ||
+        !Array.isArray(controllerState.results)
+      ) {
+        return invalid(
+          "controller_snapshot_completion_invalid"
+        );
+      }
+
+      acceptedEntryCount =
+        controllerState.results.length;
+
+      totalCount =
+        controllerState.totalCount;
+
+      if (
+        !Number.isSafeInteger(totalCount) ||
+        totalCount < 0 ||
+        totalCount < acceptedEntryCount
+      ) {
+        return invalid(
+          "controller_snapshot_total_count_invalid"
+        );
+      }
+
+      if (
+        controllerState.acceptanceStatus ===
+          "exam_result_history_response_acceptance_accepted_empty" &&
+        (
+          acceptedEntryCount !== 0 ||
+          totalCount !== 0
+        )
+      ) {
+        return invalid(
+          "controller_snapshot_empty_completion_invalid"
+        );
+      }
+
+      if (
+        controllerState.acceptanceStatus ===
+          "exam_result_history_response_acceptance_accepted" &&
+        acceptedEntryCount < 1
+      ) {
+        return invalid(
+          "controller_snapshot_result_count_invalid"
+        );
+      }
+
+      paginationState =
+        mapParticipantFullExamResultHistoryPaginationState({
+          limit:
+            identityState.request.limit,
+          offset:
+            identityState.request.offset,
+          totalCount,
+          pageEntryCount:
+            acceptedEntryCount
+        });
+
+      if (!paginationState.isValid) {
+        return invalid(
+          "controller_snapshot_" +
+          paginationState.reason
+        );
+      }
+
+      const storedPaginationState =
+        controllerState.paginationState &&
+        typeof controllerState.paginationState === "object" &&
+        !Array.isArray(controllerState.paginationState)
+          ? controllerState.paginationState
+          : null;
+
+      if (
+        !storedPaginationState ||
+        storedPaginationState.isValid !== true ||
+        storedPaginationState.limit !==
+          paginationState.limit ||
+        storedPaginationState.offset !==
+          paginationState.offset ||
+        storedPaginationState.totalCount !==
+          paginationState.totalCount ||
+        storedPaginationState.pageEntryCount !==
+          paginationState.pageEntryCount
+      ) {
+        return invalid(
+          "controller_snapshot_pagination_mismatch"
+        );
+      }
+
+      lifecycleInput.acceptanceState = {
+        isResponseAcceptanceGuardOnly: true,
+        didAcceptResponse: true,
+        canAcceptResponse: true,
+        requestIdentity:
+          identityState.requestIdentity,
+        responseIdentity:
+          identityState.requestIdentity,
+        status:
+          controllerState.acceptanceStatus,
+        results:
+          controllerState.results,
+        totalCount
+      };
+    }
+
+    if (isDiscardedStatus) {
+      discardReason =
+        storedLifecycleState.discardReason;
+
+      if (
+        typeof discardReason !== "string" ||
+        controllerState.reason !== discardReason
+      ) {
+        return invalid(
+          "controller_snapshot_discard_reason_mismatch"
+        );
+      }
+
+      lifecycleInput.discardReason =
+        discardReason;
+    }
+
+    if (isNavigationStatus) {
+      previousRequestIdentity =
+        typeof controllerState.previousRequestIdentity === "string"
+          ? controllerState.previousRequestIdentity.trim()
+          : "";
+
+      navigationIntent =
+        typeof controllerState.navigationIntent === "string"
+          ? controllerState.navigationIntent.trim()
+          : "";
+
+      const allowedNavigationIntents = [
+        "first",
+        "previous",
+        "next",
+        "retry"
+      ];
+
+      const previousParts =
+        previousRequestIdentity.split(":");
+
+      if (
+        !allowedNavigationIntents.includes(
+          navigationIntent
+        ) ||
+        previousParts.length !== 4 ||
+        previousParts[0] !==
+          "exam_history_request"
+      ) {
+        return invalid(
+          "controller_snapshot_navigation_invalid"
+        );
+      }
+
+      const previousSequence =
+        Number(previousParts[1]);
+
+      const previousPagination =
+        normalizeParticipantExamResultHistoryPagination({
+          limit:
+            Number(previousParts[2]),
+          offset:
+            Number(previousParts[3])
+        });
+
+      const canonicalPreviousIdentity =
+        "exam_history_request:" +
+        previousSequence +
+        ":" +
+        previousPagination.limit +
+        ":" +
+        previousPagination.offset;
+
+      if (
+        !Number.isSafeInteger(previousSequence) ||
+        previousSequence < 1 ||
+        previousSequence >=
+          identityState.requestSequence ||
+        !previousPagination.isValid ||
+        previousPagination.offset %
+          previousPagination.limit !== 0 ||
+        canonicalPreviousIdentity !==
+          previousRequestIdentity
+      ) {
+        return invalid(
+          "controller_snapshot_previous_identity_invalid"
+        );
+      }
+    }
+
+    const lifecycleState =
+      mapParticipantFullExamResultHistoryRequestLifecycle(
+        lifecycleInput
+      );
+
+    if (
+      !lifecycleState.isValid ||
+      lifecycleState.phase !== phase ||
+      lifecycleState.requestIdentity !==
+        identityState.requestIdentity ||
+      lifecycleState.status !==
+        storedLifecycleState.status
+    ) {
+      return invalid(
+        "controller_snapshot_lifecycle_mismatch"
+      );
+    }
+
+    if (
+      isCompletedStatus &&
+      (
+        lifecycleState.acceptedEntryCount !==
+          acceptedEntryCount ||
+        lifecycleState.totalCount !==
+          totalCount
+      )
+    ) {
+      return invalid(
+        "controller_snapshot_completion_mismatch"
+      );
+    }
+
+    const canResume =
+      isPreparedStatus ||
+      isPendingStatus ||
+      isNavigationStatus;
+
+    const isTerminal =
+      isCompletedStatus ||
+      isDiscardedStatus;
+
+    return {
+      version: "v27.29r",
+      status:
+        canResume
+          ? "exam_result_history_controller_snapshot_resumable"
+          : "exam_result_history_controller_snapshot_terminal",
+      snapshotVersion: 1,
+      isValid: true,
+      isControllerSnapshotNormalizerOnly: true,
+      isLiveCall: false,
+      canResume,
+      isTerminal,
+      resumeAction:
+        isPendingStatus
+          ? "retry_pending_request"
+          : canResume
+            ? "start_prepared_request"
+            : null,
+      controllerStatus:
+        controllerState.status,
+      phase,
+      request:
+        identityState.request,
+      requestSequence:
+        identityState.requestSequence,
+      requestIdentity:
+        identityState.requestIdentity,
+      previousRequestIdentity,
+      lifecycleState,
+      navigationIntent,
+      acceptedEntryCount,
+      totalCount,
+      paginationState,
+      discardReason,
+      reason: null
+    };
   }
 
   function mapParticipantFullExamResultHistoryRequestControllerState(input) {
@@ -7645,7 +8140,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29q",
+    version: "v27.29r",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -7711,6 +8206,7 @@
     mapParticipantFullExamResultHistoryRequestIdentity,
     mapParticipantFullExamResultHistoryRequestLifecycle,
     mapParticipantFullExamResultHistoryRequestControllerState,
+    normalizeParticipantFullExamResultHistoryControllerSnapshot,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
