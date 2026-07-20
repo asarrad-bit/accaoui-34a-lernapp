@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29j",
+    "// stand: v27.29k",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -25,6 +25,7 @@ required_markers = (
     'version: "v27.29h"',
     'version: "v27.29i"',
     'version: "v27.29j"',
+    'version: "v27.29k"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -175,6 +176,19 @@ required_markers = (
     "canmapdatasourcepaginationstates:",
     "datasourceinitialpaginationstate:",
     "mapparticipantfullexamresulthistorypaginationstate,",
+    "function orchestrateparticipantfullexamresulthistorydatasourcestate(input)",
+    '"exam_result_history_data_source_prepared"',
+    '"exam_result_history_data_source_loading"',
+    '"exam_result_history_data_source_success"',
+    '"exam_result_history_data_source_empty"',
+    '"exam_result_history_data_source_error"',
+    "isdatasourceorchestratoronly: true",
+    "hasdata: false",
+    "datasourceorchestratorname:",
+    "isdatasourceorchestratorprepared: true",
+    "canorchestratedatasourcestates: true",
+    "datasourceinitialorchestratedstate:",
+    "orchestrateparticipantfullexamresulthistorydatasourcestate,",
 )
 
 for marker in required_markers:
@@ -506,6 +520,74 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function orchestrateParticipantFullExamResultHistoryDataSourceState(input)"
+) != 1:
+    fail(
+        "Datenquellen-Orchestrator muss genau einmal "
+        "vorhanden sein."
+    )
+
+orchestrator_start = lower.index(
+    "function orchestrateparticipantfullexamresulthistorydatasourcestate(input)"
+)
+orchestrator_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    orchestrator_start,
+)
+orchestrator_block = lower[
+    orchestrator_start:orchestrator_end
+]
+
+for required in (
+    "mapparticipantfullexamresulthistorypaginationstate({",
+    "mapparticipantfullexamresulthistoryloadstate({",
+    "exam_result_history_data_source_prepared",
+    "exam_result_history_data_source_loading",
+    "exam_result_history_data_source_success",
+    "exam_result_history_data_source_empty",
+    "exam_result_history_data_source_error",
+    "empty_page_after_nonzero_offset",
+    "page_metrics_entry_count_invalid",
+    "load_state_unhandled",
+    "pageentrycount !==",
+    "loadstate.results.length",
+    "results: loadstate.results",
+    "totalcount: loadstate.totalcount",
+    "pagemetrics: loadstate.pagemetrics",
+    "isdatasourceorchestratoronly: true",
+    "islivecall: false",
+    "isvisible: false",
+    "canrender: false",
+):
+    if required not in orchestrator_block:
+        fail(
+            "Datenquellen-Orchestrator-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.error",
+    "response.error.message",
+    "response.error.details",
+    "response.error.hint",
+    "...source",
+    "...input",
+):
+    if forbidden in orchestrator_block:
+        fail(
+            "Unzulässiger Inhalt im Datenquellen-Orchestrator: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -570,6 +652,7 @@ print("Ergebnislisten-Aggregator: sichere Seitenkennzahlen")
 print("Response-Mapper: Erfolg, leer, ungültig und Fehler sicher getrennt")
 print("Ladezustands-Mapper: vorbereitet, lädt, Erfolg, leer und Fehler")
 print("Pagination-Navigationsstate: erste, mittlere, letzte und unbekannte Seite")
+print("Datenquellen-Orchestrator: Ladezustand, Response und Pagination sicher verbunden")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

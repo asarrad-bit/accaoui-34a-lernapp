@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29j
+// Stand: v27.29k
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29j",
+  "v27.29k",
   "Adapterversion"
 );
 
@@ -123,7 +123,8 @@ for (const functionName of [
   "aggregateParticipantFullExamResultRows",
   "mapParticipantFullExamResultHistoryResponse",
   "mapParticipantFullExamResultHistoryLoadState",
-  "mapParticipantFullExamResultHistoryPaginationState"
+  "mapParticipantFullExamResultHistoryPaginationState",
+  "orchestrateParticipantFullExamResultHistoryDataSourceState"
 ]) {
   assert(
     typeof adapter[functionName] === "function",
@@ -819,6 +820,182 @@ assert(
   "Maximaler Pagination-Offset ist unstabil"
 );
 
+const orchestratedPrepared =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "prepared",
+    limit: 20,
+    offset: 0
+  });
+
+assert(
+  orchestratedPrepared.status ===
+    "exam_result_history_data_source_prepared" &&
+  orchestratedPrepared.isPrepared === true &&
+  orchestratedPrepared.isLoading === false &&
+  orchestratedPrepared.paginationState.status ===
+    "exam_result_history_pagination_prepared",
+  "Vorbereiteter Datenquellen-Gesamtzustand ist unstabil"
+);
+
+const orchestratedLoading =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "loading",
+    limit: 20,
+    offset: 20
+  });
+
+assert(
+  orchestratedLoading.status ===
+    "exam_result_history_data_source_loading" &&
+  orchestratedLoading.isLoading === true &&
+  orchestratedLoading.hasData === false &&
+  orchestratedLoading.results.length === 0,
+  "Ladender Datenquellen-Gesamtzustand ist unstabil"
+);
+
+const orchestratedSuccess =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "resolved",
+    limit: 20,
+    offset: 0,
+    response: {
+      data: [
+        {
+          ...firstRow,
+          total_count: 45
+        },
+        {
+          ...secondRow,
+          total_count: 45
+        }
+      ],
+      error: null
+    }
+  });
+
+assert(
+  orchestratedSuccess.status ===
+    "exam_result_history_data_source_success" &&
+  orchestratedSuccess.isSuccess === true &&
+  orchestratedSuccess.hasData === true &&
+  orchestratedSuccess.results.length === 2 &&
+  orchestratedSuccess.totalCount === 45 &&
+  orchestratedSuccess.paginationState.canGoNext === true &&
+  orchestratedSuccess.paginationState.nextOffset === 20,
+  "Erfolgreicher Datenquellen-Gesamtzustand ist unstabil"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    orchestratedSuccess,
+    "response"
+  ),
+  "Rohe RPC-Antwort wurde in den Gesamtzustand übernommen"
+);
+
+const orchestratedEmpty =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "resolved",
+    limit: 20,
+    offset: 0,
+    response: {
+      data: [],
+      error: null
+    }
+  });
+
+assert(
+  orchestratedEmpty.status ===
+    "exam_result_history_data_source_empty" &&
+  orchestratedEmpty.isSuccess === true &&
+  orchestratedEmpty.isEmpty === true &&
+  orchestratedEmpty.totalCount === 0 &&
+  orchestratedEmpty.paginationState.status ===
+    "exam_result_history_pagination_empty",
+  "Leerer Datenquellen-Gesamtzustand ist unstabil"
+);
+
+const orchestratedStaleEmpty =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "resolved",
+    limit: 20,
+    offset: 20,
+    response: {
+      data: [],
+      error: null
+    }
+  });
+
+assert(
+  orchestratedStaleEmpty.status ===
+    "exam_result_history_data_source_error" &&
+  orchestratedStaleEmpty.hasError === true &&
+  orchestratedStaleEmpty.canRetry === true &&
+  orchestratedStaleEmpty.reason ===
+    "empty_page_after_nonzero_offset",
+  "Leere Folgeseite wurde nicht sicher abgefangen"
+);
+
+const orchestratedInvalidResponse =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "resolved",
+    limit: 20,
+    offset: 0,
+    response: {
+      data: [
+        makeRow({
+          passed: false
+        })
+      ],
+      error: null
+    }
+  });
+
+assert(
+  orchestratedInvalidResponse.status ===
+    "exam_result_history_data_source_error" &&
+  orchestratedInvalidResponse.hasError === true &&
+  orchestratedInvalidResponse.reason ===
+    "passed_status_invalid",
+  "Ungültige RPC-Ergebnisdaten wurden nicht sicher abgefangen"
+);
+
+const orchestratedInvalidRequest =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "prepared",
+    limit: 20,
+    offset: 10
+  });
+
+assert(
+  orchestratedInvalidRequest.status ===
+    "exam_result_history_data_source_error" &&
+  orchestratedInvalidRequest.hasError === true &&
+  orchestratedInvalidRequest.canRetry === false &&
+  orchestratedInvalidRequest.reason ===
+    "offset_must_align_to_limit",
+  "Ungültige Pagination-Anfrage wurde nicht geschlossen verworfen"
+);
+
+const orchestratedRejected =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "rejected",
+    limit: 20,
+    offset: 0,
+    error: {
+      message: "sensitive transport error"
+    }
+  });
+
+assert(
+  orchestratedRejected.status ===
+    "exam_result_history_data_source_error" &&
+  orchestratedRejected.reason ===
+    "rpc_request_failed" &&
+  !JSON.stringify(orchestratedRejected).includes("sensitive"),
+  "Abgelehnter Datenquellenzustand enthält unsichere Fehlerdetails"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -836,6 +1013,9 @@ console.log(
 );
 console.log(
   "Pagination-Fixtures: unbekannt, erste, mittlere, letzte, leer und begrenzt"
+);
+console.log(
+  "Orchestrator-Fixtures: vorbereitet, lädt, Erfolg, leer und Fehler"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

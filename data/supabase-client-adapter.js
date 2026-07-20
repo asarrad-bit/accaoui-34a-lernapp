@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29j
+// Stand: v27.29k
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1719,6 +1719,16 @@
           totalCount: null,
           pageEntryCount: 0
         }),
+      dataSourceOrchestratorName:
+        "orchestrateParticipantFullExamResultHistoryDataSourceState",
+      isDataSourceOrchestratorPrepared: true,
+      canOrchestrateDataSourceStates: true,
+      initialOrchestratedState:
+        orchestrateParticipantFullExamResultHistoryDataSourceState({
+          phase: "prepared",
+          limit: rpcState.defaultLimit,
+          offset: 0
+        }),
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1780,6 +1790,10 @@
       isDataSourcePaginationStateMapperPrepared: participantDashboardExamHistoryDataSourceState.isPaginationStateMapperPrepared === true,
       canMapDataSourcePaginationStates: participantDashboardExamHistoryDataSourceState.canMapPaginationStates === true,
       dataSourceInitialPaginationState: participantDashboardExamHistoryDataSourceState.initialPaginationState,
+      dataSourceOrchestratorName: participantDashboardExamHistoryDataSourceState.dataSourceOrchestratorName,
+      isDataSourceOrchestratorPrepared: participantDashboardExamHistoryDataSourceState.isDataSourceOrchestratorPrepared === true,
+      canOrchestrateDataSourceStates: participantDashboardExamHistoryDataSourceState.canOrchestrateDataSourceStates === true,
+      dataSourceInitialOrchestratedState: participantDashboardExamHistoryDataSourceState.initialOrchestratedState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -2674,6 +2688,203 @@
           ? "maximum_offset_reached"
           : null
     };
+  }
+
+  function orchestrateParticipantFullExamResultHistoryDataSourceState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const phase =
+      typeof source.phase === "string"
+        ? source.phase.trim()
+        : "prepared";
+
+    const requestPaginationState =
+      mapParticipantFullExamResultHistoryPaginationState({
+        limit: source.limit,
+        offset: source.offset,
+        totalCount: null,
+        pageEntryCount: 0
+      });
+
+    const createState = (overrides) => ({
+      version: "v27.29k",
+      status: "exam_result_history_data_source_prepared",
+      phase,
+      isDataSourceOrchestratorOnly: true,
+      isLiveCall: false,
+      isVisible: false,
+      canRender: false,
+      isPrepared: true,
+      isLoading: false,
+      isSuccess: false,
+      isEmpty: false,
+      hasError: false,
+      hasData: false,
+      canRetry: false,
+      request: {
+        limit: requestPaginationState.limit,
+        offset: requestPaginationState.offset
+      },
+      loadState: null,
+      paginationState: requestPaginationState,
+      results: [],
+      totalCount: null,
+      pageMetrics: null,
+      reason: null,
+      ...overrides
+    });
+
+    if (!requestPaginationState.isValid) {
+      return createState({
+        status: "exam_result_history_data_source_error",
+        hasError: true,
+        canRetry: false,
+        reason: requestPaginationState.reason
+      });
+    }
+
+    const loadState =
+      mapParticipantFullExamResultHistoryLoadState({
+        phase,
+        response: source.response
+      });
+
+    if (loadState.hasError) {
+      return createState({
+        status: "exam_result_history_data_source_error",
+        hasError: true,
+        canRetry: loadState.canRetry,
+        loadState,
+        reason: loadState.reason
+      });
+    }
+
+    if (loadState.isLoading) {
+      return createState({
+        status: "exam_result_history_data_source_loading",
+        isLoading: true,
+        loadState
+      });
+    }
+
+    if (
+      loadState.status ===
+      "exam_result_history_load_prepared"
+    ) {
+      return createState({
+        status: "exam_result_history_data_source_prepared",
+        loadState
+      });
+    }
+
+    if (loadState.isEmpty) {
+      if (requestPaginationState.offset !== 0) {
+        return createState({
+          status: "exam_result_history_data_source_error",
+          hasError: true,
+          canRetry: true,
+          loadState,
+          reason: "empty_page_after_nonzero_offset"
+        });
+      }
+
+      const paginationState =
+        mapParticipantFullExamResultHistoryPaginationState({
+          limit: requestPaginationState.limit,
+          offset: 0,
+          totalCount: 0,
+          pageEntryCount: 0
+        });
+
+      if (!paginationState.isValid) {
+        return createState({
+          status: "exam_result_history_data_source_error",
+          hasError: true,
+          canRetry: false,
+          loadState,
+          paginationState,
+          reason: paginationState.reason
+        });
+      }
+
+      return createState({
+        status: "exam_result_history_data_source_empty",
+        isSuccess: true,
+        isEmpty: true,
+        loadState,
+        paginationState,
+        results: [],
+        totalCount: 0,
+        pageMetrics: loadState.pageMetrics
+      });
+    }
+
+    if (loadState.isSuccess) {
+      const pageEntryCount =
+        loadState.pageMetrics &&
+        Number.isInteger(
+          loadState.pageMetrics.pageEntryCount
+        )
+          ? loadState.pageMetrics.pageEntryCount
+          : null;
+
+      if (
+        pageEntryCount === null ||
+        pageEntryCount !==
+          loadState.results.length
+      ) {
+        return createState({
+          status: "exam_result_history_data_source_error",
+          hasError: true,
+          canRetry: false,
+          loadState,
+          reason: "page_metrics_entry_count_invalid"
+        });
+      }
+
+      const paginationState =
+        mapParticipantFullExamResultHistoryPaginationState({
+          limit: requestPaginationState.limit,
+          offset: requestPaginationState.offset,
+          totalCount: loadState.totalCount,
+          pageEntryCount
+        });
+
+      if (!paginationState.isValid) {
+        return createState({
+          status: "exam_result_history_data_source_error",
+          hasError: true,
+          canRetry: false,
+          loadState,
+          paginationState,
+          reason: paginationState.reason
+        });
+      }
+
+      return createState({
+        status: "exam_result_history_data_source_success",
+        isSuccess: true,
+        hasData: loadState.results.length > 0,
+        loadState,
+        paginationState,
+        results: loadState.results,
+        totalCount: loadState.totalCount,
+        pageMetrics: loadState.pageMetrics
+      });
+    }
+
+    return createState({
+      status: "exam_result_history_data_source_error",
+      hasError: true,
+      canRetry: false,
+      loadState,
+      reason: "load_state_unhandled"
+    });
   }
 
   function normalizeParticipantExamResultHistoryPagination(options) {
@@ -5863,7 +6074,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29j",
+    version: "v27.29k",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -5924,6 +6135,7 @@
     mapParticipantFullExamResultHistoryResponse,
     mapParticipantFullExamResultHistoryLoadState,
     mapParticipantFullExamResultHistoryPaginationState,
+    orchestrateParticipantFullExamResultHistoryDataSourceState,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,
