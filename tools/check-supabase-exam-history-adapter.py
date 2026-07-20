@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29v",
+    "// stand: v27.29w",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -37,6 +37,7 @@ required_markers = (
     'version: "v27.29t"',
     'version: "v27.29u"',
     'version: "v27.29v"',
+    'version: "v27.29w"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -377,6 +378,22 @@ required_markers = (
     "canmapdatasourcesnapshotdeserializationstates:",
     "datasourceinitialsnapshotdeserializationstate:",
     "mapparticipantfullexamresulthistorysnapshotdeserializationstate,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecontract(input)",
+    '"exam_result_history_snapshot_persistence_save_ready"',
+    '"exam_result_history_snapshot_persistence_load_ready"',
+    '"exam_result_history_snapshot_persistence_delete_ready"',
+    '"exam_result_history_snapshot_persistence_save_blocked"',
+    '"exam_result_history_snapshot_persistence_load_blocked"',
+    '"exam_result_history_snapshot_persistence_invalid"',
+    "issnapshotpersistencecontractonly: true",
+    "snapshotpersistencecontractname:",
+    "issnapshotpersistencecontractprepared: true",
+    "canmapsnapshotpersistenceintents: true",
+    "datasourcesnapshotpersistencecontractname:",
+    "isdatasourcesnapshotpersistencecontractprepared:",
+    "canmapdatasourcesnapshotpersistenceintents:",
+    "datasourceinitialsnapshotpersistencestate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecontract,",
 )
 
 for marker in required_markers:
@@ -1633,6 +1650,89 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceContract(input)"
+) != 1:
+    fail(
+        "Snapshot-Persistenzvertrag muss genau einmal "
+        "vorhanden sein."
+    )
+
+persistence_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecontract(input)"
+)
+persistence_end = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotdeserializationstate(input)",
+    persistence_start,
+)
+persistence_block = lower[
+    persistence_start:persistence_end
+]
+
+for required in (
+    'allowedintents = [',
+    '"save"',
+    '"load"',
+    '"delete"',
+    '"accaoui.exam_history.snapshot.v1"',
+    "const maximumstoragekeylength = 128",
+    "mapparticipantfullexamresulthistoryrequestidentity({",
+    'mode: "create"',
+    "mapparticipantfullexamresulthistorysnapshotdeserializationstate({",
+    "snapshot_persistence_intent_invalid",
+    "snapshot_persistence_storage_key_invalid",
+    "snapshot_persistence_storage_key_format_invalid",
+    "snapshot_persistence_storage_key_noncanonical",
+    "snapshot_persistence_serialization_state_missing",
+    "snapshot_persistence_serialization_state_invalid",
+    "snapshot_persistence_serialization_state_not_ready",
+    "snapshot_persistence_save_identity_mismatch",
+    "snapshot_persistence_load_value_missing",
+    "snapshot_persistence_storage_key_identity_mismatch",
+    "exam_result_history_snapshot_persistence_save_ready",
+    "exam_result_history_snapshot_persistence_load_ready",
+    "exam_result_history_snapshot_persistence_delete_ready",
+    "exam_result_history_snapshot_persistence_save_blocked",
+    "exam_result_history_snapshot_persistence_load_blocked",
+    "exam_result_history_snapshot_persistence_invalid",
+    "issnapshotpersistencecontractonly: true",
+    "canexecutestorage: false",
+    "canwritestorage: false",
+):
+    if required not in persistence_block:
+        fail(
+            "Snapshot-Persistenz-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in persistence_block:
+        fail(
+            "Unzulässiger Inhalt im Snapshot-Persistenzvertrag: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1709,6 +1809,7 @@ print("Snapshot-Wiederaufnahme: nur normalisierte Zustände rekonstruiert")
 print("Snapshot-Erstellung: nur wiederaufnehmbare Zustände datensparsam versioniert")
 print("Snapshot-Serialisierung: kanonisches JSON, Größenlimit und Strukturprüfung")
 print("Snapshot-Deserialisierung: Größe vor Parsing begrenzt und Struktur erneut geprüft")
+print("Snapshot-Persistenzvertrag: Save, Load und Delete sicher vorbereitet")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

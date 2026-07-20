@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29v
+// Stand: v27.29w
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1817,6 +1817,11 @@
       isSnapshotDeserializationMapperPrepared: true,
       canMapSnapshotDeserializationStates: true,
       initialSnapshotDeserializationState: null,
+      snapshotPersistenceContractName:
+        "mapParticipantFullExamResultHistorySnapshotPersistenceContract",
+      isSnapshotPersistenceContractPrepared: true,
+      canMapSnapshotPersistenceIntents: true,
+      initialSnapshotPersistenceState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1926,6 +1931,10 @@
       isDataSourceSnapshotDeserializationMapperPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotDeserializationMapperPrepared === true,
       canMapDataSourceSnapshotDeserializationStates: participantDashboardExamHistoryDataSourceState.canMapSnapshotDeserializationStates === true,
       dataSourceInitialSnapshotDeserializationState: participantDashboardExamHistoryDataSourceState.initialSnapshotDeserializationState,
+      dataSourceSnapshotPersistenceContractName: participantDashboardExamHistoryDataSourceState.snapshotPersistenceContractName,
+      isDataSourceSnapshotPersistenceContractPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceContractPrepared === true,
+      canMapDataSourceSnapshotPersistenceIntents: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceIntents === true,
+      dataSourceInitialSnapshotPersistenceState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3217,6 +3226,324 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotPersistenceContract(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const intent =
+      typeof source.intent === "string"
+        ? source.intent.trim()
+        : "";
+
+    const allowedIntents = [
+      "save",
+      "load",
+      "delete"
+    ];
+
+    const storageNamespace =
+      "accaoui.exam_history.snapshot.v1";
+
+    const storageKeyPrefix =
+      storageNamespace + ":";
+
+    const maximumStorageKeyLength = 128;
+
+    const invalid = (reason) => ({
+      version: "v27.29w",
+      status:
+        "exam_result_history_snapshot_persistence_invalid",
+      intent,
+      isValid: false,
+      isSnapshotPersistenceContractOnly: true,
+      isLiveCall: false,
+      canExecuteStorage: false,
+      canWriteStorage: false,
+      canPrepareSave: false,
+      canPrepareLoad: false,
+      canPrepareDelete: false,
+      storageNamespace,
+      storageKeyPrefix,
+      storageKey: null,
+      requestIdentity: null,
+      serializedByteLength: null,
+      serializedJson: null,
+      deserializationState: null,
+      reason
+    });
+
+    if (!allowedIntents.includes(intent)) {
+      return invalid(
+        "snapshot_persistence_intent_invalid"
+      );
+    }
+
+    const createState = (overrides) => ({
+      version: "v27.29w",
+      status:
+        "exam_result_history_snapshot_persistence_blocked",
+      intent,
+      isValid: true,
+      isSnapshotPersistenceContractOnly: true,
+      isLiveCall: false,
+      canExecuteStorage: false,
+      canWriteStorage: false,
+      canPrepareSave: false,
+      canPrepareLoad: false,
+      canPrepareDelete: false,
+      storageNamespace,
+      storageKeyPrefix,
+      storageKey: null,
+      requestIdentity: null,
+      serializedByteLength: null,
+      serializedJson: null,
+      deserializationState: null,
+      reason: null,
+      ...overrides
+    });
+
+    const parseStorageKey = (storageKey) => {
+      if (
+        typeof storageKey !== "string" ||
+        storageKey.length <= storageKeyPrefix.length ||
+        storageKey.length > maximumStorageKeyLength ||
+        !storageKey.startsWith(storageKeyPrefix)
+      ) {
+        return {
+          isValid: false,
+          reason:
+            "snapshot_persistence_storage_key_invalid"
+        };
+      }
+
+      const requestIdentity =
+        storageKey.slice(storageKeyPrefix.length);
+
+      const identityParts =
+        requestIdentity.split(":");
+
+      if (
+        identityParts.length !== 4 ||
+        identityParts[0] !==
+          "exam_history_request"
+      ) {
+        return {
+          isValid: false,
+          reason:
+            "snapshot_persistence_storage_key_format_invalid"
+        };
+      }
+
+      const identityState =
+        mapParticipantFullExamResultHistoryRequestIdentity({
+          mode: "create",
+          requestSequence:
+            Number(identityParts[1]),
+          request: {
+            limit:
+              Number(identityParts[2]),
+            offset:
+              Number(identityParts[3])
+          }
+        });
+
+      if (
+        !identityState.isValid ||
+        identityState.requestIdentity !==
+          requestIdentity ||
+        storageKeyPrefix +
+          identityState.requestIdentity !==
+          storageKey
+      ) {
+        return {
+          isValid: false,
+          reason:
+            "snapshot_persistence_storage_key_noncanonical"
+        };
+      }
+
+      return {
+        isValid: true,
+        storageKey,
+        requestIdentity:
+          identityState.requestIdentity,
+        reason: null
+      };
+    };
+
+    if (intent === "save") {
+      const serializationState =
+        source.serializationState &&
+        typeof source.serializationState === "object" &&
+        !Array.isArray(source.serializationState)
+          ? source.serializationState
+          : null;
+
+      if (!serializationState) {
+        return invalid(
+          "snapshot_persistence_serialization_state_missing"
+        );
+      }
+
+      if (
+        serializationState.isSnapshotSerializationMapperOnly !==
+          true
+      ) {
+        return invalid(
+          "snapshot_persistence_serialization_state_invalid"
+        );
+      }
+
+      if (
+        !serializationState.isValid ||
+        serializationState.status !==
+          "exam_result_history_snapshot_serialization_ready" ||
+        serializationState.canSerialize !== true ||
+        serializationState.canPersistLater !== true ||
+        serializationState.canWriteStorage !== false ||
+        typeof serializationState.serializedJson !==
+          "string"
+      ) {
+        return createState({
+          status:
+            "exam_result_history_snapshot_persistence_save_blocked",
+          reason:
+            "snapshot_persistence_serialization_state_not_ready"
+        });
+      }
+
+      const deserializationState =
+        mapParticipantFullExamResultHistorySnapshotDeserializationState({
+          serializedJson:
+            serializationState.serializedJson
+        });
+
+      if (
+        !deserializationState.isValid ||
+        deserializationState.canDeserialize !== true ||
+        deserializationState.canResume !== true
+      ) {
+        return invalid(
+          deserializationState.reason ||
+            "snapshot_persistence_save_validation_failed"
+        );
+      }
+
+      if (
+        deserializationState.requestIdentity !==
+          serializationState.requestIdentity ||
+        deserializationState.serializedByteLength !==
+          serializationState.serializedByteLength
+      ) {
+        return invalid(
+          "snapshot_persistence_save_identity_mismatch"
+        );
+      }
+
+      const storageKey =
+        storageKeyPrefix +
+        serializationState.requestIdentity;
+
+      const parsedKey =
+        parseStorageKey(storageKey);
+
+      if (!parsedKey.isValid) {
+        return invalid(parsedKey.reason);
+      }
+
+      return createState({
+        status:
+          "exam_result_history_snapshot_persistence_save_ready",
+        canPrepareSave: true,
+        storageKey:
+          parsedKey.storageKey,
+        requestIdentity:
+          parsedKey.requestIdentity,
+        serializedByteLength:
+          serializationState.serializedByteLength,
+        serializedJson:
+          serializationState.serializedJson
+      });
+    }
+
+    const parsedKey =
+      parseStorageKey(source.storageKey);
+
+    if (!parsedKey.isValid) {
+      return invalid(parsedKey.reason);
+    }
+
+    if (intent === "delete") {
+      return createState({
+        status:
+          "exam_result_history_snapshot_persistence_delete_ready",
+        canPrepareDelete: true,
+        storageKey:
+          parsedKey.storageKey,
+        requestIdentity:
+          parsedKey.requestIdentity
+      });
+    }
+
+    if (
+      typeof source.serializedJson !== "string"
+    ) {
+      return invalid(
+        "snapshot_persistence_load_value_missing"
+      );
+    }
+
+    const deserializationState =
+      mapParticipantFullExamResultHistorySnapshotDeserializationState({
+        serializedJson:
+          source.serializedJson
+      });
+
+    if (
+      !deserializationState.isValid ||
+      deserializationState.canDeserialize !== true ||
+      deserializationState.canResume !== true
+    ) {
+      return invalid(
+        deserializationState.reason ||
+          "snapshot_persistence_load_validation_failed"
+      );
+    }
+
+    if (
+      deserializationState.requestIdentity !==
+      parsedKey.requestIdentity
+    ) {
+      return createState({
+        status:
+          "exam_result_history_snapshot_persistence_load_blocked",
+        storageKey:
+          parsedKey.storageKey,
+        requestIdentity:
+          parsedKey.requestIdentity,
+        reason:
+          "snapshot_persistence_storage_key_identity_mismatch"
+      });
+    }
+
+    return createState({
+      status:
+        "exam_result_history_snapshot_persistence_load_ready",
+      canPrepareLoad: true,
+      storageKey:
+        parsedKey.storageKey,
+      requestIdentity:
+        parsedKey.requestIdentity,
+      serializedByteLength:
+        deserializationState.serializedByteLength,
+      deserializationState
+    });
   }
 
   function mapParticipantFullExamResultHistorySnapshotDeserializationState(input) {
@@ -9102,7 +9429,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29v",
+    version: "v27.29w",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -9173,6 +9500,7 @@
     mapParticipantFullExamResultHistorySnapshotCreationState,
     mapParticipantFullExamResultHistorySnapshotSerializationState,
     mapParticipantFullExamResultHistorySnapshotDeserializationState,
+    mapParticipantFullExamResultHistorySnapshotPersistenceContract,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,

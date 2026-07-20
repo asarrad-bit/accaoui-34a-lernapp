@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29v
+// Stand: v27.29w
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29v",
+  "v27.29w",
   "Adapterversion"
 );
 
@@ -134,6 +134,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotCreationState",
   "mapParticipantFullExamResultHistorySnapshotSerializationState",
   "mapParticipantFullExamResultHistorySnapshotDeserializationState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceContract",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -2669,6 +2670,138 @@ expectEqual(
   "Manipulierte deserialisierte Anfrageidentität"
 );
 
+const persistenceSave =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+    intent: "save",
+    serializationState:
+      serializedPreparedSnapshot,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceSave.status ===
+    "exam_result_history_snapshot_persistence_save_ready" &&
+  persistenceSave.isValid === true &&
+  persistenceSave.canPrepareSave === true &&
+  persistenceSave.canExecuteStorage === false &&
+  persistenceSave.canWriteStorage === false &&
+  persistenceSave.storageKey ===
+    persistenceSave.storageKeyPrefix +
+    serializedPreparedSnapshot.requestIdentity &&
+  persistenceSave.serializedJson ===
+    serializedPreparedSnapshot.serializedJson,
+  "Snapshot-Save-Intent wurde nicht sicher vorbereitet"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceSave,
+    "privateField"
+  ),
+  "Unbekanntes Persistenzfeld wurde übernommen"
+);
+
+const persistenceLoad =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+    intent: "load",
+    storageKey:
+      persistenceSave.storageKey,
+    serializedJson:
+      persistenceSave.serializedJson
+  });
+
+assert(
+  persistenceLoad.status ===
+    "exam_result_history_snapshot_persistence_load_ready" &&
+  persistenceLoad.canPrepareLoad === true &&
+  persistenceLoad.canExecuteStorage === false &&
+  persistenceLoad.requestIdentity ===
+    persistenceSave.requestIdentity &&
+  persistenceLoad.deserializationState.canResume ===
+    true &&
+  persistenceLoad.deserializationState.resumeState.isPrepared ===
+    true,
+  "Snapshot-Load-Intent wurde nicht sicher vorbereitet"
+);
+
+assert(
+  persistenceLoad.serializedJson === null,
+  "Roher Load-Wert wurde im Persistenzstate offengelegt"
+);
+
+const persistenceDelete =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+    intent: "delete",
+    storageKey:
+      persistenceSave.storageKey
+  });
+
+assert(
+  persistenceDelete.status ===
+    "exam_result_history_snapshot_persistence_delete_ready" &&
+  persistenceDelete.canPrepareDelete === true &&
+  persistenceDelete.canExecuteStorage === false &&
+  persistenceDelete.storageKey ===
+    persistenceSave.storageKey,
+  "Snapshot-Delete-Intent wurde nicht sicher vorbereitet"
+);
+
+const persistenceMismatchedLoad =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+    intent: "load",
+    storageKey:
+      persistenceSave.storageKeyPrefix +
+      "exam_history_request:999:20:0",
+    serializedJson:
+      persistenceSave.serializedJson
+  });
+
+expectEqual(
+  persistenceMismatchedLoad.reason,
+  "snapshot_persistence_storage_key_identity_mismatch",
+  "Abweichende Storage-Key-Identität"
+);
+
+const persistenceBlockedSave =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+    intent: "save",
+    serializationState:
+      blockedSnapshotSerialization
+  });
+
+assert(
+  persistenceBlockedSave.status ===
+    "exam_result_history_snapshot_persistence_save_blocked" &&
+  persistenceBlockedSave.canPrepareSave === false &&
+  persistenceBlockedSave.serializedJson === null,
+  "Blockierter Serialisierungsstate wurde zum Speichern vorbereitet"
+);
+
+const persistenceInvalidKey =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+    intent: "delete",
+    storageKey:
+      "falscher-schluessel"
+  });
+
+expectEqual(
+  persistenceInvalidKey.reason,
+  "snapshot_persistence_storage_key_invalid",
+  "Ungültiger Persistenzschlüssel"
+);
+
+const persistenceInvalidIntent =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+    intent: "write"
+  });
+
+expectEqual(
+  persistenceInvalidIntent.reason,
+  "snapshot_persistence_intent_invalid",
+  "Ungültiger Persistenz-Intent"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -2722,6 +2855,9 @@ console.log(
 );
 console.log(
   "Deserialisierungs-Fixtures: gültig, kanonisch, begrenzt, fehlerhaft und manipuliert"
+);
+console.log(
+  "Persistenz-Fixtures: Save, Load, Delete, blockiert und ungültig"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29v
+Stand: v27.29w
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -610,6 +610,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_SNAPSHOT_DESERIALIZATION_TEST.md`
 
+## Snapshot-Persistenzvertrag v27.29w
+
+Für Snapshots existiert jetzt ein sicherer lokaler Vertrag für
+Save-, Load- und Delete-Intents.
+
+Speicherschlüssel werden aus einem festen Namensraum und der
+kanonischen Anfrageidentität gebildet. Save und Load erzwingen
+erneut Serialisierung beziehungsweise Deserialisierung und
+Identitätsgleichheit. Es findet kein echter Storage-Zugriff statt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_SNAPSHOT_PERSISTENCE_CONTRACT_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -700,10 +714,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29v` kann ein sicherer
-lokaler Snapshot-Persistenzvertrag vorbereitet werden, der
-Speicherschlüssel, Save-/Load-/Delete-Intents und Fail-Closed-
-Regeln beschreibt, weiterhin ohne echten Browser-Storage oder UI.
+Nach GitHub-Bestätigung von `v27.29w` kann ein sicherer
+lokaler Persistenz-Adapter-Readiness-State vorbereitet werden,
+der einen später injizierten Storage-Adapter auf getrennte
+Read-/Write-/Delete-Fähigkeiten prüft, ohne ihn aufzurufen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -716,5 +730,6 @@ Anfrage-Identitätsstate, Response-Annahme-Guard,
 Anfrage-Lebenszyklus-State, Lebenszyklus-Übergangs-Guard,
 Anfrage-Controller-State, Controller-Snapshot-Normalizer,
 Snapshot-Wiederaufnahme-State, Snapshot-Erstellungsstate,
-Snapshot-Serialisierungsstate und Snapshot-Deserialisierungsstate
-vorbereitet; keine Live-Ausführung
+Snapshot-Serialisierungsstate, Snapshot-Deserialisierungsstate
+und Snapshot-Persistenzvertrag vorbereitet;
+keine Live-Ausführung
