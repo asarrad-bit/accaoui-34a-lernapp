@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29k
+Stand: v27.29l
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -462,6 +462,19 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DATA_SOURCE_ORCHESTRATOR_TEST.md`
 
+## Navigations-Intent-State v27.29l
+
+Erste, vorherige, nächste und wiederholte Seitenanfragen werden
+jetzt lokal in einen validierten, datensparsamen Request-State
+überführt.
+
+Navigation während des Ladens, Navigation außerhalb verfügbarer
+Seiten und unzulässige Wiederholungen werden sicher blockiert.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_NAVIGATION_INTENT_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -552,14 +565,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29k` kann ein sicherer
-lokaler Navigations-Intent-State für erste, vorherige, nächste
-und wiederholte Anfragen vorbereitet werden, ohne Live-RPC oder UI.
+Nach GitHub-Bestätigung von `v27.29l` kann ein sicherer
+lokaler Anfrage-Identitätsstate vorbereitet werden, der aktuelle
+und veraltete Seitenantworten trennt, ohne Live-RPC oder UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
 Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
 lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung,
 Normalizer, Seitenaggregator, Fixture-Tests, sicherer
-Response-Mapper, Ladezustands-Mapper, Pagination-State und
-Datenquellen-Orchestrator vorbereitet; keine Live-Ausführung
+Response-Mapper, Ladezustands-Mapper, Pagination-State,
+Datenquellen-Orchestrator und Navigations-Intent-State
+vorbereitet; keine Live-Ausführung

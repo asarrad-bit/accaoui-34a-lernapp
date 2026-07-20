@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29k
+// Stand: v27.29l
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1729,6 +1729,20 @@
           limit: rpcState.defaultLimit,
           offset: 0
         }),
+      navigationIntentMapperName:
+        "mapParticipantFullExamResultHistoryNavigationIntent",
+      isNavigationIntentMapperPrepared: true,
+      canMapNavigationIntents: true,
+      initialNavigationIntentState:
+        mapParticipantFullExamResultHistoryNavigationIntent({
+          intent: "first",
+          currentState:
+            orchestrateParticipantFullExamResultHistoryDataSourceState({
+              phase: "prepared",
+              limit: rpcState.defaultLimit,
+              offset: 0
+            })
+        }),
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1794,6 +1808,10 @@
       isDataSourceOrchestratorPrepared: participantDashboardExamHistoryDataSourceState.isDataSourceOrchestratorPrepared === true,
       canOrchestrateDataSourceStates: participantDashboardExamHistoryDataSourceState.canOrchestrateDataSourceStates === true,
       dataSourceInitialOrchestratedState: participantDashboardExamHistoryDataSourceState.initialOrchestratedState,
+      dataSourceNavigationIntentMapperName: participantDashboardExamHistoryDataSourceState.navigationIntentMapperName,
+      isDataSourceNavigationIntentMapperPrepared: participantDashboardExamHistoryDataSourceState.isNavigationIntentMapperPrepared === true,
+      canMapDataSourceNavigationIntents: participantDashboardExamHistoryDataSourceState.canMapNavigationIntents === true,
+      dataSourceInitialNavigationIntentState: participantDashboardExamHistoryDataSourceState.initialNavigationIntentState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -2885,6 +2903,206 @@
       loadState,
       reason: "load_state_unhandled"
     });
+  }
+
+  function mapParticipantFullExamResultHistoryNavigationIntent(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const intent =
+      typeof source.intent === "string"
+        ? source.intent.trim()
+        : "";
+
+    const allowedIntents = [
+      "first",
+      "previous",
+      "next",
+      "retry"
+    ];
+
+    const invalid = (reason) => ({
+      version: "v27.29l",
+      status: "exam_result_history_navigation_intent_invalid",
+      intent,
+      isValid: false,
+      isNavigationIntentMapperOnly: true,
+      isLiveCall: false,
+      canNavigate: false,
+      isRetry: false,
+      isSameRequest: false,
+      sourceStatus: null,
+      request: null,
+      reason
+    });
+
+    if (!allowedIntents.includes(intent)) {
+      return invalid("navigation_intent_invalid");
+    }
+
+    const currentState =
+      source.currentState &&
+      typeof source.currentState === "object" &&
+      !Array.isArray(source.currentState)
+        ? source.currentState
+        : null;
+
+    if (!currentState) {
+      return invalid("current_state_must_be_object");
+    }
+
+    const currentRequest =
+      currentState.request &&
+      typeof currentState.request === "object" &&
+      !Array.isArray(currentState.request)
+        ? currentState.request
+        : null;
+
+    if (!currentRequest) {
+      return invalid("current_request_missing");
+    }
+
+    const normalizedRequest =
+      normalizeParticipantExamResultHistoryPagination({
+        limit: currentRequest.limit,
+        offset: currentRequest.offset
+      });
+
+    if (
+      !normalizedRequest.isValid ||
+      normalizedRequest.offset %
+        normalizedRequest.limit !== 0
+    ) {
+      return invalid("current_request_invalid");
+    }
+
+    const sourceStatus =
+      typeof currentState.status === "string"
+        ? currentState.status
+        : null;
+
+    const createState = (overrides) => ({
+      version: "v27.29l",
+      status: "exam_result_history_navigation_intent_blocked",
+      intent,
+      isValid: true,
+      isNavigationIntentMapperOnly: true,
+      isLiveCall: false,
+      canNavigate: false,
+      isRetry: false,
+      isSameRequest: false,
+      sourceStatus,
+      request: null,
+      reason: null,
+      ...overrides
+    });
+
+    const ready = (targetOffset, overrides = {}) => {
+      const targetRequest =
+        normalizeParticipantExamResultHistoryPagination({
+          limit: normalizedRequest.limit,
+          offset: targetOffset
+        });
+
+      if (
+        !targetRequest.isValid ||
+        targetRequest.offset %
+          targetRequest.limit !== 0
+      ) {
+        return invalid("navigation_target_invalid");
+      }
+
+      return createState({
+        status: "exam_result_history_navigation_intent_ready",
+        canNavigate: true,
+        isSameRequest:
+          targetRequest.offset ===
+          normalizedRequest.offset,
+        request: {
+          limit: targetRequest.limit,
+          offset: targetRequest.offset
+        },
+        ...overrides
+      });
+    };
+
+    if (currentState.isLoading === true) {
+      return createState({
+        reason: "navigation_while_loading"
+      });
+    }
+
+    if (intent === "first") {
+      return ready(0);
+    }
+
+    if (intent === "retry") {
+      if (
+        currentState.hasError !== true ||
+        currentState.canRetry !== true
+      ) {
+        return createState({
+          reason: "retry_not_available"
+        });
+      }
+
+      return ready(
+        normalizedRequest.offset,
+        {
+          isRetry: true
+        }
+      );
+    }
+
+    const paginationState =
+      currentState.paginationState &&
+      typeof currentState.paginationState === "object" &&
+      !Array.isArray(currentState.paginationState)
+        ? currentState.paginationState
+        : null;
+
+    if (
+      !paginationState ||
+      paginationState.isValid !== true
+    ) {
+      return invalid("pagination_state_invalid");
+    }
+
+    if (intent === "previous") {
+      if (
+        paginationState.canGoPrevious !== true ||
+        !Number.isInteger(
+          paginationState.previousOffset
+        )
+      ) {
+        return createState({
+          reason: "previous_page_unavailable"
+        });
+      }
+
+      return ready(
+        paginationState.previousOffset
+      );
+    }
+
+    if (
+      paginationState.canGoNext !== true ||
+      !Number.isInteger(
+        paginationState.nextOffset
+      )
+    ) {
+      return createState({
+        reason: "next_page_unavailable"
+      });
+    }
+
+    return ready(
+      paginationState.nextOffset
+    );
   }
 
   function normalizeParticipantExamResultHistoryPagination(options) {
@@ -6074,7 +6292,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29k",
+    version: "v27.29l",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -6136,6 +6354,7 @@
     mapParticipantFullExamResultHistoryLoadState,
     mapParticipantFullExamResultHistoryPaginationState,
     orchestrateParticipantFullExamResultHistoryDataSourceState,
+    mapParticipantFullExamResultHistoryNavigationIntent,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,

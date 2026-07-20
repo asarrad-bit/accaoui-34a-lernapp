@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29k",
+    "// stand: v27.29l",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -26,6 +26,7 @@ required_markers = (
     'version: "v27.29i"',
     'version: "v27.29j"',
     'version: "v27.29k"',
+    'version: "v27.29l"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -189,6 +190,26 @@ required_markers = (
     "canorchestratedatasourcestates: true",
     "datasourceinitialorchestratedstate:",
     "orchestrateparticipantfullexamresulthistorydatasourcestate,",
+    "function mapparticipantfullexamresulthistorynavigationintent(input)",
+    '"first"',
+    '"previous"',
+    '"next"',
+    '"retry"',
+    '"exam_result_history_navigation_intent_ready"',
+    '"exam_result_history_navigation_intent_blocked"',
+    '"exam_result_history_navigation_intent_invalid"',
+    "isnavigationintentmapperonly: true",
+    "cannavigate: false",
+    "isretry: false",
+    "issamerequest: false",
+    "navigationintentmappername:",
+    "isnavigationintentmapperprepared: true",
+    "canmapnavigationintents: true",
+    "datasourcenavigationintentmappername:",
+    "isdatasourcenavigationintentmapperprepared:",
+    "canmapdatasourcenavigationintents:",
+    "datasourceinitialnavigationintentstate:",
+    "mapparticipantfullexamresulthistorynavigationintent,",
 )
 
 for marker in required_markers:
@@ -588,6 +609,76 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryNavigationIntent(input)"
+) != 1:
+    fail(
+        "Navigations-Intent-Mapper muss genau einmal "
+        "vorhanden sein."
+    )
+
+navigation_start = lower.index(
+    "function mapparticipantfullexamresulthistorynavigationintent(input)"
+)
+navigation_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    navigation_start,
+)
+navigation_block = lower[
+    navigation_start:navigation_end
+]
+
+for required in (
+    'allowedintents = [',
+    '"first"',
+    '"previous"',
+    '"next"',
+    '"retry"',
+    "normalizeparticipantexamresulthistorypagination({",
+    "navigation_intent_invalid",
+    "current_state_must_be_object",
+    "current_request_missing",
+    "current_request_invalid",
+    "navigation_target_invalid",
+    "navigation_while_loading",
+    "retry_not_available",
+    "previous_page_unavailable",
+    "next_page_unavailable",
+    "pagination_state_invalid",
+    "exam_result_history_navigation_intent_ready",
+    "exam_result_history_navigation_intent_blocked",
+    "exam_result_history_navigation_intent_invalid",
+    "paginationstate.previousoffset",
+    "paginationstate.nextoffset",
+    "isnavigationintentmapperonly: true",
+    "islivecall: false",
+):
+    if required not in navigation_block:
+        fail(
+            "Navigations-Intent-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.error",
+    "currentstate.error",
+    "...source",
+    "...input",
+):
+    if forbidden in navigation_block:
+        fail(
+            "Unzulässiger Inhalt im Navigations-Intent-State: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -653,6 +744,7 @@ print("Response-Mapper: Erfolg, leer, ungültig und Fehler sicher getrennt")
 print("Ladezustands-Mapper: vorbereitet, lädt, Erfolg, leer und Fehler")
 print("Pagination-Navigationsstate: erste, mittlere, letzte und unbekannte Seite")
 print("Datenquellen-Orchestrator: Ladezustand, Response und Pagination sicher verbunden")
+print("Navigations-Intent-State: erste, vorherige, nächste und Retry-Anfrage")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

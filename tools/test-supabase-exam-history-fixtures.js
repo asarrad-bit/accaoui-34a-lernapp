@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29k
+// Stand: v27.29l
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29k",
+  "v27.29l",
   "Adapterversion"
 );
 
@@ -124,7 +124,8 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryResponse",
   "mapParticipantFullExamResultHistoryLoadState",
   "mapParticipantFullExamResultHistoryPaginationState",
-  "orchestrateParticipantFullExamResultHistoryDataSourceState"
+  "orchestrateParticipantFullExamResultHistoryDataSourceState",
+  "mapParticipantFullExamResultHistoryNavigationIntent"
 ]) {
   assert(
     typeof adapter[functionName] === "function",
@@ -996,6 +997,160 @@ assert(
   "Abgelehnter Datenquellenzustand enthält unsichere Fehlerdetails"
 );
 
+const orchestratedMiddle =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "resolved",
+    limit: 20,
+    offset: 20,
+    response: {
+      data: [
+        {
+          ...firstRow,
+          total_count: 45
+        },
+        {
+          ...secondRow,
+          total_count: 45
+        }
+      ],
+      error: null
+    }
+  });
+
+const firstIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "first",
+    currentState: orchestratedMiddle
+  });
+
+assert(
+  firstIntent.status ===
+    "exam_result_history_navigation_intent_ready" &&
+  firstIntent.canNavigate === true &&
+  firstIntent.request.limit === 20 &&
+  firstIntent.request.offset === 0,
+  "Navigation zur ersten Seite ist unstabil"
+);
+
+const previousIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "previous",
+    currentState: orchestratedMiddle
+  });
+
+assert(
+  previousIntent.canNavigate === true &&
+  previousIntent.request.offset === 0,
+  "Navigation zur vorherigen Seite ist unstabil"
+);
+
+const nextIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "next",
+    currentState: orchestratedSuccess
+  });
+
+assert(
+  nextIntent.canNavigate === true &&
+  nextIntent.request.limit === 20 &&
+  nextIntent.request.offset === 20,
+  "Navigation zur nächsten Seite ist unstabil"
+);
+
+const orchestratedLast =
+  adapter.orchestrateParticipantFullExamResultHistoryDataSourceState({
+    phase: "resolved",
+    limit: 20,
+    offset: 20,
+    response: {
+      data: [
+        {
+          ...firstRow,
+          total_count: 22
+        },
+        {
+          ...secondRow,
+          total_count: 22
+        }
+      ],
+      error: null
+    }
+  });
+
+const blockedNextIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "next",
+    currentState: orchestratedLast
+  });
+
+assert(
+  blockedNextIntent.canNavigate === false &&
+  blockedNextIntent.reason ===
+    "next_page_unavailable",
+  "Navigation hinter die letzte Seite wurde nicht blockiert"
+);
+
+const retryIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "retry",
+    currentState: orchestratedRejected
+  });
+
+assert(
+  retryIntent.canNavigate === true &&
+  retryIntent.isRetry === true &&
+  retryIntent.request.offset === 0,
+  "Wiederholungsanfrage ist unstabil"
+);
+
+const blockedRetryIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "retry",
+    currentState: orchestratedSuccess
+  });
+
+expectEqual(
+  blockedRetryIntent.reason,
+  "retry_not_available",
+  "Unzulässige Wiederholungsanfrage"
+);
+
+const blockedLoadingIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "next",
+    currentState: orchestratedLoading
+  });
+
+expectEqual(
+  blockedLoadingIntent.reason,
+  "navigation_while_loading",
+  "Navigation während des Ladens"
+);
+
+const invalidNavigationIntent =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "unknown",
+    currentState: orchestratedSuccess
+  });
+
+assert(
+  invalidNavigationIntent.isValid === false &&
+  invalidNavigationIntent.reason ===
+    "navigation_intent_invalid",
+  "Ungültiger Navigations-Intent wurde nicht verworfen"
+);
+
+const missingNavigationState =
+  adapter.mapParticipantFullExamResultHistoryNavigationIntent({
+    intent: "first"
+  });
+
+expectEqual(
+  missingNavigationState.reason,
+  "current_state_must_be_object",
+  "Fehlender Navigations-Ausgangszustand"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -1016,6 +1171,9 @@ console.log(
 );
 console.log(
   "Orchestrator-Fixtures: vorbereitet, lädt, Erfolg, leer und Fehler"
+);
+console.log(
+  "Navigations-Fixtures: erste, vorherige, nächste, blockiert und Retry"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
