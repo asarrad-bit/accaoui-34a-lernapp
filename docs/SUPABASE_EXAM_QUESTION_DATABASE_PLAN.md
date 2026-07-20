@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29m
+Stand: v27.29n
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -488,6 +488,19 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_REQUEST_IDENTITY_TEST.md`
 
+## Response-Annahme-Guard v27.29n
+
+Eintreffende Seitenantworten werden jetzt zuerst gegen die
+Identität der aktiven Anfrage geprüft.
+
+Nur exakt passende Antworten werden an den sicheren
+Datenquellen-Orchestrator übergeben. Veraltete Antworten werden
+vor dem Lesen des Response-Inhalts ignoriert.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_RESPONSE_ACCEPTANCE_GUARD_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -578,9 +591,9 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29m` kann ein sicherer
-lokaler Response-Annahme-Guard vorbereitet werden, der nur
-Antworten der aktiven Anfrage verarbeitet, ohne Live-RPC oder UI.
+Nach GitHub-Bestätigung von `v27.29n` kann ein sicherer
+lokaler Anfrage-Lebenszyklus-State für vorbereitet, ausstehend,
+abgeschlossen und verworfen ergänzt werden, ohne Live-RPC oder UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -588,5 +601,6 @@ Mitarbeiter-Rollentrennung, sichere Prüfungsergebnisliste,
 lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung,
 Normalizer, Seitenaggregator, Fixture-Tests, sicherer
 Response-Mapper, Ladezustands-Mapper, Pagination-State,
-Datenquellen-Orchestrator, Navigations-Intent-State und
-Anfrage-Identitätsstate vorbereitet; keine Live-Ausführung
+Datenquellen-Orchestrator, Navigations-Intent-State,
+Anfrage-Identitätsstate und Response-Annahme-Guard vorbereitet;
+keine Live-Ausführung

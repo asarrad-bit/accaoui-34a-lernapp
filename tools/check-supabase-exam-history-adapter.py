@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29m",
+    "// stand: v27.29n",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -28,6 +28,7 @@ required_markers = (
     'version: "v27.29k"',
     'version: "v27.29l"',
     'version: "v27.29m"',
+    'version: "v27.29n"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -230,6 +231,24 @@ required_markers = (
     "canmapdatasourcerequestidentities:",
     "datasourceinitialrequestidentitystate:",
     "mapparticipantfullexamresulthistoryrequestidentity,",
+    "function guardparticipantfullexamresulthistoryresponseacceptance(input)",
+    '"exam_result_history_response_acceptance_invalid"',
+    '"exam_result_history_response_acceptance_stale_ignored"',
+    '"exam_result_history_response_acceptance_accepted"',
+    '"exam_result_history_response_acceptance_accepted_empty"',
+    '"exam_result_history_response_acceptance_error"',
+    "isresponseacceptanceguardonly: true",
+    "canacceptresponse: false",
+    "didacceptresponse: false",
+    "shouldignoreresponse: false",
+    "responseacceptanceguardname:",
+    "isresponseacceptanceguardprepared: true",
+    "canguardresponseacceptance: true",
+    "datasourceresponseacceptanceguardname:",
+    "isdatasourceresponseacceptanceguardprepared:",
+    "canguarddatasourceresponseacceptance:",
+    "datasourceinitialresponseacceptancestate:",
+    "guardparticipantfullexamresulthistoryresponseacceptance,",
 )
 
 for marker in required_markers:
@@ -777,6 +796,95 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistoryResponseAcceptance(input)"
+) != 1:
+    fail(
+        "Response-Annahme-Guard muss genau einmal "
+        "vorhanden sein."
+    )
+
+guard_start = lower.index(
+    "function guardparticipantfullexamresulthistoryresponseacceptance(input)"
+)
+guard_end = lower.index(
+    "function mapparticipantfullexamresulthistoryrequestidentity(input)",
+    guard_start,
+)
+guard_block = lower[
+    guard_start:guard_end
+]
+
+for required in (
+    "mapparticipantfullexamresulthistoryrequestidentity({",
+    'mode: "compare"',
+    "orchestrateparticipantfullexamresulthistorydatasourcestate({",
+    'phase: "resolved"',
+    "response: source.response",
+    "identitystate.isstaleresponse",
+    "identitystate.canapplyresponse !== true",
+    "identitystate.iscurrentresponse !== true",
+    "datasourcestate.haserror",
+    "datasourcestate.isempty",
+    "datasourcestate.issuccess",
+    "datasourcestate.hasdata",
+    "stale_response_ignored",
+    "response_identity_not_applicable",
+    "data_source_state_not_acceptable",
+    "exam_result_history_response_acceptance_invalid",
+    "exam_result_history_response_acceptance_stale_ignored",
+    "exam_result_history_response_acceptance_accepted",
+    "exam_result_history_response_acceptance_accepted_empty",
+    "exam_result_history_response_acceptance_error",
+    "isresponseacceptanceguardonly: true",
+    "islivecall: false",
+    "canacceptresponse: true",
+    "didacceptresponse: true",
+):
+    if required not in guard_block:
+        fail(
+            "Response-Annahme-Guard-Anweisung fehlt: "
+            f"{required}"
+        )
+
+stale_position = guard_block.index(
+    "if (identitystate.isstaleresponse)"
+)
+response_read_position = guard_block.index(
+    "response: source.response"
+)
+
+if stale_position > response_read_position:
+    fail(
+        "Veraltete Antwort wird vor der Sperrprüfung gelesen."
+    )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response.error",
+    "source.response.message",
+    "source.response.details",
+    "source.response.hint",
+    "response.error.message",
+    "response.error.details",
+    "response.error.hint",
+    "...source",
+    "...input",
+    "...response",
+):
+    if forbidden in guard_block:
+        fail(
+            "Unzulässiger Inhalt im Response-Annahme-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -844,6 +952,7 @@ print("Pagination-Navigationsstate: erste, mittlere, letzte und unbekannte Seite
 print("Datenquellen-Orchestrator: Ladezustand, Response und Pagination sicher verbunden")
 print("Navigations-Intent-State: erste, vorherige, nächste und Retry-Anfrage")
 print("Anfrage-Identitätsstate: aktuelle und veraltete Antworten getrennt")
+print("Response-Annahme-Guard: nur aktive Anfrageantworten werden verarbeitet")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

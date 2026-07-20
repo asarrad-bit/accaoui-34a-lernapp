@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29m
+// Stand: v27.29n
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1756,6 +1756,11 @@
             offset: 0
           }
         }),
+      responseAcceptanceGuardName:
+        "guardParticipantFullExamResultHistoryResponseAcceptance",
+      isResponseAcceptanceGuardPrepared: true,
+      canGuardResponseAcceptance: true,
+      initialResponseAcceptanceState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1829,6 +1834,10 @@
       isDataSourceRequestIdentityMapperPrepared: participantDashboardExamHistoryDataSourceState.isRequestIdentityMapperPrepared === true,
       canMapDataSourceRequestIdentities: participantDashboardExamHistoryDataSourceState.canMapRequestIdentities === true,
       dataSourceInitialRequestIdentityState: participantDashboardExamHistoryDataSourceState.initialRequestIdentityState,
+      dataSourceResponseAcceptanceGuardName: participantDashboardExamHistoryDataSourceState.responseAcceptanceGuardName,
+      isDataSourceResponseAcceptanceGuardPrepared: participantDashboardExamHistoryDataSourceState.isResponseAcceptanceGuardPrepared === true,
+      canGuardDataSourceResponseAcceptance: participantDashboardExamHistoryDataSourceState.canGuardResponseAcceptance === true,
+      dataSourceInitialResponseAcceptanceState: participantDashboardExamHistoryDataSourceState.initialResponseAcceptanceState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3120,6 +3129,150 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function guardParticipantFullExamResultHistoryResponseAcceptance(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const identityState =
+      mapParticipantFullExamResultHistoryRequestIdentity({
+        mode: "compare",
+        requestSequence: source.requestSequence,
+        request: source.request,
+        responseIdentity: source.responseIdentity
+      });
+
+    const createState = (overrides) => ({
+      version: "v27.29n",
+      status: "exam_result_history_response_acceptance_invalid",
+      isValid: false,
+      isResponseAcceptanceGuardOnly: true,
+      isLiveCall: false,
+      canAcceptResponse: false,
+      didAcceptResponse: false,
+      shouldIgnoreResponse: false,
+      hasError: false,
+      canRetry: false,
+      request: identityState.request,
+      requestIdentity:
+        identityState.requestIdentity,
+      responseIdentity:
+        identityState.responseIdentity,
+      identityStatus: identityState.status,
+      dataSourceStatus: null,
+      results: [],
+      totalCount: null,
+      pageMetrics: null,
+      paginationState: null,
+      reason: null,
+      ...overrides
+    });
+
+    if (!identityState.isValid) {
+      return createState({
+        reason: identityState.reason
+      });
+    }
+
+    if (identityState.isStaleResponse) {
+      return createState({
+        status:
+          "exam_result_history_response_acceptance_stale_ignored",
+        isValid: true,
+        shouldIgnoreResponse: true,
+        reason:
+          "stale_response_ignored"
+      });
+    }
+
+    if (
+      identityState.canApplyResponse !== true ||
+      identityState.isCurrentResponse !== true
+    ) {
+      return createState({
+        reason:
+          "response_identity_not_applicable"
+      });
+    }
+
+    const dataSourceState =
+      orchestrateParticipantFullExamResultHistoryDataSourceState({
+        phase: "resolved",
+        limit: identityState.request.limit,
+        offset: identityState.request.offset,
+        response: source.response
+      });
+
+    if (dataSourceState.hasError) {
+      return createState({
+        status:
+          "exam_result_history_response_acceptance_error",
+        hasError: true,
+        canRetry: dataSourceState.canRetry,
+        dataSourceStatus:
+          dataSourceState.status,
+        reason:
+          dataSourceState.reason
+      });
+    }
+
+    if (dataSourceState.isEmpty) {
+      return createState({
+        status:
+          "exam_result_history_response_acceptance_accepted_empty",
+        isValid: true,
+        canAcceptResponse: true,
+        didAcceptResponse: true,
+        dataSourceStatus:
+          dataSourceState.status,
+        results: [],
+        totalCount:
+          dataSourceState.totalCount,
+        pageMetrics:
+          dataSourceState.pageMetrics,
+        paginationState:
+          dataSourceState.paginationState
+      });
+    }
+
+    if (
+      dataSourceState.isSuccess &&
+      dataSourceState.hasData
+    ) {
+      return createState({
+        status:
+          "exam_result_history_response_acceptance_accepted",
+        isValid: true,
+        canAcceptResponse: true,
+        didAcceptResponse: true,
+        dataSourceStatus:
+          dataSourceState.status,
+        results:
+          dataSourceState.results,
+        totalCount:
+          dataSourceState.totalCount,
+        pageMetrics:
+          dataSourceState.pageMetrics,
+        paginationState:
+          dataSourceState.paginationState
+      });
+    }
+
+    return createState({
+      status:
+        "exam_result_history_response_acceptance_error",
+      hasError: true,
+      canRetry: false,
+      dataSourceStatus:
+        dataSourceState.status,
+      reason:
+        "data_source_state_not_acceptable"
+    });
   }
 
   function mapParticipantFullExamResultHistoryRequestIdentity(input) {
@@ -6521,7 +6674,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29m",
+    version: "v27.29n",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -6585,6 +6738,7 @@
     orchestrateParticipantFullExamResultHistoryDataSourceState,
     mapParticipantFullExamResultHistoryNavigationIntent,
     mapParticipantFullExamResultHistoryRequestIdentity,
+    guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,

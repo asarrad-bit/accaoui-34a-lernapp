@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29m
+// Stand: v27.29n
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29m",
+  "v27.29n",
   "Adapterversion"
 );
 
@@ -126,7 +126,8 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryPaginationState",
   "orchestrateParticipantFullExamResultHistoryDataSourceState",
   "mapParticipantFullExamResultHistoryNavigationIntent",
-  "mapParticipantFullExamResultHistoryRequestIdentity"
+  "mapParticipantFullExamResultHistoryRequestIdentity",
+  "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
   assert(
     typeof adapter[functionName] === "function",
@@ -1309,6 +1310,189 @@ expectEqual(
   "Ungültiges Response-Identitätsformat"
 );
 
+const acceptedResponseGuard =
+  adapter.guardParticipantFullExamResultHistoryResponseAcceptance({
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      activeRequestIdentity.requestIdentity,
+    response: {
+      data: [
+        {
+          ...firstRow,
+          total_count: 45
+        },
+        {
+          ...secondRow,
+          total_count: 45
+        }
+      ],
+      error: null
+    }
+  });
+
+assert(
+  acceptedResponseGuard.status ===
+    "exam_result_history_response_acceptance_accepted" &&
+  acceptedResponseGuard.isValid === true &&
+  acceptedResponseGuard.canAcceptResponse === true &&
+  acceptedResponseGuard.didAcceptResponse === true &&
+  acceptedResponseGuard.results.length === 2 &&
+  acceptedResponseGuard.totalCount === 45,
+  "Aktuelle Seitenantwort wurde nicht angenommen"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    acceptedResponseGuard,
+    "response"
+  ),
+  "Rohe RPC-Antwort wurde vom Annahme-Guard übernommen"
+);
+
+let staleResponseWasRead = false;
+
+const staleGuardInput = {
+  requestSequence: 7,
+  request: {
+    limit: 20,
+    offset: 20
+  },
+  responseIdentity:
+    "exam_history_request:6:20:20"
+};
+
+Object.defineProperty(
+  staleGuardInput,
+  "response",
+  {
+    enumerable: true,
+    get() {
+      staleResponseWasRead = true;
+      throw new Error(
+        "Veraltete Antwort darf nicht gelesen werden."
+      );
+    }
+  }
+);
+
+const staleResponseGuard =
+  adapter.guardParticipantFullExamResultHistoryResponseAcceptance(
+    staleGuardInput
+  );
+
+assert(
+  staleResponseGuard.status ===
+    "exam_result_history_response_acceptance_stale_ignored" &&
+  staleResponseGuard.shouldIgnoreResponse === true &&
+  staleResponseGuard.didAcceptResponse === false &&
+  staleResponseWasRead === false,
+  "Veraltete Seitenantwort wurde nicht vor dem Lesen ignoriert"
+);
+
+const emptyResponseGuard =
+  adapter.guardParticipantFullExamResultHistoryResponseAcceptance({
+    requestSequence: 8,
+    request: {
+      limit: 20,
+      offset: 0
+    },
+    responseIdentity:
+      "exam_history_request:8:20:0",
+    response: {
+      data: [],
+      error: null
+    }
+  });
+
+assert(
+  emptyResponseGuard.status ===
+    "exam_result_history_response_acceptance_accepted_empty" &&
+  emptyResponseGuard.didAcceptResponse === true &&
+  emptyResponseGuard.totalCount === 0 &&
+  emptyResponseGuard.results.length === 0,
+  "Aktuelle leere Antwort wurde nicht sicher angenommen"
+);
+
+const erroredResponseGuard =
+  adapter.guardParticipantFullExamResultHistoryResponseAcceptance({
+    requestSequence: 9,
+    request: {
+      limit: 20,
+      offset: 0
+    },
+    responseIdentity:
+      "exam_history_request:9:20:0",
+    response: {
+      data: null,
+      error: {
+        message: "sensitive database message",
+        details: "sensitive database details",
+        hint: "sensitive database hint"
+      }
+    }
+  });
+
+assert(
+  erroredResponseGuard.status ===
+    "exam_result_history_response_acceptance_error" &&
+  erroredResponseGuard.hasError === true &&
+  erroredResponseGuard.reason ===
+    "rpc_response_error" &&
+  !JSON.stringify(erroredResponseGuard).includes("sensitive"),
+  "RPC-Fehler wurde vom Annahme-Guard nicht sicher reduziert"
+);
+
+const invalidIdentityGuard =
+  adapter.guardParticipantFullExamResultHistoryResponseAcceptance({
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      "falsches-format",
+    response: {
+      data: [firstRow],
+      error: null
+    }
+  });
+
+assert(
+  invalidIdentityGuard.status ===
+    "exam_result_history_response_acceptance_invalid" &&
+  invalidIdentityGuard.didAcceptResponse === false &&
+  invalidIdentityGuard.reason ===
+    "response_identity_format_invalid",
+  "Ungültige Antwortidentität wurde nicht verworfen"
+);
+
+const staleEmptyPageGuard =
+  adapter.guardParticipantFullExamResultHistoryResponseAcceptance({
+    requestSequence: 10,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    responseIdentity:
+      "exam_history_request:10:20:20",
+    response: {
+      data: [],
+      error: null
+    }
+  });
+
+assert(
+  staleEmptyPageGuard.status ===
+    "exam_result_history_response_acceptance_error" &&
+  staleEmptyPageGuard.reason ===
+    "empty_page_after_nonzero_offset",
+  "Leere aktive Folgeseite wurde nicht sicher behandelt"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -1335,6 +1519,9 @@ console.log(
 );
 console.log(
   "Identitäts-Fixtures: aktiv, aktuell, veraltet und ungültig"
+);
+console.log(
+  "Annahme-Guard-Fixtures: aktuell, leer, veraltet, ungültig und Fehler"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
