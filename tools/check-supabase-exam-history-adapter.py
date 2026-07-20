@@ -17,12 +17,13 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29h",
+    "// stand: v27.29i",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
     'version: "v27.29e"',
     'version: "v27.29h"',
+    'version: "v27.29i"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -132,6 +133,25 @@ required_markers = (
     "isdatasourceresponsemapperprepared:",
     "canmapdatasourceresponses:",
     "mapparticipantfullexamresulthistoryresponse,",
+    "function mapparticipantfullexamresulthistoryloadstate(input)",
+    '"exam_result_history_load_prepared"',
+    '"exam_result_history_load_loading"',
+    '"exam_result_history_load_success"',
+    '"exam_result_history_load_empty"',
+    '"exam_result_history_load_error"',
+    "isloadstatemapperonly: true",
+    "isloading: false",
+    "issuccess: false",
+    "haserror: false",
+    "canretry: false",
+    'loadstatemappername: "mapparticipantfullexamresulthistoryloadstate"',
+    "isloadstatemapperprepared: true",
+    "canmaploadstates: true",
+    "datasourceloadstatemappername:",
+    "isdatasourceloadstatemapperprepared:",
+    "canmapdatasourceloadstates:",
+    "datasourceinitialloadstate:",
+    "mapparticipantfullexamresulthistoryloadstate,",
 )
 
 for marker in required_markers:
@@ -334,6 +354,71 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryLoadState(input)"
+) != 1:
+    fail(
+        "Ergebnislisten-Ladezustands-Mapper muss genau einmal "
+        "vorhanden sein."
+    )
+
+load_mapper_start = lower.index(
+    "function mapparticipantfullexamresulthistoryloadstate(input)"
+)
+load_mapper_end = lower.index(
+    "function normalizeparticipantexamresulthistorypagination(options)",
+    load_mapper_start,
+)
+load_mapper_block = lower[
+    load_mapper_start:load_mapper_end
+]
+
+for required in (
+    'phase === "prepared"',
+    'phase === "loading"',
+    'phase === "resolved"',
+    'phase === "rejected"',
+    "mapparticipantfullexamresulthistoryresponse(",
+    "exam_result_history_load_prepared",
+    "exam_result_history_load_loading",
+    "exam_result_history_load_success",
+    "exam_result_history_load_empty",
+    "exam_result_history_load_error",
+    "rpc_request_failed",
+    "load_phase_invalid",
+    "isloadstatemapperonly: true",
+    "islivecall: false",
+    "results: mappedresponse.results",
+    "totalcount: mappedresponse.totalcount",
+    "pagemetrics: mappedresponse.pagemetrics",
+):
+    if required not in load_mapper_block:
+        fail(
+            "Ladezustands-Mapper-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.error.message",
+    "source.error.details",
+    "source.error.hint",
+    "...source",
+    "...input",
+):
+    if forbidden in load_mapper_block:
+        fail(
+            "Unzulässiger Inhalt im Ladezustands-Mapper: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -396,6 +481,7 @@ print("Ergebniszeilen-Normalizer: 120/60-, UUID- und Zeitprüfung")
 print("Ergebnislisten-Normalizer: Duplikate und total_count geprüft")
 print("Ergebnislisten-Aggregator: sichere Seitenkennzahlen")
 print("Response-Mapper: Erfolg, leer, ungültig und Fehler sicher getrennt")
+print("Ladezustands-Mapper: vorbereitet, lädt, Erfolg, leer und Fehler")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

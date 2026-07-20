@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29h
+// Stand: v27.29i
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29h",
+  "v27.29i",
   "Adapterversion"
 );
 
@@ -121,7 +121,8 @@ for (const functionName of [
   "normalizeParticipantFullExamResultRow",
   "normalizeParticipantFullExamResultRows",
   "aggregateParticipantFullExamResultRows",
-  "mapParticipantFullExamResultHistoryResponse"
+  "mapParticipantFullExamResultHistoryResponse",
+  "mapParticipantFullExamResultHistoryLoadState"
 ]) {
   assert(
     typeof adapter[functionName] === "function",
@@ -545,6 +546,142 @@ expectEqual(
   "Ungültige RPC-Antwortstruktur"
 );
 
+const loadPrepared =
+  adapter.mapParticipantFullExamResultHistoryLoadState({
+    phase: "prepared"
+  });
+
+expectEqual(
+  loadPrepared.status,
+  "exam_result_history_load_prepared",
+  "Vorbereiteter Ladezustand"
+);
+
+assert(
+  loadPrepared.isPrepared === true &&
+  loadPrepared.isLoading === false &&
+  loadPrepared.hasError === false,
+  "Vorbereiteter Ladezustand ist unstabil"
+);
+
+const loadLoading =
+  adapter.mapParticipantFullExamResultHistoryLoadState({
+    phase: "loading"
+  });
+
+assert(
+  loadLoading.status ===
+    "exam_result_history_load_loading" &&
+  loadLoading.isLoading === true &&
+  loadLoading.results.length === 0,
+  "Aktiver Ladezustand ist unstabil"
+);
+
+const loadSuccess =
+  adapter.mapParticipantFullExamResultHistoryLoadState({
+    phase: "resolved",
+    response: {
+      data: [firstRow, secondRow],
+      error: null
+    }
+  });
+
+assert(
+  loadSuccess.status ===
+    "exam_result_history_load_success" &&
+  loadSuccess.isSuccess === true &&
+  loadSuccess.results.length === 2 &&
+  loadSuccess.totalCount === 2,
+  "Erfolgreicher Ladezustand ist unstabil"
+);
+
+expectEqual(
+  loadSuccess.pageMetrics.pageAverageScore,
+  60,
+  "Ladezustands-Seitendurchschnitt"
+);
+
+const loadEmpty =
+  adapter.mapParticipantFullExamResultHistoryLoadState({
+    phase: "resolved",
+    response: {
+      data: [],
+      error: null
+    }
+  });
+
+assert(
+  loadEmpty.status ===
+    "exam_result_history_load_empty" &&
+  loadEmpty.isSuccess === true &&
+  loadEmpty.isEmpty === true &&
+  loadEmpty.results.length === 0,
+  "Leerer Ladezustand ist unstabil"
+);
+
+const loadInvalidResponse =
+  adapter.mapParticipantFullExamResultHistoryLoadState({
+    phase: "resolved",
+    response: {
+      data: [
+        makeRow({
+          passed: false
+        })
+      ],
+      error: null
+    }
+  });
+
+assert(
+  loadInvalidResponse.status ===
+    "exam_result_history_load_error" &&
+  loadInvalidResponse.hasError === true &&
+  loadInvalidResponse.canRetry === true &&
+  loadInvalidResponse.reason ===
+    "passed_status_invalid" &&
+  loadInvalidResponse.invalidIndex === 0,
+  "Ungültige Ergebnisdaten wurden nicht sicher gemappt"
+);
+
+const loadRejected =
+  adapter.mapParticipantFullExamResultHistoryLoadState({
+    phase: "rejected",
+    error: {
+      message: "sensitive request message",
+      details: "sensitive request details"
+    }
+  });
+
+assert(
+  loadRejected.status ===
+    "exam_result_history_load_error" &&
+  loadRejected.hasError === true &&
+  loadRejected.canRetry === true &&
+  loadRejected.reason ===
+    "rpc_request_failed",
+  "Abgelehnter Ladezustand ist unstabil"
+);
+
+assert(
+  !JSON.stringify(loadRejected).includes("sensitive"),
+  "Rohe Ladefehlerdetails wurden offengelegt"
+);
+
+const loadInvalidPhase =
+  adapter.mapParticipantFullExamResultHistoryLoadState({
+    phase: "unknown"
+  });
+
+assert(
+  loadInvalidPhase.status ===
+    "exam_result_history_load_error" &&
+  loadInvalidPhase.hasError === true &&
+  loadInvalidPhase.canRetry === false &&
+  loadInvalidPhase.reason ===
+    "load_phase_invalid",
+  "Ungültige Ladephase wurde nicht geschlossen verworfen"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -556,6 +693,9 @@ console.log(
 );
 console.log(
   "Response-Mapper-Fixtures: Erfolg, leer, ungültig und RPC-Fehler"
+);
+console.log(
+  "Ladezustands-Fixtures: vorbereitet, lädt, Erfolg, leer und Fehler"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29h
+// Stand: v27.29i
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1701,6 +1701,13 @@
       responseMapperName: "mapParticipantFullExamResultHistoryResponse",
       isResponseMapperPrepared: true,
       canMapResponses: true,
+      loadStateMapperName: "mapParticipantFullExamResultHistoryLoadState",
+      isLoadStateMapperPrepared: true,
+      canMapLoadStates: true,
+      initialLoadState:
+        mapParticipantFullExamResultHistoryLoadState({
+          phase: "prepared"
+        }),
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1754,6 +1761,10 @@
       dataSourceResponseMapperName: participantDashboardExamHistoryDataSourceState.responseMapperName,
       isDataSourceResponseMapperPrepared: participantDashboardExamHistoryDataSourceState.isResponseMapperPrepared === true,
       canMapDataSourceResponses: participantDashboardExamHistoryDataSourceState.canMapResponses === true,
+      dataSourceLoadStateMapperName: participantDashboardExamHistoryDataSourceState.loadStateMapperName,
+      isDataSourceLoadStateMapperPrepared: participantDashboardExamHistoryDataSourceState.isLoadStateMapperPrepared === true,
+      canMapDataSourceLoadStates: participantDashboardExamHistoryDataSourceState.canMapLoadStates === true,
+      dataSourceInitialLoadState: participantDashboardExamHistoryDataSourceState.initialLoadState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -2310,6 +2321,117 @@
       invalidIndex: null,
       reason: null
     };
+  }
+
+  function mapParticipantFullExamResultHistoryLoadState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const phase =
+      typeof source.phase === "string"
+        ? source.phase.trim()
+        : "prepared";
+
+    const createState = (overrides) => ({
+      version: "v27.29i",
+      status: "exam_result_history_load_prepared",
+      phase,
+      isLoadStateMapperOnly: true,
+      isLiveCall: false,
+      isPrepared: true,
+      isLoading: false,
+      isSuccess: false,
+      isEmpty: false,
+      hasError: false,
+      canRetry: false,
+      results: [],
+      totalCount: null,
+      pageMetrics: null,
+      mappedResponseStatus: null,
+      invalidIndex: null,
+      reason: null,
+      ...overrides
+    });
+
+    if (phase === "prepared") {
+      return createState({
+        status: "exam_result_history_load_prepared"
+      });
+    }
+
+    if (phase === "loading") {
+      return createState({
+        status: "exam_result_history_load_loading",
+        isLoading: true
+      });
+    }
+
+    if (phase === "resolved") {
+      const mappedResponse =
+        mapParticipantFullExamResultHistoryResponse(
+          source.response
+        );
+
+      if (
+        mappedResponse.ok === true &&
+        mappedResponse.isEmpty === true
+      ) {
+        return createState({
+          status: "exam_result_history_load_empty",
+          isSuccess: true,
+          isEmpty: true,
+          results: [],
+          totalCount: mappedResponse.totalCount,
+          pageMetrics: mappedResponse.pageMetrics,
+          mappedResponseStatus:
+            mappedResponse.status
+        });
+      }
+
+      if (mappedResponse.ok === true) {
+        return createState({
+          status: "exam_result_history_load_success",
+          isSuccess: true,
+          results: mappedResponse.results,
+          totalCount: mappedResponse.totalCount,
+          pageMetrics: mappedResponse.pageMetrics,
+          mappedResponseStatus:
+            mappedResponse.status
+        });
+      }
+
+      return createState({
+        status: "exam_result_history_load_error",
+        hasError: true,
+        canRetry: true,
+        mappedResponseStatus:
+          mappedResponse.status,
+        invalidIndex:
+          mappedResponse.invalidIndex,
+        reason:
+          mappedResponse.reason
+      });
+    }
+
+    if (phase === "rejected") {
+      return createState({
+        status: "exam_result_history_load_error",
+        hasError: true,
+        canRetry: true,
+        reason: "rpc_request_failed"
+      });
+    }
+
+    return createState({
+      status: "exam_result_history_load_error",
+      hasError: true,
+      canRetry: false,
+      reason: "load_phase_invalid"
+    });
   }
 
   function normalizeParticipantExamResultHistoryPagination(options) {
@@ -5499,7 +5621,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29h",
+    version: "v27.29i",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -5558,6 +5680,7 @@
     normalizeParticipantFullExamResultRows,
     aggregateParticipantFullExamResultRows,
     mapParticipantFullExamResultHistoryResponse,
+    mapParticipantFullExamResultHistoryLoadState,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
     getParticipantDashboardCertificateDownloadState,
