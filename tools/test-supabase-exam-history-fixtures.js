@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29n
+// Stand: v27.29o
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29n",
+  "v27.29o",
   "Adapterversion"
 );
 
@@ -127,6 +127,7 @@ for (const functionName of [
   "orchestrateParticipantFullExamResultHistoryDataSourceState",
   "mapParticipantFullExamResultHistoryNavigationIntent",
   "mapParticipantFullExamResultHistoryRequestIdentity",
+  "mapParticipantFullExamResultHistoryRequestLifecycle",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
   assert(
@@ -1493,6 +1494,146 @@ assert(
   "Leere aktive Folgeseite wurde nicht sicher behandelt"
 );
 
+const lifecyclePrepared =
+  adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+    phase: "prepared",
+    requestSequence: 11,
+    request: {
+      limit: 20,
+      offset: 0
+    }
+  });
+
+assert(
+  lifecyclePrepared.status ===
+    "exam_result_history_request_lifecycle_prepared" &&
+  lifecyclePrepared.isPrepared === true &&
+  lifecyclePrepared.canStart === true,
+  "Vorbereiteter Anfrage-Lebenszyklus ist unstabil"
+);
+
+const lifecyclePending =
+  adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+    phase: "pending",
+    requestSequence: 11,
+    request: {
+      limit: 20,
+      offset: 0
+    }
+  });
+
+assert(
+  lifecyclePending.status ===
+    "exam_result_history_request_lifecycle_pending" &&
+  lifecyclePending.isPending === true &&
+  lifecyclePending.canComplete === true &&
+  lifecyclePending.canDiscard === true,
+  "Ausstehender Anfrage-Lebenszyklus ist unstabil"
+);
+
+const lifecycleCompleted =
+  adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+    phase: "completed",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    acceptanceState:
+      acceptedResponseGuard
+  });
+
+assert(
+  lifecycleCompleted.status ===
+    "exam_result_history_request_lifecycle_completed" &&
+  lifecycleCompleted.isCompleted === true &&
+  lifecycleCompleted.acceptedEntryCount === 2 &&
+  lifecycleCompleted.totalCount === 45,
+  "Abgeschlossener Anfrage-Lebenszyklus ist unstabil"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    lifecycleCompleted,
+    "acceptanceState"
+  ),
+  "Roher Annahme-State wurde im Lebenszyklus offengelegt"
+);
+
+const lifecycleMismatch =
+  adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+    phase: "completed",
+    requestSequence: 8,
+    request: {
+      limit: 20,
+      offset: 0
+    },
+    acceptanceState:
+      acceptedResponseGuard
+  });
+
+expectEqual(
+  lifecycleMismatch.reason,
+  "request_lifecycle_acceptance_identity_mismatch",
+  "Abweichende Annahme-Identität"
+);
+
+const lifecycleDiscarded =
+  adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+    phase: "discarded",
+    requestSequence: 12,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    discardReason:
+      "superseded_by_new_request"
+  });
+
+assert(
+  lifecycleDiscarded.status ===
+    "exam_result_history_request_lifecycle_discarded" &&
+  lifecycleDiscarded.isDiscarded === true &&
+  lifecycleDiscarded.discardReason ===
+    "superseded_by_new_request",
+  "Verworfener Anfrage-Lebenszyklus ist unstabil"
+);
+
+const lifecycleInvalidDiscard =
+  adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+    phase: "discarded",
+    requestSequence: 12,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    discardReason: "beliebig"
+  });
+
+expectEqual(
+  lifecycleInvalidDiscard.reason,
+  "request_lifecycle_discard_reason_invalid",
+  "Ungültiger Verwerfungsgrund"
+);
+
+const lifecycleStaleAcceptance =
+  adapter.mapParticipantFullExamResultHistoryRequestLifecycle({
+    phase: "completed",
+    requestSequence: 7,
+    request: {
+      limit: 20,
+      offset: 20
+    },
+    acceptanceState:
+      staleResponseGuard
+  });
+
+expectEqual(
+  lifecycleStaleAcceptance.reason,
+  "request_lifecycle_acceptance_state_invalid",
+  "Veralteter Annahme-State"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -1522,6 +1663,9 @@ console.log(
 );
 console.log(
   "Annahme-Guard-Fixtures: aktuell, leer, veraltet, ungültig und Fehler"
+);
+console.log(
+  "Lebenszyklus-Fixtures: vorbereitet, ausstehend, abgeschlossen und verworfen"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29n",
+    "// stand: v27.29o",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -29,6 +29,7 @@ required_markers = (
     'version: "v27.29l"',
     'version: "v27.29m"',
     'version: "v27.29n"',
+    'version: "v27.29o"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -249,6 +250,21 @@ required_markers = (
     "canguarddatasourceresponseacceptance:",
     "datasourceinitialresponseacceptancestate:",
     "guardparticipantfullexamresulthistoryresponseacceptance,",
+    "function mapparticipantfullexamresulthistoryrequestlifecycle(input)",
+    '"exam_result_history_request_lifecycle_prepared"',
+    '"exam_result_history_request_lifecycle_pending"',
+    '"exam_result_history_request_lifecycle_completed"',
+    '"exam_result_history_request_lifecycle_discarded"',
+    '"exam_result_history_request_lifecycle_invalid"',
+    "isrequestlifecyclemapperonly: true",
+    "requestlifecyclemappername:",
+    "isrequestlifecyclemapperprepared: true",
+    "canmaprequestlifecycles: true",
+    "datasourcerequestlifecyclemappername:",
+    "isdatasourcerequestlifecyclemapperprepared:",
+    "canmapdatasourcerequestlifecycles:",
+    "datasourceinitialrequestlifecyclestate:",
+    "mapparticipantfullexamresulthistoryrequestlifecycle,",
 )
 
 for marker in required_markers:
@@ -885,6 +901,84 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryRequestLifecycle(input)"
+) != 1:
+    fail(
+        "Anfrage-Lebenszyklus-Mapper muss genau einmal "
+        "vorhanden sein."
+    )
+
+lifecycle_start = lower.index(
+    "function mapparticipantfullexamresulthistoryrequestlifecycle(input)"
+)
+lifecycle_end = lower.index(
+    "function guardparticipantfullexamresulthistoryresponseacceptance(input)",
+    lifecycle_start,
+)
+lifecycle_block = lower[
+    lifecycle_start:lifecycle_end
+]
+
+for required in (
+    'allowedphases = [',
+    '"prepared"',
+    '"pending"',
+    '"completed"',
+    '"discarded"',
+    "mapparticipantfullexamresulthistoryrequestidentity({",
+    'mode: "create"',
+    "alloweddiscardreasons = [",
+    "cancelled_before_response",
+    "superseded_by_new_request",
+    "stale_response_ignored",
+    "acceptancestate.didacceptresponse !== true",
+    "acceptancestate.canacceptresponse !== true",
+    "acceptancestate.requestidentity !==",
+    "identitystate.requestidentity",
+    "request_lifecycle_phase_invalid",
+    "request_lifecycle_discard_reason_invalid",
+    "request_lifecycle_acceptance_state_missing",
+    "request_lifecycle_acceptance_state_invalid",
+    "request_lifecycle_acceptance_identity_mismatch",
+    "request_lifecycle_acceptance_status_invalid",
+    "request_lifecycle_total_count_invalid",
+    "exam_result_history_request_lifecycle_prepared",
+    "exam_result_history_request_lifecycle_pending",
+    "exam_result_history_request_lifecycle_completed",
+    "exam_result_history_request_lifecycle_discarded",
+    "exam_result_history_request_lifecycle_invalid",
+    "isrequestlifecyclemapperonly: true",
+    "islivecall: false",
+):
+    if required not in lifecycle_block:
+        fail(
+            "Anfrage-Lebenszyklus-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+):
+    if forbidden in lifecycle_block:
+        fail(
+            "Unzulässiger Inhalt im Anfrage-Lebenszyklus: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -953,6 +1047,7 @@ print("Datenquellen-Orchestrator: Ladezustand, Response und Pagination sicher ve
 print("Navigations-Intent-State: erste, vorherige, nächste und Retry-Anfrage")
 print("Anfrage-Identitätsstate: aktuelle und veraltete Antworten getrennt")
 print("Response-Annahme-Guard: nur aktive Anfrageantworten werden verarbeitet")
+print("Anfrage-Lebenszyklus: vorbereitet, ausstehend, abgeschlossen und verworfen")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

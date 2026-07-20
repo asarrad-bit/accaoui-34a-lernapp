@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29n
+Stand: v27.29o
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -501,6 +501,19 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_RESPONSE_ACCEPTANCE_GUARD_TEST.md`
 
+## Anfrage-Lebenszyklus-State v27.29o
+
+Lokale Ergebnislisten-Anfragen können jetzt als vorbereitet,
+ausstehend, abgeschlossen oder verworfen eingeordnet werden.
+
+Ein Abschluss ist nur mit einem angenommenen Response-State
+derselben Anfrageidentität zulässig. Verwerfungsgründe sind
+fest begrenzt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_REQUEST_LIFECYCLE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -591,9 +604,9 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29n` kann ein sicherer
-lokaler Anfrage-Lebenszyklus-State für vorbereitet, ausstehend,
-abgeschlossen und verworfen ergänzt werden, ohne Live-RPC oder UI.
+Nach GitHub-Bestätigung von `v27.29o` kann ein sicherer
+lokaler Lebenszyklus-Übergangs-Guard vorbereitet werden, der nur
+zulässige Zustandswechsel akzeptiert, ohne Live-RPC oder UI.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -602,5 +615,5 @@ lokaler Adaptervertrag, Dashboard-Datenquellen-Zuordnung,
 Normalizer, Seitenaggregator, Fixture-Tests, sicherer
 Response-Mapper, Ladezustands-Mapper, Pagination-State,
 Datenquellen-Orchestrator, Navigations-Intent-State,
-Anfrage-Identitätsstate und Response-Annahme-Guard vorbereitet;
-keine Live-Ausführung
+Anfrage-Identitätsstate, Response-Annahme-Guard und
+Anfrage-Lebenszyklus-State vorbereitet; keine Live-Ausführung

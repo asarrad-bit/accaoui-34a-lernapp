@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29n
+// Stand: v27.29o
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1761,6 +1761,19 @@
       isResponseAcceptanceGuardPrepared: true,
       canGuardResponseAcceptance: true,
       initialResponseAcceptanceState: null,
+      requestLifecycleMapperName:
+        "mapParticipantFullExamResultHistoryRequestLifecycle",
+      isRequestLifecycleMapperPrepared: true,
+      canMapRequestLifecycles: true,
+      initialRequestLifecycleState:
+        mapParticipantFullExamResultHistoryRequestLifecycle({
+          phase: "prepared",
+          requestSequence: 1,
+          request: {
+            limit: rpcState.defaultLimit,
+            offset: 0
+          }
+        }),
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1838,6 +1851,10 @@
       isDataSourceResponseAcceptanceGuardPrepared: participantDashboardExamHistoryDataSourceState.isResponseAcceptanceGuardPrepared === true,
       canGuardDataSourceResponseAcceptance: participantDashboardExamHistoryDataSourceState.canGuardResponseAcceptance === true,
       dataSourceInitialResponseAcceptanceState: participantDashboardExamHistoryDataSourceState.initialResponseAcceptanceState,
+      dataSourceRequestLifecycleMapperName: participantDashboardExamHistoryDataSourceState.requestLifecycleMapperName,
+      isDataSourceRequestLifecycleMapperPrepared: participantDashboardExamHistoryDataSourceState.isRequestLifecycleMapperPrepared === true,
+      canMapDataSourceRequestLifecycles: participantDashboardExamHistoryDataSourceState.canMapRequestLifecycles === true,
+      dataSourceInitialRequestLifecycleState: participantDashboardExamHistoryDataSourceState.initialRequestLifecycleState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3129,6 +3146,225 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistoryRequestLifecycle(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const phase =
+      typeof source.phase === "string"
+        ? source.phase.trim()
+        : "";
+
+    const allowedPhases = [
+      "prepared",
+      "pending",
+      "completed",
+      "discarded"
+    ];
+
+    const invalid = (reason) => ({
+      version: "v27.29o",
+      status: "exam_result_history_request_lifecycle_invalid",
+      phase,
+      isValid: false,
+      isRequestLifecycleMapperOnly: true,
+      isLiveCall: false,
+      isPrepared: false,
+      isPending: false,
+      isCompleted: false,
+      isDiscarded: false,
+      canStart: false,
+      canComplete: false,
+      canDiscard: false,
+      request: null,
+      requestSequence: null,
+      requestIdentity: null,
+      acceptanceStatus: null,
+      acceptedEntryCount: 0,
+      totalCount: null,
+      discardReason: null,
+      reason
+    });
+
+    if (!allowedPhases.includes(phase)) {
+      return invalid(
+        "request_lifecycle_phase_invalid"
+      );
+    }
+
+    const identityState =
+      mapParticipantFullExamResultHistoryRequestIdentity({
+        mode: "create",
+        requestSequence: source.requestSequence,
+        request: source.request
+      });
+
+    if (!identityState.isValid) {
+      return invalid(identityState.reason);
+    }
+
+    const createState = (overrides) => ({
+      version: "v27.29o",
+      status: "exam_result_history_request_lifecycle_prepared",
+      phase,
+      isValid: true,
+      isRequestLifecycleMapperOnly: true,
+      isLiveCall: false,
+      isPrepared: false,
+      isPending: false,
+      isCompleted: false,
+      isDiscarded: false,
+      canStart: false,
+      canComplete: false,
+      canDiscard: false,
+      request: identityState.request,
+      requestSequence:
+        identityState.requestSequence,
+      requestIdentity:
+        identityState.requestIdentity,
+      acceptanceStatus: null,
+      acceptedEntryCount: 0,
+      totalCount: null,
+      discardReason: null,
+      reason: null,
+      ...overrides
+    });
+
+    if (phase === "prepared") {
+      return createState({
+        status:
+          "exam_result_history_request_lifecycle_prepared",
+        isPrepared: true,
+        canStart: true
+      });
+    }
+
+    if (phase === "pending") {
+      return createState({
+        status:
+          "exam_result_history_request_lifecycle_pending",
+        isPending: true,
+        canComplete: true,
+        canDiscard: true
+      });
+    }
+
+    if (phase === "discarded") {
+      const discardReason =
+        typeof source.discardReason === "string"
+          ? source.discardReason.trim()
+          : "";
+
+      const allowedDiscardReasons = [
+        "cancelled_before_response",
+        "superseded_by_new_request",
+        "stale_response_ignored"
+      ];
+
+      if (
+        !allowedDiscardReasons.includes(
+          discardReason
+        )
+      ) {
+        return invalid(
+          "request_lifecycle_discard_reason_invalid"
+        );
+      }
+
+      return createState({
+        status:
+          "exam_result_history_request_lifecycle_discarded",
+        isDiscarded: true,
+        discardReason
+      });
+    }
+
+    const acceptanceState =
+      source.acceptanceState &&
+      typeof source.acceptanceState === "object" &&
+      !Array.isArray(source.acceptanceState)
+        ? source.acceptanceState
+        : null;
+
+    if (!acceptanceState) {
+      return invalid(
+        "request_lifecycle_acceptance_state_missing"
+      );
+    }
+
+    if (
+      acceptanceState.isResponseAcceptanceGuardOnly !== true ||
+      acceptanceState.didAcceptResponse !== true ||
+      acceptanceState.canAcceptResponse !== true
+    ) {
+      return invalid(
+        "request_lifecycle_acceptance_state_invalid"
+      );
+    }
+
+    if (
+      acceptanceState.requestIdentity !==
+        identityState.requestIdentity ||
+      acceptanceState.responseIdentity !==
+        identityState.requestIdentity
+    ) {
+      return invalid(
+        "request_lifecycle_acceptance_identity_mismatch"
+      );
+    }
+
+    const allowedAcceptanceStatuses = [
+      "exam_result_history_response_acceptance_accepted",
+      "exam_result_history_response_acceptance_accepted_empty"
+    ];
+
+    if (
+      !allowedAcceptanceStatuses.includes(
+        acceptanceState.status
+      )
+    ) {
+      return invalid(
+        "request_lifecycle_acceptance_status_invalid"
+      );
+    }
+
+    const acceptedEntryCount =
+      Array.isArray(acceptanceState.results)
+        ? acceptanceState.results.length
+        : 0;
+
+    const totalCount =
+      acceptanceState.totalCount === null ||
+      Number.isSafeInteger(
+        acceptanceState.totalCount
+      )
+        ? acceptanceState.totalCount
+        : null;
+
+    if (
+      acceptanceState.totalCount !== null &&
+      totalCount === null
+    ) {
+      return invalid(
+        "request_lifecycle_total_count_invalid"
+      );
+    }
+
+    return createState({
+      status:
+        "exam_result_history_request_lifecycle_completed",
+      isCompleted: true,
+      acceptanceStatus:
+        acceptanceState.status,
+      acceptedEntryCount,
+      totalCount
+    });
   }
 
   function guardParticipantFullExamResultHistoryResponseAcceptance(input) {
@@ -6674,7 +6910,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29n",
+    version: "v27.29o",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -6738,6 +6974,7 @@
     orchestrateParticipantFullExamResultHistoryDataSourceState,
     mapParticipantFullExamResultHistoryNavigationIntent,
     mapParticipantFullExamResultHistoryRequestIdentity,
+    mapParticipantFullExamResultHistoryRequestLifecycle,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
     getParticipantDashboardCertificateHistoryState,
