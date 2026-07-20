@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29r
+// Stand: v27.29s
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29r",
+  "v27.29s",
   "Adapterversion"
 );
 
@@ -130,6 +130,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistoryRequestLifecycle",
   "mapParticipantFullExamResultHistoryRequestControllerState",
   "normalizeParticipantFullExamResultHistoryControllerSnapshot",
+  "mapParticipantFullExamResultHistorySnapshotResumeState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -2121,6 +2122,136 @@ expectEqual(
   "Ungültige Snapshot-Version"
 );
 
+const resumePrepared =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot: {
+      snapshotVersion: 1,
+      controllerState:
+        controllerInitialized
+    },
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  resumePrepared.status ===
+    "exam_result_history_snapshot_resume_prepared" &&
+  resumePrepared.canResume === true &&
+  resumePrepared.isPrepared === true &&
+  resumePrepared.resumeAction ===
+    "start_prepared_request" &&
+  resumePrepared.reconstructedControllerState.isPrepared ===
+    true,
+  "Vorbereiteter Snapshot wurde nicht sicher rekonstruiert"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    resumePrepared,
+    "snapshot"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    resumePrepared,
+    "privateField"
+  ),
+  "Roher Snapshot-Inhalt wurde übernommen"
+);
+
+const resumePending =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot: {
+      snapshotVersion: 1,
+      controllerState:
+        controllerStarted
+    }
+  });
+
+assert(
+  resumePending.status ===
+    "exam_result_history_snapshot_resume_pending_retry" &&
+  resumePending.canResume === true &&
+  resumePending.isPending === true &&
+  resumePending.resumeAction ===
+    "retry_pending_request" &&
+  resumePending.reconstructedControllerState.isPending ===
+    true,
+  "Ausstehender Snapshot wurde nicht sicher rekonstruiert"
+);
+
+const resumeNavigation =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot: {
+      snapshotVersion: 1,
+      controllerState:
+        controllerNavigation
+    }
+  });
+
+assert(
+  resumeNavigation.status ===
+    "exam_result_history_snapshot_resume_navigation_prepared" &&
+  resumeNavigation.canResume === true &&
+  resumeNavigation.isNavigationResume === true &&
+  resumeNavigation.navigationIntent ===
+    "next" &&
+  resumeNavigation.previousRequestIdentity ===
+    "exam_history_request:21:20:0" &&
+  resumeNavigation.reconstructedControllerState.requestSequence ===
+    22,
+  "Navigations-Snapshot wurde nicht sicher rekonstruiert"
+);
+
+const resumeCompleted =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot: {
+      snapshotVersion: 1,
+      controllerState:
+        controllerAccepted
+    }
+  });
+
+assert(
+  resumeCompleted.status ===
+    "exam_result_history_snapshot_resume_terminal_blocked" &&
+  resumeCompleted.canResume === false &&
+  resumeCompleted.isTerminal === true &&
+  resumeCompleted.reconstructedControllerState ===
+    null,
+  "Abgeschlossener Snapshot wurde nicht blockiert"
+);
+
+const resumeDiscarded =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot: {
+      snapshotVersion: 1,
+      controllerState:
+        controllerDiscarded
+    }
+  });
+
+assert(
+  resumeDiscarded.status ===
+    "exam_result_history_snapshot_resume_terminal_blocked" &&
+  resumeDiscarded.canResume === false &&
+  resumeDiscarded.isTerminal === true,
+  "Verworfener Snapshot wurde nicht blockiert"
+);
+
+const resumeInvalid =
+  adapter.mapParticipantFullExamResultHistorySnapshotResumeState({
+    snapshot: {
+      snapshotVersion: 2,
+      controllerState:
+        controllerInitialized
+    }
+  });
+
+expectEqual(
+  resumeInvalid.reason,
+  "controller_snapshot_version_invalid",
+  "Ungültiger Snapshot im Wiederaufnahme-State"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -2162,6 +2293,9 @@ console.log(
 );
 console.log(
   "Snapshot-Fixtures: vorbereitet, ausstehend, abgeschlossen, navigiert und verworfen"
+);
+console.log(
+  "Wiederaufnahme-Fixtures: vorbereitet, ausstehend, navigiert und terminal"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

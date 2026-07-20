@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29r
+// Stand: v27.29s
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1797,6 +1797,11 @@
       isControllerSnapshotNormalizerPrepared: true,
       canNormalizeControllerSnapshots: true,
       initialControllerSnapshotState: null,
+      snapshotResumeMapperName:
+        "mapParticipantFullExamResultHistorySnapshotResumeState",
+      isSnapshotResumeMapperPrepared: true,
+      canMapSnapshotResumeStates: true,
+      initialSnapshotResumeState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1890,6 +1895,10 @@
       isDataSourceControllerSnapshotNormalizerPrepared: participantDashboardExamHistoryDataSourceState.isControllerSnapshotNormalizerPrepared === true,
       canNormalizeDataSourceControllerSnapshots: participantDashboardExamHistoryDataSourceState.canNormalizeControllerSnapshots === true,
       dataSourceInitialControllerSnapshotState: participantDashboardExamHistoryDataSourceState.initialControllerSnapshotState,
+      dataSourceSnapshotResumeMapperName: participantDashboardExamHistoryDataSourceState.snapshotResumeMapperName,
+      isDataSourceSnapshotResumeMapperPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotResumeMapperPrepared === true,
+      canMapDataSourceSnapshotResumeStates: participantDashboardExamHistoryDataSourceState.canMapSnapshotResumeStates === true,
+      dataSourceInitialSnapshotResumeState: participantDashboardExamHistoryDataSourceState.initialSnapshotResumeState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3181,6 +3190,197 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotResumeState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const snapshotState =
+      normalizeParticipantFullExamResultHistoryControllerSnapshot(
+        source.snapshot
+      );
+
+    const invalid = (reason) => ({
+      version: "v27.29s",
+      status: "exam_result_history_snapshot_resume_invalid",
+      isValid: false,
+      isSnapshotResumeMapperOnly: true,
+      isLiveCall: false,
+      canResume: false,
+      canExecuteLiveRequest: false,
+      requiresFutureLiveRequest: false,
+      isPrepared: false,
+      isPending: false,
+      isNavigationResume: false,
+      isTerminal: false,
+      resumeAction: null,
+      snapshotStatus:
+        snapshotState &&
+        typeof snapshotState.status === "string"
+          ? snapshotState.status
+          : null,
+      originControllerStatus: null,
+      request: null,
+      requestSequence: null,
+      requestIdentity: null,
+      previousRequestIdentity: null,
+      navigationIntent: null,
+      reconstructedControllerState: null,
+      reason
+    });
+
+    if (!snapshotState.isValid) {
+      return invalid(snapshotState.reason);
+    }
+
+    const createState = (overrides) => ({
+      version: "v27.29s",
+      status: "exam_result_history_snapshot_resume_prepared",
+      isValid: true,
+      isSnapshotResumeMapperOnly: true,
+      isLiveCall: false,
+      canResume: false,
+      canExecuteLiveRequest: false,
+      requiresFutureLiveRequest: false,
+      isPrepared: false,
+      isPending: false,
+      isNavigationResume: false,
+      isTerminal: false,
+      resumeAction: null,
+      snapshotStatus:
+        snapshotState.status,
+      originControllerStatus:
+        snapshotState.controllerStatus,
+      request:
+        snapshotState.request,
+      requestSequence:
+        snapshotState.requestSequence,
+      requestIdentity:
+        snapshotState.requestIdentity,
+      previousRequestIdentity:
+        snapshotState.previousRequestIdentity,
+      navigationIntent:
+        snapshotState.navigationIntent,
+      reconstructedControllerState: null,
+      reason: null,
+      ...overrides
+    });
+
+    if (
+      snapshotState.isTerminal ||
+      snapshotState.canResume !== true
+    ) {
+      return createState({
+        status:
+          "exam_result_history_snapshot_resume_terminal_blocked",
+        isTerminal: true,
+        reason:
+          "snapshot_resume_terminal_state"
+      });
+    }
+
+    if (
+      snapshotState.phase !== "prepared" &&
+      snapshotState.phase !== "pending"
+    ) {
+      return invalid(
+        "snapshot_resume_phase_invalid"
+      );
+    }
+
+    const preparedControllerState =
+      mapParticipantFullExamResultHistoryRequestControllerState({
+        action: "initialize",
+        requestSequence:
+          snapshotState.requestSequence,
+        request:
+          snapshotState.request
+      });
+
+    if (
+      !preparedControllerState.isValid ||
+      preparedControllerState.isPrepared !== true ||
+      preparedControllerState.requestIdentity !==
+        snapshotState.requestIdentity
+    ) {
+      return invalid(
+        "snapshot_resume_controller_reconstruction_invalid"
+      );
+    }
+
+    const isNavigationResume =
+      snapshotState.controllerStatus ===
+      "exam_result_history_request_controller_navigation_ready";
+
+    if (snapshotState.phase === "prepared") {
+      if (
+        snapshotState.resumeAction !==
+        "start_prepared_request"
+      ) {
+        return invalid(
+          "snapshot_resume_action_invalid"
+        );
+      }
+
+      return createState({
+        status:
+          isNavigationResume
+            ? "exam_result_history_snapshot_resume_navigation_prepared"
+            : "exam_result_history_snapshot_resume_prepared",
+        canResume: true,
+        requiresFutureLiveRequest: true,
+        isPrepared: true,
+        isNavigationResume,
+        resumeAction:
+          "start_prepared_request",
+        reconstructedControllerState:
+          preparedControllerState
+      });
+    }
+
+    if (
+      snapshotState.resumeAction !==
+      "retry_pending_request"
+    ) {
+      return invalid(
+        "snapshot_resume_action_invalid"
+      );
+    }
+
+    const pendingControllerState =
+      mapParticipantFullExamResultHistoryRequestControllerState({
+        action: "start",
+        currentLifecycleState:
+          preparedControllerState.lifecycleState
+      });
+
+    if (
+      !pendingControllerState.isValid ||
+      pendingControllerState.isPending !== true ||
+      pendingControllerState.requestIdentity !==
+        snapshotState.requestIdentity
+    ) {
+      return invalid(
+        "snapshot_resume_pending_reconstruction_invalid"
+      );
+    }
+
+    return createState({
+      status:
+        "exam_result_history_snapshot_resume_pending_retry",
+      canResume: true,
+      requiresFutureLiveRequest: true,
+      isPending: true,
+      resumeAction:
+        "retry_pending_request",
+      reconstructedControllerState:
+        pendingControllerState
+    });
   }
 
   function normalizeParticipantFullExamResultHistoryControllerSnapshot(input) {
@@ -8140,7 +8340,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29r",
+    version: "v27.29s",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -8207,6 +8407,7 @@
     mapParticipantFullExamResultHistoryRequestLifecycle,
     mapParticipantFullExamResultHistoryRequestControllerState,
     normalizeParticipantFullExamResultHistoryControllerSnapshot,
+    mapParticipantFullExamResultHistorySnapshotResumeState,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,

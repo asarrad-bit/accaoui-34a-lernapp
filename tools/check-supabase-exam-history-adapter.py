@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29r",
+    "// stand: v27.29s",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -33,6 +33,7 @@ required_markers = (
     'version: "v27.29p"',
     'version: "v27.29q"',
     'version: "v27.29r"',
+    'version: "v27.29s"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -318,6 +319,21 @@ required_markers = (
     "cannormalizedatasourcecontrollersnapshots:",
     "datasourceinitialcontrollersnapshotstate:",
     "normalizeparticipantfullexamresulthistorycontrollersnapshot,",
+    "function mapparticipantfullexamresulthistorysnapshotresumestate(input)",
+    '"exam_result_history_snapshot_resume_prepared"',
+    '"exam_result_history_snapshot_resume_pending_retry"',
+    '"exam_result_history_snapshot_resume_navigation_prepared"',
+    '"exam_result_history_snapshot_resume_terminal_blocked"',
+    '"exam_result_history_snapshot_resume_invalid"',
+    "issnapshotresumemapperonly: true",
+    "snapshotresumemappername:",
+    "issnapshotresumemapperprepared: true",
+    "canmapsnapshotresumestates: true",
+    "datasourcesnapshotresumemappername:",
+    "isdatasourcesnapshotresumemapperprepared:",
+    "canmapdatasourcesnapshotresumestates:",
+    "datasourceinitialsnapshotresumestate:",
+    "mapparticipantfullexamresulthistorysnapshotresumestate,",
 )
 
 for marker in required_markers:
@@ -1265,6 +1281,80 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotResumeState(input)"
+) != 1:
+    fail(
+        "Snapshot-Wiederaufnahme-State muss genau einmal "
+        "vorhanden sein."
+    )
+
+resume_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotresumestate(input)"
+)
+resume_end = lower.index(
+    "function normalizeparticipantfullexamresulthistorycontrollersnapshot(input)",
+    resume_start,
+)
+resume_block = lower[
+    resume_start:resume_end
+]
+
+for required in (
+    "normalizeparticipantfullexamresulthistorycontrollersnapshot(",
+    "source.snapshot",
+    "mapparticipantfullexamresulthistoryrequestcontrollerstate({",
+    'action: "initialize"',
+    'action: "start"',
+    "snapshotstate.isterminal",
+    "snapshotstate.canresume !== true",
+    "snapshotstate.phase !==",
+    "snapshot_resume_terminal_state",
+    "snapshot_resume_phase_invalid",
+    "snapshot_resume_controller_reconstruction_invalid",
+    "snapshot_resume_pending_reconstruction_invalid",
+    "snapshot_resume_action_invalid",
+    "start_prepared_request",
+    "retry_pending_request",
+    "exam_result_history_snapshot_resume_prepared",
+    "exam_result_history_snapshot_resume_pending_retry",
+    "exam_result_history_snapshot_resume_navigation_prepared",
+    "exam_result_history_snapshot_resume_terminal_blocked",
+    "exam_result_history_snapshot_resume_invalid",
+    "issnapshotresumemapperonly: true",
+    "islivecall: false",
+    "canexecuteliverequest: false",
+):
+    if required not in resume_block:
+        fail(
+            "Snapshot-Wiederaufnahme-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "source.response",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "snapshotstate.results",
+    "source.snapshot.controllerstate",
+):
+    if forbidden in resume_block:
+        fail(
+            "Unzulässiger Inhalt im Snapshot-Wiederaufnahme-State: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -1337,6 +1427,7 @@ print("Anfrage-Lebenszyklus: vorbereitet, ausstehend, abgeschlossen und verworfe
 print("Lebenszyklus-Übergangs-Guard: nur zulässige Zustandswechsel")
 print("Anfrage-Controller: Navigation, Identität, Lebenszyklus und Annahme verbunden")
 print("Controller-Snapshot: gespeicherte Zustände sicher normalisiert")
+print("Snapshot-Wiederaufnahme: nur normalisierte Zustände rekonstruiert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
