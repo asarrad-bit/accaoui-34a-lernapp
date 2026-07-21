@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.30j
+// Stand: v27.30k
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1887,6 +1887,11 @@
       isSnapshotPersistenceCycleRegistrySerializationMapperPrepared: true,
       canMapSnapshotPersistenceCycleRegistrySerializationStates: true,
       initialSnapshotPersistenceCycleRegistrySerializationState: null,
+      snapshotPersistenceCycleRegistryDeserializationMapperName:
+        "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState",
+      isSnapshotPersistenceCycleRegistryDeserializationMapperPrepared: true,
+      canMapSnapshotPersistenceCycleRegistryDeserializationStates: true,
+      initialSnapshotPersistenceCycleRegistryDeserializationState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -2052,6 +2057,10 @@
       isDataSourceSnapshotPersistenceCycleRegistrySerializationMapperPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceCycleRegistrySerializationMapperPrepared === true,
       canMapDataSourceSnapshotPersistenceCycleRegistrySerializationStates: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceCycleRegistrySerializationStates === true,
       dataSourceInitialSnapshotPersistenceCycleRegistrySerializationState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceCycleRegistrySerializationState,
+      dataSourceSnapshotPersistenceCycleRegistryDeserializationMapperName: participantDashboardExamHistoryDataSourceState.snapshotPersistenceCycleRegistryDeserializationMapperName,
+      isDataSourceSnapshotPersistenceCycleRegistryDeserializationMapperPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceCycleRegistryDeserializationMapperPrepared === true,
+      canMapDataSourceSnapshotPersistenceCycleRegistryDeserializationStates: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceCycleRegistryDeserializationStates === true,
+      dataSourceInitialSnapshotPersistenceCycleRegistryDeserializationState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceCycleRegistryDeserializationState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3343,6 +3352,336 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const deserializationSchemaVersion = 1;
+    const maximumSerializedBytes = 32768;
+    const maximumCompletedCycleIdentities =
+      100;
+
+    const inspectOwnDataProperty = (
+      target,
+      propertyName
+    ) => {
+      try {
+        const descriptor =
+          Object.getOwnPropertyDescriptor(
+            target,
+            propertyName
+          );
+
+        if (!descriptor) {
+          return {
+            isPresent: false,
+            isValid: true,
+            value: null
+          };
+        }
+
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            descriptor,
+            "value"
+          )
+        ) {
+          return {
+            isPresent: true,
+            isValid: false,
+            value: null
+          };
+        }
+
+        return {
+          isPresent: true,
+          isValid: true,
+          value:
+            descriptor.value
+        };
+      } catch (_error) {
+        return {
+          isPresent: true,
+          isValid: false,
+          value: null
+        };
+      }
+    };
+
+    const invalid = (reason) => ({
+      version: "v27.30k",
+      status:
+        "exam_result_history_persistence_cycle_registry_deserialization_invalid",
+      isValid: false,
+      isSnapshotPersistenceCycleRegistryDeserializationMapperOnly: true,
+      isLiveCall: false,
+      canDeserializeRegistry: false,
+      canUseRegistry: false,
+      canPersistLater: false,
+      canExecuteStorage: false,
+      deserializationSchemaVersion,
+      maximumSerializedBytes,
+      registryVersion: null,
+      registryIdentity: null,
+      maximumCompletedCycleIdentities,
+      completedCycleCount: null,
+      isEmpty: false,
+      isAtCapacity: false,
+      serializedByteLength: null,
+      completedCycleIdentities: [],
+      registryPayload: null,
+      registryState: null,
+      reason
+    });
+
+    const serializedProperty =
+      inspectOwnDataProperty(
+        source,
+        "serializedJson"
+      );
+
+    if (!serializedProperty.isPresent) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_json_missing"
+      );
+    }
+
+    if (!serializedProperty.isValid) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_json_accessor_not_allowed"
+      );
+    }
+
+    const serializedJson =
+      serializedProperty.value;
+
+    if (
+      typeof serializedJson !== "string"
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_json_invalid"
+      );
+    }
+
+    const serializedByteLength =
+      getParticipantFullExamResultHistorySnapshotUtf8ByteLength(
+        serializedJson
+      );
+
+    if (
+      !Number.isSafeInteger(
+        serializedByteLength
+      ) ||
+      serializedByteLength < 1 ||
+      serializedByteLength >
+        maximumSerializedBytes
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_size_invalid"
+      );
+    }
+
+    let parsedPayload;
+
+    try {
+      parsedPayload =
+        JSON.parse(
+          serializedJson
+        );
+    } catch (_error) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_json_parse_failed"
+      );
+    }
+
+    if (
+      !parsedPayload ||
+      typeof parsedPayload !== "object" ||
+      Array.isArray(parsedPayload)
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_payload_invalid"
+      );
+    }
+
+    let payloadKeys;
+
+    try {
+      payloadKeys =
+        Object.keys(
+          parsedPayload
+        );
+    } catch (_error) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_payload_invalid"
+      );
+    }
+
+    if (
+      JSON.stringify(payloadKeys) !==
+      JSON.stringify([
+        "registryVersion",
+        "completedCycleIdentities"
+      ])
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_payload_fields_invalid"
+      );
+    }
+
+    const registryVersionProperty =
+      inspectOwnDataProperty(
+        parsedPayload,
+        "registryVersion"
+      );
+
+    const identitiesProperty =
+      inspectOwnDataProperty(
+        parsedPayload,
+        "completedCycleIdentities"
+      );
+
+    if (
+      !registryVersionProperty.isPresent ||
+      !registryVersionProperty.isValid ||
+      registryVersionProperty.value !== 1
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_version_invalid"
+      );
+    }
+
+    if (
+      !identitiesProperty.isPresent ||
+      !identitiesProperty.isValid ||
+      !Array.isArray(
+        identitiesProperty.value
+      ) ||
+      identitiesProperty.value.length >
+        maximumCompletedCycleIdentities
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_identities_invalid"
+      );
+    }
+
+    if (
+      JSON.stringify(
+        parsedPayload
+      ) !==
+      serializedJson
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_json_not_canonical"
+      );
+    }
+
+    const registryState =
+      mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+        completedCycleIdentities:
+          identitiesProperty.value
+      });
+
+    if (
+      !registryState.isValid ||
+      registryState.canUseRegistry !==
+        true ||
+      registryState.canExecuteStorage !==
+        false ||
+      registryState.registryVersion !==
+        1 ||
+      registryState.registryIdentity !==
+        "exam_history_persistence_cycle_registry:v1" ||
+      registryState.maximumCompletedCycleIdentities !==
+        maximumCompletedCycleIdentities
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_registry_state_invalid"
+      );
+    }
+
+    if (
+      JSON.stringify(
+        registryState.registryPayload
+      ) !==
+      serializedJson
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_payload_not_canonical"
+      );
+    }
+
+    const serializationState =
+      mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState({
+        registryState
+      });
+
+    if (
+      !serializationState.isValid ||
+      serializationState.canSerializeRegistry !==
+        true ||
+      serializationState.canPersistLater !==
+        true ||
+      serializationState.canWriteStorage !==
+        false ||
+      serializationState.canExecuteStorage !==
+        false ||
+      serializationState.serializedJson !==
+        serializedJson ||
+      serializationState.serializedByteLength !==
+        serializedByteLength
+    ) {
+      return invalid(
+        "persistence_cycle_registry_deserialization_round_trip_invalid"
+      );
+    }
+
+    const completedCycleIdentities =
+      registryState
+        .completedCycleIdentities
+        .slice();
+
+    const registryPayload = {
+      registryVersion: 1,
+      completedCycleIdentities:
+        completedCycleIdentities.slice()
+    };
+
+    return {
+      version: "v27.30k",
+      status:
+        "exam_result_history_persistence_cycle_registry_deserialization_ready",
+      isValid: true,
+      isSnapshotPersistenceCycleRegistryDeserializationMapperOnly: true,
+      isLiveCall: false,
+      canDeserializeRegistry: true,
+      canUseRegistry: true,
+      canPersistLater: true,
+      canExecuteStorage: false,
+      deserializationSchemaVersion,
+      maximumSerializedBytes,
+      registryVersion: 1,
+      registryIdentity:
+        "exam_history_persistence_cycle_registry:v1",
+      maximumCompletedCycleIdentities,
+      completedCycleCount:
+        completedCycleIdentities.length,
+      isEmpty:
+        registryState.isEmpty,
+      isAtCapacity:
+        registryState.isAtCapacity,
+      serializedByteLength,
+      completedCycleIdentities,
+      registryPayload,
+      registryState,
+      reason: null
+    };
   }
 
   function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState(input) {
@@ -15452,7 +15791,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.30j",
+    version: "v27.30k",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -15537,6 +15876,7 @@
     guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition,
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState,
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState,
+    mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,

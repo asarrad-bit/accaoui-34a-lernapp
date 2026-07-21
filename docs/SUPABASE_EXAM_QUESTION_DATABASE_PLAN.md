@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30j
+Stand: v27.30k
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -803,6 +803,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_SERIALIZATION_TEST.md`
 
+## Persistenz-Zyklusregister-Deserialisierung v27.30k
+
+Serialisierte Persistenz-Zyklusregister können jetzt nach einer
+Größenprüfung sicher geparst und als kanonische versionierte
+Register-States rekonstruiert werden.
+
+Payload, Version, Felder und Identitäten werden erneut geprüft.
+Register-Mapper und Serialisierungsstate müssen einen exakten
+Rundlauf ergeben. Keine Storage- oder UI-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_DESERIALIZATION_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -893,11 +907,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30j` kann ein sicherer
-lokaler Persistenz-Zyklusregister-Deserialisierungsstate
-vorbereitet werden, der die Größe vor dem Parsing begrenzt und
-ausschließlich kanonische versionierte Register-Payloads
-rekonstruiert, weiterhin ohne Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30k` kann ein sicherer
+lokaler Persistenz-Zyklusregister-Vertrag vorbereitet werden,
+der Save, Load und Delete über einen eigenen kanonischen
+Namensraum vorbereitet, weiterhin ohne Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -918,6 +931,7 @@ Persistenz-Ausführungs-Guard, Persistenz-Aufrufvertrag,
 Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag,
 Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate,
 Persistenz-Zyklusstate, Persistenz-Zyklus-Wiederholungs-Guard,
-Persistenz-Zyklusregister-State und
-Persistenz-Zyklusregister-Serialisierungsstate vorbereitet;
+Persistenz-Zyklusregister-State,
+Persistenz-Zyklusregister-Serialisierungsstate und
+Persistenz-Zyklusregister-Deserialisierungsstate vorbereitet;
 keine Live-Ausführung

@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30j
+// Stand: v27.30k
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30j",
+  "v27.30k",
   "Adapterversion"
 );
 
@@ -148,6 +148,7 @@ for (const functionName of [
   "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -4977,6 +4978,190 @@ assert(
   "Registerstate-Getter wurde nicht geschlossen blockiert"
 );
 
+const emptyCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      emptyCycleRegistrySerialization.serializedJson,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  emptyCycleRegistryDeserialization.status ===
+    "exam_result_history_persistence_cycle_registry_deserialization_ready" &&
+  emptyCycleRegistryDeserialization.isValid ===
+    true &&
+  emptyCycleRegistryDeserialization.canDeserializeRegistry ===
+    true &&
+  emptyCycleRegistryDeserialization.canUseRegistry ===
+    true &&
+  emptyCycleRegistryDeserialization.canPersistLater ===
+    true &&
+  emptyCycleRegistryDeserialization.canExecuteStorage ===
+    false &&
+  emptyCycleRegistryDeserialization.completedCycleCount ===
+    0 &&
+  emptyCycleRegistryDeserialization.isEmpty ===
+    true &&
+  emptyCycleRegistryDeserialization.registryState.isValid ===
+    true,
+  "Leeres Zyklusregister wurde nicht sicher deserialisiert"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    emptyCycleRegistryDeserialization,
+    "serializedJson"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    emptyCycleRegistryDeserialization,
+    "privateField"
+  ),
+  "Rohe oder unbekannte Deserialisierungsfelder wurden übernommen"
+);
+
+const registeredCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      registeredCycleRegistrySerialization.serializedJson
+  });
+
+assert(
+  registeredCycleRegistryDeserialization.isValid ===
+    true &&
+  registeredCycleRegistryDeserialization.completedCycleCount ===
+    1 &&
+  registeredCycleRegistryDeserialization.isEmpty ===
+    false &&
+  registeredCycleRegistryDeserialization.completedCycleIdentities[0] ===
+    persistenceReadCycle.cycleIdentity &&
+  registeredCycleRegistryDeserialization.serializedByteLength ===
+    registeredCycleRegistrySerialization.serializedByteLength,
+  "Aktualisiertes Zyklusregister wurde nicht rekonstruiert"
+);
+
+expectJson(
+  registeredCycleRegistryDeserialization.registryPayload,
+  registeredReadCycleRegistry.registryPayload,
+  "Deserialisierter Register-Payload"
+);
+
+const nonCanonicalCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      registeredCycleRegistrySerialization.serializedJson +
+      " "
+  });
+
+expectEqual(
+  nonCanonicalCycleRegistryDeserialization.reason,
+  "persistence_cycle_registry_deserialization_json_not_canonical",
+  "Nicht kanonisches Register-JSON"
+);
+
+const malformedCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      "{ungueltig"
+  });
+
+expectEqual(
+  malformedCycleRegistryDeserialization.reason,
+  "persistence_cycle_registry_deserialization_json_parse_failed",
+  "Ungültiges Register-JSON"
+);
+
+const versionCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      JSON.stringify({
+        registryVersion: 2,
+        completedCycleIdentities: []
+      })
+  });
+
+expectEqual(
+  versionCycleRegistryDeserialization.reason,
+  "persistence_cycle_registry_deserialization_version_invalid",
+  "Ungültige Registerversion"
+);
+
+const extraFieldCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      JSON.stringify({
+        registryVersion: 1,
+        completedCycleIdentities: [],
+        privateField: true
+      })
+  });
+
+expectEqual(
+  extraFieldCycleRegistryDeserialization.reason,
+  "persistence_cycle_registry_deserialization_payload_fields_invalid",
+  "Zusätzliches Registerfeld"
+);
+
+const invalidIdentityCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      JSON.stringify({
+        registryVersion: 1,
+        completedCycleIdentities: [
+          "ungueltige-identitaet"
+        ]
+      })
+  });
+
+expectEqual(
+  invalidIdentityCycleRegistryDeserialization.reason,
+  "persistence_cycle_registry_deserialization_registry_state_invalid",
+  "Ungültige Identität im Register-Payload"
+);
+
+const oversizedCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+    serializedJson:
+      "x".repeat(32769)
+  });
+
+expectEqual(
+  oversizedCycleRegistryDeserialization.reason,
+  "persistence_cycle_registry_deserialization_size_invalid",
+  "Zu großes Register-JSON"
+);
+
+let registryDeserializationAccessorReads = 0;
+
+const registryDeserializationAccessorInput = {};
+
+Object.defineProperty(
+  registryDeserializationAccessorInput,
+  "serializedJson",
+  {
+    enumerable: true,
+    get() {
+      registryDeserializationAccessorReads += 1;
+      throw new Error(
+        "Registerdeserialisierung darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorCycleRegistryDeserialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState(
+    registryDeserializationAccessorInput
+  );
+
+assert(
+  accessorCycleRegistryDeserialization.reason ===
+    "persistence_cycle_registry_deserialization_json_accessor_not_allowed" &&
+  registryDeserializationAccessorReads === 0 &&
+  storageAdapterOperationCalls === 0,
+  "Register-JSON-Getter wurde nicht geschlossen blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -5072,6 +5257,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Serialisierungs-Fixtures: leer, aktualisiert, deterministisch, manipuliert und Accessor"
+);
+console.log(
+  "Zyklusregister-Deserialisierungs-Fixtures: leer, aktualisiert, nicht kanonisch, ungültig, zu groß und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
