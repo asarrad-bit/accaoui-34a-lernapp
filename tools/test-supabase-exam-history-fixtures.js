@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30e
+// Stand: v27.30f
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30e",
+  "v27.30f",
   "Adapterversion"
 );
 
@@ -143,6 +143,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceResultContract",
   "guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -4117,6 +4118,163 @@ expectEqual(
   "Ungültiger Ergebnisvertrag in Ergebnisannahme"
 );
 
+const persistenceReadCompletion =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState({
+    acceptanceState:
+      acceptedReadResult,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceReadCompletion.status ===
+    "exam_result_history_persistence_completion_read_ready" &&
+  persistenceReadCompletion.isValid === true &&
+  persistenceReadCompletion.canFinalizePersistence ===
+    true &&
+  persistenceReadCompletion.isTerminal ===
+    true &&
+  persistenceReadCompletion.isSuccessful ===
+    true &&
+  persistenceReadCompletion.terminalOutcome ===
+    "read_ready" &&
+  persistenceReadCompletion.canResumeSnapshot ===
+    true &&
+  persistenceReadCompletion.resumeState.canResume ===
+    true &&
+  persistenceReadCompletion.canExecuteStorage ===
+    false &&
+  storageAdapterOperationCalls === 0,
+  "Read-Ergebnis wurde nicht sicher abgeschlossen"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadCompletion,
+    "acceptanceState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadCompletion,
+    "privateField"
+  ),
+  "Interne Abschlussfelder wurden übernommen"
+);
+
+const persistenceReadEmptyCompletion =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState({
+    acceptanceState:
+      acceptedEmptyReadResult
+  });
+
+assert(
+  persistenceReadEmptyCompletion.status ===
+    "exam_result_history_persistence_completion_read_empty" &&
+  persistenceReadEmptyCompletion.isTerminal ===
+    true &&
+  persistenceReadEmptyCompletion.didRead ===
+    true &&
+  persistenceReadEmptyCompletion.isEmpty ===
+    true &&
+  persistenceReadEmptyCompletion.canResumeSnapshot ===
+    false,
+  "Leeres Read-Ergebnis wurde nicht terminal abgeschlossen"
+);
+
+const persistenceWriteCompletion =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState({
+    acceptanceState:
+      acceptedWriteResult
+  });
+
+assert(
+  persistenceWriteCompletion.status ===
+    "exam_result_history_persistence_completion_write_confirmed" &&
+  persistenceWriteCompletion.terminalOutcome ===
+    "write_confirmed" &&
+  persistenceWriteCompletion.didWrite ===
+    true &&
+  persistenceWriteCompletion.serializedByteLength ===
+    persistenceWritePackage.serializedByteLength &&
+  storageAdapterOperationCalls === 0,
+  "Write-Ergebnis wurde nicht terminal abgeschlossen"
+);
+
+const acceptedDeleteResult =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceDeletePackage,
+    resultContractState:
+      persistenceDeleteResult
+  });
+
+const persistenceDeleteCompletion =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState({
+    acceptanceState:
+      acceptedDeleteResult
+  });
+
+assert(
+  persistenceDeleteCompletion.status ===
+    "exam_result_history_persistence_completion_delete_confirmed" &&
+  persistenceDeleteCompletion.terminalOutcome ===
+    "delete_confirmed" &&
+  persistenceDeleteCompletion.didDelete ===
+    true &&
+  persistenceDeleteCompletion.wasAlreadyAbsent ===
+    false,
+  "Delete-Ergebnis wurde nicht terminal abgeschlossen"
+);
+
+const persistenceDeleteAbsentCompletion =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState({
+    acceptanceState:
+      acceptedDeleteAbsentResult
+  });
+
+assert(
+  persistenceDeleteAbsentCompletion.status ===
+    "exam_result_history_persistence_completion_delete_absent" &&
+  persistenceDeleteAbsentCompletion.terminalOutcome ===
+    "delete_absent" &&
+  persistenceDeleteAbsentCompletion.didDelete ===
+    false &&
+  persistenceDeleteAbsentCompletion.wasAlreadyAbsent ===
+    true &&
+  persistenceDeleteAbsentCompletion.isEmpty ===
+    true,
+  "Idempotentes Delete-Ergebnis wurde nicht terminal abgeschlossen"
+);
+
+const stalePersistenceCompletion =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState({
+    acceptanceState:
+      stalePersistenceResult
+  });
+
+expectEqual(
+  stalePersistenceCompletion.reason,
+  "persistence_completion_acceptance_state_invalid",
+  "Veraltetes Ergebnis im Abschlussstate"
+);
+
+const tamperedCompletionAcceptance = {
+  ...acceptedReadResult,
+  resultStatus:
+    "exam_result_history_persistence_result_read_empty"
+};
+
+const tamperedPersistenceCompletion =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState({
+    acceptanceState:
+      tamperedCompletionAcceptance
+  });
+
+expectEqual(
+  tamperedPersistenceCompletion.reason,
+  "persistence_completion_read_empty_invalid",
+  "Manipulierter Read-Abschlussstate"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -4197,6 +4355,9 @@ console.log(
 );
 console.log(
   "Ergebnisannahme-Fixtures: Read, leer, Write, Delete, veraltet und manipuliert"
+);
+console.log(
+  "Abschluss-Fixtures: Read, leer, Write, Delete, idempotent, veraltet und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

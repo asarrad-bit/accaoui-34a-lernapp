@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30e
+Stand: v27.30f
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -732,6 +732,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_RESULT_ACCEPTANCE_TEST.md`
 
+## Persistenz-Abschlussstate v27.30f
+
+Angenommene Persistenzergebnisse können jetzt in sichere
+terminale Zustände überführt werden.
+
+Read wird als wiederaufnehmbar oder leer abgeschlossen. Write
+wird eindeutig bestätigt. Delete wird als gelöscht oder bereits
+nicht vorhanden idempotent abgeschlossen. Keine Storage- oder
+UI-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_COMPLETION_STATE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -822,11 +836,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30e` kann ein sicherer
-lokaler Persistenz-Abschlussstate vorbereitet werden, der
-angenommene Read-, Write- und Delete-Ergebnisse in terminale
-Erfolgs-, Leer- und idempotente Zustände überführt, weiterhin
-ohne Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30f` kann ein sicherer
+lokaler Persistenz-Zyklusstate vorbereitet werden, der
+Aufrufpaket, Ergebnisvertrag, Ergebnisannahme und terminalen
+Abschluss zusammenhängend prüft, weiterhin ohne Storage- oder
+UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -844,6 +858,6 @@ Snapshot-Persistenzvertrag, Persistenz-Adapter-Readiness-State,
 Persistenz-Operationsplan-State,
 Persistenz-Operationsfreigabe-State,
 Persistenz-Ausführungs-Guard, Persistenz-Aufrufvertrag,
-Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag und
-Persistenz-Ergebnisannahme-Guard vorbereitet;
-keine Live-Ausführung
+Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag,
+Persistenz-Ergebnisannahme-Guard und Persistenz-Abschlussstate
+vorbereitet; keine Live-Ausführung

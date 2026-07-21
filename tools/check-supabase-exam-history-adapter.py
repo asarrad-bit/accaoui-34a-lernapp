@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30e",
+    "// stand: v27.30f",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -46,6 +46,7 @@ required_markers = (
     'version: "v27.30c"',
     'version: "v27.30d"',
     'version: "v27.30e"',
+    'version: "v27.30f"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -507,6 +508,22 @@ required_markers = (
     "canguarddatasourcesnapshotpersistenceresultacceptance:",
     "datasourceinitialsnapshotpersistenceresultacceptancestate:",
     "guardparticipantfullexamresulthistorysnapshotpersistenceresultacceptance,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecompletionstate(input)",
+    '"exam_result_history_persistence_completion_read_ready"',
+    '"exam_result_history_persistence_completion_read_empty"',
+    '"exam_result_history_persistence_completion_write_confirmed"',
+    '"exam_result_history_persistence_completion_delete_confirmed"',
+    '"exam_result_history_persistence_completion_delete_absent"',
+    '"exam_result_history_persistence_completion_invalid"',
+    "issnapshotpersistencecompletionmapperonly: true",
+    "snapshotpersistencecompletionmappername:",
+    "issnapshotpersistencecompletionmapperprepared: true",
+    "canmapsnapshotpersistencecompletionstates: true",
+    "datasourcesnapshotpersistencecompletionmappername:",
+    "isdatasourcesnapshotpersistencecompletionmapperprepared:",
+    "canmapdatasourcesnapshotpersistencecompletionstates:",
+    "datasourceinitialsnapshotpersistencecompletionstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecompletionstate,",
 )
 
 for marker in required_markers:
@@ -2566,6 +2583,94 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState(input)"
+) != 1:
+    fail(
+        "Persistenz-Abschlussstate muss genau einmal "
+        "vorhanden sein."
+    )
+
+completion_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecompletionstate(input)"
+)
+acceptance_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistenceresultacceptance(input)",
+    completion_start,
+)
+completion_block = lower[
+    completion_start:acceptance_start
+]
+
+for required in (
+    "mapparticipantfullexamresulthistorysnapshotpersistencecontract({",
+    "normalizeparticipantfullexamresulthistorycontrollersnapshot(",
+    "mapparticipantfullexamresulthistorysnapshotresumestate({",
+    "persistence_completion_acceptance_state_missing",
+    "persistence_completion_acceptance_state_invalid",
+    "persistence_completion_operation_invalid",
+    "persistence_completion_package_identity_invalid",
+    "persistence_completion_storage_key_invalid",
+    "persistence_completion_identity_invalid",
+    "persistence_completion_read_empty_invalid",
+    "persistence_completion_read_result_invalid",
+    "persistence_completion_read_snapshot_invalid",
+    "persistence_completion_write_result_invalid",
+    "persistence_completion_delete_result_invalid",
+    "exam_history_persistence_completion:",
+    "exam_result_history_persistence_completion_read_ready",
+    "exam_result_history_persistence_completion_read_empty",
+    "exam_result_history_persistence_completion_write_confirmed",
+    "exam_result_history_persistence_completion_delete_confirmed",
+    "exam_result_history_persistence_completion_delete_absent",
+    "exam_result_history_persistence_completion_invalid",
+    "issnapshotpersistencecompletionmapperonly: true",
+    "canfinalizepersistence: true",
+    "isterminal: true",
+    "issuccessful: true",
+    "canresumesnapshot: true",
+    "canexecutestorage: false",
+):
+    if required not in completion_block:
+        fail(
+            "Persistenz-Abschluss-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+    "acceptancestate.error",
+    "acceptancestate.message",
+    "acceptancestate.details",
+):
+    if forbidden in completion_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Abschlussstate: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2651,6 +2756,7 @@ print("Persistenz-Aufrufvertrag: kanonisches Methoden- und Argumenteschema erste
 print("Persistenz-Aufrufpaket: Guard, Vertrag und Adapter erneut geschlossen verbunden")
 print("Persistenz-Ergebnisvertrag: Read, Write und Delete getrennt normalisiert")
 print("Persistenz-Ergebnisannahme: nur Ergebnisse des aktuellen Aufrufpakets akzeptiert")
+print("Persistenz-Abschlussstate: angenommene Ergebnisse terminal und sicher abgeschlossen")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
