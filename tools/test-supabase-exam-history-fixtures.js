@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29z
+// Stand: v27.30a
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29z",
+  "v27.30a",
   "Adapterversion"
 );
 
@@ -138,6 +138,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness",
   "mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan",
   "mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState",
+  "guardParticipantFullExamResultHistorySnapshotPersistenceExecution",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -3248,6 +3249,197 @@ expectEqual(
   "Ungültiger Operationsplan in Freigabe"
 );
 
+const persistenceWriteExecution =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceExecution({
+    releaseState:
+      persistenceWriteRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      fullStorageAdapter,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceWriteExecution.status ===
+    "exam_result_history_persistence_execution_guard_ready" &&
+  persistenceWriteExecution.isValid === true &&
+  persistenceWriteExecution.canPrepareExecution ===
+    true &&
+  persistenceWriteExecution.canInvokeLater ===
+    true &&
+  persistenceWriteExecution.canExecuteStorage ===
+    false &&
+  persistenceWriteExecution.isMethodReferenceValidated ===
+    true &&
+  persistenceWriteExecution.operation ===
+    "write" &&
+  persistenceWriteExecution.operationArgumentCount ===
+    2 &&
+  persistenceWriteExecution.serializedJson ===
+    persistenceSave.serializedJson &&
+  storageAdapterOperationCalls === 0,
+  "Write-Ausführung wurde nicht sicher vorbereitet"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWriteExecution,
+    "storageAdapter"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWriteExecution,
+    "privateField"
+  ),
+  "Adapter oder unbekanntes Feld wurde offengelegt"
+);
+
+const readExecutionAdapter = {
+  adapterKind:
+    "accaoui_exam_history_snapshot_storage_adapter_v1",
+  contractVersion: 1,
+  read() {
+    storageAdapterOperationCalls += 1;
+  }
+};
+
+const persistenceReadExecution =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceExecution({
+    releaseState:
+      persistenceReadRelease,
+    persistenceState:
+      persistenceLoad,
+    storageAdapter:
+      readExecutionAdapter
+  });
+
+assert(
+  persistenceReadExecution.canPrepareExecution ===
+    true &&
+  persistenceReadExecution.operation ===
+    "read" &&
+  persistenceReadExecution.operationArgumentCount ===
+    1 &&
+  persistenceReadExecution.serializedJson ===
+    null &&
+  persistenceReadExecution.hasValidatedLoadState ===
+    true &&
+  storageAdapterOperationCalls === 0,
+  "Read-Ausführung wurde nicht sicher vorbereitet"
+);
+
+const persistenceDeleteExecution =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceExecution({
+    releaseState:
+      persistenceDeleteRelease,
+    persistenceState:
+      persistenceDelete,
+    storageAdapter:
+      fullStorageAdapter
+  });
+
+assert(
+  persistenceDeleteExecution.canPrepareExecution ===
+    true &&
+  persistenceDeleteExecution.operation ===
+    "delete" &&
+  persistenceDeleteExecution.operationArgumentCount ===
+    1 &&
+  storageAdapterOperationCalls === 0,
+  "Delete-Ausführung wurde nicht sicher vorbereitet"
+);
+
+const changedExecutionAdapter = {
+  adapterKind:
+    "accaoui_exam_history_snapshot_storage_adapter_v1",
+  contractVersion: 1,
+  write() {
+    storageAdapterOperationCalls += 1;
+  }
+};
+
+const changedExecution =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceExecution({
+    releaseState:
+      persistenceWriteRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      changedExecutionAdapter
+  });
+
+expectEqual(
+  changedExecution.reason,
+  "persistence_execution_readiness_changed",
+  "Veränderte Readiness im Ausführungs-Guard"
+);
+
+let executionAccessorReads = 0;
+
+const accessorExecutionAdapter = {
+  adapterKind:
+    "accaoui_exam_history_snapshot_storage_adapter_v1",
+  contractVersion: 1,
+  read() {},
+  delete() {}
+};
+
+Object.defineProperty(
+  accessorExecutionAdapter,
+  "write",
+  {
+    enumerable: true,
+    get() {
+      executionAccessorReads += 1;
+      throw new Error(
+        "Ausführungs-Guard darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorExecution =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceExecution({
+    releaseState:
+      persistenceWriteRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      accessorExecutionAdapter
+  });
+
+assert(
+  accessorExecution.isValid === false &&
+  accessorExecution.reason ===
+    "storage_adapter_capability_accessor_not_allowed" &&
+  executionAccessorReads === 0 &&
+  storageAdapterOperationCalls === 0,
+  "Accessor-Methode wurde nicht geschlossen blockiert"
+);
+
+const tamperedExecutionRelease = {
+  ...persistenceWriteRelease,
+  releaseIdentity:
+    "exam_history_persistence_release:write:manipuliert"
+};
+
+const tamperedExecution =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceExecution({
+    releaseState:
+      tamperedExecutionRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      fullStorageAdapter
+  });
+
+expectEqual(
+  tamperedExecution.reason,
+  "persistence_execution_release_mismatch",
+  "Manipulierte Freigabe im Ausführungs-Guard"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -3313,6 +3505,9 @@ console.log(
 );
 console.log(
   "Freigabe-Fixtures: Write, Read, Delete, veränderte Readiness und manipuliert"
+);
+console.log(
+  "Ausführungs-Guard-Fixtures: Write, Read, Delete, verändert, Accessor und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

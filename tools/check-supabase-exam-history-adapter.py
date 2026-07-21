@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29z",
+    "// stand: v27.30a",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -41,6 +41,7 @@ required_markers = (
     'version: "v27.29x"',
     'version: "v27.29y"',
     'version: "v27.29z"',
+    'version: "v27.30a"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -437,6 +438,18 @@ required_markers = (
     "canmapdatasourcesnapshotpersistenceoperationreleases:",
     "datasourceinitialsnapshotpersistenceoperationreleasestate:",
     "mapparticipantfullexamresulthistorysnapshotpersistenceoperationreleasestate,",
+    "function guardparticipantfullexamresulthistorysnapshotpersistenceexecution(input)",
+    '"exam_result_history_persistence_execution_guard_ready"',
+    '"exam_result_history_persistence_execution_guard_invalid"',
+    "issnapshotpersistenceexecutionguardonly: true",
+    "snapshotpersistenceexecutionguardname:",
+    "issnapshotpersistenceexecutionguardprepared: true",
+    "canguardsnapshotpersistenceexecutions: true",
+    "datasourcesnapshotpersistenceexecutionguardname:",
+    "isdatasourcesnapshotpersistenceexecutionguardprepared:",
+    "canguarddatasourcesnapshotpersistenceexecutions:",
+    "datasourceinitialsnapshotpersistenceexecutionstate:",
+    "guardparticipantfullexamresulthistorysnapshotpersistenceexecution,",
 )
 
 for marker in required_markers:
@@ -2047,6 +2060,93 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistorySnapshotPersistenceExecution(input)"
+) != 1:
+    fail(
+        "Persistenz-Ausführungs-Guard muss genau einmal "
+        "vorhanden sein."
+    )
+
+execution_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistenceexecution(input)"
+)
+fingerprint_start = lower.index(
+    "function getparticipantfullexamresulthistorysnapshotstorageadapterreadinessfingerprint(input)",
+    execution_start,
+)
+execution_block = lower[
+    execution_start:fingerprint_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "mapparticipantfullexamresulthistorysnapshotstorageadapterreadiness({",
+    "getparticipantfullexamresulthistorysnapshotstorageadapterreadinessfingerprint(",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceoperationplan({",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceoperationreleasestate({",
+    "persistence_execution_release_state_missing",
+    "persistence_execution_persistence_state_missing",
+    "persistence_execution_storage_adapter_missing",
+    "persistence_execution_release_state_invalid",
+    "persistence_execution_persistence_state_invalid",
+    "persistence_execution_storage_adapter_invalid",
+    "persistence_execution_readiness_changed",
+    "persistence_execution_recomputed_plan_invalid",
+    "persistence_execution_recomputed_release_invalid",
+    "persistence_execution_release_mismatch",
+    "persistence_execution_operation_invalid",
+    "persistence_execution_method_invalid",
+    "persistence_execution_write_payload_invalid",
+    "persistence_execution_unexpected_payload",
+    "persistence_execution_load_state_invalid",
+    "exam_history_persistence_execution:",
+    "exam_result_history_persistence_execution_guard_ready",
+    "exam_result_history_persistence_execution_guard_invalid",
+    "issnapshotpersistenceexecutionguardonly: true",
+    "caninvokelater: true",
+    "canexecutestorage: false",
+    "ismethodreferencevalidated: true",
+):
+    if required not in execution_block:
+        fail(
+            "Persistenz-Ausführungs-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "methodproperty.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in execution_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Ausführungs-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2127,6 +2227,7 @@ print("Snapshot-Persistenzvertrag: Save, Load und Delete sicher vorbereitet")
 print("Persistenz-Adapter-Readiness: Read, Write und Delete ohne Aufruf geprüft")
 print("Persistenz-Operationsplan: Vertrag und Adapterfähigkeit ohne Aufruf verbunden")
 print("Persistenz-Operationsfreigabe: unveränderte Readiness und Plan erneut geprüft")
+print("Persistenz-Ausführungs-Guard: Adapter und Methode ohne Aufruf erneut geprüft")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
