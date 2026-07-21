@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30m",
+    "// stand: v27.30n",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -54,6 +54,7 @@ required_markers = (
     'version: "v27.30k"',
     'version: "v27.30l"',
     'version: "v27.30m"',
+    'version: "v27.30n"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -623,6 +624,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistrystorageadapterreadinessstates:",
     "datasourceinitialsnapshotpersistencecycleregistrystorageadapterreadinessstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystorageadapterreadinessstate,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationplanstate(input)",
+    '"exam_result_history_persistence_cycle_registry_operation_plan_ready"',
+    '"exam_result_history_persistence_cycle_registry_operation_plan_blocked"',
+    '"exam_result_history_persistence_cycle_registry_operation_plan_invalid"',
+    "issnapshotpersistencecycleregistryoperationplanmapperonly: true",
+    "snapshotpersistencecycleregistryoperationplanmappername:",
+    "issnapshotpersistencecycleregistryoperationplanmapperprepared: true",
+    "canmapsnapshotpersistencecycleregistryoperationplanstates: true",
+    "datasourcesnapshotpersistencecycleregistryoperationplanmappername:",
+    "isdatasourcesnapshotpersistencecycleregistryoperationplanmapperprepared:",
+    "canmapdatasourcesnapshotpersistencecycleregistryoperationplanstates:",
+    "datasourceinitialsnapshotpersistencecycleregistryoperationplanstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationplanstate,",
 )
 
 for marker in required_markers:
@@ -3378,6 +3392,95 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Operationsplan-State muss "
+        "genau einmal vorhanden sein."
+    )
+
+registry_operation_plan_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationplanstate(input)"
+)
+registry_readiness_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystorageadapterreadinessstate(input)",
+    registry_operation_plan_start,
+)
+registry_operation_plan_block = lower[
+    registry_operation_plan_start:
+    registry_readiness_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "object.keys(",
+    "json.stringify(",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrydeserializationstate({",
+    "const operationplanversion = 1",
+    "persistence_cycle_registry_operation_plan_contract_missing",
+    "persistence_cycle_registry_operation_plan_readiness_missing",
+    "persistence_cycle_registry_operation_plan_contract_invalid",
+    "persistence_cycle_registry_operation_plan_save_payload_invalid",
+    "persistence_cycle_registry_operation_plan_save_size_mismatch",
+    "persistence_cycle_registry_operation_plan_save_round_trip_invalid",
+    "persistence_cycle_registry_operation_plan_payload_unexpected",
+    "persistence_cycle_registry_operation_plan_readiness_invalid",
+    "persistence_cycle_registry_operation_plan_capability_unavailable",
+    "exam_result_history_persistence_cycle_registry_operation_plan_ready",
+    "exam_result_history_persistence_cycle_registry_operation_plan_blocked",
+    "exam_result_history_persistence_cycle_registry_operation_plan_invalid",
+    "exam_history_persistence_cycle_registry_operation_plan:",
+    "issnapshotpersistencecycleregistryoperationplanmapperonly: true",
+    "canprepareoperation",
+    "caninvokelater:",
+    "iscapabilityavailable",
+    "canplansave:",
+    "canplanload:",
+    "canplandelete:",
+    "canexecutestorage: false",
+):
+    if required not in registry_operation_plan_block:
+        fail(
+            "Persistenz-Zyklusregister-Operationsplan-"
+            f"Anweisung fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "property.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in registry_operation_plan_block:
+        fail(
+            "Unzulässiger Inhalt im Zyklusregister-"
+            "Operationsplan-State: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -3471,6 +3574,7 @@ print("Persistenz-Zyklusregister-Serialisierung: kanonisches JSON größenbegren
 print("Persistenz-Zyklusregister-Deserialisierung: Größe vor Parsing begrenzt und Register rekonstruiert")
 print("Persistenz-Zyklusregister-Vertrag: Save, Load und Delete im eigenen Namensraum vorbereitet")
 print("Persistenz-Zyklusregister-Adapter-Readiness: nur eigene Datenmethoden geprüft")
+print("Persistenz-Zyklusregister-Operationsplan: Save, Load und Delete mit Adapterfähigkeiten verbunden")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

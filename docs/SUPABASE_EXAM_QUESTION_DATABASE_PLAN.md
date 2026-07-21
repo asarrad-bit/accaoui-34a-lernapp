@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30m
+Stand: v27.30n
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -845,6 +845,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_STORAGE_ADAPTER_READINESS_TEST.md`
 
+## Zyklusregister-Persistenz-Operationsplan v27.30n
+
+Zyklusregister-Vertrag und Adapter-Readiness können jetzt zu
+einem sicheren lokalen Operationsplan verbunden werden.
+
+Save wird Write, Load wird Read und Delete bleibt Delete.
+Payload, Fähigkeiten und Readiness-Fingerprint werden erneut
+geprüft. Fehlende Fähigkeiten werden geschlossen blockiert.
+Keine Adaptermethode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_OPERATION_PLAN_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -935,11 +949,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30m` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Operationsplan-State
-vorbereitet werden, der Vertrag und Adapter-Readiness zu
-Save→Write, Load→Read und Delete→Delete zusammenführt,
-weiterhin ohne Methoden-, Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30n` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Operationsfreigabe-State
+vorbereitet werden, der den Operationsplan mit derselben erneut
+geprüften Adapter-Readiness verbindet, weiterhin ohne Methoden-,
+Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -963,6 +977,7 @@ Persistenz-Zyklusstate, Persistenz-Zyklus-Wiederholungs-Guard,
 Persistenz-Zyklusregister-State,
 Persistenz-Zyklusregister-Serialisierungsstate,
 Persistenz-Zyklusregister-Deserialisierungsstate,
-Persistenz-Zyklusregister-Vertrag und
-Zyklusregister-Storage-Adapter-Readiness-State vorbereitet;
+Persistenz-Zyklusregister-Vertrag,
+Zyklusregister-Storage-Adapter-Readiness-State und
+Zyklusregister-Persistenz-Operationsplan-State vorbereitet;
 keine Live-Ausführung

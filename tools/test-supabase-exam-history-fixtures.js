@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30m
+// Stand: v27.30n
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30m",
+  "v27.30n",
   "Adapterversion"
 );
 
@@ -151,6 +151,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -5590,6 +5591,206 @@ assert(
   "Zyklusregister-Adapter-Getter wurde nicht blockiert"
 );
 
+const registrySaveOperationPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState({
+    contractState:
+      registrySaveContract,
+    adapterReadinessState:
+      fullRegistryStorageAdapterReadiness,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  registrySaveOperationPlan.status ===
+    "exam_result_history_persistence_cycle_registry_operation_plan_ready" &&
+  registrySaveOperationPlan.isValid ===
+    true &&
+  registrySaveOperationPlan.canPrepareOperation ===
+    true &&
+  registrySaveOperationPlan.canInvokeLater ===
+    true &&
+  registrySaveOperationPlan.isCapabilityAvailable ===
+    true &&
+  registrySaveOperationPlan.canPlanSave ===
+    true &&
+  registrySaveOperationPlan.canPlanLoad ===
+    false &&
+  registrySaveOperationPlan.canPlanDelete ===
+    false &&
+  registrySaveOperationPlan.operation ===
+    "write" &&
+  registrySaveOperationPlan.methodName ===
+    "write" &&
+  registrySaveOperationPlan.requiredCapability ===
+    "write" &&
+  registrySaveOperationPlan.serializedJson ===
+    registrySaveContract.serializedJson &&
+  registrySaveOperationPlan.canExecuteStorage ===
+    false &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Save-Operationsplan wurde nicht sicher erstellt"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveOperationPlan,
+    "contractState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveOperationPlan,
+    "adapterReadinessState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveOperationPlan,
+    "privateField"
+  ),
+  "Interne Zyklusregister-Operationsplan-Felder wurden übernommen"
+);
+
+const registryLoadOperationPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState({
+    contractState:
+      registryLoadContract,
+    adapterReadinessState:
+      partialRegistryStorageAdapterReadiness
+  });
+
+assert(
+  registryLoadOperationPlan.status ===
+    "exam_result_history_persistence_cycle_registry_operation_plan_ready" &&
+  registryLoadOperationPlan.canPlanLoad ===
+    true &&
+  registryLoadOperationPlan.operation ===
+    "read" &&
+  registryLoadOperationPlan.methodName ===
+    "read" &&
+  registryLoadOperationPlan.requiredCapability ===
+    "read" &&
+  registryLoadOperationPlan.serializedJson ===
+    null &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Load-Operationsplan wurde nicht sicher erstellt"
+);
+
+const registryDeleteBlockedOperationPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState({
+    contractState:
+      registryDeleteContract,
+    adapterReadinessState:
+      partialRegistryStorageAdapterReadiness
+  });
+
+assert(
+  registryDeleteBlockedOperationPlan.status ===
+    "exam_result_history_persistence_cycle_registry_operation_plan_blocked" &&
+  registryDeleteBlockedOperationPlan.isValid ===
+    true &&
+  registryDeleteBlockedOperationPlan.canPrepareOperation ===
+    false &&
+  registryDeleteBlockedOperationPlan.canInvokeLater ===
+    false &&
+  registryDeleteBlockedOperationPlan.isCapabilityAvailable ===
+    false &&
+  registryDeleteBlockedOperationPlan.reason ===
+    "persistence_cycle_registry_operation_plan_capability_unavailable" &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Fehlende Zyklusregister-Delete-Fähigkeit wurde nicht blockiert"
+);
+
+const registryDeleteOperationPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState({
+    contractState:
+      registryDeleteContract,
+    adapterReadinessState:
+      fullRegistryStorageAdapterReadiness
+  });
+
+assert(
+  registryDeleteOperationPlan.status ===
+    "exam_result_history_persistence_cycle_registry_operation_plan_ready" &&
+  registryDeleteOperationPlan.canPlanDelete ===
+    true &&
+  registryDeleteOperationPlan.operation ===
+    "delete" &&
+  registryDeleteOperationPlan.methodName ===
+    "delete" &&
+  registryDeleteOperationPlan.requiredCapability ===
+    "delete",
+  "Zyklusregister-Delete-Operationsplan wurde nicht erstellt"
+);
+
+const tamperedRegistryReadinessOperationPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState({
+    contractState:
+      registryLoadContract,
+    adapterReadinessState: {
+      ...partialRegistryStorageAdapterReadiness,
+      readinessFingerprint:
+        "exam_history_persistence_cycle_registry_storage_adapter_readiness:v1:read=0:write=0:delete=0"
+    }
+  });
+
+expectEqual(
+  tamperedRegistryReadinessOperationPlan.reason,
+  "persistence_cycle_registry_operation_plan_readiness_invalid",
+  "Manipulierter Zyklusregister-Readiness-Fingerprint"
+);
+
+const tamperedRegistryContractOperationPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState({
+    contractState: {
+      ...registrySaveContract,
+      operation: "read"
+    },
+    adapterReadinessState:
+      fullRegistryStorageAdapterReadiness
+  });
+
+expectEqual(
+  tamperedRegistryContractOperationPlan.reason,
+  "persistence_cycle_registry_operation_plan_contract_invalid",
+  "Manipulierter Zyklusregister-Vertrag"
+);
+
+let registryOperationPlanAccessorReads = 0;
+
+const registryOperationPlanAccessorInput = {};
+
+Object.defineProperty(
+  registryOperationPlanAccessorInput,
+  "contractState",
+  {
+    enumerable: true,
+    get() {
+      registryOperationPlanAccessorReads +=
+        1;
+
+      throw new Error(
+        "Zyklusregister-Operationsplan darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorRegistryOperationPlan =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState(
+    registryOperationPlanAccessorInput
+  );
+
+assert(
+  accessorRegistryOperationPlan.reason ===
+    "persistence_cycle_registry_operation_plan_contract_accessor_not_allowed" &&
+  registryOperationPlanAccessorReads ===
+    0 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Operationsplan-Getter wurde nicht blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -5694,6 +5895,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Adapter-Readiness-Fixtures: vollständig, teilweise, leer, geerbt, ungültig und Accessor"
+);
+console.log(
+  "Zyklusregister-Operationsplan-Fixtures: Save, Load, Delete, blockiert, manipuliert und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
