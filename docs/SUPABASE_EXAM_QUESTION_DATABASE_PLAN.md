@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.29y
+Stand: v27.29z
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -650,6 +650,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_OPERATION_PLAN_TEST.md`
 
+## Persistenz-Operationsfreigabe-State v27.29z
+
+Ein vorbereiteter Persistenz-Operationsplan kann jetzt zusammen
+mit Persistenzvertrag und aktueller Adapter-Readiness erneut
+vollständig geprüft werden.
+
+Die Readiness erhält einen deterministischen Fingerprint.
+Veränderte Fähigkeiten oder manipulierte Plandaten werden
+geschlossen blockiert. Keine Storage-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_OPERATION_RELEASE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -740,10 +754,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.29y` kann ein sicherer
-lokaler Persistenz-Operationsfreigabe-State vorbereitet werden,
-der nur einen gültigen Operationsplan und dieselbe unveränderte
-Adapter-Readiness akzeptiert, weiterhin ohne Methodenaufruf.
+Nach GitHub-Bestätigung von `v27.29z` kann ein sicherer
+lokaler Persistenz-Ausführungs-Guard vorbereitet werden, der
+Freigabe und injizierten Adapter unmittelbar vor einem späteren
+Methodenaufruf erneut verifiziert, weiterhin ohne Storage-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -757,6 +771,7 @@ Anfrage-Lebenszyklus-State, Lebenszyklus-Übergangs-Guard,
 Anfrage-Controller-State, Controller-Snapshot-Normalizer,
 Snapshot-Wiederaufnahme-State, Snapshot-Erstellungsstate,
 Snapshot-Serialisierungsstate, Snapshot-Deserialisierungsstate,
-Snapshot-Persistenzvertrag, Persistenz-Adapter-Readiness-State
-und Persistenz-Operationsplan-State vorbereitet;
+Snapshot-Persistenzvertrag, Persistenz-Adapter-Readiness-State,
+Persistenz-Operationsplan-State und
+Persistenz-Operationsfreigabe-State vorbereitet;
 keine Live-Ausführung

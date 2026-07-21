@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.29y
+// Stand: v27.29z
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.29y",
+  "v27.29z",
   "Adapterversion"
 );
 
@@ -137,6 +137,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceContract",
   "mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness",
   "mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -3094,6 +3095,159 @@ expectEqual(
   "Ungültiger Readiness-State im Operationsplan"
 );
 
+const persistenceWriteRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState({
+    operationPlanState:
+      persistenceWritePlan,
+    persistenceState:
+      persistenceSave,
+    adapterReadinessState:
+      fullStorageReadiness,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceWriteRelease.status ===
+    "exam_result_history_persistence_operation_release_ready" &&
+  persistenceWriteRelease.isValid === true &&
+  persistenceWriteRelease.canReleaseOperation ===
+    true &&
+  persistenceWriteRelease.canExecuteStorage ===
+    false &&
+  persistenceWriteRelease.operation ===
+    "write" &&
+  persistenceWriteRelease.serializedJson ===
+    persistenceSave.serializedJson &&
+  typeof persistenceWriteRelease.adapterReadinessFingerprint ===
+    "string" &&
+  storageAdapterOperationCalls === 0,
+  "Write-Operationsfreigabe wurde nicht sicher erstellt"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWriteRelease,
+    "privateField"
+  ),
+  "Unbekanntes Freigabefeld wurde übernommen"
+);
+
+const persistenceReadRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState({
+    operationPlanState:
+      persistenceReadPlan,
+    persistenceState:
+      persistenceLoad,
+    adapterReadinessState:
+      readOnlyStorageReadiness
+  });
+
+assert(
+  persistenceReadRelease.canReleaseOperation ===
+    true &&
+  persistenceReadRelease.operation ===
+    "read" &&
+  persistenceReadRelease.hasValidatedLoadState ===
+    true &&
+  persistenceReadRelease.serializedJson ===
+    null &&
+  storageAdapterOperationCalls === 0,
+  "Read-Operationsfreigabe wurde nicht sicher erstellt"
+);
+
+const persistenceDeleteRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState({
+    operationPlanState:
+      persistenceDeletePlan,
+    persistenceState:
+      persistenceDelete,
+    adapterReadinessState:
+      fullStorageReadiness
+  });
+
+assert(
+  persistenceDeleteRelease.canReleaseOperation ===
+    true &&
+  persistenceDeleteRelease.operation ===
+    "delete" &&
+  storageAdapterOperationCalls === 0,
+  "Delete-Operationsfreigabe wurde nicht sicher erstellt"
+);
+
+const writeOnlyStorageReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness({
+    storageAdapter: {
+      adapterKind:
+        "accaoui_exam_history_snapshot_storage_adapter_v1",
+      contractVersion: 1,
+      write() {
+        storageAdapterOperationCalls += 1;
+      }
+    }
+  });
+
+const changedReadinessRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState({
+    operationPlanState:
+      persistenceWritePlan,
+    persistenceState:
+      persistenceSave,
+    adapterReadinessState:
+      writeOnlyStorageReadiness
+  });
+
+assert(
+  changedReadinessRelease.status ===
+    "exam_result_history_persistence_operation_release_blocked" &&
+  changedReadinessRelease.canReleaseOperation ===
+    false &&
+  changedReadinessRelease.reason ===
+    "persistence_operation_release_readiness_changed" &&
+  storageAdapterOperationCalls === 0,
+  "Veränderte Adapter-Readiness wurde nicht blockiert"
+);
+
+const tamperedWritePlan = {
+  ...persistenceWritePlan,
+  serializedByteLength:
+    persistenceWritePlan.serializedByteLength + 1
+};
+
+const tamperedPlanRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState({
+    operationPlanState:
+      tamperedWritePlan,
+    persistenceState:
+      persistenceSave,
+    adapterReadinessState:
+      fullStorageReadiness
+  });
+
+assert(
+  tamperedPlanRelease.status ===
+    "exam_result_history_persistence_operation_release_blocked" &&
+  tamperedPlanRelease.reason ===
+    "persistence_operation_release_plan_mismatch",
+  "Manipulierter Operationsplan wurde nicht blockiert"
+);
+
+const invalidOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState({
+    operationPlanState:
+      blockedDeletePlan,
+    persistenceState:
+      persistenceDelete,
+    adapterReadinessState:
+      readOnlyStorageReadiness
+  });
+
+expectEqual(
+  invalidOperationRelease.reason,
+  "persistence_operation_release_plan_invalid",
+  "Ungültiger Operationsplan in Freigabe"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -3156,6 +3310,9 @@ console.log(
 );
 console.log(
   "Operationsplan-Fixtures: Write, Read, Delete, blockiert und ungültig"
+);
+console.log(
+  "Freigabe-Fixtures: Write, Read, Delete, veränderte Readiness und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

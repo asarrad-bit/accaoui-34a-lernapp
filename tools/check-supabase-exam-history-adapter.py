@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.29y",
+    "// stand: v27.29z",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -40,6 +40,7 @@ required_markers = (
     'version: "v27.29w"',
     'version: "v27.29x"',
     'version: "v27.29y"',
+    'version: "v27.29z"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -423,6 +424,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistenceoperationplans:",
     "datasourceinitialsnapshotpersistenceoperationplanstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistenceoperationplan,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceoperationreleasestate(input)",
+    '"exam_result_history_persistence_operation_release_ready"',
+    '"exam_result_history_persistence_operation_release_blocked"',
+    '"exam_result_history_persistence_operation_release_invalid"',
+    "issnapshotpersistenceoperationreleaseonly: true",
+    "snapshotpersistenceoperationreleasemappername:",
+    "issnapshotpersistenceoperationreleaseprepared: true",
+    "canmapsnapshotpersistenceoperationreleases: true",
+    "datasourcesnapshotpersistenceoperationreleasemappername:",
+    "isdatasourcesnapshotpersistenceoperationreleaseprepared:",
+    "canmapdatasourcesnapshotpersistenceoperationreleases:",
+    "datasourceinitialsnapshotpersistenceoperationreleasestate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceoperationreleasestate,",
 )
 
 for marker in required_markers:
@@ -1923,6 +1937,116 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function getParticipantFullExamResultHistorySnapshotStorageAdapterReadinessFingerprint(input)"
+) != 1:
+    fail(
+        "Adapter-Readiness-Fingerprint-Helfer muss genau einmal "
+        "vorhanden sein."
+    )
+
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState(input)"
+) != 1:
+    fail(
+        "Persistenz-Operationsfreigabe-State muss genau einmal "
+        "vorhanden sein."
+    )
+
+fingerprint_start = lower.index(
+    "function getparticipantfullexamresulthistorysnapshotstorageadapterreadinessfingerprint(input)"
+)
+release_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceoperationreleasestate(input)",
+    fingerprint_start,
+)
+operation_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceoperationplan(input)",
+    release_start,
+)
+
+fingerprint_block = lower[
+    fingerprint_start:release_start
+]
+
+release_block = lower[
+    release_start:operation_start
+]
+
+for required in (
+    '"accaoui_exam_history_snapshot_storage_adapter_v1"',
+    "state.contractversion !== 1",
+    'requiredcapabilities = [',
+    "state.availablecapabilitycount !==",
+    "state.isadapterready !==",
+    "state.ispartiallyready !==",
+    "availablecapabilities.join",
+    "missingcapabilities.join",
+):
+    if required not in fingerprint_block:
+        fail(
+            "Adapter-Readiness-Fingerprint-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for required in (
+    "getparticipantfullexamresulthistorysnapshotstorageadapterreadinessfingerprint(",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceoperationplan({",
+    "persistence_operation_release_plan_missing",
+    "persistence_operation_release_plan_invalid",
+    "persistence_operation_release_persistence_state_invalid",
+    "persistence_operation_release_readiness_state_invalid",
+    "persistence_operation_release_readiness_fingerprint_invalid",
+    "persistence_operation_release_readiness_changed",
+    "persistence_operation_release_recomputed_plan_not_ready",
+    "persistence_operation_release_plan_mismatch",
+    "exam_history_persistence_release:",
+    "exam_result_history_persistence_operation_release_ready",
+    "exam_result_history_persistence_operation_release_blocked",
+    "exam_result_history_persistence_operation_release_invalid",
+    "issnapshotpersistenceoperationreleaseonly: true",
+    "canexecutestorage: false",
+):
+    if required not in release_block:
+        fail(
+            "Persistenz-Operationsfreigabe-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if (
+      forbidden in fingerprint_block or
+      forbidden in release_block
+    ):
+        fail(
+            "Unzulässiger Inhalt in Persistenz-Freigabe: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2002,6 +2126,7 @@ print("Snapshot-Deserialisierung: Größe vor Parsing begrenzt und Struktur erne
 print("Snapshot-Persistenzvertrag: Save, Load und Delete sicher vorbereitet")
 print("Persistenz-Adapter-Readiness: Read, Write und Delete ohne Aufruf geprüft")
 print("Persistenz-Operationsplan: Vertrag und Adapterfähigkeit ohne Aufruf verbunden")
+print("Persistenz-Operationsfreigabe: unveränderte Readiness und Plan erneut geprüft")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.29y
+// Stand: v27.29z
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1832,6 +1832,11 @@
       isSnapshotPersistenceOperationPlanPrepared: true,
       canMapSnapshotPersistenceOperationPlans: true,
       initialSnapshotPersistenceOperationPlanState: null,
+      snapshotPersistenceOperationReleaseMapperName:
+        "mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState",
+      isSnapshotPersistenceOperationReleasePrepared: true,
+      canMapSnapshotPersistenceOperationReleases: true,
+      initialSnapshotPersistenceOperationReleaseState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1953,6 +1958,10 @@
       isDataSourceSnapshotPersistenceOperationPlanPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceOperationPlanPrepared === true,
       canMapDataSourceSnapshotPersistenceOperationPlans: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceOperationPlans === true,
       dataSourceInitialSnapshotPersistenceOperationPlanState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceOperationPlanState,
+      dataSourceSnapshotPersistenceOperationReleaseMapperName: participantDashboardExamHistoryDataSourceState.snapshotPersistenceOperationReleaseMapperName,
+      isDataSourceSnapshotPersistenceOperationReleasePrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceOperationReleasePrepared === true,
+      canMapDataSourceSnapshotPersistenceOperationReleases: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceOperationReleases === true,
+      dataSourceInitialSnapshotPersistenceOperationReleaseState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceOperationReleaseState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3246,6 +3255,364 @@
     );
   }
 
+  function getParticipantFullExamResultHistorySnapshotStorageAdapterReadinessFingerprint(input) {
+    const state =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : null;
+
+    if (
+      !state ||
+      state.isSnapshotStorageAdapterReadinessOnly !== true ||
+      state.isValid !== true ||
+      state.canInspectAdapter !== true ||
+      state.canExecuteStorage !== false ||
+      state.adapterKind !==
+        "accaoui_exam_history_snapshot_storage_adapter_v1" ||
+      state.contractVersion !== 1
+    ) {
+      return null;
+    }
+
+    const requiredCapabilities = [
+      "read",
+      "write",
+      "delete"
+    ];
+
+    const capabilityFlags = {
+      read:
+        state.canRead === true,
+      write:
+        state.canWrite === true,
+      delete:
+        state.canDelete === true
+    };
+
+    const availableCapabilities =
+      requiredCapabilities.filter(
+        (capability) =>
+          capabilityFlags[capability]
+      );
+
+    const missingCapabilities =
+      requiredCapabilities.filter(
+        (capability) =>
+          !capabilityFlags[capability]
+      );
+
+    const isAdapterReady =
+      availableCapabilities.length ===
+      requiredCapabilities.length;
+
+    const isPartiallyReady =
+      !isAdapterReady &&
+      availableCapabilities.length > 0;
+
+    const expectedStatus =
+      isAdapterReady
+        ? "exam_result_history_storage_adapter_readiness_ready"
+        : isPartiallyReady
+          ? "exam_result_history_storage_adapter_readiness_partial"
+          : "exam_result_history_storage_adapter_readiness_unavailable";
+
+    const expectedReason =
+      isAdapterReady
+        ? null
+        : isPartiallyReady
+          ? "storage_adapter_capabilities_partial"
+          : "storage_adapter_capabilities_unavailable";
+
+    if (
+      JSON.stringify(
+        state.requiredCapabilities
+      ) !==
+        JSON.stringify(
+          requiredCapabilities
+        ) ||
+      JSON.stringify(
+        state.availableCapabilities
+      ) !==
+        JSON.stringify(
+          availableCapabilities
+        ) ||
+      JSON.stringify(
+        state.missingCapabilities
+      ) !==
+        JSON.stringify(
+          missingCapabilities
+        ) ||
+      state.availableCapabilityCount !==
+        availableCapabilities.length ||
+      state.isAdapterReady !==
+        isAdapterReady ||
+      state.isPartiallyReady !==
+        isPartiallyReady ||
+      state.status !==
+        expectedStatus ||
+      state.reason !==
+        expectedReason
+    ) {
+      return null;
+    }
+
+    return [
+      state.adapterKind,
+      String(state.contractVersion),
+      state.status,
+      capabilityFlags.read ? "1" : "0",
+      capabilityFlags.write ? "1" : "0",
+      capabilityFlags.delete ? "1" : "0",
+      availableCapabilities.join(","),
+      missingCapabilities.join(",")
+    ].join("|");
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const operationPlanState =
+      source.operationPlanState &&
+      typeof source.operationPlanState === "object" &&
+      !Array.isArray(source.operationPlanState)
+        ? source.operationPlanState
+        : null;
+
+    const persistenceState =
+      source.persistenceState &&
+      typeof source.persistenceState === "object" &&
+      !Array.isArray(source.persistenceState)
+        ? source.persistenceState
+        : null;
+
+    const adapterReadinessState =
+      source.adapterReadinessState &&
+      typeof source.adapterReadinessState === "object" &&
+      !Array.isArray(source.adapterReadinessState)
+        ? source.adapterReadinessState
+        : null;
+
+    const invalid = (reason) => ({
+      version: "v27.29z",
+      status:
+        "exam_result_history_persistence_operation_release_invalid",
+      isValid: false,
+      isSnapshotPersistenceOperationReleaseOnly: true,
+      isLiveCall: false,
+      canReleaseOperation: false,
+      canExecuteStorage: false,
+      operation: null,
+      requiredCapability: null,
+      adapterReadinessFingerprint: null,
+      storageKey: null,
+      requestIdentity: null,
+      releaseIdentity: null,
+      serializedByteLength: null,
+      serializedJson: null,
+      hasValidatedLoadState: false,
+      reason
+    });
+
+    const blocked = (
+      reason,
+      operation = null,
+      requiredCapability = null,
+      storageKey = null,
+      requestIdentity = null
+    ) => ({
+      version: "v27.29z",
+      status:
+        "exam_result_history_persistence_operation_release_blocked",
+      isValid: true,
+      isSnapshotPersistenceOperationReleaseOnly: true,
+      isLiveCall: false,
+      canReleaseOperation: false,
+      canExecuteStorage: false,
+      operation,
+      requiredCapability,
+      adapterReadinessFingerprint: null,
+      storageKey,
+      requestIdentity,
+      releaseIdentity: null,
+      serializedByteLength: null,
+      serializedJson: null,
+      hasValidatedLoadState: false,
+      reason
+    });
+
+    if (!operationPlanState) {
+      return invalid(
+        "persistence_operation_release_plan_missing"
+      );
+    }
+
+    if (
+      operationPlanState.isSnapshotPersistenceOperationPlanOnly !== true ||
+      operationPlanState.isValid !== true ||
+      operationPlanState.status !==
+        "exam_result_history_persistence_operation_plan_ready" ||
+      operationPlanState.canPlanOperation !== true ||
+      operationPlanState.canExecuteStorage !== false ||
+      operationPlanState.isRequiredCapabilityAvailable !==
+        true ||
+      typeof operationPlanState.adapterReadinessFingerprint !==
+        "string" ||
+      operationPlanState.adapterReadinessFingerprint.length <
+        10
+    ) {
+      return invalid(
+        "persistence_operation_release_plan_invalid"
+      );
+    }
+
+    if (
+      !persistenceState ||
+      persistenceState.isSnapshotPersistenceContractOnly !==
+        true ||
+      persistenceState.isValid !== true ||
+      persistenceState.canExecuteStorage !== false ||
+      persistenceState.canWriteStorage !== false
+    ) {
+      return invalid(
+        "persistence_operation_release_persistence_state_invalid"
+      );
+    }
+
+    if (
+      !adapterReadinessState ||
+      adapterReadinessState.isSnapshotStorageAdapterReadinessOnly !==
+        true ||
+      adapterReadinessState.isValid !== true ||
+      adapterReadinessState.canInspectAdapter !== true ||
+      adapterReadinessState.canExecuteStorage !== false
+    ) {
+      return invalid(
+        "persistence_operation_release_readiness_state_invalid"
+      );
+    }
+
+    const currentReadinessFingerprint =
+      getParticipantFullExamResultHistorySnapshotStorageAdapterReadinessFingerprint(
+        adapterReadinessState
+      );
+
+    if (
+      typeof currentReadinessFingerprint !==
+        "string"
+    ) {
+      return invalid(
+        "persistence_operation_release_readiness_fingerprint_invalid"
+      );
+    }
+
+    if (
+      currentReadinessFingerprint !==
+      operationPlanState.adapterReadinessFingerprint
+    ) {
+      return blocked(
+        "persistence_operation_release_readiness_changed",
+        operationPlanState.operation,
+        operationPlanState.requiredCapability,
+        operationPlanState.storageKey,
+        operationPlanState.requestIdentity
+      );
+    }
+
+    const recomputedPlan =
+      mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan({
+        persistenceState,
+        adapterReadinessState
+      });
+
+    if (
+      !recomputedPlan.isValid ||
+      recomputedPlan.status !==
+        "exam_result_history_persistence_operation_plan_ready" ||
+      recomputedPlan.canPlanOperation !== true ||
+      recomputedPlan.canExecuteStorage !== false
+    ) {
+      return blocked(
+        "persistence_operation_release_recomputed_plan_not_ready",
+        operationPlanState.operation,
+        operationPlanState.requiredCapability,
+        operationPlanState.storageKey,
+        operationPlanState.requestIdentity
+      );
+    }
+
+    const planMatches =
+      recomputedPlan.operation ===
+        operationPlanState.operation &&
+      recomputedPlan.requiredCapability ===
+        operationPlanState.requiredCapability &&
+      recomputedPlan.isRequiredCapabilityAvailable ===
+        operationPlanState.isRequiredCapabilityAvailable &&
+      recomputedPlan.adapterReadinessFingerprint ===
+        operationPlanState.adapterReadinessFingerprint &&
+      recomputedPlan.storageKey ===
+        operationPlanState.storageKey &&
+      recomputedPlan.requestIdentity ===
+        operationPlanState.requestIdentity &&
+      recomputedPlan.serializedByteLength ===
+        operationPlanState.serializedByteLength &&
+      recomputedPlan.serializedJson ===
+        operationPlanState.serializedJson &&
+      recomputedPlan.hasValidatedLoadState ===
+        operationPlanState.hasValidatedLoadState;
+
+    if (!planMatches) {
+      return blocked(
+        "persistence_operation_release_plan_mismatch",
+        operationPlanState.operation,
+        operationPlanState.requiredCapability,
+        operationPlanState.storageKey,
+        operationPlanState.requestIdentity
+      );
+    }
+
+    const releaseIdentity =
+      "exam_history_persistence_release:" +
+      recomputedPlan.operation +
+      ":" +
+      recomputedPlan.requestIdentity;
+
+    return {
+      version: "v27.29z",
+      status:
+        "exam_result_history_persistence_operation_release_ready",
+      isValid: true,
+      isSnapshotPersistenceOperationReleaseOnly: true,
+      isLiveCall: false,
+      canReleaseOperation: true,
+      canExecuteStorage: false,
+      operation:
+        recomputedPlan.operation,
+      requiredCapability:
+        recomputedPlan.requiredCapability,
+      adapterReadinessFingerprint:
+        currentReadinessFingerprint,
+      storageKey:
+        recomputedPlan.storageKey,
+      requestIdentity:
+        recomputedPlan.requestIdentity,
+      releaseIdentity,
+      serializedByteLength:
+        recomputedPlan.serializedByteLength,
+      serializedJson:
+        recomputedPlan.serializedJson,
+      hasValidatedLoadState:
+        recomputedPlan.hasValidatedLoadState,
+      reason: null
+    };
+  }
+
   function mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan(input) {
     const source =
       input &&
@@ -3285,6 +3652,7 @@
       serializedByteLength: null,
       serializedJson: null,
       hasValidatedLoadState: false,
+      adapterReadinessFingerprint: null,
       reason
     });
 
@@ -3322,6 +3690,20 @@
     ) {
       return invalid(
         "persistence_operation_plan_readiness_state_invalid"
+      );
+    }
+
+    const adapterReadinessFingerprint =
+      getParticipantFullExamResultHistorySnapshotStorageAdapterReadinessFingerprint(
+        adapterReadinessState
+      );
+
+    if (
+      typeof adapterReadinessFingerprint !==
+        "string"
+    ) {
+      return invalid(
+        "persistence_operation_plan_readiness_fingerprint_invalid"
       );
     }
 
@@ -3505,6 +3887,7 @@
         serializedByteLength: null,
         serializedJson: null,
         hasValidatedLoadState: false,
+        adapterReadinessFingerprint,
         reason:
           "persistence_operation_plan_capability_unavailable"
       };
@@ -3531,6 +3914,7 @@
       serializedByteLength,
       serializedJson,
       hasValidatedLoadState,
+      adapterReadinessFingerprint,
       reason: null
     };
   }
@@ -10040,7 +10424,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.29y",
+    version: "v27.29z",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -10114,6 +10498,7 @@
     mapParticipantFullExamResultHistorySnapshotPersistenceContract,
     mapParticipantFullExamResultHistorySnapshotStorageAdapterReadiness,
     mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan,
+    mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
