@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30a
+// Stand: v27.30b
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30a",
+  "v27.30b",
   "Adapterversion"
 );
 
@@ -139,6 +139,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceOperationPlan",
   "mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState",
   "guardParticipantFullExamResultHistorySnapshotPersistenceExecution",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -3440,6 +3441,153 @@ expectEqual(
   "Manipulierte Freigabe im Ausführungs-Guard"
 );
 
+const persistenceWriteInvocation =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract({
+    executionState:
+      persistenceWriteExecution,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceWriteInvocation.status ===
+    "exam_result_history_persistence_invocation_contract_ready" &&
+  persistenceWriteInvocation.isValid === true &&
+  persistenceWriteInvocation.canBuildInvocation ===
+    true &&
+  persistenceWriteInvocation.canInvokeLater ===
+    true &&
+  persistenceWriteInvocation.canExecuteStorage ===
+    false &&
+  persistenceWriteInvocation.methodName ===
+    "write" &&
+  persistenceWriteInvocation.invocationArgumentCount ===
+    2 &&
+  persistenceWriteInvocation.serializedByteLength ===
+    persistenceWriteExecution.serializedByteLength &&
+  storageAdapterOperationCalls === 0,
+  "Write-Aufrufvertrag wurde nicht sicher erstellt"
+);
+
+expectJson(
+  persistenceWriteInvocation.invocationArgumentNames,
+  [
+    "storageKey",
+    "serializedJson"
+  ],
+  "Write-Argumentnamen"
+);
+
+expectJson(
+  persistenceWriteInvocation.invocationArguments,
+  [
+    {
+      position: 0,
+      name: "storageKey",
+      valueType: "string",
+      value:
+        persistenceSave.storageKey
+    },
+    {
+      position: 1,
+      name: "serializedJson",
+      valueType: "string",
+      value:
+        persistenceSave.serializedJson
+    }
+  ],
+  "Write-Argumenteschema"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWriteInvocation,
+    "executionState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWriteInvocation,
+    "privateField"
+  ),
+  "Ausführungsstate oder unbekanntes Feld wurde übernommen"
+);
+
+const persistenceReadInvocation =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract({
+    executionState:
+      persistenceReadExecution
+  });
+
+assert(
+  persistenceReadInvocation.canBuildInvocation ===
+    true &&
+  persistenceReadInvocation.methodName ===
+    "read" &&
+  persistenceReadInvocation.invocationArgumentCount ===
+    1 &&
+  persistenceReadInvocation.hasValidatedLoadState ===
+    true &&
+  persistenceReadInvocation.serializedByteLength ===
+    null &&
+  storageAdapterOperationCalls === 0,
+  "Read-Aufrufvertrag wurde nicht sicher erstellt"
+);
+
+expectJson(
+  persistenceReadInvocation.invocationArgumentNames,
+  [
+    "storageKey"
+  ],
+  "Read-Argumentnamen"
+);
+
+const persistenceDeleteInvocation =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract({
+    executionState:
+      persistenceDeleteExecution
+  });
+
+assert(
+  persistenceDeleteInvocation.canBuildInvocation ===
+    true &&
+  persistenceDeleteInvocation.methodName ===
+    "delete" &&
+  persistenceDeleteInvocation.invocationArgumentCount ===
+    1 &&
+  persistenceDeleteInvocation.hasValidatedLoadState ===
+    false &&
+  storageAdapterOperationCalls === 0,
+  "Delete-Aufrufvertrag wurde nicht sicher erstellt"
+);
+
+const tamperedInvocationExecution = {
+  ...persistenceWriteExecution,
+  operationArgumentCount: 1
+};
+
+const tamperedInvocation =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract({
+    executionState:
+      tamperedInvocationExecution
+  });
+
+expectEqual(
+  tamperedInvocation.reason,
+  "persistence_invocation_contract_argument_count_invalid",
+  "Manipulierte Argumentanzahl"
+);
+
+const invalidInvocation =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract({
+    executionState:
+      changedExecution
+  });
+
+expectEqual(
+  invalidInvocation.reason,
+  "persistence_invocation_contract_execution_state_invalid",
+  "Ungültiger Ausführungsstate im Aufrufvertrag"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -3508,6 +3656,9 @@ console.log(
 );
 console.log(
   "Ausführungs-Guard-Fixtures: Write, Read, Delete, verändert, Accessor und manipuliert"
+);
+console.log(
+  "Aufrufvertrag-Fixtures: Write, Read, Delete, kanonisch und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

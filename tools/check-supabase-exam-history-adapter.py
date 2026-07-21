@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30a",
+    "// stand: v27.30b",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -42,6 +42,7 @@ required_markers = (
     'version: "v27.29y"',
     'version: "v27.29z"',
     'version: "v27.30a"',
+    'version: "v27.30b"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -450,6 +451,18 @@ required_markers = (
     "canguarddatasourcesnapshotpersistenceexecutions:",
     "datasourceinitialsnapshotpersistenceexecutionstate:",
     "guardparticipantfullexamresulthistorysnapshotpersistenceexecution,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceinvocationcontract(input)",
+    '"exam_result_history_persistence_invocation_contract_ready"',
+    '"exam_result_history_persistence_invocation_contract_invalid"',
+    "issnapshotpersistenceinvocationcontractonly: true",
+    "snapshotpersistenceinvocationcontractname:",
+    "issnapshotpersistenceinvocationcontractprepared: true",
+    "canmapsnapshotpersistenceinvocationcontracts: true",
+    "datasourcesnapshotpersistenceinvocationcontractname:",
+    "isdatasourcesnapshotpersistenceinvocationcontractprepared:",
+    "canmapdatasourcesnapshotpersistenceinvocationcontracts:",
+    "datasourceinitialsnapshotpersistenceinvocationcontractstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceinvocationcontract,",
 )
 
 for marker in required_markers:
@@ -2147,6 +2160,94 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract(input)"
+) != 1:
+    fail(
+        "Persistenz-Aufrufvertrag muss genau einmal "
+        "vorhanden sein."
+    )
+
+invocation_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceinvocationcontract(input)"
+)
+execution_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistenceexecution(input)",
+    invocation_start,
+)
+invocation_block = lower[
+    invocation_start:execution_start
+]
+
+for required in (
+    "mapparticipantfullexamresulthistorysnapshotpersistencecontract({",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotdeserializationstate({",
+    'invocationschemaversion: 1',
+    'methodname',
+    'invocationarguments.push({',
+    'name: "storagekey"',
+    'name: "serializedjson"',
+    "persistence_invocation_contract_execution_state_missing",
+    "persistence_invocation_contract_execution_state_invalid",
+    "persistence_invocation_contract_operation_invalid",
+    "persistence_invocation_contract_capability_mismatch",
+    "persistence_invocation_contract_argument_count_invalid",
+    "persistence_invocation_contract_load_state_invalid",
+    "persistence_invocation_contract_readiness_fingerprint_invalid",
+    "persistence_invocation_contract_storage_key_invalid",
+    "persistence_invocation_contract_release_identity_invalid",
+    "persistence_invocation_contract_execution_identity_invalid",
+    "persistence_invocation_contract_write_payload_invalid",
+    "persistence_invocation_contract_write_size_mismatch",
+    "persistence_invocation_contract_write_payload_validation_failed",
+    "persistence_invocation_contract_unexpected_payload",
+    "persistence_invocation_contract_argument_schema_invalid",
+    "exam_history_persistence_invocation:",
+    "exam_result_history_persistence_invocation_contract_ready",
+    "exam_result_history_persistence_invocation_contract_invalid",
+    "issnapshotpersistenceinvocationcontractonly: true",
+    "caninvokelater: true",
+    "canexecutestorage: false",
+):
+    if required not in invocation_block:
+        fail(
+            "Persistenz-Aufrufvertrag-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "methodproperty.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in invocation_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Aufrufvertrag: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2228,6 +2329,7 @@ print("Persistenz-Adapter-Readiness: Read, Write und Delete ohne Aufruf geprüft
 print("Persistenz-Operationsplan: Vertrag und Adapterfähigkeit ohne Aufruf verbunden")
 print("Persistenz-Operationsfreigabe: unveränderte Readiness und Plan erneut geprüft")
 print("Persistenz-Ausführungs-Guard: Adapter und Methode ohne Aufruf erneut geprüft")
+print("Persistenz-Aufrufvertrag: kanonisches Methoden- und Argumenteschema erstellt")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
