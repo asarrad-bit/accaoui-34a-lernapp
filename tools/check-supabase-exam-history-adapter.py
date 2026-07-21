@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30c",
+    "// stand: v27.30d",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -44,6 +44,7 @@ required_markers = (
     'version: "v27.30a"',
     'version: "v27.30b"',
     'version: "v27.30c"',
+    'version: "v27.30d"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -476,6 +477,22 @@ required_markers = (
     "canmapdatasourcesnapshotpersistenceinvocationpackages:",
     "datasourceinitialsnapshotpersistenceinvocationpackagestate:",
     "mapparticipantfullexamresulthistorysnapshotpersistenceinvocationpackagestate,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceresultcontract(input)",
+    '"exam_result_history_persistence_result_read_ready"',
+    '"exam_result_history_persistence_result_read_empty"',
+    '"exam_result_history_persistence_result_write_confirmed"',
+    '"exam_result_history_persistence_result_delete_confirmed"',
+    '"exam_result_history_persistence_result_delete_absent"',
+    '"exam_result_history_persistence_result_contract_invalid"',
+    "issnapshotpersistenceresultcontractonly: true",
+    "snapshotpersistenceresultcontractname:",
+    "issnapshotpersistenceresultcontractprepared: true",
+    "canmapsnapshotpersistenceresults: true",
+    "datasourcesnapshotpersistenceresultcontractname:",
+    "isdatasourcesnapshotpersistenceresultcontractprepared:",
+    "canmapdatasourcesnapshotpersistenceresults:",
+    "datasourceinitialsnapshotpersistenceresultstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceresultcontract,",
 )
 
 for marker in required_markers:
@@ -2348,6 +2365,102 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceResultContract(input)"
+) != 1:
+    fail(
+        "Persistenz-Ergebnisvertrag muss genau einmal "
+        "vorhanden sein."
+    )
+
+result_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceresultcontract(input)"
+)
+package_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceinvocationpackagestate(input)",
+    result_start,
+)
+result_block = lower[
+    result_start:package_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecontract({",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotdeserializationstate({",
+    "const maximumresultbytes = 4096",
+    "resultschemaversion: 1",
+    "persistence_result_package_missing",
+    "persistence_result_value_missing",
+    "persistence_result_package_invalid",
+    "persistence_result_operation_invalid",
+    "persistence_result_storage_key_invalid",
+    "persistence_result_identity_invalid",
+    "persistence_result_argument_schema_invalid",
+    "persistence_result_storage_key_argument_invalid",
+    "persistence_result_write_payload_size_invalid",
+    "persistence_result_write_payload_invalid",
+    "persistence_result_unexpected_payload_size",
+    "persistence_result_read_value_invalid",
+    "persistence_result_read_size_invalid",
+    "persistence_result_read_identity_mismatch",
+    "persistence_result_write_confirmation_invalid",
+    "persistence_result_delete_confirmation_invalid",
+    "exam_result_history_persistence_result_read_ready",
+    "exam_result_history_persistence_result_read_empty",
+    "exam_result_history_persistence_result_write_confirmed",
+    "exam_result_history_persistence_result_delete_confirmed",
+    "exam_result_history_persistence_result_delete_absent",
+    "exam_result_history_persistence_result_contract_invalid",
+    "issnapshotpersistenceresultcontractonly: true",
+    "canexecutestorage: false",
+    "canresumesnapshot: true",
+    "snapshotpayload:",
+    "resumestate:",
+):
+    if required not in result_block:
+        fail(
+            "Persistenz-Ergebnisvertrag-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "methodproperty.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+    "operationresult.error",
+    "operationresult.message",
+    "operationresult.details",
+):
+    if forbidden in result_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Ergebnisvertrag: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2431,6 +2544,7 @@ print("Persistenz-Operationsfreigabe: unveränderte Readiness und Plan erneut ge
 print("Persistenz-Ausführungs-Guard: Adapter und Methode ohne Aufruf erneut geprüft")
 print("Persistenz-Aufrufvertrag: kanonisches Methoden- und Argumenteschema erstellt")
 print("Persistenz-Aufrufpaket: Guard, Vertrag und Adapter erneut geschlossen verbunden")
+print("Persistenz-Ergebnisvertrag: Read, Write und Delete getrennt normalisiert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

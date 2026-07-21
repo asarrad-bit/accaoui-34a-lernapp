@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30c
+// Stand: v27.30d
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30c",
+  "v27.30d",
   "Adapterversion"
 );
 
@@ -141,6 +141,7 @@ for (const functionName of [
   "guardParticipantFullExamResultHistorySnapshotPersistenceExecution",
   "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract",
   "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceResultContract",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -3779,6 +3780,178 @@ expectEqual(
   "Manipulierter Ausführungsstate im Aufrufpaket"
 );
 
+const persistenceReadResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      persistenceReadPackage,
+    operationResult:
+      persistenceSave.serializedJson,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceReadResult.status ===
+    "exam_result_history_persistence_result_read_ready" &&
+  persistenceReadResult.isValid === true &&
+  persistenceReadResult.canAcceptResult ===
+    true &&
+  persistenceReadResult.canResumeSnapshot ===
+    true &&
+  persistenceReadResult.didRead === true &&
+  persistenceReadResult.snapshotPayload &&
+  persistenceReadResult.resumeState.canResume ===
+    true &&
+  persistenceReadResult.requestIdentity ===
+    persistenceReadPackage.requestIdentity &&
+  storageAdapterOperationCalls === 0,
+  "Read-Ergebnis wurde nicht sicher normalisiert"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadResult,
+    "operationResult"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadResult,
+    "serializedJson"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadResult,
+    "privateField"
+  ),
+  "Roher Rückgabewert oder unbekanntes Ergebnisfeld wurde übernommen"
+);
+
+const persistenceReadEmptyResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      persistenceReadPackage,
+    operationResult:
+      null
+  });
+
+assert(
+  persistenceReadEmptyResult.status ===
+    "exam_result_history_persistence_result_read_empty" &&
+  persistenceReadEmptyResult.didRead ===
+    true &&
+  persistenceReadEmptyResult.isEmpty ===
+    true &&
+  persistenceReadEmptyResult.canResumeSnapshot ===
+    false,
+  "Leeres Read-Ergebnis wurde nicht sicher normalisiert"
+);
+
+const persistenceWriteResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      persistenceWritePackage,
+    operationResult:
+      true
+  });
+
+assert(
+  persistenceWriteResult.status ===
+    "exam_result_history_persistence_result_write_confirmed" &&
+  persistenceWriteResult.didWrite ===
+    true &&
+  persistenceWriteResult.serializedByteLength ===
+    persistenceWritePackage.serializedByteLength &&
+  persistenceWriteResult.canExecuteStorage ===
+    false &&
+  storageAdapterOperationCalls === 0,
+  "Write-Ergebnis wurde nicht sicher bestätigt"
+);
+
+const persistenceDeleteResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      persistenceDeletePackage,
+    operationResult:
+      true
+  });
+
+assert(
+  persistenceDeleteResult.status ===
+    "exam_result_history_persistence_result_delete_confirmed" &&
+  persistenceDeleteResult.didDelete ===
+    true &&
+  persistenceDeleteResult.wasAlreadyAbsent ===
+    false &&
+  storageAdapterOperationCalls === 0,
+  "Delete-Ergebnis wurde nicht sicher bestätigt"
+);
+
+const persistenceDeleteAbsentResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      persistenceDeletePackage,
+    operationResult:
+      false
+  });
+
+assert(
+  persistenceDeleteAbsentResult.status ===
+    "exam_result_history_persistence_result_delete_absent" &&
+  persistenceDeleteAbsentResult.didDelete ===
+    false &&
+  persistenceDeleteAbsentResult.wasAlreadyAbsent ===
+    true &&
+  persistenceDeleteAbsentResult.isEmpty ===
+    true,
+  "Bereits fehlender Snapshot wurde nicht idempotent normalisiert"
+);
+
+const invalidWriteResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      persistenceWritePackage,
+    operationResult:
+      false
+  });
+
+expectEqual(
+  invalidWriteResult.reason,
+  "persistence_result_write_confirmation_invalid",
+  "Ungültige Write-Bestätigung"
+);
+
+const invalidReadResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      persistenceReadPackage,
+    operationResult:
+      persistenceSave.serializedJson + " "
+  });
+
+expectEqual(
+  invalidReadResult.reason,
+  "snapshot_deserialization_json_not_canonical",
+  "Nicht kanonischer Read-Rückgabewert"
+);
+
+const tamperedResultPackage = {
+  ...persistenceReadPackage,
+  invocationPackageIdentity:
+    "exam_history_persistence_invocation_package:read:manipuliert"
+};
+
+const tamperedPackageResult =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceResultContract({
+    invocationPackageState:
+      tamperedResultPackage,
+    operationResult:
+      persistenceSave.serializedJson
+  });
+
+expectEqual(
+  tamperedPackageResult.reason,
+  "persistence_result_identity_invalid",
+  "Manipuliertes Aufrufpaket im Ergebnisvertrag"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -3853,6 +4026,9 @@ console.log(
 );
 console.log(
   "Aufrufpaket-Fixtures: Write, Read, Delete, veränderter Adapter und manipuliert"
+);
+console.log(
+  "Ergebnisvertrag-Fixtures: Read, leer, Write, Delete, nicht vorhanden und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

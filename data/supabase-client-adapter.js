@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.30c
+// Stand: v27.30d
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1852,6 +1852,11 @@
       isSnapshotPersistenceInvocationPackagePrepared: true,
       canMapSnapshotPersistenceInvocationPackages: true,
       initialSnapshotPersistenceInvocationPackageState: null,
+      snapshotPersistenceResultContractName:
+        "mapParticipantFullExamResultHistorySnapshotPersistenceResultContract",
+      isSnapshotPersistenceResultContractPrepared: true,
+      canMapSnapshotPersistenceResults: true,
+      initialSnapshotPersistenceResultState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -1989,6 +1994,10 @@
       isDataSourceSnapshotPersistenceInvocationPackagePrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceInvocationPackagePrepared === true,
       canMapDataSourceSnapshotPersistenceInvocationPackages: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceInvocationPackages === true,
       dataSourceInitialSnapshotPersistenceInvocationPackageState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceInvocationPackageState,
+      dataSourceSnapshotPersistenceResultContractName: participantDashboardExamHistoryDataSourceState.snapshotPersistenceResultContractName,
+      isDataSourceSnapshotPersistenceResultContractPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceResultContractPrepared === true,
+      canMapDataSourceSnapshotPersistenceResults: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceResults === true,
+      dataSourceInitialSnapshotPersistenceResultState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceResultState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3279,6 +3288,549 @@
 
     return ready(
       paginationState.nextOffset
+    );
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotPersistenceResultContract(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const maximumResultBytes = 4096;
+
+    const inspectOwnDataProperty = (
+      target,
+      propertyName
+    ) => {
+      try {
+        const descriptor =
+          Object.getOwnPropertyDescriptor(
+            target,
+            propertyName
+          );
+
+        if (
+          !descriptor ||
+          !Object.prototype.hasOwnProperty.call(
+            descriptor,
+            "value"
+          )
+        ) {
+          return {
+            isValid: false,
+            value: null
+          };
+        }
+
+        return {
+          isValid: true,
+          value:
+            descriptor.value
+        };
+      } catch (_error) {
+        return {
+          isValid: false,
+          value: null
+        };
+      }
+    };
+
+    const invalid = (reason) => ({
+      version: "v27.30d",
+      status:
+        "exam_result_history_persistence_result_contract_invalid",
+      isValid: false,
+      isSnapshotPersistenceResultContractOnly: true,
+      isLiveCall: false,
+      canAcceptResult: false,
+      canResumeSnapshot: false,
+      canExecuteStorage: false,
+      resultSchemaVersion: 1,
+      maximumResultBytes,
+      operation: null,
+      methodName: null,
+      storageKey: null,
+      requestIdentity: null,
+      invocationIdentity: null,
+      invocationPackageIdentity: null,
+      didRead: false,
+      didWrite: false,
+      didDelete: false,
+      wasAlreadyAbsent: false,
+      isEmpty: false,
+      serializedByteLength: null,
+      snapshotPayload: null,
+      resumeState: null,
+      reason
+    });
+
+    const ready = (
+      status,
+      packageState,
+      overrides = {}
+    ) => ({
+      version: "v27.30d",
+      status,
+      isValid: true,
+      isSnapshotPersistenceResultContractOnly: true,
+      isLiveCall: false,
+      canAcceptResult: true,
+      canResumeSnapshot: false,
+      canExecuteStorage: false,
+      resultSchemaVersion: 1,
+      maximumResultBytes,
+      operation:
+        packageState.operation,
+      methodName:
+        packageState.methodName,
+      storageKey:
+        packageState.storageKey,
+      requestIdentity:
+        packageState.requestIdentity,
+      invocationIdentity:
+        packageState.invocationIdentity,
+      invocationPackageIdentity:
+        packageState.invocationPackageIdentity,
+      didRead: false,
+      didWrite: false,
+      didDelete: false,
+      wasAlreadyAbsent: false,
+      isEmpty: false,
+      serializedByteLength: null,
+      snapshotPayload: null,
+      resumeState: null,
+      reason: null,
+      ...overrides
+    });
+
+    const packageProperty =
+      inspectOwnDataProperty(
+        source,
+        "invocationPackageState"
+      );
+
+    const resultProperty =
+      inspectOwnDataProperty(
+        source,
+        "operationResult"
+      );
+
+    if (!packageProperty.isValid) {
+      return invalid(
+        "persistence_result_package_missing"
+      );
+    }
+
+    if (!resultProperty.isValid) {
+      return invalid(
+        "persistence_result_value_missing"
+      );
+    }
+
+    const packageState =
+      packageProperty.value;
+
+    const operationResult =
+      resultProperty.value;
+
+    if (
+      !packageState ||
+      typeof packageState !== "object" ||
+      Array.isArray(packageState) ||
+      packageState.isSnapshotPersistenceInvocationPackageOnly !==
+        true ||
+      packageState.isValid !== true ||
+      packageState.status !==
+        "exam_result_history_persistence_invocation_package_ready" ||
+      packageState.canPrepareInvocationPackage !==
+        true ||
+      packageState.canInvokeLater !== true ||
+      packageState.canExecuteStorage !== false ||
+      packageState.isMethodReferenceValidated !==
+        true ||
+      packageState.invocationPackageSchemaVersion !==
+        1
+    ) {
+      return invalid(
+        "persistence_result_package_invalid"
+      );
+    }
+
+    const operationConfig = {
+      read: {
+        methodName: "read",
+        requiredCapability: "read",
+        argumentNames: [
+          "storageKey"
+        ],
+        hasValidatedLoadState: true
+      },
+      write: {
+        methodName: "write",
+        requiredCapability: "write",
+        argumentNames: [
+          "storageKey",
+          "serializedJson"
+        ],
+        hasValidatedLoadState: false
+      },
+      delete: {
+        methodName: "delete",
+        requiredCapability: "delete",
+        argumentNames: [
+          "storageKey"
+        ],
+        hasValidatedLoadState: false
+      }
+    };
+
+    const config =
+      operationConfig[
+        packageState.operation
+      ];
+
+    if (
+      !config ||
+      packageState.methodName !==
+        config.methodName ||
+      packageState.requiredCapability !==
+        config.requiredCapability ||
+      packageState.hasValidatedLoadState !==
+        config.hasValidatedLoadState
+    ) {
+      return invalid(
+        "persistence_result_operation_invalid"
+      );
+    }
+
+    if (
+      typeof packageState.adapterReadinessFingerprint !==
+        "string" ||
+      packageState.adapterReadinessFingerprint.length <
+        10
+    ) {
+      return invalid(
+        "persistence_result_readiness_fingerprint_invalid"
+      );
+    }
+
+    const canonicalKeyState =
+      mapParticipantFullExamResultHistorySnapshotPersistenceContract({
+        intent: "delete",
+        storageKey:
+          packageState.storageKey
+      });
+
+    if (
+      !canonicalKeyState.isValid ||
+      canonicalKeyState.canPrepareDelete !==
+        true ||
+      canonicalKeyState.storageKey !==
+        packageState.storageKey ||
+      canonicalKeyState.requestIdentity !==
+        packageState.requestIdentity
+    ) {
+      return invalid(
+        "persistence_result_storage_key_invalid"
+      );
+    }
+
+    const expectedReleaseIdentity =
+      "exam_history_persistence_release:" +
+      packageState.operation +
+      ":" +
+      canonicalKeyState.requestIdentity;
+
+    const expectedExecutionIdentity =
+      "exam_history_persistence_execution:" +
+      packageState.operation +
+      ":" +
+      canonicalKeyState.requestIdentity;
+
+    const expectedInvocationIdentity =
+      "exam_history_persistence_invocation:" +
+      packageState.operation +
+      ":" +
+      canonicalKeyState.requestIdentity;
+
+    const expectedPackageIdentity =
+      "exam_history_persistence_invocation_package:" +
+      packageState.operation +
+      ":" +
+      canonicalKeyState.requestIdentity;
+
+    if (
+      packageState.releaseIdentity !==
+        expectedReleaseIdentity ||
+      packageState.executionIdentity !==
+        expectedExecutionIdentity ||
+      packageState.invocationIdentity !==
+        expectedInvocationIdentity ||
+      packageState.invocationPackageIdentity !==
+        expectedPackageIdentity
+    ) {
+      return invalid(
+        "persistence_result_identity_invalid"
+      );
+    }
+
+    if (
+      !Array.isArray(
+        packageState.invocationArgumentNames
+      ) ||
+      !Array.isArray(
+        packageState.invocationArguments
+      ) ||
+      packageState.invocationArgumentCount !==
+        config.argumentNames.length ||
+      packageState.invocationArguments.length !==
+        config.argumentNames.length ||
+      JSON.stringify(
+        packageState.invocationArgumentNames
+      ) !==
+        JSON.stringify(
+          config.argumentNames
+        )
+    ) {
+      return invalid(
+        "persistence_result_argument_schema_invalid"
+      );
+    }
+
+    const canonicalArguments = [];
+
+    for (
+      let index = 0;
+      index <
+        packageState.invocationArguments.length;
+      index += 1
+    ) {
+      const argument =
+        packageState.invocationArguments[
+          index
+        ];
+
+      if (
+        !argument ||
+        typeof argument !== "object" ||
+        Array.isArray(argument) ||
+        argument.position !== index ||
+        argument.name !==
+          config.argumentNames[index] ||
+        argument.valueType !==
+          "string" ||
+        typeof argument.value !==
+          "string"
+      ) {
+        return invalid(
+          "persistence_result_argument_schema_invalid"
+        );
+      }
+
+      canonicalArguments.push({
+        position:
+          argument.position,
+        name:
+          argument.name,
+        valueType:
+          argument.valueType,
+        value:
+          argument.value
+      });
+    }
+
+    if (
+      canonicalArguments[0].value !==
+      canonicalKeyState.storageKey
+    ) {
+      return invalid(
+        "persistence_result_storage_key_argument_invalid"
+      );
+    }
+
+    let writeSerializedByteLength = null;
+
+    if (packageState.operation === "write") {
+      const serializedJson =
+        canonicalArguments[1].value;
+
+      const actualByteLength =
+        getParticipantFullExamResultHistorySnapshotUtf8ByteLength(
+          serializedJson
+        );
+
+      if (
+        !Number.isSafeInteger(
+          packageState.serializedByteLength
+        ) ||
+        packageState.serializedByteLength < 1 ||
+        actualByteLength !==
+          packageState.serializedByteLength
+      ) {
+        return invalid(
+          "persistence_result_write_payload_size_invalid"
+        );
+      }
+
+      const deserializationState =
+        mapParticipantFullExamResultHistorySnapshotDeserializationState({
+          serializedJson
+        });
+
+      if (
+        !deserializationState.isValid ||
+        deserializationState.canDeserialize !==
+          true ||
+        deserializationState.canResume !== true ||
+        deserializationState.requestIdentity !==
+          canonicalKeyState.requestIdentity ||
+        deserializationState.serializedByteLength !==
+          actualByteLength
+      ) {
+        return invalid(
+          "persistence_result_write_payload_invalid"
+        );
+      }
+
+      writeSerializedByteLength =
+        actualByteLength;
+    } else if (
+      packageState.serializedByteLength !==
+        null
+    ) {
+      return invalid(
+        "persistence_result_unexpected_payload_size"
+      );
+    }
+
+    if (packageState.operation === "read") {
+      if (operationResult === null) {
+        return ready(
+          "exam_result_history_persistence_result_read_empty",
+          packageState,
+          {
+            didRead: true,
+            isEmpty: true
+          }
+        );
+      }
+
+      if (
+        typeof operationResult !== "string"
+      ) {
+        return invalid(
+          "persistence_result_read_value_invalid"
+        );
+      }
+
+      const resultByteLength =
+        getParticipantFullExamResultHistorySnapshotUtf8ByteLength(
+          operationResult
+        );
+
+      if (
+        !Number.isSafeInteger(
+          resultByteLength
+        ) ||
+        resultByteLength < 1 ||
+        resultByteLength >
+          maximumResultBytes
+      ) {
+        return invalid(
+          "persistence_result_read_size_invalid"
+        );
+      }
+
+      const deserializationState =
+        mapParticipantFullExamResultHistorySnapshotDeserializationState({
+          serializedJson:
+            operationResult
+        });
+
+      if (
+        !deserializationState.isValid ||
+        deserializationState.canDeserialize !==
+          true ||
+        deserializationState.canResume !== true
+      ) {
+        return invalid(
+          deserializationState.reason ||
+            "persistence_result_read_snapshot_invalid"
+        );
+      }
+
+      if (
+        deserializationState.requestIdentity !==
+        canonicalKeyState.requestIdentity
+      ) {
+        return invalid(
+          "persistence_result_read_identity_mismatch"
+        );
+      }
+
+      return ready(
+        "exam_result_history_persistence_result_read_ready",
+        packageState,
+        {
+          canResumeSnapshot: true,
+          didRead: true,
+          serializedByteLength:
+            deserializationState.serializedByteLength,
+          snapshotPayload:
+            deserializationState.snapshotPayload,
+          resumeState:
+            deserializationState.resumeState
+        }
+      );
+    }
+
+    if (packageState.operation === "write") {
+      if (operationResult !== true) {
+        return invalid(
+          "persistence_result_write_confirmation_invalid"
+        );
+      }
+
+      return ready(
+        "exam_result_history_persistence_result_write_confirmed",
+        packageState,
+        {
+          didWrite: true,
+          serializedByteLength:
+            writeSerializedByteLength
+        }
+      );
+    }
+
+    if (
+      typeof operationResult !==
+        "boolean"
+    ) {
+      return invalid(
+        "persistence_result_delete_confirmation_invalid"
+      );
+    }
+
+    if (operationResult) {
+      return ready(
+        "exam_result_history_persistence_result_delete_confirmed",
+        packageState,
+        {
+          didDelete: true
+        }
+      );
+    }
+
+    return ready(
+      "exam_result_history_persistence_result_delete_absent",
+      packageState,
+      {
+        wasAlreadyAbsent: true,
+        isEmpty: true
+      }
     );
   }
 
@@ -11605,7 +12157,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.30c",
+    version: "v27.30d",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -11683,6 +12235,7 @@
     guardParticipantFullExamResultHistorySnapshotPersistenceExecution,
     mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract,
     mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState,
+    mapParticipantFullExamResultHistorySnapshotPersistenceResultContract,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
