@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30f
+Stand: v27.30g
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -746,6 +746,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_COMPLETION_STATE_TEST.md`
 
+## Persistenz-Zyklusstate v27.30g
+
+Aufrufpaket, Ergebnisvertrag, Ergebnisannahme und terminaler
+Abschluss können jetzt als zusammenhängender Persistenzzyklus
+geprüft werden.
+
+Ergebnisannahme und Abschluss werden vollständig neu berechnet.
+Alle Zustände, Schlüssel und Identitäten müssen exakt
+übereinstimmen. Keine Storage- oder UI-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_STATE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -836,11 +850,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30f` kann ein sicherer
-lokaler Persistenz-Zyklusstate vorbereitet werden, der
-Aufrufpaket, Ergebnisvertrag, Ergebnisannahme und terminalen
-Abschluss zusammenhängend prüft, weiterhin ohne Storage- oder
-UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30g` kann ein sicherer
+lokaler Persistenz-Zyklus-Wiederholungs-Guard vorbereitet werden,
+der bereits terminal abgeschlossene Zyklusidentitäten erkennt und
+eine doppelte Ergebnisanwendung geschlossen blockiert, weiterhin
+ohne Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -859,5 +873,5 @@ Persistenz-Operationsplan-State,
 Persistenz-Operationsfreigabe-State,
 Persistenz-Ausführungs-Guard, Persistenz-Aufrufvertrag,
 Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag,
-Persistenz-Ergebnisannahme-Guard und Persistenz-Abschlussstate
-vorbereitet; keine Live-Ausführung
+Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate und
+Persistenz-Zyklusstate vorbereitet; keine Live-Ausführung

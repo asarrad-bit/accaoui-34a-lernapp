@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30f",
+    "// stand: v27.30g",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -47,6 +47,7 @@ required_markers = (
     'version: "v27.30d"',
     'version: "v27.30e"',
     'version: "v27.30f"',
+    'version: "v27.30g"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -524,6 +525,18 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecompletionstates:",
     "datasourceinitialsnapshotpersistencecompletionstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecompletionstate,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecyclestate(input)",
+    '"exam_result_history_persistence_cycle_completed"',
+    '"exam_result_history_persistence_cycle_invalid"',
+    "issnapshotpersistencecyclemapperonly: true",
+    "snapshotpersistencecyclemappername:",
+    "issnapshotpersistencecyclemapperprepared: true",
+    "canmapsnapshotpersistencecyclestates: true",
+    "datasourcesnapshotpersistencecyclemappername:",
+    "isdatasourcesnapshotpersistencecyclemapperprepared:",
+    "canmapdatasourcesnapshotpersistencecyclestates:",
+    "datasourceinitialsnapshotpersistencecyclestate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecyclestate,",
 )
 
 for marker in required_markers:
@@ -2671,6 +2684,94 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCycleState(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusstate muss genau einmal "
+        "vorhanden sein."
+    )
+
+cycle_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecyclestate(input)"
+)
+completion_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecompletionstate(input)",
+    cycle_start,
+)
+cycle_block = lower[
+    cycle_start:completion_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "guardparticipantfullexamresulthistorysnapshotpersistenceresultacceptance({",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecompletionstate({",
+    "json.stringify(",
+    "persistence_cycle_invocation_package_missing",
+    "persistence_cycle_result_contract_missing",
+    "persistence_cycle_acceptance_state_missing",
+    "persistence_cycle_completion_state_missing",
+    "persistence_cycle_invocation_package_invalid",
+    "persistence_cycle_result_contract_invalid",
+    "persistence_cycle_acceptance_state_invalid",
+    "persistence_cycle_completion_state_invalid",
+    "persistence_cycle_recomputed_acceptance_not_ready",
+    "persistence_cycle_acceptance_state_mismatch",
+    "persistence_cycle_recomputed_completion_invalid",
+    "persistence_cycle_completion_state_mismatch",
+    "persistence_cycle_identity_mismatch",
+    "exam_history_persistence_cycle:",
+    "exam_result_history_persistence_cycle_completed",
+    "exam_result_history_persistence_cycle_invalid",
+    "issnapshotpersistencecyclemapperonly: true",
+    "cycleschemaversion: 1",
+    "canfinalizecycle: true",
+    "isterminal: true",
+    "issuccessful: true",
+    "canexecutestorage: false",
+):
+    if required not in cycle_block:
+        fail(
+            "Persistenz-Zyklus-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+    "resultcontractstate.error",
+    "resultcontractstate.message",
+    "resultcontractstate.details",
+):
+    if forbidden in cycle_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Zyklusstate: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2757,6 +2858,7 @@ print("Persistenz-Aufrufpaket: Guard, Vertrag und Adapter erneut geschlossen ver
 print("Persistenz-Ergebnisvertrag: Read, Write und Delete getrennt normalisiert")
 print("Persistenz-Ergebnisannahme: nur Ergebnisse des aktuellen Aufrufpakets akzeptiert")
 print("Persistenz-Abschlussstate: angenommene Ergebnisse terminal und sicher abgeschlossen")
+print("Persistenz-Zyklusstate: Aufrufpaket bis Abschluss zusammenhängend geprüft")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

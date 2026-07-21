@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30f
+// Stand: v27.30g
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30f",
+  "v27.30g",
   "Adapterversion"
 );
 
@@ -144,6 +144,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceResultContract",
   "guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -4275,6 +4276,224 @@ expectEqual(
   "Manipulierter Read-Abschlussstate"
 );
 
+const persistenceReadCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceReadPackage,
+    resultContractState:
+      persistenceReadResult,
+    acceptanceState:
+      acceptedReadResult,
+    completionState:
+      persistenceReadCompletion,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceReadCycle.status ===
+    "exam_result_history_persistence_cycle_completed" &&
+  persistenceReadCycle.isValid === true &&
+  persistenceReadCycle.canFinalizeCycle ===
+    true &&
+  persistenceReadCycle.isTerminal ===
+    true &&
+  persistenceReadCycle.isSuccessful ===
+    true &&
+  persistenceReadCycle.terminalOutcome ===
+    "read_ready" &&
+  persistenceReadCycle.canResumeSnapshot ===
+    true &&
+  persistenceReadCycle.resumeState.canResume ===
+    true &&
+  persistenceReadCycle.canExecuteStorage ===
+    false &&
+  storageAdapterOperationCalls === 0,
+  "Read-Persistenzzyklus wurde nicht sicher abgeschlossen"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadCycle,
+    "invocationPackageState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadCycle,
+    "resultContractState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadCycle,
+    "acceptanceState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadCycle,
+    "completionState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadCycle,
+    "privateField"
+  ),
+  "Interne Persistenzzyklus-Felder wurden übernommen"
+);
+
+const persistenceReadEmptyCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceReadPackage,
+    resultContractState:
+      persistenceReadEmptyResult,
+    acceptanceState:
+      acceptedEmptyReadResult,
+    completionState:
+      persistenceReadEmptyCompletion
+  });
+
+assert(
+  persistenceReadEmptyCycle.terminalOutcome ===
+    "read_empty" &&
+  persistenceReadEmptyCycle.didRead ===
+    true &&
+  persistenceReadEmptyCycle.isEmpty ===
+    true &&
+  persistenceReadEmptyCycle.canResumeSnapshot ===
+    false,
+  "Leerer Read-Zyklus wurde nicht sicher abgeschlossen"
+);
+
+const persistenceWriteCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceWritePackage,
+    resultContractState:
+      persistenceWriteResult,
+    acceptanceState:
+      acceptedWriteResult,
+    completionState:
+      persistenceWriteCompletion
+  });
+
+assert(
+  persistenceWriteCycle.terminalOutcome ===
+    "write_confirmed" &&
+  persistenceWriteCycle.didWrite ===
+    true &&
+  persistenceWriteCycle.serializedByteLength ===
+    persistenceWritePackage.serializedByteLength &&
+  storageAdapterOperationCalls === 0,
+  "Write-Persistenzzyklus wurde nicht sicher abgeschlossen"
+);
+
+const persistenceDeleteCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceDeletePackage,
+    resultContractState:
+      persistenceDeleteResult,
+    acceptanceState:
+      acceptedDeleteResult,
+    completionState:
+      persistenceDeleteCompletion
+  });
+
+assert(
+  persistenceDeleteCycle.terminalOutcome ===
+    "delete_confirmed" &&
+  persistenceDeleteCycle.didDelete ===
+    true &&
+  persistenceDeleteCycle.wasAlreadyAbsent ===
+    false,
+  "Delete-Persistenzzyklus wurde nicht sicher abgeschlossen"
+);
+
+const persistenceDeleteAbsentCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceDeletePackage,
+    resultContractState:
+      persistenceDeleteAbsentResult,
+    acceptanceState:
+      acceptedDeleteAbsentResult,
+    completionState:
+      persistenceDeleteAbsentCompletion
+  });
+
+assert(
+  persistenceDeleteAbsentCycle.terminalOutcome ===
+    "delete_absent" &&
+  persistenceDeleteAbsentCycle.didDelete ===
+    false &&
+  persistenceDeleteAbsentCycle.wasAlreadyAbsent ===
+    true &&
+  persistenceDeleteAbsentCycle.isEmpty ===
+    true,
+  "Idempotenter Delete-Zyklus wurde nicht sicher abgeschlossen"
+);
+
+const tamperedCycleAcceptance = {
+  ...acceptedReadResult,
+  didRead: false
+};
+
+const tamperedAcceptanceCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceReadPackage,
+    resultContractState:
+      persistenceReadResult,
+    acceptanceState:
+      tamperedCycleAcceptance,
+    completionState:
+      persistenceReadCompletion
+  });
+
+expectEqual(
+  tamperedAcceptanceCycle.reason,
+  "persistence_cycle_acceptance_state_mismatch",
+  "Manipulierter Ergebnisannahme-State im Zyklus"
+);
+
+const tamperedCycleCompletion = {
+  ...persistenceReadCompletion,
+  terminalOutcome:
+    "read_empty"
+};
+
+const tamperedCompletionCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceReadPackage,
+    resultContractState:
+      persistenceReadResult,
+    acceptanceState:
+      acceptedReadResult,
+    completionState:
+      tamperedCycleCompletion
+  });
+
+expectEqual(
+  tamperedCompletionCycle.reason,
+  "persistence_cycle_completion_state_mismatch",
+  "Manipulierter Abschlussstate im Zyklus"
+);
+
+const stalePersistenceCycle =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleState({
+    invocationPackageState:
+      persistenceDeletePackage,
+    resultContractState:
+      persistenceReadResult,
+    acceptanceState:
+      stalePersistenceResult,
+    completionState:
+      persistenceDeleteAbsentCompletion
+  });
+
+expectEqual(
+  stalePersistenceCycle.reason,
+  "persistence_cycle_acceptance_state_invalid",
+  "Veraltetes Ergebnis im Persistenzzyklus"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -4358,6 +4577,9 @@ console.log(
 );
 console.log(
   "Abschluss-Fixtures: Read, leer, Write, Delete, idempotent, veraltet und manipuliert"
+);
+console.log(
+  "Zyklus-Fixtures: Read, leer, Write, Delete, idempotent, veraltet und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
