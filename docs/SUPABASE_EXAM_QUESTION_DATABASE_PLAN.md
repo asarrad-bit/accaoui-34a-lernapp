@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30n
+Stand: v27.30o
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -859,6 +859,19 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_OPERATION_PLAN_TEST.md`
 
+## Zyklusregister-Persistenz-Operationsfreigabe v27.30o
+
+Ein Zyklusregister-Operationsplan kann jetzt nur mit derselben
+erneut berechneten Adapter-Readiness freigegeben werden.
+
+Readiness-Fingerprint, benötigte Fähigkeit, Operationsidentitäten
+und Save-Payload werden erneut geprüft. Blockierte Pläne bleiben
+geschlossen blockiert. Keine Adaptermethode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_OPERATION_RELEASE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -949,11 +962,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30n` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Operationsfreigabe-State
-vorbereitet werden, der den Operationsplan mit derselben erneut
-geprüften Adapter-Readiness verbindet, weiterhin ohne Methoden-,
-Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30o` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Ausführungs-Guard vorbereitet
+werden, der Freigabe und denselben injizierten Adapter unmittelbar
+vor einem späteren Methodenaufruf erneut prüft, weiterhin ohne
+Methoden-, Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -978,6 +991,7 @@ Persistenz-Zyklusregister-State,
 Persistenz-Zyklusregister-Serialisierungsstate,
 Persistenz-Zyklusregister-Deserialisierungsstate,
 Persistenz-Zyklusregister-Vertrag,
-Zyklusregister-Storage-Adapter-Readiness-State und
-Zyklusregister-Persistenz-Operationsplan-State vorbereitet;
+Zyklusregister-Storage-Adapter-Readiness-State,
+Zyklusregister-Persistenz-Operationsplan-State und
+Zyklusregister-Persistenz-Operationsfreigabe-State vorbereitet;
 keine Live-Ausführung

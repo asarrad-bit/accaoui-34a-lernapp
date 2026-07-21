@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30n
+// Stand: v27.30o
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30n",
+  "v27.30o",
   "Adapterversion"
 );
 
@@ -152,6 +152,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -5791,6 +5792,246 @@ assert(
   "Zyklusregister-Operationsplan-Getter wurde nicht blockiert"
 );
 
+const registrySaveOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState({
+    operationPlanState:
+      registrySaveOperationPlan,
+    storageAdapter:
+      fullRegistryStorageAdapter,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  registrySaveOperationRelease.status ===
+    "exam_result_history_persistence_cycle_registry_operation_release_ready" &&
+  registrySaveOperationRelease.isValid ===
+    true &&
+  registrySaveOperationRelease.canReleaseOperation ===
+    true &&
+  registrySaveOperationRelease.canInvokeLater ===
+    true &&
+  registrySaveOperationRelease.isCapabilityAvailable ===
+    true &&
+  registrySaveOperationRelease.isMethodReferenceValidated ===
+    true &&
+  registrySaveOperationRelease.canReleaseSave ===
+    true &&
+  registrySaveOperationRelease.canReleaseLoad ===
+    false &&
+  registrySaveOperationRelease.canReleaseDelete ===
+    false &&
+  registrySaveOperationRelease.operation ===
+    "write" &&
+  registrySaveOperationRelease.methodName ===
+    "write" &&
+  registrySaveOperationRelease.serializedJson ===
+    registrySaveOperationPlan.serializedJson &&
+  registrySaveOperationRelease.canExecuteStorage ===
+    false &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Save-Operation wurde nicht sicher freigegeben"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveOperationRelease,
+    "operationPlanState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveOperationRelease,
+    "storageAdapter"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveOperationRelease,
+    "privateField"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveOperationRelease,
+    "write"
+  ),
+  "Adapter oder Methodenreferenz wurde in Freigabe übernommen"
+);
+
+const registryLoadOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState({
+    operationPlanState:
+      registryLoadOperationPlan,
+    storageAdapter:
+      partialRegistryStorageAdapter
+  });
+
+assert(
+  registryLoadOperationRelease.status ===
+    "exam_result_history_persistence_cycle_registry_operation_release_ready" &&
+  registryLoadOperationRelease.canReleaseLoad ===
+    true &&
+  registryLoadOperationRelease.operation ===
+    "read" &&
+  registryLoadOperationRelease.methodName ===
+    "read" &&
+  registryLoadOperationRelease.isMethodReferenceValidated ===
+    true &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Load-Operation wurde nicht sicher freigegeben"
+);
+
+const registryDeleteBlockedOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState({
+    operationPlanState:
+      registryDeleteBlockedOperationPlan,
+    storageAdapter:
+      partialRegistryStorageAdapter
+  });
+
+assert(
+  registryDeleteBlockedOperationRelease.status ===
+    "exam_result_history_persistence_cycle_registry_operation_release_blocked" &&
+  registryDeleteBlockedOperationRelease.isValid ===
+    true &&
+  registryDeleteBlockedOperationRelease.canReleaseOperation ===
+    false &&
+  registryDeleteBlockedOperationRelease.canInvokeLater ===
+    false &&
+  registryDeleteBlockedOperationRelease.isCapabilityAvailable ===
+    false &&
+  registryDeleteBlockedOperationRelease.isMethodReferenceValidated ===
+    false &&
+  registryDeleteBlockedOperationRelease.reason ===
+    "persistence_cycle_registry_operation_release_capability_unavailable" &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Blockierte Delete-Operation wurde nicht geschlossen beibehalten"
+);
+
+const registryDeleteOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState({
+    operationPlanState:
+      registryDeleteOperationPlan,
+    storageAdapter:
+      fullRegistryStorageAdapter
+  });
+
+assert(
+  registryDeleteOperationRelease.status ===
+    "exam_result_history_persistence_cycle_registry_operation_release_ready" &&
+  registryDeleteOperationRelease.canReleaseDelete ===
+    true &&
+  registryDeleteOperationRelease.operation ===
+    "delete" &&
+  registryDeleteOperationRelease.methodName ===
+    "delete" &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Delete-Operation wurde nicht sicher freigegeben"
+);
+
+const mismatchedRegistryOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState({
+    operationPlanState:
+      registrySaveOperationPlan,
+    storageAdapter:
+      partialRegistryStorageAdapter
+  });
+
+expectEqual(
+  mismatchedRegistryOperationRelease.reason,
+  "persistence_cycle_registry_operation_release_readiness_mismatch",
+  "Abweichende Adapter-Readiness in Operationsfreigabe"
+);
+
+const tamperedRegistryOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState({
+    operationPlanState: {
+      ...registrySaveOperationPlan,
+      operationPlanIdentity:
+        "exam_history_persistence_cycle_registry_operation_plan:load:v1"
+    },
+    storageAdapter:
+      fullRegistryStorageAdapter
+  });
+
+expectEqual(
+  tamperedRegistryOperationRelease.reason,
+  "persistence_cycle_registry_operation_release_plan_invalid",
+  "Manipulierte Operationsplan-Identität"
+);
+
+let registryOperationReleaseAccessorReads = 0;
+
+const registryOperationReleaseAccessorInput = {};
+
+Object.defineProperty(
+  registryOperationReleaseAccessorInput,
+  "operationPlanState",
+  {
+    enumerable: true,
+    get() {
+      registryOperationReleaseAccessorReads +=
+        1;
+
+      throw new Error(
+        "Zyklusregister-Freigabe darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorRegistryOperationRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState(
+    registryOperationReleaseAccessorInput
+  );
+
+assert(
+  accessorRegistryOperationRelease.reason ===
+    "persistence_cycle_registry_operation_release_plan_accessor_not_allowed" &&
+  registryOperationReleaseAccessorReads ===
+    0 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Freigabe-Getter wurde nicht blockiert"
+);
+
+let registryReleaseMethodAccessorReads = 0;
+
+const accessorRegistryReleaseAdapter = {};
+
+Object.defineProperty(
+  accessorRegistryReleaseAdapter,
+  "read",
+  {
+    enumerable: true,
+    get() {
+      registryReleaseMethodAccessorReads +=
+        1;
+
+      throw new Error(
+        "Zyklusregister-Adapter-Getter darf nicht ausgeführt werden."
+      );
+    }
+  }
+);
+
+const accessorRegistryMethodRelease =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState({
+    operationPlanState:
+      registryLoadOperationPlan,
+    storageAdapter:
+      accessorRegistryReleaseAdapter
+  });
+
+assert(
+  accessorRegistryMethodRelease.reason ===
+    "persistence_cycle_registry_operation_release_adapter_readiness_invalid" &&
+  registryReleaseMethodAccessorReads ===
+    0 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Methoden-Getter wurde nicht blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -5898,6 +6139,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Operationsplan-Fixtures: Save, Load, Delete, blockiert, manipuliert und Accessor"
+);
+console.log(
+  "Zyklusregister-Operationsfreigabe-Fixtures: Save, Load, Delete, blockiert, abweichend und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

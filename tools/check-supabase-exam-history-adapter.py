@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30n",
+    "// stand: v27.30o",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -55,6 +55,7 @@ required_markers = (
     'version: "v27.30l"',
     'version: "v27.30m"',
     'version: "v27.30n"',
+    'version: "v27.30o"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -637,6 +638,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistryoperationplanstates:",
     "datasourceinitialsnapshotpersistencecycleregistryoperationplanstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationplanstate,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationreleasestate(input)",
+    '"exam_result_history_persistence_cycle_registry_operation_release_ready"',
+    '"exam_result_history_persistence_cycle_registry_operation_release_blocked"',
+    '"exam_result_history_persistence_cycle_registry_operation_release_invalid"',
+    "issnapshotpersistencecycleregistryoperationreleasemapperonly: true",
+    "snapshotpersistencecycleregistryoperationreleasemappername:",
+    "issnapshotpersistencecycleregistryoperationreleasemapperprepared: true",
+    "canmapsnapshotpersistencecycleregistryoperationreleasestates: true",
+    "datasourcesnapshotpersistencecycleregistryoperationreleasemappername:",
+    "isdatasourcesnapshotpersistencecycleregistryoperationreleasemapperprepared:",
+    "canmapdatasourcesnapshotpersistencecycleregistryoperationreleasestates:",
+    "datasourceinitialsnapshotpersistencecycleregistryoperationreleasestate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationreleasestate,",
 )
 
 for marker in required_markers:
@@ -3481,6 +3495,97 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Operationsfreigabe-State "
+        "muss genau einmal vorhanden sein."
+    )
+
+registry_operation_release_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationreleasestate(input)"
+)
+registry_operation_plan_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationplanstate(input)",
+    registry_operation_release_start,
+)
+registry_operation_release_block = lower[
+    registry_operation_release_start:
+    registry_operation_plan_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrydeserializationstate({",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystorageadapterreadinessstate({",
+    "const operationreleaseversion = 1",
+    "persistence_cycle_registry_operation_release_plan_missing",
+    "persistence_cycle_registry_operation_release_adapter_missing",
+    "persistence_cycle_registry_operation_release_plan_invalid",
+    "persistence_cycle_registry_operation_release_save_payload_invalid",
+    "persistence_cycle_registry_operation_release_save_size_mismatch",
+    "persistence_cycle_registry_operation_release_save_round_trip_invalid",
+    "persistence_cycle_registry_operation_release_payload_unexpected",
+    "persistence_cycle_registry_operation_release_adapter_readiness_invalid",
+    "persistence_cycle_registry_operation_release_readiness_mismatch",
+    "persistence_cycle_registry_operation_release_plan_state_invalid",
+    "persistence_cycle_registry_operation_release_capability_unavailable",
+    "persistence_cycle_registry_operation_release_method_invalid",
+    "exam_result_history_persistence_cycle_registry_operation_release_ready",
+    "exam_result_history_persistence_cycle_registry_operation_release_blocked",
+    "exam_result_history_persistence_cycle_registry_operation_release_invalid",
+    "exam_history_persistence_cycle_registry_operation_release:",
+    "issnapshotpersistencecycleregistryoperationreleasemapperonly: true",
+    "canreleaseoperation",
+    "caninvokelater:",
+    "ismethodreferencevalidated",
+    "canreleasesave:",
+    "canreleaseload:",
+    "canreleasedelete:",
+    "canexecutestorage: false",
+):
+    if required not in registry_operation_release_block:
+        fail(
+            "Persistenz-Zyklusregister-Operationsfreigabe-"
+            f"Anweisung fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "methodproperty.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in registry_operation_release_block:
+        fail(
+            "Unzulässiger Inhalt im Zyklusregister-"
+            "Operationsfreigabe-State: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -3575,6 +3680,7 @@ print("Persistenz-Zyklusregister-Deserialisierung: Größe vor Parsing begrenzt 
 print("Persistenz-Zyklusregister-Vertrag: Save, Load und Delete im eigenen Namensraum vorbereitet")
 print("Persistenz-Zyklusregister-Adapter-Readiness: nur eigene Datenmethoden geprüft")
 print("Persistenz-Zyklusregister-Operationsplan: Save, Load und Delete mit Adapterfähigkeiten verbunden")
+print("Persistenz-Zyklusregister-Operationsfreigabe: Operationsplan mit derselben Adapter-Readiness verbunden")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

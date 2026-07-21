@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.30n
+// Stand: v27.30o
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1907,6 +1907,11 @@
       isSnapshotPersistenceCycleRegistryOperationPlanMapperPrepared: true,
       canMapSnapshotPersistenceCycleRegistryOperationPlanStates: true,
       initialSnapshotPersistenceCycleRegistryOperationPlanState: null,
+      snapshotPersistenceCycleRegistryOperationReleaseMapperName:
+        "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState",
+      isSnapshotPersistenceCycleRegistryOperationReleaseMapperPrepared: true,
+      canMapSnapshotPersistenceCycleRegistryOperationReleaseStates: true,
+      initialSnapshotPersistenceCycleRegistryOperationReleaseState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -2088,6 +2093,10 @@
       isDataSourceSnapshotPersistenceCycleRegistryOperationPlanMapperPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceCycleRegistryOperationPlanMapperPrepared === true,
       canMapDataSourceSnapshotPersistenceCycleRegistryOperationPlanStates: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceCycleRegistryOperationPlanStates === true,
       dataSourceInitialSnapshotPersistenceCycleRegistryOperationPlanState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceCycleRegistryOperationPlanState,
+      dataSourceSnapshotPersistenceCycleRegistryOperationReleaseMapperName: participantDashboardExamHistoryDataSourceState.snapshotPersistenceCycleRegistryOperationReleaseMapperName,
+      isDataSourceSnapshotPersistenceCycleRegistryOperationReleaseMapperPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceCycleRegistryOperationReleaseMapperPrepared === true,
+      canMapDataSourceSnapshotPersistenceCycleRegistryOperationReleaseStates: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceCycleRegistryOperationReleaseStates === true,
+      dataSourceInitialSnapshotPersistenceCycleRegistryOperationReleaseState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceCycleRegistryOperationReleaseState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3379,6 +3388,651 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const operationReleaseVersion = 1;
+
+    const storageNamespace =
+      "accaoui:exam_history:persistence_cycle_registry";
+
+    const storageKey =
+      storageNamespace +
+      ":v1";
+
+    const registryIdentity =
+      "exam_history_persistence_cycle_registry:v1";
+
+    const maximumSerializedBytes = 32768;
+
+    const maximumCompletedCycleIdentities =
+      100;
+
+    const inspectOwnDataProperty = (
+      target,
+      propertyName
+    ) => {
+      try {
+        const descriptor =
+          Object.getOwnPropertyDescriptor(
+            target,
+            propertyName
+          );
+
+        if (!descriptor) {
+          return {
+            isPresent: false,
+            isValid: true,
+            value: null
+          };
+        }
+
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            descriptor,
+            "value"
+          )
+        ) {
+          return {
+            isPresent: true,
+            isValid: false,
+            value: null
+          };
+        }
+
+        return {
+          isPresent: true,
+          isValid: true,
+          value:
+            descriptor.value
+        };
+      } catch (_error) {
+        return {
+          isPresent: true,
+          isValid: false,
+          value: null
+        };
+      }
+    };
+
+    const readRequiredFields = (
+      target,
+      fieldNames
+    ) => {
+      const fields = {};
+
+      for (
+        let index = 0;
+        index < fieldNames.length;
+        index += 1
+      ) {
+        const fieldName =
+          fieldNames[index];
+
+        const property =
+          inspectOwnDataProperty(
+            target,
+            fieldName
+          );
+
+        if (
+          !property.isPresent ||
+          !property.isValid
+        ) {
+          return {
+            isValid: false,
+            fields: {}
+          };
+        }
+
+        fields[fieldName] =
+          property.value;
+      }
+
+      return {
+        isValid: true,
+        fields
+      };
+    };
+
+    const createState = ({
+      status,
+      isValid,
+      canReleaseOperation,
+      isCapabilityAvailable,
+      isMethodReferenceValidated,
+      intent = null,
+      operation = null,
+      methodName = null,
+      requiredCapability = null,
+      readinessFingerprint = null,
+      completedCycleCount = null,
+      serializedByteLength = null,
+      serializedJson = null,
+      contractIdentity = null,
+      operationPlanIdentity = null,
+      operationReleaseIdentity = null,
+      reason
+    }) => ({
+      version: "v27.30o",
+      status,
+      isValid,
+      isSnapshotPersistenceCycleRegistryOperationReleaseMapperOnly: true,
+      isLiveCall: false,
+      canReleaseOperation,
+      canInvokeLater:
+        canReleaseOperation,
+      isCapabilityAvailable,
+      isMethodReferenceValidated,
+      canReleaseSave:
+        canReleaseOperation &&
+        intent === "save",
+      canReleaseLoad:
+        canReleaseOperation &&
+        intent === "load",
+      canReleaseDelete:
+        canReleaseOperation &&
+        intent === "delete",
+      canExecuteStorage: false,
+      operationReleaseVersion,
+      intent,
+      operation,
+      methodName,
+      requiredCapability,
+      storageNamespace,
+      storageKey,
+      registryIdentity,
+      maximumSerializedBytes,
+      maximumCompletedCycleIdentities,
+      readinessFingerprint,
+      completedCycleCount,
+      serializedByteLength,
+      serializedJson,
+      contractIdentity,
+      operationPlanIdentity,
+      operationReleaseIdentity,
+      reason
+    });
+
+    const invalid = (reason) =>
+      createState({
+        status:
+          "exam_result_history_persistence_cycle_registry_operation_release_invalid",
+        isValid: false,
+        canReleaseOperation: false,
+        isCapabilityAvailable: false,
+        isMethodReferenceValidated: false,
+        reason
+      });
+
+    const planProperty =
+      inspectOwnDataProperty(
+        source,
+        "operationPlanState"
+      );
+
+    const adapterProperty =
+      inspectOwnDataProperty(
+        source,
+        "storageAdapter"
+      );
+
+    if (!planProperty.isPresent) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_plan_missing"
+      );
+    }
+
+    if (!planProperty.isValid) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_plan_accessor_not_allowed"
+      );
+    }
+
+    if (!adapterProperty.isPresent) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_adapter_missing"
+      );
+    }
+
+    if (!adapterProperty.isValid) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_adapter_accessor_not_allowed"
+      );
+    }
+
+    const operationPlanState =
+      planProperty.value;
+
+    const storageAdapter =
+      adapterProperty.value;
+
+    if (
+      !operationPlanState ||
+      typeof operationPlanState !==
+        "object" ||
+      Array.isArray(
+        operationPlanState
+      )
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_plan_invalid"
+      );
+    }
+
+    if (
+      !storageAdapter ||
+      typeof storageAdapter !== "object" ||
+      Array.isArray(storageAdapter)
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_adapter_invalid"
+      );
+    }
+
+    const fieldsState =
+      readRequiredFields(
+        operationPlanState,
+        [
+          "status",
+          "isValid",
+          "isSnapshotPersistenceCycleRegistryOperationPlanMapperOnly",
+          "isLiveCall",
+          "canPrepareOperation",
+          "canInvokeLater",
+          "isCapabilityAvailable",
+          "canPlanSave",
+          "canPlanLoad",
+          "canPlanDelete",
+          "canExecuteStorage",
+          "operationPlanVersion",
+          "intent",
+          "operation",
+          "methodName",
+          "requiredCapability",
+          "storageNamespace",
+          "storageKey",
+          "registryIdentity",
+          "maximumSerializedBytes",
+          "maximumCompletedCycleIdentities",
+          "readinessFingerprint",
+          "completedCycleCount",
+          "serializedByteLength",
+          "serializedJson",
+          "contractIdentity",
+          "operationPlanIdentity",
+          "reason"
+        ]
+      );
+
+    if (!fieldsState.isValid) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_plan_fields_invalid"
+      );
+    }
+
+    const fields =
+      fieldsState.fields;
+
+    const intentConfig = {
+      save: {
+        operation: "write",
+        methodName: "write",
+        requiredCapability: "write"
+      },
+      load: {
+        operation: "read",
+        methodName: "read",
+        requiredCapability: "read"
+      },
+      delete: {
+        operation: "delete",
+        methodName: "delete",
+        requiredCapability: "delete"
+      }
+    };
+
+    const config =
+      intentConfig[
+        fields.intent
+      ];
+
+    if (
+      !config ||
+      fields.isValid !== true ||
+      fields.isSnapshotPersistenceCycleRegistryOperationPlanMapperOnly !==
+        true ||
+      fields.isLiveCall !== false ||
+      fields.canExecuteStorage !== false ||
+      fields.operationPlanVersion !== 1 ||
+      fields.operation !==
+        config.operation ||
+      fields.methodName !==
+        config.methodName ||
+      fields.requiredCapability !==
+        config.requiredCapability ||
+      fields.storageNamespace !==
+        storageNamespace ||
+      fields.storageKey !==
+        storageKey ||
+      fields.registryIdentity !==
+        registryIdentity ||
+      fields.maximumSerializedBytes !==
+        maximumSerializedBytes ||
+      fields.maximumCompletedCycleIdentities !==
+        maximumCompletedCycleIdentities ||
+      fields.contractIdentity !==
+        (
+          "exam_history_persistence_cycle_registry_contract:" +
+          fields.intent +
+          ":v1"
+        ) ||
+      fields.operationPlanIdentity !==
+        (
+          "exam_history_persistence_cycle_registry_operation_plan:" +
+          fields.intent +
+          ":v1"
+        )
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_plan_invalid"
+      );
+    }
+
+    let completedCycleCount = null;
+    let serializedByteLength = null;
+    let serializedJson = null;
+
+    if (fields.intent === "save") {
+      if (
+        !Number.isInteger(
+          fields.completedCycleCount
+        ) ||
+        fields.completedCycleCount < 0 ||
+        fields.completedCycleCount >
+          maximumCompletedCycleIdentities ||
+        !Number.isSafeInteger(
+          fields.serializedByteLength
+        ) ||
+        fields.serializedByteLength < 1 ||
+        fields.serializedByteLength >
+          maximumSerializedBytes ||
+        typeof fields.serializedJson !==
+          "string"
+      ) {
+        return invalid(
+          "persistence_cycle_registry_operation_release_save_payload_invalid"
+        );
+      }
+
+      const actualByteLength =
+        getParticipantFullExamResultHistorySnapshotUtf8ByteLength(
+          fields.serializedJson
+        );
+
+      if (
+        actualByteLength !==
+          fields.serializedByteLength
+      ) {
+        return invalid(
+          "persistence_cycle_registry_operation_release_save_size_mismatch"
+        );
+      }
+
+      const deserializationState =
+        mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState({
+          serializedJson:
+            fields.serializedJson
+        });
+
+      if (
+        !deserializationState.isValid ||
+        deserializationState.canDeserializeRegistry !==
+          true ||
+        deserializationState.canUseRegistry !==
+          true ||
+        deserializationState.canPersistLater !==
+          true ||
+        deserializationState.canExecuteStorage !==
+          false ||
+        deserializationState.registryIdentity !==
+          registryIdentity ||
+        deserializationState.completedCycleCount !==
+          fields.completedCycleCount ||
+        deserializationState.serializedByteLength !==
+          actualByteLength
+      ) {
+        return invalid(
+          "persistence_cycle_registry_operation_release_save_round_trip_invalid"
+        );
+      }
+
+      completedCycleCount =
+        fields.completedCycleCount;
+
+      serializedByteLength =
+        actualByteLength;
+
+      serializedJson =
+        fields.serializedJson;
+    } else if (
+      fields.completedCycleCount !== null ||
+      fields.serializedByteLength !== null ||
+      fields.serializedJson !== null
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_payload_unexpected"
+      );
+    }
+
+    const recomputedReadiness =
+      mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState({
+        storageAdapter
+      });
+
+    if (
+      !recomputedReadiness.isValid ||
+      recomputedReadiness.isSnapshotPersistenceCycleRegistryStorageAdapterReadinessMapperOnly !==
+        true ||
+      recomputedReadiness.isLiveCall !==
+        false ||
+      recomputedReadiness.canExecuteStorage !==
+        false ||
+      recomputedReadiness.readinessVersion !==
+        1 ||
+      recomputedReadiness.adapterMode !==
+        "own_data_methods_only" ||
+      typeof recomputedReadiness.readinessFingerprint !==
+        "string" ||
+      recomputedReadiness.reason !== null
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_adapter_readiness_invalid"
+      );
+    }
+
+    if (
+      recomputedReadiness.readinessFingerprint !==
+        fields.readinessFingerprint
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_readiness_mismatch"
+      );
+    }
+
+    const capabilityState = {
+      read:
+        recomputedReadiness.canPrepareRead ===
+        true,
+      write:
+        recomputedReadiness.canPrepareWrite ===
+        true,
+      delete:
+        recomputedReadiness.canPrepareDelete ===
+        true
+    };
+
+    const isCapabilityAvailable =
+      capabilityState[
+        config.requiredCapability
+      ] === true;
+
+    const isReadyPlan =
+      fields.status ===
+        "exam_result_history_persistence_cycle_registry_operation_plan_ready" &&
+      fields.canPrepareOperation ===
+        true &&
+      fields.canInvokeLater ===
+        true &&
+      fields.isCapabilityAvailable ===
+        true &&
+      fields.reason === null;
+
+    const isBlockedPlan =
+      fields.status ===
+        "exam_result_history_persistence_cycle_registry_operation_plan_blocked" &&
+      fields.canPrepareOperation ===
+        false &&
+      fields.canInvokeLater ===
+        false &&
+      fields.isCapabilityAvailable ===
+        false &&
+      fields.canPlanSave === false &&
+      fields.canPlanLoad === false &&
+      fields.canPlanDelete === false &&
+      fields.reason ===
+        "persistence_cycle_registry_operation_plan_capability_unavailable";
+
+    if (!isReadyPlan && !isBlockedPlan) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_plan_state_invalid"
+      );
+    }
+
+    const expectedPlanFlags = {
+      save:
+        fields.intent === "save",
+      load:
+        fields.intent === "load",
+      delete:
+        fields.intent === "delete"
+    };
+
+    if (
+      isReadyPlan &&
+      (
+        fields.canPlanSave !==
+          expectedPlanFlags.save ||
+        fields.canPlanLoad !==
+          expectedPlanFlags.load ||
+        fields.canPlanDelete !==
+          expectedPlanFlags.delete
+      )
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_plan_flags_invalid"
+      );
+    }
+
+    const operationReleaseIdentity =
+      "exam_history_persistence_cycle_registry_operation_release:" +
+      fields.intent +
+      ":v1";
+
+    if (isBlockedPlan) {
+      if (isCapabilityAvailable) {
+        return invalid(
+          "persistence_cycle_registry_operation_release_blocked_capability_mismatch"
+        );
+      }
+
+      return createState({
+        status:
+          "exam_result_history_persistence_cycle_registry_operation_release_blocked",
+        isValid: true,
+        canReleaseOperation: false,
+        isCapabilityAvailable: false,
+        isMethodReferenceValidated: false,
+        intent:
+          fields.intent,
+        operation:
+          fields.operation,
+        methodName:
+          fields.methodName,
+        requiredCapability:
+          fields.requiredCapability,
+        readinessFingerprint:
+          recomputedReadiness.readinessFingerprint,
+        completedCycleCount,
+        serializedByteLength,
+        serializedJson,
+        contractIdentity:
+          fields.contractIdentity,
+        operationPlanIdentity:
+          fields.operationPlanIdentity,
+        operationReleaseIdentity,
+        reason:
+          "persistence_cycle_registry_operation_release_capability_unavailable"
+      });
+    }
+
+    if (!isCapabilityAvailable) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_capability_mismatch"
+      );
+    }
+
+    const methodProperty =
+      inspectOwnDataProperty(
+        storageAdapter,
+        config.methodName
+      );
+
+    if (
+      !methodProperty.isPresent ||
+      !methodProperty.isValid ||
+      typeof methodProperty.value !==
+        "function"
+    ) {
+      return invalid(
+        "persistence_cycle_registry_operation_release_method_invalid"
+      );
+    }
+
+    return createState({
+      status:
+        "exam_result_history_persistence_cycle_registry_operation_release_ready",
+      isValid: true,
+      canReleaseOperation: true,
+      isCapabilityAvailable: true,
+      isMethodReferenceValidated: true,
+      intent:
+        fields.intent,
+      operation:
+        fields.operation,
+      methodName:
+        fields.methodName,
+      requiredCapability:
+        fields.requiredCapability,
+      readinessFingerprint:
+        recomputedReadiness.readinessFingerprint,
+      completedCycleCount,
+      serializedByteLength,
+      serializedJson,
+      contractIdentity:
+        fields.contractIdentity,
+      operationPlanIdentity:
+        fields.operationPlanIdentity,
+      operationReleaseIdentity,
+      reason: null
+    });
   }
 
   function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState(input) {
@@ -17190,7 +17844,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.30n",
+    version: "v27.30o",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -17279,6 +17933,7 @@
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract,
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState,
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationPlanState,
+    mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryOperationReleaseState,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
