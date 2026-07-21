@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30l
+// Stand: v27.30m
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30l",
+  "v27.30m",
   "Adapterversion"
 );
 
@@ -150,6 +150,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -5335,6 +5336,260 @@ assert(
   "Zyklusregister-Vertrags-Getter wurde nicht blockiert"
 );
 
+let registryStorageAdapterOperationCalls = 0;
+
+const fullRegistryStorageAdapter = {
+  read(_storageKey) {
+    registryStorageAdapterOperationCalls +=
+      1;
+
+    return null;
+  },
+
+  write(
+    _storageKey,
+    _serializedJson
+  ) {
+    registryStorageAdapterOperationCalls +=
+      1;
+
+    return true;
+  },
+
+  delete(_storageKey) {
+    registryStorageAdapterOperationCalls +=
+      1;
+
+    return true;
+  },
+
+  privateField:
+    "nicht übernehmen"
+};
+
+const fullRegistryStorageAdapterReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState({
+    storageAdapter:
+      fullRegistryStorageAdapter,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  fullRegistryStorageAdapterReadiness.status ===
+    "exam_result_history_persistence_cycle_registry_storage_adapter_ready" &&
+  fullRegistryStorageAdapterReadiness.isValid ===
+    true &&
+  fullRegistryStorageAdapterReadiness.canUseAdapter ===
+    true &&
+  fullRegistryStorageAdapterReadiness.isFullyReady ===
+    true &&
+  fullRegistryStorageAdapterReadiness.canPrepareRead ===
+    true &&
+  fullRegistryStorageAdapterReadiness.canPrepareWrite ===
+    true &&
+  fullRegistryStorageAdapterReadiness.canPrepareDelete ===
+    true &&
+  fullRegistryStorageAdapterReadiness.availableCapabilityCount ===
+    3 &&
+  fullRegistryStorageAdapterReadiness.canExecuteStorage ===
+    false &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Vollständiger Zyklusregister-Adapter wurde nicht sicher erkannt"
+);
+
+expectJson(
+  fullRegistryStorageAdapterReadiness.availableCapabilities,
+  [
+    "read",
+    "write",
+    "delete"
+  ],
+  "Verfügbare Zyklusregister-Adapterfähigkeiten"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    fullRegistryStorageAdapterReadiness,
+    "storageAdapter"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    fullRegistryStorageAdapterReadiness,
+    "read"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    fullRegistryStorageAdapterReadiness,
+    "write"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    fullRegistryStorageAdapterReadiness,
+    "delete"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    fullRegistryStorageAdapterReadiness,
+    "privateField"
+  ),
+  "Adapter oder Methodenreferenzen wurden übernommen"
+);
+
+const partialRegistryStorageAdapter = {
+  read(_storageKey) {
+    registryStorageAdapterOperationCalls +=
+      1;
+
+    return null;
+  }
+};
+
+const partialRegistryStorageAdapterReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState({
+    storageAdapter:
+      partialRegistryStorageAdapter
+  });
+
+assert(
+  partialRegistryStorageAdapterReadiness.status ===
+    "exam_result_history_persistence_cycle_registry_storage_adapter_partial" &&
+  partialRegistryStorageAdapterReadiness.isValid ===
+    true &&
+  partialRegistryStorageAdapterReadiness.canUseAdapter ===
+    true &&
+  partialRegistryStorageAdapterReadiness.isFullyReady ===
+    false &&
+  partialRegistryStorageAdapterReadiness.canPrepareRead ===
+    true &&
+  partialRegistryStorageAdapterReadiness.canPrepareWrite ===
+    false &&
+  partialRegistryStorageAdapterReadiness.canPrepareDelete ===
+    false &&
+  partialRegistryStorageAdapterReadiness.availableCapabilityCount ===
+    1 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Teilweiser Zyklusregister-Adapter wurde nicht korrekt erkannt"
+);
+
+const inheritedRegistryStorageAdapterPrototype = {
+  read(_storageKey) {
+    registryStorageAdapterOperationCalls +=
+      1;
+
+    return null;
+  },
+
+  write(
+    _storageKey,
+    _serializedJson
+  ) {
+    registryStorageAdapterOperationCalls +=
+      1;
+
+    return true;
+  },
+
+  delete(_storageKey) {
+    registryStorageAdapterOperationCalls +=
+      1;
+
+    return true;
+  }
+};
+
+const inheritedRegistryStorageAdapter =
+  Object.create(
+    inheritedRegistryStorageAdapterPrototype
+  );
+
+const inheritedRegistryStorageAdapterReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState({
+    storageAdapter:
+      inheritedRegistryStorageAdapter
+  });
+
+assert(
+  inheritedRegistryStorageAdapterReadiness.status ===
+    "exam_result_history_persistence_cycle_registry_storage_adapter_unavailable" &&
+  inheritedRegistryStorageAdapterReadiness.isValid ===
+    true &&
+  inheritedRegistryStorageAdapterReadiness.canUseAdapter ===
+    false &&
+  inheritedRegistryStorageAdapterReadiness.availableCapabilityCount ===
+    0 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Geerbte Zyklusregister-Methoden wurden nicht ausgeschlossen"
+);
+
+const emptyRegistryStorageAdapterReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState({
+    storageAdapter: {}
+  });
+
+assert(
+  emptyRegistryStorageAdapterReadiness.status ===
+    "exam_result_history_persistence_cycle_registry_storage_adapter_unavailable" &&
+  emptyRegistryStorageAdapterReadiness.isValid ===
+    true &&
+  emptyRegistryStorageAdapterReadiness.canUseAdapter ===
+    false &&
+  emptyRegistryStorageAdapterReadiness.isFullyReady ===
+    false &&
+  emptyRegistryStorageAdapterReadiness.availableCapabilityCount ===
+    0,
+  "Leerer Zyklusregister-Adapter wurde nicht geschlossen erkannt"
+);
+
+const invalidRegistryStorageAdapterReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState({
+    storageAdapter: {
+      read:
+        "keine Funktion"
+    }
+  });
+
+expectEqual(
+  invalidRegistryStorageAdapterReadiness.reason,
+  "persistence_cycle_registry_storage_adapter_read_method_invalid",
+  "Ungültige Zyklusregister-Read-Methode"
+);
+
+let registryStorageAdapterAccessorReads = 0;
+
+const accessorRegistryStorageAdapter = {};
+
+Object.defineProperty(
+  accessorRegistryStorageAdapter,
+  "read",
+  {
+    enumerable: true,
+    get() {
+      registryStorageAdapterAccessorReads +=
+        1;
+
+      throw new Error(
+        "Zyklusregister-Adapter darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorRegistryStorageAdapterReadiness =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState({
+    storageAdapter:
+      accessorRegistryStorageAdapter
+  });
+
+assert(
+  accessorRegistryStorageAdapterReadiness.reason ===
+    "persistence_cycle_registry_storage_adapter_read_accessor_not_allowed" &&
+  registryStorageAdapterAccessorReads ===
+    0 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Adapter-Getter wurde nicht blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -5436,6 +5691,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Vertrags-Fixtures: Save, Load, Delete, manipuliert und Accessor"
+);
+console.log(
+  "Zyklusregister-Adapter-Readiness-Fixtures: vollständig, teilweise, leer, geerbt, ungültig und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

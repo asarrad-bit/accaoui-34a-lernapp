@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.30l
+// Stand: v27.30m
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1897,6 +1897,11 @@
       isSnapshotPersistenceCycleRegistryContractPrepared: true,
       canMapSnapshotPersistenceCycleRegistryIntents: true,
       initialSnapshotPersistenceCycleRegistryContractState: null,
+      snapshotPersistenceCycleRegistryStorageAdapterReadinessMapperName:
+        "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState",
+      isSnapshotPersistenceCycleRegistryStorageAdapterReadinessMapperPrepared: true,
+      canMapSnapshotPersistenceCycleRegistryStorageAdapterReadinessStates: true,
+      initialSnapshotPersistenceCycleRegistryStorageAdapterReadinessState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -2070,6 +2075,10 @@
       isDataSourceSnapshotPersistenceCycleRegistryContractPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceCycleRegistryContractPrepared === true,
       canMapDataSourceSnapshotPersistenceCycleRegistryIntents: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceCycleRegistryIntents === true,
       dataSourceInitialSnapshotPersistenceCycleRegistryContractState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceCycleRegistryContractState,
+      dataSourceSnapshotPersistenceCycleRegistryStorageAdapterReadinessMapperName: participantDashboardExamHistoryDataSourceState.snapshotPersistenceCycleRegistryStorageAdapterReadinessMapperName,
+      isDataSourceSnapshotPersistenceCycleRegistryStorageAdapterReadinessMapperPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceCycleRegistryStorageAdapterReadinessMapperPrepared === true,
+      canMapDataSourceSnapshotPersistenceCycleRegistryStorageAdapterReadinessStates: participantDashboardExamHistoryDataSourceState.canMapSnapshotPersistenceCycleRegistryStorageAdapterReadinessStates === true,
+      dataSourceInitialSnapshotPersistenceCycleRegistryStorageAdapterReadinessState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceCycleRegistryStorageAdapterReadinessState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3361,6 +3370,254 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const readinessVersion = 1;
+
+    const inspectOwnDataProperty = (
+      target,
+      propertyName
+    ) => {
+      try {
+        const descriptor =
+          Object.getOwnPropertyDescriptor(
+            target,
+            propertyName
+          );
+
+        if (!descriptor) {
+          return {
+            isPresent: false,
+            isValid: true,
+            value: null
+          };
+        }
+
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            descriptor,
+            "value"
+          )
+        ) {
+          return {
+            isPresent: true,
+            isValid: false,
+            value: null
+          };
+        }
+
+        return {
+          isPresent: true,
+          isValid: true,
+          value:
+            descriptor.value
+        };
+      } catch (_error) {
+        return {
+          isPresent: true,
+          isValid: false,
+          value: null
+        };
+      }
+    };
+
+    const invalid = (reason) => ({
+      version: "v27.30m",
+      status:
+        "exam_result_history_persistence_cycle_registry_storage_adapter_invalid",
+      isValid: false,
+      isSnapshotPersistenceCycleRegistryStorageAdapterReadinessMapperOnly: true,
+      isLiveCall: false,
+      canUseAdapter: false,
+      isFullyReady: false,
+      canPrepareRead: false,
+      canPrepareWrite: false,
+      canPrepareDelete: false,
+      canExecuteStorage: false,
+      readinessVersion,
+      adapterMode:
+        "own_data_methods_only",
+      availableCapabilityCount: 0,
+      availableCapabilities: [],
+      unavailableCapabilities: [
+        "read",
+        "write",
+        "delete"
+      ],
+      readinessFingerprint: null,
+      reason
+    });
+
+    const adapterProperty =
+      inspectOwnDataProperty(
+        source,
+        "storageAdapter"
+      );
+
+    if (!adapterProperty.isPresent) {
+      return invalid(
+        "persistence_cycle_registry_storage_adapter_missing"
+      );
+    }
+
+    if (!adapterProperty.isValid) {
+      return invalid(
+        "persistence_cycle_registry_storage_adapter_accessor_not_allowed"
+      );
+    }
+
+    const storageAdapter =
+      adapterProperty.value;
+
+    if (
+      !storageAdapter ||
+      typeof storageAdapter !== "object" ||
+      Array.isArray(storageAdapter)
+    ) {
+      return invalid(
+        "persistence_cycle_registry_storage_adapter_invalid"
+      );
+    }
+
+    const capabilityNames = [
+      "read",
+      "write",
+      "delete"
+    ];
+
+    const capabilityState = {
+      read: false,
+      write: false,
+      delete: false
+    };
+
+    const availableCapabilities = [];
+    const unavailableCapabilities = [];
+
+    for (
+      let index = 0;
+      index < capabilityNames.length;
+      index += 1
+    ) {
+      const capabilityName =
+        capabilityNames[index];
+
+      const property =
+        inspectOwnDataProperty(
+          storageAdapter,
+          capabilityName
+        );
+
+      if (!property.isValid) {
+        return invalid(
+          "persistence_cycle_registry_storage_adapter_" +
+          capabilityName +
+          "_accessor_not_allowed"
+        );
+      }
+
+      if (
+        property.isPresent &&
+        typeof property.value !==
+          "function"
+      ) {
+        return invalid(
+          "persistence_cycle_registry_storage_adapter_" +
+          capabilityName +
+          "_method_invalid"
+        );
+      }
+
+      const isAvailable =
+        property.isPresent &&
+        typeof property.value ===
+          "function";
+
+      capabilityState[
+        capabilityName
+      ] = isAvailable;
+
+      if (isAvailable) {
+        availableCapabilities.push(
+          capabilityName
+        );
+      } else {
+        unavailableCapabilities.push(
+          capabilityName
+        );
+      }
+    }
+
+    const availableCapabilityCount =
+      availableCapabilities.length;
+
+    const isFullyReady =
+      availableCapabilityCount ===
+      capabilityNames.length;
+
+    const canUseAdapter =
+      availableCapabilityCount > 0;
+
+    const status =
+      isFullyReady
+        ? "exam_result_history_persistence_cycle_registry_storage_adapter_ready"
+        : canUseAdapter
+          ? "exam_result_history_persistence_cycle_registry_storage_adapter_partial"
+          : "exam_result_history_persistence_cycle_registry_storage_adapter_unavailable";
+
+    const readinessFingerprint =
+      "exam_history_persistence_cycle_registry_storage_adapter_readiness:v1:" +
+      "read=" +
+      (
+        capabilityState.read
+          ? "1"
+          : "0"
+      ) +
+      ":write=" +
+      (
+        capabilityState.write
+          ? "1"
+          : "0"
+      ) +
+      ":delete=" +
+      (
+        capabilityState.delete
+          ? "1"
+          : "0"
+      );
+
+    return {
+      version: "v27.30m",
+      status,
+      isValid: true,
+      isSnapshotPersistenceCycleRegistryStorageAdapterReadinessMapperOnly: true,
+      isLiveCall: false,
+      canUseAdapter,
+      isFullyReady,
+      canPrepareRead:
+        capabilityState.read,
+      canPrepareWrite:
+        capabilityState.write,
+      canPrepareDelete:
+        capabilityState.delete,
+      canExecuteStorage: false,
+      readinessVersion,
+      adapterMode:
+        "own_data_methods_only",
+      availableCapabilityCount,
+      availableCapabilities,
+      unavailableCapabilities,
+      readinessFingerprint,
+      reason: null
+    };
   }
 
   function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract(input) {
@@ -16150,7 +16407,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.30l",
+    version: "v27.30m",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -16237,6 +16494,7 @@
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState,
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState,
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract,
+    mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,

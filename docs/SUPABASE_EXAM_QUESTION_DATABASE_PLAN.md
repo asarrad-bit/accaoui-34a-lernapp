@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30l
+Stand: v27.30m
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -831,6 +831,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_CONTRACT_TEST.md`
 
+## Zyklusregister-Storage-Adapter-Readiness v27.30m
+
+Ein später injizierter Storage-Adapter für das
+Persistenz-Zyklusregister kann jetzt ausschließlich anhand
+eigener Read-, Write- und Delete-Datenmethoden geprüft werden.
+
+Geerbte Methoden und Accessor-Properties werden nicht akzeptiert.
+Keine Methodenreferenz wird übernommen und keine Methode wird
+aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_STORAGE_ADAPTER_READINESS_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -921,11 +935,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30l` kann ein sicherer
-lokaler Zyklusregister-Storage-Adapter-Readiness-State vorbereitet
-werden, der ausschließlich eigene Read-, Write- und
-Delete-Datenmethoden prüft, weiterhin ohne Methoden-, Storage-
-oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30m` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Operationsplan-State
+vorbereitet werden, der Vertrag und Adapter-Readiness zu
+Save→Write, Load→Read und Delete→Delete zusammenführt,
+weiterhin ohne Methoden-, Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -948,6 +962,7 @@ Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate,
 Persistenz-Zyklusstate, Persistenz-Zyklus-Wiederholungs-Guard,
 Persistenz-Zyklusregister-State,
 Persistenz-Zyklusregister-Serialisierungsstate,
-Persistenz-Zyklusregister-Deserialisierungsstate und
-Persistenz-Zyklusregister-Vertrag vorbereitet;
+Persistenz-Zyklusregister-Deserialisierungsstate,
+Persistenz-Zyklusregister-Vertrag und
+Zyklusregister-Storage-Adapter-Readiness-State vorbereitet;
 keine Live-Ausführung

@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30l",
+    "// stand: v27.30m",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -53,6 +53,7 @@ required_markers = (
     'version: "v27.30j"',
     'version: "v27.30k"',
     'version: "v27.30l"',
+    'version: "v27.30m"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -608,6 +609,20 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistryintents:",
     "datasourceinitialsnapshotpersistencecycleregistrycontractstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrycontract,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystorageadapterreadinessstate(input)",
+    '"exam_result_history_persistence_cycle_registry_storage_adapter_ready"',
+    '"exam_result_history_persistence_cycle_registry_storage_adapter_partial"',
+    '"exam_result_history_persistence_cycle_registry_storage_adapter_unavailable"',
+    '"exam_result_history_persistence_cycle_registry_storage_adapter_invalid"',
+    "issnapshotpersistencecycleregistrystorageadapterreadinessmapperonly: true",
+    "snapshotpersistencecycleregistrystorageadapterreadinessmappername:",
+    "issnapshotpersistencecycleregistrystorageadapterreadinessmapperprepared: true",
+    "canmapsnapshotpersistencecycleregistrystorageadapterreadinessstates: true",
+    "datasourcesnapshotpersistencecycleregistrystorageadapterreadinessmappername:",
+    "isdatasourcesnapshotpersistencecycleregistrystorageadapterreadinessmapperprepared:",
+    "canmapdatasourcesnapshotpersistencecycleregistrystorageadapterreadinessstates:",
+    "datasourceinitialsnapshotpersistencecycleregistrystorageadapterreadinessstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystorageadapterreadinessstate,",
 )
 
 for marker in required_markers:
@@ -3274,6 +3289,95 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryStorageAdapterReadinessState(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Storage-Adapter-Readiness-"
+        "State muss genau einmal vorhanden sein."
+    )
+
+registry_readiness_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystorageadapterreadinessstate(input)"
+)
+registry_contract_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrycontract(input)",
+    registry_readiness_start,
+)
+registry_readiness_block = lower[
+    registry_readiness_start:
+    registry_contract_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "const readinessversion = 1",
+    '"own_data_methods_only"',
+    'const capabilitynames = [',
+    '"read"',
+    '"write"',
+    '"delete"',
+    "typeof property.value !==",
+    "availablecapabilities.push(",
+    "unavailablecapabilities.push(",
+    "persistence_cycle_registry_storage_adapter_missing",
+    "persistence_cycle_registry_storage_adapter_accessor_not_allowed",
+    "persistence_cycle_registry_storage_adapter_invalid",
+    "_accessor_not_allowed",
+    "_method_invalid",
+    "exam_result_history_persistence_cycle_registry_storage_adapter_ready",
+    "exam_result_history_persistence_cycle_registry_storage_adapter_partial",
+    "exam_result_history_persistence_cycle_registry_storage_adapter_unavailable",
+    "exam_result_history_persistence_cycle_registry_storage_adapter_invalid",
+    "exam_history_persistence_cycle_registry_storage_adapter_readiness:v1:",
+    "issnapshotpersistencecycleregistrystorageadapterreadinessmapperonly: true",
+    "canuseadapter",
+    "isfullyready",
+    "canprepareread:",
+    "canpreparewrite:",
+    "canpreparedelete:",
+    "canexecutestorage: false",
+):
+    if required not in registry_readiness_block:
+        fail(
+            "Persistenz-Zyklusregister-Storage-Adapter-"
+            f"Readiness-Anweisung fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "property.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in registry_readiness_block:
+        fail(
+            "Unzulässiger Inhalt im Zyklusregister-"
+            "Storage-Adapter-Readiness-State: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -3366,6 +3470,7 @@ print("Persistenz-Zyklusregister: begrenzte Identitäten kanonisch normalisiert"
 print("Persistenz-Zyklusregister-Serialisierung: kanonisches JSON größenbegrenzt erstellt")
 print("Persistenz-Zyklusregister-Deserialisierung: Größe vor Parsing begrenzt und Register rekonstruiert")
 print("Persistenz-Zyklusregister-Vertrag: Save, Load und Delete im eigenen Namensraum vorbereitet")
+print("Persistenz-Zyklusregister-Adapter-Readiness: nur eigene Datenmethoden geprüft")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
