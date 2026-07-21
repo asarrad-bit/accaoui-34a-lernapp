@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30p
+Stand: v27.30q
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -887,6 +887,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_EXECUTION_GUARD_TEST.md`
 
+## Zyklusregister-Persistenz-Aufrufvertrag v27.30q
+
+Der Zyklusregister-Ausführungs-Guard kann jetzt in kanonische
+Read-, Write- und Delete-Aufrufargumente übersetzt werden.
+
+Identitäten, Readiness-Fingerprint, Fähigkeit und Save-Payload
+werden erneut geprüft. Blockierte Ausführungen bleiben ohne
+Aufrufargumente geschlossen blockiert. Keine Adaptermethode wird
+aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_INVOCATION_CONTRACT_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -977,10 +991,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30p` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Aufrufvertrag vorbereitet
-werden, der den Ausführungs-Guard in kanonische Read-, Write-
-und Delete-Aufrufargumente übersetzt, weiterhin ohne Methoden-,
+Nach GitHub-Bestätigung von `v27.30q` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Aufrufpaket-State vorbereitet
+werden, der den Aufrufvertrag mit derselben erneut geprüften
+eigenen Adaptermethode verbindet, weiterhin ohne Methoden-,
 Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
@@ -1008,6 +1022,7 @@ Persistenz-Zyklusregister-Deserialisierungsstate,
 Persistenz-Zyklusregister-Vertrag,
 Zyklusregister-Storage-Adapter-Readiness-State,
 Zyklusregister-Persistenz-Operationsplan-State,
-Zyklusregister-Persistenz-Operationsfreigabe-State und
-Zyklusregister-Persistenz-Ausführungs-Guard vorbereitet;
+Zyklusregister-Persistenz-Operationsfreigabe-State,
+Zyklusregister-Persistenz-Ausführungs-Guard und
+Zyklusregister-Persistenz-Aufrufvertrag vorbereitet;
 keine Live-Ausführung
