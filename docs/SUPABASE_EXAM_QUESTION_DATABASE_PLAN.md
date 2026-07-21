@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30o
+Stand: v27.30p
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -872,6 +872,21 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_OPERATION_RELEASE_TEST.md`
 
+## Zyklusregister-Persistenz-Ausführungs-Guard v27.30p
+
+Operationsfreigabe und derselbe injizierte Storage-Adapter
+können jetzt unmittelbar vor einem späteren Methodenaufruf
+erneut vollständig geprüft werden.
+
+Readiness-Fingerprint, Fähigkeit, Methode, Identitäten und
+Save-Payload werden erneut validiert. Blockierte Freigaben
+bleiben geschlossen blockiert. Keine Adaptermethode wird
+aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_EXECUTION_GUARD_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -962,11 +977,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30o` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Ausführungs-Guard vorbereitet
-werden, der Freigabe und denselben injizierten Adapter unmittelbar
-vor einem späteren Methodenaufruf erneut prüft, weiterhin ohne
-Methoden-, Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30p` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Aufrufvertrag vorbereitet
+werden, der den Ausführungs-Guard in kanonische Read-, Write-
+und Delete-Aufrufargumente übersetzt, weiterhin ohne Methoden-,
+Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -992,6 +1007,7 @@ Persistenz-Zyklusregister-Serialisierungsstate,
 Persistenz-Zyklusregister-Deserialisierungsstate,
 Persistenz-Zyklusregister-Vertrag,
 Zyklusregister-Storage-Adapter-Readiness-State,
-Zyklusregister-Persistenz-Operationsplan-State und
-Zyklusregister-Persistenz-Operationsfreigabe-State vorbereitet;
+Zyklusregister-Persistenz-Operationsplan-State,
+Zyklusregister-Persistenz-Operationsfreigabe-State und
+Zyklusregister-Persistenz-Ausführungs-Guard vorbereitet;
 keine Live-Ausführung

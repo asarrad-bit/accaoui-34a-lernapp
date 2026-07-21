@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30o",
+    "// stand: v27.30p",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -56,6 +56,7 @@ required_markers = (
     'version: "v27.30m"',
     'version: "v27.30n"',
     'version: "v27.30o"',
+    'version: "v27.30p"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -651,6 +652,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistryoperationreleasestates:",
     "datasourceinitialsnapshotpersistencecycleregistryoperationreleasestate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationreleasestate,",
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecycleregistryexecution(input)",
+    '"exam_result_history_persistence_cycle_registry_execution_guard_ready"',
+    '"exam_result_history_persistence_cycle_registry_execution_guard_blocked"',
+    '"exam_result_history_persistence_cycle_registry_execution_guard_invalid"',
+    "issnapshotpersistencecycleregistryexecutionguardonly: true",
+    "snapshotpersistencecycleregistryexecutionguardname:",
+    "issnapshotpersistencecycleregistryexecutionguardprepared: true",
+    "canguardsnapshotpersistencecycleregistryexecutions: true",
+    "datasourcesnapshotpersistencecycleregistryexecutionguardname:",
+    "isdatasourcesnapshotpersistencecycleregistryexecutionguardprepared:",
+    "canguarddatasourcesnapshotpersistencecycleregistryexecutions:",
+    "datasourceinitialsnapshotpersistencecycleregistryexecutionstate:",
+    "guardparticipantfullexamresulthistorysnapshotpersistencecycleregistryexecution,",
 )
 
 for marker in required_markers:
@@ -3586,6 +3600,98 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryExecution(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Ausführungs-Guard muss "
+        "genau einmal vorhanden sein."
+    )
+
+registry_execution_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecycleregistryexecution(input)"
+)
+registry_operation_release_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryoperationreleasestate(input)",
+    registry_execution_start,
+)
+registry_execution_block = lower[
+    registry_execution_start:
+    registry_operation_release_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrydeserializationstate({",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystorageadapterreadinessstate({",
+    "const executionguardversion = 1",
+    "persistence_cycle_registry_execution_guard_release_missing",
+    "persistence_cycle_registry_execution_guard_adapter_missing",
+    "persistence_cycle_registry_execution_guard_release_invalid",
+    "persistence_cycle_registry_execution_guard_save_payload_invalid",
+    "persistence_cycle_registry_execution_guard_save_size_mismatch",
+    "persistence_cycle_registry_execution_guard_save_round_trip_invalid",
+    "persistence_cycle_registry_execution_guard_payload_unexpected",
+    "persistence_cycle_registry_execution_guard_adapter_readiness_invalid",
+    "persistence_cycle_registry_execution_guard_readiness_mismatch",
+    "persistence_cycle_registry_execution_guard_release_state_invalid",
+    "persistence_cycle_registry_execution_guard_capability_unavailable",
+    "persistence_cycle_registry_execution_guard_method_invalid",
+    "exam_result_history_persistence_cycle_registry_execution_guard_ready",
+    "exam_result_history_persistence_cycle_registry_execution_guard_blocked",
+    "exam_result_history_persistence_cycle_registry_execution_guard_invalid",
+    "exam_history_persistence_cycle_registry_execution_guard:",
+    "issnapshotpersistencecycleregistryexecutionguardonly: true",
+    "canproceedtoinvocation",
+    "caninvokelater:",
+    "isexecutionboundaryvalidated",
+    "ismethodreferencevalidated",
+    "canguardsave:",
+    "canguardload:",
+    "canguarddelete:",
+    "canexecutestorage: false",
+):
+    if required not in registry_execution_block:
+        fail(
+            "Persistenz-Zyklusregister-Ausführungs-"
+            f"Anweisung fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "methodproperty.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in registry_execution_block:
+        fail(
+            "Unzulässiger Inhalt im Zyklusregister-"
+            "Ausführungs-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -3681,6 +3787,7 @@ print("Persistenz-Zyklusregister-Vertrag: Save, Load und Delete im eigenen Namen
 print("Persistenz-Zyklusregister-Adapter-Readiness: nur eigene Datenmethoden geprüft")
 print("Persistenz-Zyklusregister-Operationsplan: Save, Load und Delete mit Adapterfähigkeiten verbunden")
 print("Persistenz-Zyklusregister-Operationsfreigabe: Operationsplan mit derselben Adapter-Readiness verbunden")
+print("Persistenz-Zyklusregister-Ausführungs-Guard: Freigabe unmittelbar vor späterem Aufruf erneut geprüft")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
