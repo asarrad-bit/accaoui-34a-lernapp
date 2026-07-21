@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30i
+Stand: v27.30j
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -789,6 +789,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_STATE_TEST.md`
 
+## Persistenz-Zyklusregister-Serialisierung v27.30j
+
+Der kanonische und versionierte Payload des lokalen
+Persistenz-Zyklusregisters kann jetzt deterministisch und
+größenbegrenzt als JSON serialisiert werden.
+
+Status, Flags, Identitäten und Payload werden erneut geprüft.
+Der Register-Mapper wird für einen vollständigen Rundlauf erneut
+ausgeführt. Keine Storage- oder UI-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_SERIALIZATION_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -879,11 +893,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30i` kann ein sicherer
-lokaler Persistenz-Zyklusregister-Serialisierungsstate vorbereitet
-werden, der ausschließlich den kanonischen versionierten
-Register-Payload größenbegrenzt serialisiert, weiterhin ohne
-Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30j` kann ein sicherer
+lokaler Persistenz-Zyklusregister-Deserialisierungsstate
+vorbereitet werden, der die Größe vor dem Parsing begrenzt und
+ausschließlich kanonische versionierte Register-Payloads
+rekonstruiert, weiterhin ohne Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -903,6 +917,7 @@ Persistenz-Operationsfreigabe-State,
 Persistenz-Ausführungs-Guard, Persistenz-Aufrufvertrag,
 Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag,
 Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate,
-Persistenz-Zyklusstate, Persistenz-Zyklus-Wiederholungs-Guard und
-Persistenz-Zyklusregister-State vorbereitet;
+Persistenz-Zyklusstate, Persistenz-Zyklus-Wiederholungs-Guard,
+Persistenz-Zyklusregister-State und
+Persistenz-Zyklusregister-Serialisierungsstate vorbereitet;
 keine Live-Ausführung

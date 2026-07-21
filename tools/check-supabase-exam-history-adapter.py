@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30i",
+    "// stand: v27.30j",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -50,6 +50,7 @@ required_markers = (
     'version: "v27.30g"',
     'version: "v27.30h"',
     'version: "v27.30i"',
+    'version: "v27.30j"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -567,6 +568,18 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistrystates:",
     "datasourceinitialsnapshotpersistencecycleregistrystate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystate,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryserializationstate(input)",
+    '"exam_result_history_persistence_cycle_registry_serialization_ready"',
+    '"exam_result_history_persistence_cycle_registry_serialization_invalid"',
+    "issnapshotpersistencecycleregistryserializationmapperonly: true",
+    "snapshotpersistencecycleregistryserializationmappername:",
+    "issnapshotpersistencecycleregistryserializationmapperprepared: true",
+    "canmapsnapshotpersistencecycleregistryserializationstates: true",
+    "datasourcesnapshotpersistencecycleregistryserializationmappername:",
+    "isdatasourcesnapshotpersistencecycleregistryserializationmapperprepared:",
+    "canmapdatasourcesnapshotpersistencecycleregistryserializationstates:",
+    "datasourceinitialsnapshotpersistencecycleregistryserializationstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryserializationstate,",
 )
 
 for marker in required_markers:
@@ -2970,6 +2983,94 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Serialisierungsstate muss "
+        "genau einmal vorhanden sein."
+    )
+
+registry_serialization_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryserializationstate(input)"
+)
+registry_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystate(input)",
+    registry_serialization_start,
+)
+registry_serialization_block = lower[
+    registry_serialization_start:registry_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "object.keys(",
+    "json.stringify(",
+    "json.parse(",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystate({",
+    "const serializationSchemaVersion".lower(),
+    "const maximumserializedbytes = 32768",
+    "persistence_cycle_registry_serialization_registry_state_missing",
+    "persistence_cycle_registry_serialization_registry_accessor_not_allowed",
+    "persistence_cycle_registry_serialization_registry_state_invalid",
+    "persistence_cycle_registry_serialization_registry_field_invalid",
+    "persistence_cycle_registry_serialization_registry_status_invalid",
+    "persistence_cycle_registry_serialization_identities_invalid",
+    "persistence_cycle_registry_serialization_registry_flags_invalid",
+    "persistence_cycle_registry_serialization_identity_order_invalid",
+    "persistence_cycle_registry_serialization_payload_invalid",
+    "persistence_cycle_registry_serialization_payload_mismatch",
+    "persistence_cycle_registry_serialization_canonical_state_invalid",
+    "persistence_cycle_registry_serialization_size_invalid",
+    "persistence_cycle_registry_serialization_round_trip_invalid",
+    "exam_result_history_persistence_cycle_registry_serialization_ready",
+    "exam_result_history_persistence_cycle_registry_serialization_invalid",
+    "issnapshotpersistencecycleregistryserializationmapperonly: true",
+    "canserializeregistry: true",
+    "canpersistlater: true",
+    "canwritestorage: false",
+    "canexecutestorage: false",
+):
+    if required not in registry_serialization_block:
+        fail(
+            "Persistenz-Zyklusregister-Serialisierungsanweisung "
+            f"fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in registry_serialization_block:
+        fail(
+            "Unzulässiger Inhalt in der "
+            "Zyklusregister-Serialisierung: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -3059,6 +3160,7 @@ print("Persistenz-Abschlussstate: angenommene Ergebnisse terminal und sicher abg
 print("Persistenz-Zyklusstate: Aufrufpaket bis Abschluss zusammenhängend geprüft")
 print("Persistenz-Zyklus-Wiederholung: doppelte terminale Ergebnisse blockiert")
 print("Persistenz-Zyklusregister: begrenzte Identitäten kanonisch normalisiert")
+print("Persistenz-Zyklusregister-Serialisierung: kanonisches JSON größenbegrenzt erstellt")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

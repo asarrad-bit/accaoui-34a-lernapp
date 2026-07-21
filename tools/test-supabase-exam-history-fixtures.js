@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30i
+// Stand: v27.30j
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30i",
+  "v27.30j",
   "Adapterversion"
 );
 
@@ -147,6 +147,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleState",
   "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -4815,6 +4816,167 @@ expectEqual(
   "Manipulierter Zyklusregister-Folgezustand"
 );
 
+const emptyCycleRegistrySerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState({
+    registryState:
+      emptyCycleRegistry,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  emptyCycleRegistrySerialization.status ===
+    "exam_result_history_persistence_cycle_registry_serialization_ready" &&
+  emptyCycleRegistrySerialization.isValid ===
+    true &&
+  emptyCycleRegistrySerialization.canSerializeRegistry ===
+    true &&
+  emptyCycleRegistrySerialization.canPersistLater ===
+    true &&
+  emptyCycleRegistrySerialization.canWriteStorage ===
+    false &&
+  emptyCycleRegistrySerialization.canExecuteStorage ===
+    false &&
+  emptyCycleRegistrySerialization.completedCycleCount ===
+    0 &&
+  emptyCycleRegistrySerialization.isEmpty ===
+    true &&
+  emptyCycleRegistrySerialization.serializedByteLength >
+    0,
+  "Leeres Zyklusregister wurde nicht sicher serialisiert"
+);
+
+expectJson(
+  JSON.parse(
+    emptyCycleRegistrySerialization.serializedJson
+  ),
+  emptyCycleRegistry.registryPayload,
+  "Leerer Register-Payload nach Serialisierung"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    emptyCycleRegistrySerialization,
+    "registryState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    emptyCycleRegistrySerialization,
+    "privateField"
+  ),
+  "Interne Registerserialisierungsfelder wurden übernommen"
+);
+
+const registeredCycleRegistrySerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState({
+    registryState:
+      registeredReadCycleRegistry
+  });
+
+assert(
+  registeredCycleRegistrySerialization.isValid ===
+    true &&
+  registeredCycleRegistrySerialization.completedCycleCount ===
+    1 &&
+  registeredCycleRegistrySerialization.isEmpty ===
+    false &&
+  registeredCycleRegistrySerialization.isAtCapacity ===
+    false &&
+  registeredCycleRegistrySerialization.serializedByteLength <=
+    registeredCycleRegistrySerialization.maximumSerializedBytes,
+  "Aktualisiertes Zyklusregister wurde nicht serialisiert"
+);
+
+expectJson(
+  JSON.parse(
+    registeredCycleRegistrySerialization.serializedJson
+  ),
+  registeredReadCycleRegistry.registryPayload,
+  "Aktualisierter Register-Payload nach Serialisierung"
+);
+
+const repeatedCycleRegistrySerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState({
+    registryState:
+      registeredReadCycleRegistry
+  });
+
+expectEqual(
+  repeatedCycleRegistrySerialization.serializedJson,
+  registeredCycleRegistrySerialization.serializedJson,
+  "Deterministische Registerserialisierung"
+);
+
+expectEqual(
+  repeatedCycleRegistrySerialization.serializedByteLength,
+  registeredCycleRegistrySerialization.serializedByteLength,
+  "Deterministische Registergröße"
+);
+
+const tamperedRegistrySerializationState = {
+  ...registeredReadCycleRegistry,
+  registryPayload: {
+    registryVersion: 1,
+    completedCycleIdentities: [
+      persistenceWriteCycle.cycleIdentity
+    ]
+  }
+};
+
+const tamperedCycleRegistrySerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState({
+    registryState:
+      tamperedRegistrySerializationState
+  });
+
+expectEqual(
+  tamperedCycleRegistrySerialization.reason,
+  "persistence_cycle_registry_serialization_payload_mismatch",
+  "Manipulierter Register-Payload"
+);
+
+const invalidCycleRegistrySerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState({
+    registryState:
+      invalidCycleRegistry
+  });
+
+expectEqual(
+  invalidCycleRegistrySerialization.reason,
+  "persistence_cycle_registry_serialization_registry_state_invalid",
+  "Ungültiger Registerstate in Serialisierung"
+);
+
+let registrySerializationAccessorReads = 0;
+
+const registrySerializationAccessorInput = {};
+
+Object.defineProperty(
+  registrySerializationAccessorInput,
+  "registryState",
+  {
+    enumerable: true,
+    get() {
+      registrySerializationAccessorReads += 1;
+      throw new Error(
+        "Registerserialisierung darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorCycleRegistrySerialization =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState(
+    registrySerializationAccessorInput
+  );
+
+assert(
+  accessorCycleRegistrySerialization.reason ===
+    "persistence_cycle_registry_serialization_registry_accessor_not_allowed" &&
+  registrySerializationAccessorReads === 0 &&
+  storageAdapterOperationCalls === 0,
+  "Registerstate-Getter wurde nicht geschlossen blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -4907,6 +5069,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Fixtures: leer, sortiert, aktualisiert, doppelt und ungültig"
+);
+console.log(
+  "Zyklusregister-Serialisierungs-Fixtures: leer, aktualisiert, deterministisch, manipuliert und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
