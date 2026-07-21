@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30d",
+    "// stand: v27.30e",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -45,6 +45,7 @@ required_markers = (
     'version: "v27.30b"',
     'version: "v27.30c"',
     'version: "v27.30d"',
+    'version: "v27.30e"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -493,6 +494,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistenceresults:",
     "datasourceinitialsnapshotpersistenceresultstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistenceresultcontract,",
+    "function guardparticipantfullexamresulthistorysnapshotpersistenceresultacceptance(input)",
+    '"exam_result_history_persistence_result_acceptance_ready"',
+    '"exam_result_history_persistence_result_acceptance_stale_ignored"',
+    '"exam_result_history_persistence_result_acceptance_invalid"',
+    "issnapshotpersistenceresultacceptanceguardonly: true",
+    "snapshotpersistenceresultacceptanceguardname:",
+    "issnapshotpersistenceresultacceptanceguardprepared: true",
+    "canguardsnapshotpersistenceresultacceptance: true",
+    "datasourcesnapshotpersistenceresultacceptanceguardname:",
+    "isdatasourcesnapshotpersistenceresultacceptanceguardprepared:",
+    "canguarddatasourcesnapshotpersistenceresultacceptance:",
+    "datasourceinitialsnapshotpersistenceresultacceptancestate:",
+    "guardparticipantfullexamresulthistorysnapshotpersistenceresultacceptance,",
 )
 
 for marker in required_markers:
@@ -2461,6 +2475,97 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance(input)"
+) != 1:
+    fail(
+        "Persistenz-Ergebnisannahme-Guard muss genau einmal "
+        "vorhanden sein."
+    )
+
+acceptance_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistenceresultacceptance(input)"
+)
+result_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceresultcontract(input)",
+    acceptance_start,
+)
+acceptance_block = lower[
+    acceptance_start:result_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecontract({",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotdeserializationstate({",
+    "normalizeparticipantfullexamresulthistorycontrollersnapshot(",
+    "mapparticipantfullexamresulthistorysnapshotresumestate({",
+    "persistence_result_acceptance_active_package_missing",
+    "persistence_result_acceptance_result_state_missing",
+    "persistence_result_acceptance_active_package_invalid",
+    "persistence_result_acceptance_active_operation_invalid",
+    "persistence_result_acceptance_active_identity_invalid",
+    "persistence_result_acceptance_storage_key_invalid",
+    "persistence_result_acceptance_active_arguments_invalid",
+    "persistence_result_acceptance_active_write_payload_invalid",
+    "persistence_result_acceptance_result_state_invalid",
+    "persistence_result_acceptance_stale_package",
+    "persistence_result_acceptance_result_identity_mismatch",
+    "persistence_result_acceptance_read_empty_invalid",
+    "persistence_result_acceptance_read_result_invalid",
+    "persistence_result_acceptance_read_snapshot_invalid",
+    "persistence_result_acceptance_write_result_invalid",
+    "persistence_result_acceptance_delete_result_invalid",
+    "exam_result_history_persistence_result_acceptance_ready",
+    "exam_result_history_persistence_result_acceptance_stale_ignored",
+    "exam_result_history_persistence_result_acceptance_invalid",
+    "issnapshotpersistenceresultacceptanceguardonly: true",
+    "didacceptresult: true",
+    "isstaleresult: true",
+    "canexecutestorage: false",
+):
+    if required not in acceptance_block:
+        fail(
+            "Persistenz-Ergebnisannahme-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+    "resultstate.error",
+    "resultstate.message",
+    "resultstate.details",
+):
+    if forbidden in acceptance_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Ergebnisannahme-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2545,6 +2650,7 @@ print("Persistenz-Ausführungs-Guard: Adapter und Methode ohne Aufruf erneut gep
 print("Persistenz-Aufrufvertrag: kanonisches Methoden- und Argumenteschema erstellt")
 print("Persistenz-Aufrufpaket: Guard, Vertrag und Adapter erneut geschlossen verbunden")
 print("Persistenz-Ergebnisvertrag: Read, Write und Delete getrennt normalisiert")
+print("Persistenz-Ergebnisannahme: nur Ergebnisse des aktuellen Aufrufpakets akzeptiert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

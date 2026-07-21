@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30d
+// Stand: v27.30e
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30d",
+  "v27.30e",
   "Adapterversion"
 );
 
@@ -142,6 +142,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract",
   "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceResultContract",
+  "guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -3952,6 +3953,170 @@ expectEqual(
   "Manipuliertes Aufrufpaket im Ergebnisvertrag"
 );
 
+const acceptedReadResult =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceReadPackage,
+    resultContractState:
+      persistenceReadResult,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  acceptedReadResult.status ===
+    "exam_result_history_persistence_result_acceptance_ready" &&
+  acceptedReadResult.isValid === true &&
+  acceptedReadResult.canApplyResult ===
+    true &&
+  acceptedReadResult.didAcceptResult ===
+    true &&
+  acceptedReadResult.isStaleResult ===
+    false &&
+  acceptedReadResult.canResumeSnapshot ===
+    true &&
+  acceptedReadResult.resumeState.canResume ===
+    true &&
+  acceptedReadResult.requestIdentity ===
+    persistenceReadPackage.requestIdentity &&
+  storageAdapterOperationCalls === 0,
+  "Aktuelles Read-Ergebnis wurde nicht sicher angenommen"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    acceptedReadResult,
+    "activeInvocationPackageState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    acceptedReadResult,
+    "resultContractState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    acceptedReadResult,
+    "privateField"
+  ),
+  "Interne Ergebnisannahme-Felder wurden übernommen"
+);
+
+const acceptedEmptyReadResult =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceReadPackage,
+    resultContractState:
+      persistenceReadEmptyResult
+  });
+
+assert(
+  acceptedEmptyReadResult.canApplyResult ===
+    true &&
+  acceptedEmptyReadResult.didAcceptResult ===
+    true &&
+  acceptedEmptyReadResult.didRead ===
+    true &&
+  acceptedEmptyReadResult.isEmpty ===
+    true &&
+  acceptedEmptyReadResult.canResumeSnapshot ===
+    false,
+  "Leeres aktuelles Read-Ergebnis wurde nicht angenommen"
+);
+
+const acceptedWriteResult =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceWritePackage,
+    resultContractState:
+      persistenceWriteResult
+  });
+
+assert(
+  acceptedWriteResult.canApplyResult ===
+    true &&
+  acceptedWriteResult.didWrite ===
+    true &&
+  acceptedWriteResult.serializedByteLength ===
+    persistenceWritePackage.serializedByteLength &&
+  storageAdapterOperationCalls === 0,
+  "Aktuelles Write-Ergebnis wurde nicht sicher angenommen"
+);
+
+const acceptedDeleteAbsentResult =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceDeletePackage,
+    resultContractState:
+      persistenceDeleteAbsentResult
+  });
+
+assert(
+  acceptedDeleteAbsentResult.canApplyResult ===
+    true &&
+  acceptedDeleteAbsentResult.didDelete ===
+    false &&
+  acceptedDeleteAbsentResult.wasAlreadyAbsent ===
+    true &&
+  acceptedDeleteAbsentResult.isEmpty ===
+    true,
+  "Idempotentes Delete-Ergebnis wurde nicht angenommen"
+);
+
+const stalePersistenceResult =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceDeletePackage,
+    resultContractState:
+      persistenceReadResult
+  });
+
+assert(
+  stalePersistenceResult.status ===
+    "exam_result_history_persistence_result_acceptance_stale_ignored" &&
+  stalePersistenceResult.isValid === true &&
+  stalePersistenceResult.canApplyResult ===
+    false &&
+  stalePersistenceResult.didAcceptResult ===
+    false &&
+  stalePersistenceResult.isStaleResult ===
+    true &&
+  stalePersistenceResult.reason ===
+    "persistence_result_acceptance_stale_package",
+  "Veraltetes Persistenzergebnis wurde nicht ignoriert"
+);
+
+const tamperedAcceptedResultState = {
+  ...persistenceReadResult,
+  requestIdentity:
+    "exam_history_request:999:20:0"
+};
+
+const tamperedAcceptedResult =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceReadPackage,
+    resultContractState:
+      tamperedAcceptedResultState
+  });
+
+expectEqual(
+  tamperedAcceptedResult.reason,
+  "persistence_result_acceptance_result_identity_mismatch",
+  "Manipulierte Ergebnisidentität"
+);
+
+const invalidResultAcceptance =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance({
+    activeInvocationPackageState:
+      persistenceWritePackage,
+    resultContractState:
+      invalidWriteResult
+  });
+
+expectEqual(
+  invalidResultAcceptance.reason,
+  "persistence_result_acceptance_result_state_invalid",
+  "Ungültiger Ergebnisvertrag in Ergebnisannahme"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -4029,6 +4194,9 @@ console.log(
 );
 console.log(
   "Ergebnisvertrag-Fixtures: Read, leer, Write, Delete, nicht vorhanden und manipuliert"
+);
+console.log(
+  "Ergebnisannahme-Fixtures: Read, leer, Write, Delete, veraltet und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
