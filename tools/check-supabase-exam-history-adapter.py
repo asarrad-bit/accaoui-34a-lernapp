@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30s",
+    "// stand: v27.30t",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -60,6 +60,7 @@ required_markers = (
     'version: "v27.30q"',
     'version: "v27.30r"',
     'version: "v27.30s"',
+    'version: "v27.30t"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -710,6 +711,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistryresults:",
     "datasourceinitialsnapshotpersistencecycleregistryresultstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryresultcontract,",
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecycleregistryresultacceptance(input)",
+    '"exam_result_history_persistence_cycle_registry_result_acceptance_ready"',
+    '"exam_result_history_persistence_cycle_registry_result_acceptance_stale_ignored"',
+    '"exam_result_history_persistence_cycle_registry_result_acceptance_invalid"',
+    "issnapshotpersistencecycleregistryresultacceptanceguardonly: true",
+    "snapshotpersistencecycleregistryresultacceptanceguardname:",
+    "issnapshotpersistencecycleregistryresultacceptanceguardprepared: true",
+    "canguardsnapshotpersistencecycleregistryresultacceptance: true",
+    "datasourcesnapshotpersistencecycleregistryresultacceptanceguardname:",
+    "isdatasourcesnapshotpersistencecycleregistryresultacceptanceguardprepared:",
+    "canguarddatasourcesnapshotpersistencecycleregistryresultacceptance:",
+    "datasourceinitialsnapshotpersistencecycleregistryresultacceptancestate:",
+    "guardparticipantfullexamresulthistorysnapshotpersistencecycleregistryresultacceptance,",
 )
 
 for marker in required_markers:
@@ -4030,6 +4044,106 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultAcceptance(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Ergebnisannahme-Guard "
+        "muss genau einmal vorhanden sein."
+    )
+
+registry_result_acceptance_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecycleregistryresultacceptance(input)"
+)
+registry_result_contract_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryresultcontract(input)",
+    registry_result_acceptance_start,
+)
+registry_result_acceptance_block = lower[
+    registry_result_acceptance_start:
+    registry_result_contract_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "object.keys(",
+    "json.stringify(",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryserializationstate({",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrydeserializationstate({",
+    "const acceptanceguardversion = 1",
+    "persistence_cycle_registry_result_acceptance_active_package_missing",
+    "persistence_cycle_registry_result_acceptance_result_missing",
+    "persistence_cycle_registry_result_acceptance_active_package_invalid",
+    "persistence_cycle_registry_result_acceptance_active_identity_invalid",
+    "persistence_cycle_registry_result_acceptance_active_readiness_invalid",
+    "persistence_cycle_registry_result_acceptance_active_arguments_invalid",
+    "persistence_cycle_registry_result_acceptance_active_save_payload_invalid",
+    "persistence_cycle_registry_result_acceptance_result_invalid",
+    "persistence_cycle_registry_result_acceptance_result_readiness_invalid",
+    "persistence_cycle_registry_result_acceptance_stale_package",
+    "persistence_cycle_registry_result_acceptance_result_context_mismatch",
+    "persistence_cycle_registry_result_acceptance_read_result_invalid",
+    "persistence_cycle_registry_result_acceptance_read_round_trip_invalid",
+    "persistence_cycle_registry_result_acceptance_read_empty_invalid",
+    "persistence_cycle_registry_result_acceptance_write_result_invalid",
+    "persistence_cycle_registry_result_acceptance_delete_result_invalid",
+    "exam_result_history_persistence_cycle_registry_result_acceptance_ready",
+    "exam_result_history_persistence_cycle_registry_result_acceptance_stale_ignored",
+    "exam_result_history_persistence_cycle_registry_result_acceptance_invalid",
+    "exam_history_persistence_cycle_registry_result_acceptance:",
+    "issnapshotpersistencecycleregistryresultacceptanceguardonly: true",
+    "canapplyresult",
+    "didacceptresult",
+    "isstaleresult",
+    "canuseregistry",
+    "activeinvocationpackageidentity",
+    "resultinvocationpackageidentity",
+    "resultacceptanceidentity",
+    "canexecutestorage: false",
+):
+    if required not in registry_result_acceptance_block:
+        fail(
+            "Persistenz-Zyklusregister-Ergebnisannahme-"
+            f"Anweisung fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+    "operationresult.message",
+    "operationresult.stack",
+    "rawerror",
+):
+    if forbidden in registry_result_acceptance_block:
+        fail(
+            "Unzulässiger Inhalt im Zyklusregister-"
+            "Ergebnisannahme-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -4129,6 +4243,7 @@ print("Persistenz-Zyklusregister-Ausführungs-Guard: Freigabe unmittelbar vor sp
 print("Persistenz-Zyklusregister-Aufrufvertrag: kanonische Read-, Write- und Delete-Argumente erstellt")
 print("Persistenz-Zyklusregister-Aufrufpaket: Aufrufvertrag mit derselben eigenen Adaptermethode verbunden")
 print("Persistenz-Zyklusregister-Ergebnisvertrag: Read, Write und Delete streng normalisiert")
+print("Persistenz-Zyklusregister-Ergebnisannahme: nur aktuell passendes Aufrufpaket akzeptiert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

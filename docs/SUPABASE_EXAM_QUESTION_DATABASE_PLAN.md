@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30s
+Stand: v27.30t
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -932,6 +932,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_RESULT_CONTRACT_TEST.md`
 
+## Zyklusregister-Persistenz-Ergebnisannahme v27.30t
+
+Normalisierte Zyklusregister-Persistenzergebnisse können jetzt
+nur dem aktuell passenden Aufrufpaket zugeordnet werden.
+
+Aufrufpaket-Identität, Intent, Operation, Readiness,
+Identitätskette und Ergebnisinhalt werden erneut geprüft.
+Abweichende Paketidentitäten werden geschlossen als veraltet
+ignoriert. Keine Adaptermethode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_RESULT_ACCEPTANCE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1022,11 +1036,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30s` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Ergebnisannahme-Guard
-vorbereitet werden, der normalisierte Ergebnisse ausschließlich
-dem aktuell passenden Aufrufpaket zuordnet und abweichende
-Ergebnisse geschlossen blockiert, weiterhin ohne Methoden-,
+Nach GitHub-Bestätigung von `v27.30t` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Abschlussstate vorbereitet
+werden, der angenommene Read-, Write- und Delete-Ergebnisse in
+terminale kanonische Zustände überführt, weiterhin ohne Methoden-,
 Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
@@ -1057,6 +1070,7 @@ Zyklusregister-Persistenz-Operationsplan-State,
 Zyklusregister-Persistenz-Operationsfreigabe-State,
 Zyklusregister-Persistenz-Ausführungs-Guard,
 Zyklusregister-Persistenz-Aufrufvertrag,
-Zyklusregister-Persistenz-Aufrufpaket-State und
-Zyklusregister-Persistenz-Ergebnisvertrag vorbereitet;
+Zyklusregister-Persistenz-Aufrufpaket-State,
+Zyklusregister-Persistenz-Ergebnisvertrag und
+Zyklusregister-Persistenz-Ergebnisannahme-Guard vorbereitet;
 keine Live-Ausführung
