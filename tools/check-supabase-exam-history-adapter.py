@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30k",
+    "// stand: v27.30l",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -52,6 +52,7 @@ required_markers = (
     'version: "v27.30i"',
     'version: "v27.30j"',
     'version: "v27.30k"',
+    'version: "v27.30l"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -593,6 +594,20 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistrydeserializationstates:",
     "datasourceinitialsnapshotpersistencecycleregistrydeserializationstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrydeserializationstate,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrycontract(input)",
+    '"exam_result_history_persistence_cycle_registry_contract_save_ready"',
+    '"exam_result_history_persistence_cycle_registry_contract_load_ready"',
+    '"exam_result_history_persistence_cycle_registry_contract_delete_ready"',
+    '"exam_result_history_persistence_cycle_registry_contract_invalid"',
+    "issnapshotpersistencecycleregistrycontractonly: true",
+    "snapshotpersistencecycleregistrycontractname:",
+    "issnapshotpersistencecycleregistrycontractprepared: true",
+    "canmapsnapshotpersistencecycleregistryintents: true",
+    "datasourcesnapshotpersistencecycleregistrycontractname:",
+    "isdatasourcesnapshotpersistencecycleregistrycontractprepared:",
+    "canmapdatasourcesnapshotpersistencecycleregistryintents:",
+    "datasourceinitialsnapshotpersistencecycleregistrycontractstate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrycontract,",
 )
 
 for marker in required_markers:
@@ -3174,6 +3189,91 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Vertrag muss genau "
+        "einmal vorhanden sein."
+    )
+
+registry_contract_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrycontract(input)"
+)
+registry_deserialization_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrydeserializationstate(input)",
+    registry_contract_start,
+)
+registry_contract_block = lower[
+    registry_contract_start:
+    registry_deserialization_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "getparticipantfullexamresulthistorysnapshotutf8bytelength(",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrydeserializationstate({",
+    "const contractversion = 1",
+    '"accaoui:exam_history:persistence_cycle_registry"',
+    '"exam_history_persistence_cycle_registry:v1"',
+    "persistence_cycle_registry_contract_intent_missing",
+    "persistence_cycle_registry_contract_intent_accessor_not_allowed",
+    "persistence_cycle_registry_contract_intent_invalid",
+    "persistence_cycle_registry_contract_serialization_state_missing",
+    "persistence_cycle_registry_contract_serialization_state_invalid",
+    "persistence_cycle_registry_contract_serialization_size_mismatch",
+    "persistence_cycle_registry_contract_serialization_round_trip_invalid",
+    "persistence_cycle_registry_contract_serialization_unexpected",
+    "exam_result_history_persistence_cycle_registry_contract_save_ready",
+    "exam_result_history_persistence_cycle_registry_contract_load_ready",
+    "exam_result_history_persistence_cycle_registry_contract_delete_ready",
+    "exam_result_history_persistence_cycle_registry_contract_invalid",
+    "issnapshotpersistencecycleregistrycontractonly: true",
+    "canpreparesave:",
+    "canprepareload:",
+    "canpreparedelete:",
+    "canpersistlater: true",
+    "canexecutestorage: false",
+):
+    if required not in registry_contract_block:
+        fail(
+            "Persistenz-Zyklusregister-Vertragsanweisung "
+            f"fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in registry_contract_block:
+        fail(
+            "Unzulässiger Inhalt im "
+            "Zyklusregister-Vertrag: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -3265,6 +3365,7 @@ print("Persistenz-Zyklus-Wiederholung: doppelte terminale Ergebnisse blockiert")
 print("Persistenz-Zyklusregister: begrenzte Identitäten kanonisch normalisiert")
 print("Persistenz-Zyklusregister-Serialisierung: kanonisches JSON größenbegrenzt erstellt")
 print("Persistenz-Zyklusregister-Deserialisierung: Größe vor Parsing begrenzt und Register rekonstruiert")
+print("Persistenz-Zyklusregister-Vertrag: Save, Load und Delete im eigenen Namensraum vorbereitet")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

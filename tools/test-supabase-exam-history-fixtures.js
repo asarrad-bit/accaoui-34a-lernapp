@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30k
+// Stand: v27.30l
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30k",
+  "v27.30l",
   "Adapterversion"
 );
 
@@ -149,6 +149,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistrySerializationState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryDeserializationState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -5162,6 +5163,178 @@ assert(
   "Register-JSON-Getter wurde nicht geschlossen blockiert"
 );
 
+const registrySaveContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract({
+    intent: "save",
+    serializationState:
+      registeredCycleRegistrySerialization,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  registrySaveContract.status ===
+    "exam_result_history_persistence_cycle_registry_contract_save_ready" &&
+  registrySaveContract.isValid ===
+    true &&
+  registrySaveContract.canPrepareSave ===
+    true &&
+  registrySaveContract.canPrepareLoad ===
+    false &&
+  registrySaveContract.canPrepareDelete ===
+    false &&
+  registrySaveContract.canPersistLater ===
+    true &&
+  registrySaveContract.canExecuteStorage ===
+    false &&
+  registrySaveContract.operation ===
+    "write" &&
+  registrySaveContract.requiredCapability ===
+    "write" &&
+  registrySaveContract.completedCycleCount ===
+    1 &&
+  registrySaveContract.serializedJson ===
+    registeredCycleRegistrySerialization.serializedJson &&
+  registrySaveContract.serializedByteLength ===
+    registeredCycleRegistrySerialization.serializedByteLength &&
+  storageAdapterOperationCalls === 0,
+  "Zyklusregister-Save-Vertrag wurde nicht sicher erstellt"
+);
+
+expectEqual(
+  registrySaveContract.storageKey,
+  "accaoui:exam_history:persistence_cycle_registry:v1",
+  "Kanonischer Zyklusregister-Speicherschlüssel"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveContract,
+    "serializationState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registrySaveContract,
+    "privateField"
+  ),
+  "Interne Zyklusregister-Vertragsfelder wurden übernommen"
+);
+
+const registryLoadContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract({
+    intent: "load"
+  });
+
+assert(
+  registryLoadContract.status ===
+    "exam_result_history_persistence_cycle_registry_contract_load_ready" &&
+  registryLoadContract.canPrepareSave ===
+    false &&
+  registryLoadContract.canPrepareLoad ===
+    true &&
+  registryLoadContract.canPrepareDelete ===
+    false &&
+  registryLoadContract.operation ===
+    "read" &&
+  registryLoadContract.requiredCapability ===
+    "read" &&
+  registryLoadContract.serializedJson ===
+    null &&
+  registryLoadContract.serializedByteLength ===
+    null,
+  "Zyklusregister-Load-Vertrag wurde nicht sicher erstellt"
+);
+
+const registryDeleteContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract({
+    intent: "delete"
+  });
+
+assert(
+  registryDeleteContract.status ===
+    "exam_result_history_persistence_cycle_registry_contract_delete_ready" &&
+  registryDeleteContract.canPrepareDelete ===
+    true &&
+  registryDeleteContract.operation ===
+    "delete" &&
+  registryDeleteContract.requiredCapability ===
+    "delete" &&
+  registryDeleteContract.storageKey ===
+    registryLoadContract.storageKey,
+  "Zyklusregister-Delete-Vertrag wurde nicht sicher erstellt"
+);
+
+const missingRegistrySerializationContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract({
+    intent: "save"
+  });
+
+expectEqual(
+  missingRegistrySerializationContract.reason,
+  "persistence_cycle_registry_contract_serialization_state_missing",
+  "Fehlender Register-Serialisierungsstate"
+);
+
+const tamperedRegistrySerializationContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract({
+    intent: "save",
+    serializationState: {
+      ...registeredCycleRegistrySerialization,
+      serializedByteLength:
+        registeredCycleRegistrySerialization.serializedByteLength +
+        1
+    }
+  });
+
+expectEqual(
+  tamperedRegistrySerializationContract.reason,
+  "persistence_cycle_registry_contract_serialization_size_mismatch",
+  "Manipulierte Register-Serialisierungsgröße"
+);
+
+const unexpectedRegistrySerializationContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract({
+    intent: "load",
+    serializationState:
+      registeredCycleRegistrySerialization
+  });
+
+expectEqual(
+  unexpectedRegistrySerializationContract.reason,
+  "persistence_cycle_registry_contract_serialization_unexpected",
+  "Unerwarteter Register-Serialisierungsstate"
+);
+
+let registryContractAccessorReads = 0;
+
+const registryContractAccessorInput = {};
+
+Object.defineProperty(
+  registryContractAccessorInput,
+  "intent",
+  {
+    enumerable: true,
+    get() {
+      registryContractAccessorReads += 1;
+      throw new Error(
+        "Zyklusregister-Vertrag darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorRegistryContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryContract(
+    registryContractAccessorInput
+  );
+
+assert(
+  accessorRegistryContract.reason ===
+    "persistence_cycle_registry_contract_intent_accessor_not_allowed" &&
+  registryContractAccessorReads === 0 &&
+  storageAdapterOperationCalls === 0,
+  "Zyklusregister-Vertrags-Getter wurde nicht blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -5260,6 +5433,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Deserialisierungs-Fixtures: leer, aktualisiert, nicht kanonisch, ungültig, zu groß und Accessor"
+);
+console.log(
+  "Zyklusregister-Vertrags-Fixtures: Save, Load, Delete, manipuliert und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

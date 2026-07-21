@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30k
+Stand: v27.30l
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -817,6 +817,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_DESERIALIZATION_TEST.md`
 
+## Persistenz-Zyklusregister-Vertrag v27.30l
+
+Save, Load und Delete des lokalen Persistenz-Zyklusregisters
+können jetzt in einem eigenen kanonischen Namensraum vorbereitet
+werden.
+
+Save akzeptiert ausschließlich einen gültigen und erneut
+geprüften Register-Serialisierungsstate. Load und Delete besitzen
+keinen Payload. Keine Storage- oder UI-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_CONTRACT_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -907,10 +921,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30k` kann ein sicherer
-lokaler Persistenz-Zyklusregister-Vertrag vorbereitet werden,
-der Save, Load und Delete über einen eigenen kanonischen
-Namensraum vorbereitet, weiterhin ohne Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30l` kann ein sicherer
+lokaler Zyklusregister-Storage-Adapter-Readiness-State vorbereitet
+werden, der ausschließlich eigene Read-, Write- und
+Delete-Datenmethoden prüft, weiterhin ohne Methoden-, Storage-
+oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -932,6 +947,7 @@ Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag,
 Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate,
 Persistenz-Zyklusstate, Persistenz-Zyklus-Wiederholungs-Guard,
 Persistenz-Zyklusregister-State,
-Persistenz-Zyklusregister-Serialisierungsstate und
-Persistenz-Zyklusregister-Deserialisierungsstate vorbereitet;
+Persistenz-Zyklusregister-Serialisierungsstate,
+Persistenz-Zyklusregister-Deserialisierungsstate und
+Persistenz-Zyklusregister-Vertrag vorbereitet;
 keine Live-Ausführung
