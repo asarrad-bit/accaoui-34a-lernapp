@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30h",
+    "// stand: v27.30i",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -49,6 +49,7 @@ required_markers = (
     'version: "v27.30f"',
     'version: "v27.30g"',
     'version: "v27.30h"',
+    'version: "v27.30i"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -551,6 +552,21 @@ required_markers = (
     "canguarddatasourcesnapshotpersistencecyclerepetitions:",
     "datasourceinitialsnapshotpersistencecyclerepetitionstate:",
     "guardparticipantfullexamresulthistorysnapshotpersistencecyclerepetition,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystate(input)",
+    '"exam_result_history_persistence_cycle_registry_empty"',
+    '"exam_result_history_persistence_cycle_registry_ready"',
+    '"exam_result_history_persistence_cycle_registry_updated"',
+    '"exam_result_history_persistence_cycle_registry_duplicate_unchanged"',
+    '"exam_result_history_persistence_cycle_registry_invalid"',
+    "issnapshotpersistencecycleregistrymapperonly: true",
+    "snapshotpersistencecycleregistrymappername:",
+    "issnapshotpersistencecycleregistrymapperprepared: true",
+    "canmapsnapshotpersistencecycleregistrystates: true",
+    "datasourcesnapshotpersistencecycleregistrymappername:",
+    "isdatasourcesnapshotpersistencecycleregistrymapperprepared:",
+    "canmapdatasourcesnapshotpersistencecycleregistrystates:",
+    "datasourceinitialsnapshotpersistencecycleregistrystate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystate,",
 )
 
 for marker in required_markers:
@@ -2871,6 +2887,89 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-State muss genau einmal "
+        "vorhanden sein."
+    )
+
+registry_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrystate(input)"
+)
+repetition_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecyclerepetition(input)",
+    registry_start,
+)
+registry_block = lower[
+    registry_start:repetition_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "new set()",
+    "identities.sort()",
+    "registryversion = 1",
+    "maximumcompletedcycleidentities =",
+    '"exam_history_persistence_cycle_registry:v1"',
+    "exam_result_history_persistence_cycle_registry_empty",
+    "exam_result_history_persistence_cycle_registry_ready",
+    "exam_result_history_persistence_cycle_registry_updated",
+    "exam_result_history_persistence_cycle_registry_duplicate_unchanged",
+    "exam_result_history_persistence_cycle_registry_invalid",
+    "persistence_cycle_registry_identities_missing",
+    "persistence_cycle_registry_identity_invalid",
+    "persistence_cycle_registry_duplicate",
+    "persistence_cycle_registry_repetition_state_invalid",
+    "persistence_cycle_registry_repetition_source_mismatch",
+    "persistence_cycle_registry_repetition_update_invalid",
+    "persistence_cycle_registry_duplicate_state_invalid",
+    "issnapshotpersistencecycleregistrymapperonly: true",
+    "canuseregistry: true",
+    "canregistermorecycleidentities:",
+    "iscanonicalorder: true",
+    "registryPayload",
+    "canexecutestorage: false",
+):
+    if required.lower() not in registry_block:
+        fail(
+            "Persistenz-Zyklusregister-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in registry_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Zyklusregister: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2959,6 +3058,7 @@ print("Persistenz-Ergebnisannahme: nur Ergebnisse des aktuellen Aufrufpakets akz
 print("Persistenz-Abschlussstate: angenommene Ergebnisse terminal und sicher abgeschlossen")
 print("Persistenz-Zyklusstate: Aufrufpaket bis Abschluss zusammenhängend geprüft")
 print("Persistenz-Zyklus-Wiederholung: doppelte terminale Ergebnisse blockiert")
+print("Persistenz-Zyklusregister: begrenzte Identitäten kanonisch normalisiert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30h
+// Stand: v27.30i
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30h",
+  "v27.30i",
   "Adapterversion"
 );
 
@@ -146,6 +146,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleState",
   "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -4634,6 +4635,186 @@ expectEqual(
   "Manipulierter Zyklus im Wiederholungs-Guard"
 );
 
+const emptyCycleRegistry =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+    completedCycleIdentities: [],
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  emptyCycleRegistry.status ===
+    "exam_result_history_persistence_cycle_registry_empty" &&
+  emptyCycleRegistry.isValid === true &&
+  emptyCycleRegistry.canUseRegistry ===
+    true &&
+  emptyCycleRegistry.canRegisterMoreCycleIdentities ===
+    true &&
+  emptyCycleRegistry.registryVersion ===
+    1 &&
+  emptyCycleRegistry.completedCycleCount ===
+    0 &&
+  emptyCycleRegistry.isEmpty === true &&
+  emptyCycleRegistry.canExecuteStorage ===
+    false,
+  "Leeres Zyklusregister wurde nicht sicher normalisiert"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    emptyCycleRegistry,
+    "privateField"
+  ),
+  "Unbekanntes Zyklusregister-Feld wurde übernommen"
+);
+
+const unsortedCycleRegistryInput = [
+  persistenceWriteCycle.cycleIdentity,
+  persistenceReadCycle.cycleIdentity
+];
+
+const unsortedCycleRegistryCopy =
+  unsortedCycleRegistryInput.slice();
+
+const normalizedCycleRegistry =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+    completedCycleIdentities:
+      unsortedCycleRegistryInput
+  });
+
+const expectedSortedCycleIdentities =
+  unsortedCycleRegistryCopy.slice().sort();
+
+assert(
+  normalizedCycleRegistry.status ===
+    "exam_result_history_persistence_cycle_registry_ready" &&
+  normalizedCycleRegistry.completedCycleCount ===
+    2 &&
+  normalizedCycleRegistry.isCanonicalOrder ===
+    true &&
+  normalizedCycleRegistry.updateKind ===
+    "normalized" &&
+  normalizedCycleRegistry.isAtCapacity ===
+    false,
+  "Bestehendes Zyklusregister wurde nicht normalisiert"
+);
+
+expectJson(
+  normalizedCycleRegistry.completedCycleIdentities,
+  expectedSortedCycleIdentities,
+  "Kanonische Zyklusregister-Reihenfolge"
+);
+
+expectJson(
+  unsortedCycleRegistryInput,
+  unsortedCycleRegistryCopy,
+  "Zyklusregister-Eingabe wurde verändert"
+);
+
+const registeredReadCycleRegistry =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+    completedCycleIdentities:
+      persistenceReadRepetition.completedCycleIdentities,
+    repetitionState:
+      persistenceReadRepetition
+  });
+
+assert(
+  registeredReadCycleRegistry.status ===
+    "exam_result_history_persistence_cycle_registry_updated" &&
+  registeredReadCycleRegistry.wasUpdated ===
+    true &&
+  registeredReadCycleRegistry.wasDuplicateIgnored ===
+    false &&
+  registeredReadCycleRegistry.updateKind ===
+    "registered" &&
+  registeredReadCycleRegistry.completedCycleCount ===
+    1 &&
+  registeredReadCycleRegistry.completedCycleIdentities[0] ===
+    persistenceReadCycle.cycleIdentity,
+  "Freigegebene Zyklusidentität wurde nicht registriert"
+);
+
+expectJson(
+  registeredReadCycleRegistry.registryPayload,
+  {
+    registryVersion: 1,
+    completedCycleIdentities: [
+      persistenceReadCycle.cycleIdentity
+    ]
+  },
+  "Versionierter Zyklusregister-Payload"
+);
+
+const unchangedDuplicateCycleRegistry =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+    completedCycleIdentities:
+      duplicateReadRepetition.completedCycleIdentities,
+    repetitionState:
+      duplicateReadRepetition
+  });
+
+assert(
+  unchangedDuplicateCycleRegistry.status ===
+    "exam_result_history_persistence_cycle_registry_duplicate_unchanged" &&
+  unchangedDuplicateCycleRegistry.wasUpdated ===
+    false &&
+  unchangedDuplicateCycleRegistry.wasDuplicateIgnored ===
+    true &&
+  unchangedDuplicateCycleRegistry.updateKind ===
+    "duplicate_unchanged" &&
+  unchangedDuplicateCycleRegistry.completedCycleCount ===
+    1,
+  "Doppelter Zyklus wurde im Register nicht unverändert gelassen"
+);
+
+const duplicateCycleRegistry =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+    completedCycleIdentities: [
+      persistenceReadCycle.cycleIdentity,
+      persistenceReadCycle.cycleIdentity
+    ]
+  });
+
+expectEqual(
+  duplicateCycleRegistry.reason,
+  "persistence_cycle_registry_duplicate",
+  "Doppelte Zyklusregister-Identität"
+);
+
+const invalidCycleRegistry =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+    completedCycleIdentities: [
+      "ungueltige-identitaet"
+    ]
+  });
+
+expectEqual(
+  invalidCycleRegistry.reason,
+  "persistence_cycle_registry_identity_invalid",
+  "Ungültige Zyklusregister-Identität"
+);
+
+const tamperedRegistryRepetition = {
+  ...persistenceReadRepetition,
+  nextCompletedCycleIdentities: [
+    persistenceWriteCycle.cycleIdentity
+  ]
+};
+
+const tamperedCycleRegistry =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryState({
+    completedCycleIdentities: [],
+    repetitionState:
+      tamperedRegistryRepetition
+  });
+
+expectEqual(
+  tamperedCycleRegistry.reason,
+  "persistence_cycle_registry_repetition_update_invalid",
+  "Manipulierter Zyklusregister-Folgezustand"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -4723,6 +4904,9 @@ console.log(
 );
 console.log(
   "Zyklus-Wiederholungs-Fixtures: neu, doppelt, Register und manipuliert"
+);
+console.log(
+  "Zyklusregister-Fixtures: leer, sortiert, aktualisiert, doppelt und ungültig"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

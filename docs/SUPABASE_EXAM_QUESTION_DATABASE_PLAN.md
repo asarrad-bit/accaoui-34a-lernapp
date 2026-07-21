@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30h
+Stand: v27.30i
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -774,6 +774,21 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REPETITION_TEST.md`
 
+## Persistenz-Zyklusregister-State v27.30i
+
+Die begrenzte Liste terminal abgeschlossener Zyklusidentitäten
+kann jetzt kanonisch normalisiert und als versionierter lokaler
+Register-Payload vorbereitet werden.
+
+Identitäten werden strukturell geprüft, dedupliziert und
+deterministisch sortiert. Ein gültiger Wiederholungs-Guard kann
+genau einen neuen Eintrag ergänzen. Doppelte Zyklen lassen das
+Register unverändert. Keine Storage- oder UI-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_STATE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -864,11 +879,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30h` kann ein sicherer
-lokaler Persistenz-Zyklusregister-State vorbereitet werden, der
-die begrenzte Liste terminaler Zyklusidentitäten kanonisch
-normalisiert und versioniert, weiterhin ohne Storage- oder
-UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30i` kann ein sicherer
+lokaler Persistenz-Zyklusregister-Serialisierungsstate vorbereitet
+werden, der ausschließlich den kanonischen versionierten
+Register-Payload größenbegrenzt serialisiert, weiterhin ohne
+Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -888,5 +903,6 @@ Persistenz-Operationsfreigabe-State,
 Persistenz-Ausführungs-Guard, Persistenz-Aufrufvertrag,
 Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag,
 Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate,
-Persistenz-Zyklusstate und Persistenz-Zyklus-Wiederholungs-Guard
-vorbereitet; keine Live-Ausführung
+Persistenz-Zyklusstate, Persistenz-Zyklus-Wiederholungs-Guard und
+Persistenz-Zyklusregister-State vorbereitet;
+keine Live-Ausführung
