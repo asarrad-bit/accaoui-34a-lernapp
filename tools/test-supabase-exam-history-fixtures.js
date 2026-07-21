@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30r
+// Stand: v27.30s
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30r",
+  "v27.30s",
   "Adapterversion"
 );
 
@@ -156,6 +156,7 @@ for (const functionName of [
   "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryExecution",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryInvocationContract",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryInvocationPackageState",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -6721,6 +6722,288 @@ assert(
   "Zyklusregister-Aufrufpaket-Methoden-Getter wurde nicht blockiert"
 );
 
+const registryReadResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registryLoadInvocationPackage,
+    operationResult:
+      registeredCycleRegistrySerialization.serializedJson,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  registryReadResultContract.status ===
+    "exam_result_history_persistence_cycle_registry_result_read_ready" &&
+  registryReadResultContract.isValid ===
+    true &&
+  registryReadResultContract.canAcceptResult ===
+    true &&
+  registryReadResultContract.canUseRegistry ===
+    true &&
+  registryReadResultContract.didRead ===
+    true &&
+  registryReadResultContract.didWrite ===
+    false &&
+  registryReadResultContract.didDelete ===
+    false &&
+  registryReadResultContract.isEmpty ===
+    false &&
+  registryReadResultContract.resultKind ===
+    "read_ready" &&
+  registryReadResultContract.completedCycleCount ===
+    1 &&
+  registryReadResultContract.registryState.isValid ===
+    true &&
+  registryReadResultContract.canExecuteStorage ===
+    false &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Read-Ergebnis wurde nicht sicher normalisiert"
+);
+
+expectJson(
+  registryReadResultContract.registryPayload,
+  registeredReadCycleRegistry.registryPayload,
+  "Normalisierter Zyklusregister-Read-Payload"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    registryReadResultContract,
+    "operationResult"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registryReadResultContract,
+    "invocationPackageState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registryReadResultContract,
+    "privateField"
+  ),
+  "Rohe Zyklusregister-Ergebnisfelder wurden übernommen"
+);
+
+const registryReadEmptyResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registryLoadInvocationPackage,
+    operationResult: null
+  });
+
+assert(
+  registryReadEmptyResultContract.status ===
+    "exam_result_history_persistence_cycle_registry_result_read_empty" &&
+  registryReadEmptyResultContract.isValid ===
+    true &&
+  registryReadEmptyResultContract.canAcceptResult ===
+    true &&
+  registryReadEmptyResultContract.canUseRegistry ===
+    false &&
+  registryReadEmptyResultContract.didRead ===
+    true &&
+  registryReadEmptyResultContract.isEmpty ===
+    true &&
+  registryReadEmptyResultContract.resultKind ===
+    "read_empty",
+  "Leeres Zyklusregister-Read-Ergebnis wurde nicht normalisiert"
+);
+
+const registryWriteResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registrySaveInvocationPackage,
+    operationResult: true
+  });
+
+assert(
+  registryWriteResultContract.status ===
+    "exam_result_history_persistence_cycle_registry_result_write_confirmed" &&
+  registryWriteResultContract.isValid ===
+    true &&
+  registryWriteResultContract.canAcceptResult ===
+    true &&
+  registryWriteResultContract.didWrite ===
+    true &&
+  registryWriteResultContract.resultKind ===
+    "write_confirmed" &&
+  registryWriteResultContract.completedCycleCount ===
+    1 &&
+  registryWriteResultContract.serializedByteLength ===
+    registrySaveInvocationPackage.serializedByteLength &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Write-Ergebnis wurde nicht bestätigt"
+);
+
+const invalidRegistryWriteResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registrySaveInvocationPackage,
+    operationResult: false
+  });
+
+expectEqual(
+  invalidRegistryWriteResultContract.reason,
+  "persistence_cycle_registry_result_write_confirmation_invalid",
+  "Ungültige Zyklusregister-Write-Bestätigung"
+);
+
+const registryDeleteResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registryDeleteInvocationPackage,
+    operationResult: true
+  });
+
+assert(
+  registryDeleteResultContract.status ===
+    "exam_result_history_persistence_cycle_registry_result_delete_confirmed" &&
+  registryDeleteResultContract.isValid ===
+    true &&
+  registryDeleteResultContract.didDelete ===
+    true &&
+  registryDeleteResultContract.wasAlreadyAbsent ===
+    false &&
+  registryDeleteResultContract.resultKind ===
+    "delete_confirmed",
+  "Zyklusregister-Delete-Ergebnis wurde nicht bestätigt"
+);
+
+const registryDeleteAbsentResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registryDeleteInvocationPackage,
+    operationResult: false
+  });
+
+assert(
+  registryDeleteAbsentResultContract.status ===
+    "exam_result_history_persistence_cycle_registry_result_delete_absent" &&
+  registryDeleteAbsentResultContract.isValid ===
+    true &&
+  registryDeleteAbsentResultContract.didDelete ===
+    true &&
+  registryDeleteAbsentResultContract.wasAlreadyAbsent ===
+    true &&
+  registryDeleteAbsentResultContract.resultKind ===
+    "delete_absent",
+  "Bereits fehlendes Zyklusregister wurde nicht idempotent normalisiert"
+);
+
+const malformedRegistryReadResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registryLoadInvocationPackage,
+    operationResult:
+      "{ungueltig"
+  });
+
+expectEqual(
+  malformedRegistryReadResultContract.reason,
+  "persistence_cycle_registry_result_read_registry_invalid",
+  "Ungültiges Zyklusregister-Read-JSON"
+);
+
+const rawErrorRegistryResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registryLoadInvocationPackage,
+    operationResult: {
+      message:
+        "geheime Fehlermeldung",
+      stack:
+        "geheimer Stack",
+      code:
+        "INTERNAL_SECRET"
+    }
+  });
+
+assert(
+  rawErrorRegistryResultContract.reason ===
+    "persistence_cycle_registry_result_read_value_invalid" &&
+  !Object.prototype.hasOwnProperty.call(
+    rawErrorRegistryResultContract,
+    "message"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    rawErrorRegistryResultContract,
+    "stack"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    rawErrorRegistryResultContract,
+    "code"
+  ),
+  "Rohe Zyklusregister-Fehlerdetails wurden nicht verworfen"
+);
+
+const tamperedRegistryResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState: {
+      ...registrySaveInvocationPackage,
+      invocationPackageIdentity:
+        "exam_history_persistence_cycle_registry_invocation_package:load:v1"
+    },
+    operationResult: true
+  });
+
+expectEqual(
+  tamperedRegistryResultContract.reason,
+  "persistence_cycle_registry_result_identity_invalid",
+  "Manipulierte Zyklusregister-Aufrufpaket-Identität"
+);
+
+const blockedRegistryResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract({
+    invocationPackageState:
+      registryBlockedInvocationPackage,
+    operationResult: false
+  });
+
+expectEqual(
+  blockedRegistryResultContract.reason,
+  "persistence_cycle_registry_result_package_invalid",
+  "Blockiertes Zyklusregister-Aufrufpaket"
+);
+
+let registryResultContractAccessorReads = 0;
+
+const registryResultContractAccessorInput = {
+  invocationPackageState:
+    registryLoadInvocationPackage
+};
+
+Object.defineProperty(
+  registryResultContractAccessorInput,
+  "operationResult",
+  {
+    enumerable: true,
+    get() {
+      registryResultContractAccessorReads +=
+        1;
+
+      throw new Error(
+        "Zyklusregister-Ergebnisvertrag darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorRegistryResultContract =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultContract(
+    registryResultContractAccessorInput
+  );
+
+assert(
+  accessorRegistryResultContract.reason ===
+    "persistence_cycle_registry_result_value_accessor_not_allowed" &&
+  registryResultContractAccessorReads ===
+    0 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Ergebnisvertrags-Getter wurde nicht blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -6840,6 +7123,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Aufrufpaket-Fixtures: Save, Load, Delete, blockiert, abweichend, manipuliert und Accessor"
+);
+console.log(
+  "Zyklusregister-Ergebnisvertrags-Fixtures: Read, leer, Write, Delete, nicht vorhanden, manipuliert und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

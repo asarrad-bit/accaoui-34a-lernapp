@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30r
+Stand: v27.30s
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -916,6 +916,22 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_INVOCATION_PACKAGE_TEST.md`
 
+## Zyklusregister-Persistenz-Ergebnisvertrag v27.30s
+
+Spätere Read-, Write- und Delete-Rückgaben des
+Persistenz-Zyklusregisters können jetzt streng und datensparsam
+normalisiert werden.
+
+Read akzeptiert ausschließlich kanonisches Register-JSON oder
+einen leeren Wert. Write verlangt eine eindeutige Bestätigung.
+Delete wird idempotent als gelöscht oder bereits nicht vorhanden
+abgebildet. Rohe Fehlerdetails werden nicht übernommen und keine
+Adaptermethode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_RESULT_CONTRACT_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1006,11 +1022,12 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30r` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Ergebnisvertrag vorbereitet
-werden, der spätere Read-, Write- und Delete-Rückgaben streng
-normalisiert und rohe Fehlerdetails geschlossen verwirft,
-weiterhin ohne Methoden-, Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30s` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Ergebnisannahme-Guard
+vorbereitet werden, der normalisierte Ergebnisse ausschließlich
+dem aktuell passenden Aufrufpaket zuordnet und abweichende
+Ergebnisse geschlossen blockiert, weiterhin ohne Methoden-,
+Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1039,6 +1056,7 @@ Zyklusregister-Storage-Adapter-Readiness-State,
 Zyklusregister-Persistenz-Operationsplan-State,
 Zyklusregister-Persistenz-Operationsfreigabe-State,
 Zyklusregister-Persistenz-Ausführungs-Guard,
-Zyklusregister-Persistenz-Aufrufvertrag und
-Zyklusregister-Persistenz-Aufrufpaket-State vorbereitet;
+Zyklusregister-Persistenz-Aufrufvertrag,
+Zyklusregister-Persistenz-Aufrufpaket-State und
+Zyklusregister-Persistenz-Ergebnisvertrag vorbereitet;
 keine Live-Ausführung
