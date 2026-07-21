@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30g",
+    "// stand: v27.30h",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -48,6 +48,7 @@ required_markers = (
     'version: "v27.30e"',
     'version: "v27.30f"',
     'version: "v27.30g"',
+    'version: "v27.30h"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -537,6 +538,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecyclestates:",
     "datasourceinitialsnapshotpersistencecyclestate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecyclestate,",
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecyclerepetition(input)",
+    '"exam_result_history_persistence_cycle_repetition_ready"',
+    '"exam_result_history_persistence_cycle_repetition_blocked"',
+    '"exam_result_history_persistence_cycle_repetition_invalid"',
+    "issnapshotpersistencecyclerepetitionguardonly: true",
+    "snapshotpersistencecyclerepetitionguardname:",
+    "issnapshotpersistencecyclerepetitionguardprepared: true",
+    "canguardsnapshotpersistencecyclerepetitions: true",
+    "datasourcesnapshotpersistencecyclerepetitionguardname:",
+    "isdatasourcesnapshotpersistencecyclerepetitionguardprepared:",
+    "canguarddatasourcesnapshotpersistencecyclerepetitions:",
+    "datasourceinitialsnapshotpersistencecyclerepetitionstate:",
+    "guardparticipantfullexamresulthistorysnapshotpersistencecyclerepetition,",
 )
 
 for marker in required_markers:
@@ -2772,6 +2786,91 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklus-Wiederholungs-Guard muss genau "
+        "einmal vorhanden sein."
+    )
+
+repetition_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecyclerepetition(input)"
+)
+cycle_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecyclestate(input)",
+    repetition_start,
+)
+repetition_block = lower[
+    repetition_start:cycle_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "new set()",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecontract({",
+    "normalizeparticipantfullexamresulthistorycontrollersnapshot(",
+    "mapparticipantfullexamresulthistorysnapshotresumestate({",
+    "const maximumcompletedcycleidentities =",
+    "persistence_cycle_repetition_cycle_state_missing",
+    "persistence_cycle_repetition_registry_missing",
+    "persistence_cycle_repetition_cycle_state_invalid",
+    "persistence_cycle_repetition_registry_invalid",
+    "persistence_cycle_repetition_registry_identity_invalid",
+    "persistence_cycle_repetition_registry_duplicate",
+    "persistence_cycle_repetition_outcome_invalid",
+    "persistence_cycle_repetition_storage_key_invalid",
+    "persistence_cycle_repetition_identity_invalid",
+    "persistence_cycle_repetition_read_snapshot_invalid",
+    "persistence_cycle_repetition_registry_limit_reached",
+    "persistence_cycle_repetition_already_completed",
+    "exam_result_history_persistence_cycle_repetition_ready",
+    "exam_result_history_persistence_cycle_repetition_blocked",
+    "exam_result_history_persistence_cycle_repetition_invalid",
+    "issnapshotpersistencecyclerepetitionguardonly: true",
+    "canacceptcycleonce: true",
+    "canregistercycleidentitylater: true",
+    "isduplicatecycle: true",
+    "canexecutestorage: false",
+):
+    if required not in repetition_block:
+        fail(
+            "Persistenz-Zyklus-Wiederholungs-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in repetition_block:
+        fail(
+            "Unzulässiger Inhalt im Zyklus-Wiederholungs-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2859,6 +2958,7 @@ print("Persistenz-Ergebnisvertrag: Read, Write und Delete getrennt normalisiert"
 print("Persistenz-Ergebnisannahme: nur Ergebnisse des aktuellen Aufrufpakets akzeptiert")
 print("Persistenz-Abschlussstate: angenommene Ergebnisse terminal und sicher abgeschlossen")
 print("Persistenz-Zyklusstate: Aufrufpaket bis Abschluss zusammenhängend geprüft")
+print("Persistenz-Zyklus-Wiederholung: doppelte terminale Ergebnisse blockiert")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

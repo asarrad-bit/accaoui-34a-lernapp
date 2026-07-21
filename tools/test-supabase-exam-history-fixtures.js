@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30g
+// Stand: v27.30h
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30g",
+  "v27.30h",
   "Adapterversion"
 );
 
@@ -145,6 +145,7 @@ for (const functionName of [
   "guardParticipantFullExamResultHistorySnapshotPersistenceResultAcceptance",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCompletionState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleState",
+  "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -4494,6 +4495,145 @@ expectEqual(
   "Veraltetes Ergebnis im Persistenzzyklus"
 );
 
+const persistenceReadRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition({
+    cycleState:
+      persistenceReadCycle,
+    completedCycleIdentities: [],
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceReadRepetition.status ===
+    "exam_result_history_persistence_cycle_repetition_ready" &&
+  persistenceReadRepetition.isValid === true &&
+  persistenceReadRepetition.canAcceptCycleOnce ===
+    true &&
+  persistenceReadRepetition.canRegisterCycleIdentityLater ===
+    true &&
+  persistenceReadRepetition.isDuplicateCycle ===
+    false &&
+  persistenceReadRepetition.nextCompletedCycleCount ===
+    1 &&
+  persistenceReadRepetition.nextCompletedCycleIdentities[0] ===
+    persistenceReadCycle.cycleIdentity &&
+  persistenceReadRepetition.canExecuteStorage ===
+    false &&
+  storageAdapterOperationCalls === 0,
+  "Neuer Persistenzzyklus wurde nicht einmalig freigegeben"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadRepetition,
+    "cycleState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceReadRepetition,
+    "privateField"
+  ),
+  "Interne Wiederholungsfelder wurden übernommen"
+);
+
+const duplicateReadRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition({
+    cycleState:
+      persistenceReadCycle,
+    completedCycleIdentities:
+      persistenceReadRepetition.nextCompletedCycleIdentities
+  });
+
+assert(
+  duplicateReadRepetition.status ===
+    "exam_result_history_persistence_cycle_repetition_blocked" &&
+  duplicateReadRepetition.isValid === true &&
+  duplicateReadRepetition.canAcceptCycleOnce ===
+    false &&
+  duplicateReadRepetition.canRegisterCycleIdentityLater ===
+    false &&
+  duplicateReadRepetition.isDuplicateCycle ===
+    true &&
+  duplicateReadRepetition.reason ===
+    "persistence_cycle_repetition_already_completed" &&
+  duplicateReadRepetition.nextCompletedCycleCount ===
+    1 &&
+  storageAdapterOperationCalls === 0,
+  "Doppelter Persistenzzyklus wurde nicht blockiert"
+);
+
+const persistenceWriteRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition({
+    cycleState:
+      persistenceWriteCycle,
+    completedCycleIdentities:
+      persistenceReadRepetition.nextCompletedCycleIdentities
+  });
+
+assert(
+  persistenceWriteRepetition.canAcceptCycleOnce ===
+    true &&
+  persistenceWriteRepetition.isDuplicateCycle ===
+    false &&
+  persistenceWriteRepetition.completedCycleCount ===
+    1 &&
+  persistenceWriteRepetition.nextCompletedCycleCount ===
+    2 &&
+  persistenceWriteRepetition.nextCompletedCycleIdentities[1] ===
+    persistenceWriteCycle.cycleIdentity,
+  "Zweiter unterschiedlicher Persistenzzyklus wurde nicht registriert"
+);
+
+const duplicateRegistryRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition({
+    cycleState:
+      persistenceReadCycle,
+    completedCycleIdentities: [
+      persistenceReadCycle.cycleIdentity,
+      persistenceReadCycle.cycleIdentity
+    ]
+  });
+
+expectEqual(
+  duplicateRegistryRepetition.reason,
+  "persistence_cycle_repetition_registry_duplicate",
+  "Doppelte Identität im Zyklusregister"
+);
+
+const invalidRegistryRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition({
+    cycleState:
+      persistenceReadCycle,
+    completedCycleIdentities: [
+      "ungueltige-identitaet"
+    ]
+  });
+
+expectEqual(
+  invalidRegistryRepetition.reason,
+  "persistence_cycle_repetition_registry_identity_invalid",
+  "Ungültige Zyklusregister-Identität"
+);
+
+const tamperedRepetitionCycle = {
+  ...persistenceReadCycle,
+  terminalOutcome:
+    "read_empty"
+};
+
+const tamperedCycleRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRepetition({
+    cycleState:
+      tamperedRepetitionCycle,
+    completedCycleIdentities: []
+  });
+
+expectEqual(
+  tamperedCycleRepetition.reason,
+  "persistence_cycle_repetition_outcome_invalid",
+  "Manipulierter Zyklus im Wiederholungs-Guard"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -4580,6 +4720,9 @@ console.log(
 );
 console.log(
   "Zyklus-Fixtures: Read, leer, Write, Delete, idempotent, veraltet und manipuliert"
+);
+console.log(
+  "Zyklus-Wiederholungs-Fixtures: neu, doppelt, Register und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

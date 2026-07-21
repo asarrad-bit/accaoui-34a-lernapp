@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30g
+Stand: v27.30h
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -760,6 +760,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_STATE_TEST.md`
 
+## Persistenz-Zyklus-Wiederholungs-Guard v27.30h
+
+Terminal abgeschlossene Persistenzzyklen können jetzt anhand
+ihrer kanonischen Zyklusidentität nur einmal freigegeben werden.
+
+Bereits registrierte Zyklusidentitäten werden geschlossen
+blockiert. Unterschiedliche neue Identitäten können in einem
+begrenzten lokalen Folgezustand vorbereitet werden. Keine
+Storage- oder UI-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REPETITION_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -850,11 +864,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30g` kann ein sicherer
-lokaler Persistenz-Zyklus-Wiederholungs-Guard vorbereitet werden,
-der bereits terminal abgeschlossene Zyklusidentitäten erkennt und
-eine doppelte Ergebnisanwendung geschlossen blockiert, weiterhin
-ohne Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30h` kann ein sicherer
+lokaler Persistenz-Zyklusregister-State vorbereitet werden, der
+die begrenzte Liste terminaler Zyklusidentitäten kanonisch
+normalisiert und versioniert, weiterhin ohne Storage- oder
+UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -873,5 +887,6 @@ Persistenz-Operationsplan-State,
 Persistenz-Operationsfreigabe-State,
 Persistenz-Ausführungs-Guard, Persistenz-Aufrufvertrag,
 Persistenz-Aufrufpaket-State, Persistenz-Ergebnisvertrag,
-Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate und
-Persistenz-Zyklusstate vorbereitet; keine Live-Ausführung
+Persistenz-Ergebnisannahme-Guard, Persistenz-Abschlussstate,
+Persistenz-Zyklusstate und Persistenz-Zyklus-Wiederholungs-Guard
+vorbereitet; keine Live-Ausführung
