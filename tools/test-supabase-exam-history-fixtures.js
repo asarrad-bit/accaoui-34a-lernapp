@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30b
+// Stand: v27.30c
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30b",
+  "v27.30c",
   "Adapterversion"
 );
 
@@ -140,6 +140,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceOperationReleaseState",
   "guardParticipantFullExamResultHistorySnapshotPersistenceExecution",
   "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationContract",
+  "mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -3588,6 +3589,196 @@ expectEqual(
   "Ungültiger Ausführungsstate im Aufrufvertrag"
 );
 
+const persistenceWritePackage =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState({
+    releaseState:
+      persistenceWriteRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      fullStorageAdapter,
+    executionState:
+      persistenceWriteExecution,
+    invocationContractState:
+      persistenceWriteInvocation,
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  persistenceWritePackage.status ===
+    "exam_result_history_persistence_invocation_package_ready" &&
+  persistenceWritePackage.isValid === true &&
+  persistenceWritePackage.canPrepareInvocationPackage ===
+    true &&
+  persistenceWritePackage.canInvokeLater ===
+    true &&
+  persistenceWritePackage.canExecuteStorage ===
+    false &&
+  persistenceWritePackage.isMethodReferenceValidated ===
+    true &&
+  persistenceWritePackage.methodName ===
+    "write" &&
+  persistenceWritePackage.invocationArgumentCount ===
+    2 &&
+  storageAdapterOperationCalls === 0,
+  "Write-Aufrufpaket wurde nicht sicher erstellt"
+);
+
+expectJson(
+  persistenceWritePackage.invocationArguments,
+  persistenceWriteInvocation.invocationArguments,
+  "Write-Aufrufpaket-Argumente"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWritePackage,
+    "storageAdapter"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWritePackage,
+    "executionState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWritePackage,
+    "invocationContractState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    persistenceWritePackage,
+    "privateField"
+  ),
+  "Adapter oder interne Aufrufpaket-Felder wurden übernommen"
+);
+
+const persistenceReadPackage =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState({
+    releaseState:
+      persistenceReadRelease,
+    persistenceState:
+      persistenceLoad,
+    storageAdapter:
+      readExecutionAdapter,
+    executionState:
+      persistenceReadExecution,
+    invocationContractState:
+      persistenceReadInvocation
+  });
+
+assert(
+  persistenceReadPackage.canPrepareInvocationPackage ===
+    true &&
+  persistenceReadPackage.methodName ===
+    "read" &&
+  persistenceReadPackage.invocationArgumentCount ===
+    1 &&
+  persistenceReadPackage.hasValidatedLoadState ===
+    true &&
+  persistenceReadPackage.serializedByteLength ===
+    null &&
+  storageAdapterOperationCalls === 0,
+  "Read-Aufrufpaket wurde nicht sicher erstellt"
+);
+
+const persistenceDeletePackage =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState({
+    releaseState:
+      persistenceDeleteRelease,
+    persistenceState:
+      persistenceDelete,
+    storageAdapter:
+      fullStorageAdapter,
+    executionState:
+      persistenceDeleteExecution,
+    invocationContractState:
+      persistenceDeleteInvocation
+  });
+
+assert(
+  persistenceDeletePackage.canPrepareInvocationPackage ===
+    true &&
+  persistenceDeletePackage.methodName ===
+    "delete" &&
+  persistenceDeletePackage.invocationArgumentCount ===
+    1 &&
+  persistenceDeletePackage.hasValidatedLoadState ===
+    false &&
+  storageAdapterOperationCalls === 0,
+  "Delete-Aufrufpaket wurde nicht sicher erstellt"
+);
+
+const changedAdapterPackage =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState({
+    releaseState:
+      persistenceWriteRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      changedExecutionAdapter,
+    executionState:
+      persistenceWriteExecution,
+    invocationContractState:
+      persistenceWriteInvocation
+  });
+
+expectEqual(
+  changedAdapterPackage.reason,
+  "persistence_invocation_package_recomputed_execution_invalid",
+  "Veränderter Adapter im Aufrufpaket"
+);
+
+const tamperedPackageInvocation = {
+  ...persistenceWriteInvocation,
+  invocationIdentity:
+    "exam_history_persistence_invocation:write:manipuliert"
+};
+
+const tamperedInvocationPackage =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState({
+    releaseState:
+      persistenceWriteRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      fullStorageAdapter,
+    executionState:
+      persistenceWriteExecution,
+    invocationContractState:
+      tamperedPackageInvocation
+  });
+
+expectEqual(
+  tamperedInvocationPackage.reason,
+  "persistence_invocation_package_contract_mismatch",
+  "Manipulierter Aufrufvertrag im Aufrufpaket"
+);
+
+const tamperedPackageExecution = {
+  ...persistenceWriteExecution,
+  executionIdentity:
+    "exam_history_persistence_execution:write:manipuliert"
+};
+
+const tamperedExecutionPackage =
+  adapter.mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState({
+    releaseState:
+      persistenceWriteRelease,
+    persistenceState:
+      persistenceSave,
+    storageAdapter:
+      fullStorageAdapter,
+    executionState:
+      tamperedPackageExecution,
+    invocationContractState:
+      persistenceWriteInvocation
+  });
+
+expectEqual(
+  tamperedExecutionPackage.reason,
+  "persistence_invocation_package_execution_state_mismatch",
+  "Manipulierter Ausführungsstate im Aufrufpaket"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -3659,6 +3850,9 @@ console.log(
 );
 console.log(
   "Aufrufvertrag-Fixtures: Write, Read, Delete, kanonisch und manipuliert"
+);
+console.log(
+  "Aufrufpaket-Fixtures: Write, Read, Delete, veränderter Adapter und manipuliert"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

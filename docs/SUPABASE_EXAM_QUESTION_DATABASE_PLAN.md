@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30b
+Stand: v27.30c
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -691,6 +691,20 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_INVOCATION_CONTRACT_TEST.md`
 
+## Persistenz-Aufrufpaket-State v27.30c
+
+Ausführungs-Guard, Aufrufvertrag und tatsächlich injizierter
+Storage-Adapter werden jetzt erneut zu einem sicheren lokalen
+Aufrufpaket zusammengebunden.
+
+Guard und Aufrufvertrag werden vollständig neu erzeugt.
+Operation, Methode, Identitäten und Argumente müssen exakt
+übereinstimmen. Keine Storage-Methode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_INVOCATION_PACKAGE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -781,10 +795,10 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30b` kann ein sicherer
-lokaler Persistenz-Aufrufpaket-State vorbereitet werden, der
-Ausführungs-Guard, Aufrufvertrag und denselben injizierten Adapter
-erneut zusammenbindet, weiterhin ohne Methodenaufruf.
+Nach GitHub-Bestätigung von `v27.30c` kann ein sicherer
+lokaler Persistenz-Ergebnisvertrag vorbereitet werden, der spätere
+Read-, Write- und Delete-Rückgabewerte getrennt normalisiert,
+weiterhin ohne Storage- oder Methodenaufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -801,5 +815,6 @@ Snapshot-Serialisierungsstate, Snapshot-Deserialisierungsstate,
 Snapshot-Persistenzvertrag, Persistenz-Adapter-Readiness-State,
 Persistenz-Operationsplan-State,
 Persistenz-Operationsfreigabe-State,
-Persistenz-Ausführungs-Guard und Persistenz-Aufrufvertrag
-vorbereitet; keine Live-Ausführung
+Persistenz-Ausführungs-Guard, Persistenz-Aufrufvertrag und
+Persistenz-Aufrufpaket-State vorbereitet;
+keine Live-Ausführung

@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30b",
+    "// stand: v27.30c",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -43,6 +43,7 @@ required_markers = (
     'version: "v27.29z"',
     'version: "v27.30a"',
     'version: "v27.30b"',
+    'version: "v27.30c"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -463,6 +464,18 @@ required_markers = (
     "canmapdatasourcesnapshotpersistenceinvocationcontracts:",
     "datasourceinitialsnapshotpersistenceinvocationcontractstate:",
     "mapparticipantfullexamresulthistorysnapshotpersistenceinvocationcontract,",
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceinvocationpackagestate(input)",
+    '"exam_result_history_persistence_invocation_package_ready"',
+    '"exam_result_history_persistence_invocation_package_invalid"',
+    "issnapshotpersistenceinvocationpackageonly: true",
+    "snapshotpersistenceinvocationpackagemappername:",
+    "issnapshotpersistenceinvocationpackageprepared: true",
+    "canmapsnapshotpersistenceinvocationpackages: true",
+    "datasourcesnapshotpersistenceinvocationpackagemappername:",
+    "isdatasourcesnapshotpersistenceinvocationpackageprepared:",
+    "canmapdatasourcesnapshotpersistenceinvocationpackages:",
+    "datasourceinitialsnapshotpersistenceinvocationpackagestate:",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceinvocationpackagestate,",
 )
 
 for marker in required_markers:
@@ -2248,6 +2261,93 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistorySnapshotPersistenceInvocationPackageState(input)"
+) != 1:
+    fail(
+        "Persistenz-Aufrufpaket-State muss genau einmal "
+        "vorhanden sein."
+    )
+
+package_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceinvocationpackagestate(input)"
+)
+invocation_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistenceinvocationcontract(input)",
+    package_start,
+)
+package_block = lower[
+    package_start:invocation_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "guardparticipantfullexamresulthistorysnapshotpersistenceexecution({",
+    "mapparticipantfullexamresulthistorysnapshotpersistenceinvocationcontract({",
+    "json.stringify(",
+    "invocationarguments.push({",
+    "persistence_invocation_package_release_state_missing",
+    "persistence_invocation_package_persistence_state_missing",
+    "persistence_invocation_package_storage_adapter_missing",
+    "persistence_invocation_package_execution_state_missing",
+    "persistence_invocation_package_contract_missing",
+    "persistence_invocation_package_execution_state_invalid",
+    "persistence_invocation_package_contract_invalid",
+    "persistence_invocation_package_storage_adapter_invalid",
+    "persistence_invocation_package_recomputed_execution_invalid",
+    "persistence_invocation_package_execution_state_mismatch",
+    "persistence_invocation_package_recomputed_contract_invalid",
+    "persistence_invocation_package_contract_mismatch",
+    "persistence_invocation_package_method_invalid",
+    "persistence_invocation_package_argument_schema_invalid",
+    "exam_history_persistence_invocation_package:",
+    "exam_result_history_persistence_invocation_package_ready",
+    "exam_result_history_persistence_invocation_package_invalid",
+    "issnapshotpersistenceinvocationpackageonly: true",
+    "invocationpackageschemaversion: 1",
+    "caninvokelater: true",
+    "canexecutestorage: false",
+    "ismethodreferencevalidated: true",
+):
+    if required not in package_block:
+        fail(
+            "Persistenz-Aufrufpaket-Anweisung fehlt: "
+            f"{required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    "methodproperty.value(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+):
+    if forbidden in package_block:
+        fail(
+            "Unzulässiger Inhalt im Persistenz-Aufrufpaket: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -2330,6 +2430,7 @@ print("Persistenz-Operationsplan: Vertrag und Adapterfähigkeit ohne Aufruf verb
 print("Persistenz-Operationsfreigabe: unveränderte Readiness und Plan erneut geprüft")
 print("Persistenz-Ausführungs-Guard: Adapter und Methode ohne Aufruf erneut geprüft")
 print("Persistenz-Aufrufvertrag: kanonisches Methoden- und Argumenteschema erstellt")
+print("Persistenz-Aufrufpaket: Guard, Vertrag und Adapter erneut geschlossen verbunden")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")
