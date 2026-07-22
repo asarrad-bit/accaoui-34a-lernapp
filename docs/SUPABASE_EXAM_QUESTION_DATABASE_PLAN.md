@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31c
+Stand: v27.31d
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1094,6 +1094,30 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_IDEMPOTENCY_RESERVATION_RPC_TEST.md`
 
+## Idempotenz-Abschluss-RPC v27.31d
+
+Ein interner atomarer Abschluss-RPC ist vorbereitet.
+
+Der RPC:
+
+- bestimmt den Nutzer ausschließlich über `auth.uid()`
+- akzeptiert keine Nutzer- oder Teilnehmer-ID
+- verlangt einen zuvor reservierten Vorgang
+- prüft Bereich, Mutation, Ressource und Fingerprint erneut
+- sperrt die Operation mit `FOR UPDATE`
+- überführt ausschließlich `pending` nach `completed` oder `failed`
+- speichert bei Erfolg einen kanonischen JSONB-Ergebnis-Payload
+- speichert bei Fehler nur einen stabilen Fehlercode
+- lässt identische terminale Wiederholungen vollständig unverändert
+- blockiert abweichende zweite Abschlüsse ohne Überschreiben
+
+Der RPC bleibt intern und besitzt keine direkte
+Ausführungsfreigabe für App-Rollen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_IDEMPOTENCY_COMPLETION_RPC_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1184,14 +1208,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31c` kann `v27.31d`
-einen internen atomaren Idempotenz-Abschluss-RPC vorbereiten.
+Nach GitHub-Bestätigung von `v27.31d` kann `v27.31e`
+einen statischen End-to-End-Idempotenz-RPC-Flow-Audit
+vorbereiten.
 
-Er muss ausschließlich den reservierten Vorgang desselben
-authentifizierten Nutzers abschließen, einen kanonischen
-Ergebnis-Payload oder einen stabilen Fehlercode speichern und
-bereits terminale Zustände unverändert lassen. Es erfolgt
-keine Live-Ausführung.
+Der Audit muss Operationstabelle, Reservierung und Abschluss
+als gemeinsame Transaktionsgrenze prüfen, direkte App-Zugriffe
+weiterhin ausschließen und verhindern, dass eine spätere
+Fachmutation außerhalb des reservierten Vorgangs abgeschlossen
+wird. Es erfolgt keine Live-Ausführung.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1230,5 +1255,6 @@ Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard vorbereitet
 sowie die Persistenz-Rekursionsgrenze v27.30x dokumentiert;
 produktiver Idempotenz-Integrationsvertrag v27.31a und
 vollständig gesperrte Idempotenz-Operationstabelle v27.31b und
-interner atomarer Idempotenz-Reservierungs-RPC v27.31c vorbereitet;
+interner atomarer Idempotenz-Reservierungs-RPC v27.31c und
+interner atomarer Idempotenz-Abschluss-RPC v27.31d vorbereitet;
 keine Live-Ausführung
