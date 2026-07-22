@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30w",
+    "// stand: v27.31a",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -64,6 +64,7 @@ required_markers = (
     'version: "v27.30u"',
     'version: "v27.30v"',
     'version: "v27.30w"',
+    'version: "v27.31a"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -768,6 +769,18 @@ required_markers = (
     "canguarddatasourcesnapshotpersistencecycleregistrycyclerepetitions:",
     "datasourceinitialsnapshotpersistencecycleregistrycyclerepetitionstate:",
     "guardparticipantfullexamresulthistorysnapshotpersistencecycleregistrycyclerepetition,",
+    "function mapparticipantfullexamresulthistoryproductiveidempotencyintegrationcontract(input)",
+    '"exam_result_history_productive_idempotency_integration_prepared"',
+    '"exam_result_history_productive_idempotency_integration_invalid"',
+    "isproductiveidempotencyintegrationcontractonly: true",
+    "productiveidempotencyintegrationcontractname:",
+    "isproductiveidempotencyintegrationcontractprepared: true",
+    "canmapproductiveidempotencyintegrationcontracts: true",
+    "datasourceproductiveidempotencyintegrationcontractname:",
+    "isdatasourceproductiveidempotencyintegrationcontractprepared:",
+    "canmapdatasourceproductiveidempotencyintegrationcontracts:",
+    "datasourceinitialproductiveidempotencyintegrationcontractstate:",
+    "mapparticipantfullexamresulthistoryproductiveidempotencyintegrationcontract,",
 )
 
 for marker in required_markers:
@@ -4470,6 +4483,97 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract(input)"
+) != 1:
+    fail(
+        "Produktiver Idempotenz-Integrationsvertrag "
+        "muss genau einmal vorhanden sein."
+    )
+
+productive_idempotency_start = lower.index(
+    "function mapparticipantfullexamresulthistoryproductiveidempotencyintegrationcontract(input)"
+)
+registry_repetition_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecycleregistrycyclerepetition(input)",
+    productive_idempotency_start,
+)
+productive_idempotency_block = lower[
+    productive_idempotency_start:
+    registry_repetition_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "const contractversion = 1",
+    "server_issued",
+    "database_unique_constraint",
+    "return_existing_result",
+    "reject_payload_mismatch",
+    "exam_history_idempotency_operations",
+    "exam_history_idempotency_operations_operation_identity_key",
+    "exam_history_idempotency:",
+    "productive_idempotency_operation_scope_invalid",
+    "productive_idempotency_operation_invalid",
+    "productive_idempotency_identity_source_invalid",
+    "productive_idempotency_external_operation_identity_invalid",
+    "productive_idempotency_atomicity_strategy_invalid",
+    "productive_idempotency_result_reuse_policy_invalid",
+    "productive_idempotency_conflict_policy_invalid",
+    "productive_idempotency_payload_fingerprint_invalid",
+    "productive_idempotency_delete_payload_fingerprint_not_allowed",
+    "exam_result_history_productive_idempotency_integration_prepared",
+    "exam_result_history_productive_idempotency_integration_invalid",
+    "isproductiveidempotencyintegrationcontractonly: true",
+    "canintegratelater",
+    "canexecutenow: false",
+    "canexecutestorage: false",
+    "canexecuterpc: false",
+    "canusebrowserstorage: false",
+    "isidentityauthorityverified: false",
+    "requiresserververification: true",
+    "isatomicityenforcednow: false",
+    "requiresatomicdatabasewrite: true",
+    "requiresuniqueconstraint: true",
+):
+    if required not in productive_idempotency_block:
+        fail(
+            "Produktiver Idempotenz-Integrationsvertrag: "
+            f"Anweisung fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+    "storageadapter.",
+    "rawerror",
+):
+    if forbidden in productive_idempotency_block:
+        fail(
+            "Unzulässiger Inhalt im produktiven "
+            "Idempotenz-Integrationsvertrag: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -4573,6 +4677,7 @@ print("Persistenz-Zyklusregister-Ergebnisannahme: nur aktuell passendes Aufrufpa
 print("Persistenz-Zyklusregister-Abschluss: Read, Write und Delete terminal abgeschlossen")
 print("Persistenz-Zyklusregister-Zyklus: Aufruf, Ergebnis, Annahme und Abschluss zusammenhängend geprüft")
 print("Persistenz-Zyklusregister-Zyklus-Wiederholung: terminale Zyklusidentität nur einmal freigegeben")
+print("Produktive Idempotenz: externe Operations-ID und atomare Datenbankgrenze vorbereitet")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

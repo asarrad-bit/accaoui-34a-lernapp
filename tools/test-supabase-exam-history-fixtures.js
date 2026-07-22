@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30w
+// Stand: v27.31a
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30w",
+  "v27.31a",
   "Adapterversion"
 );
 
@@ -161,6 +161,7 @@ for (const functionName of [
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCompletionState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleState",
   "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition",
+  "mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -7891,6 +7892,250 @@ assert(
   "Zyklusregister-Zyklus-Wiederholungs-Getter wurde nicht blockiert"
 );
 
+const productiveWriteIdempotencyContract =
+  adapter.mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract({
+    operationScope:
+      "snapshot",
+    operation:
+      "write",
+    externalOperationIdentity:
+      "123e4567-e89b-42d3-a456-426614174000",
+    identitySource:
+      "server_issued",
+    atomicityStrategy:
+      "database_unique_constraint",
+    resultReusePolicy:
+      "return_existing_result",
+    conflictPolicy:
+      "reject_payload_mismatch",
+    payloadFingerprint:
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  productiveWriteIdempotencyContract.status ===
+    "exam_result_history_productive_idempotency_integration_prepared" &&
+  productiveWriteIdempotencyContract.isValid ===
+    true &&
+  productiveWriteIdempotencyContract.canIntegrateLater ===
+    true &&
+  productiveWriteIdempotencyContract.canExecuteNow ===
+    false &&
+  productiveWriteIdempotencyContract.operationScope ===
+    "snapshot" &&
+  productiveWriteIdempotencyContract.operation ===
+    "write" &&
+  productiveWriteIdempotencyContract.operationIdentity ===
+    "exam_history_idempotency:snapshot:write:123e4567-e89b-42d3-a456-426614174000" &&
+  productiveWriteIdempotencyContract.requiresPayloadFingerprint ===
+    true &&
+  productiveWriteIdempotencyContract.requiresServerVerification ===
+    true &&
+  productiveWriteIdempotencyContract.isIdentityAuthorityVerified ===
+    false &&
+  productiveWriteIdempotencyContract.requiresUniqueConstraint ===
+    true &&
+  productiveWriteIdempotencyContract.canExecuteStorage ===
+    false &&
+  productiveWriteIdempotencyContract.canExecuteRpc ===
+    false,
+  "Produktiver Write-Idempotenzvertrag wurde nicht sicher vorbereitet"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    productiveWriteIdempotencyContract,
+    "privateField"
+  ),
+  "Unbekanntes Idempotenzfeld wurde übernommen"
+);
+
+const productiveDeleteIdempotencyContract =
+  adapter.mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract({
+    operationScope:
+      "cycle_registry",
+    operation:
+      "delete",
+    externalOperationIdentity:
+      "223e4567-e89b-42d3-b456-426614174001",
+    identitySource:
+      "server_issued",
+    atomicityStrategy:
+      "database_unique_constraint",
+    resultReusePolicy:
+      "return_existing_result",
+    conflictPolicy:
+      "reject_payload_mismatch",
+    payloadFingerprint:
+      null
+  });
+
+assert(
+  productiveDeleteIdempotencyContract.isValid ===
+    true &&
+  productiveDeleteIdempotencyContract.operationIdentity ===
+    "exam_history_idempotency:cycle_registry:delete:223e4567-e89b-42d3-b456-426614174001" &&
+  productiveDeleteIdempotencyContract.requiresPayloadFingerprint ===
+    false &&
+  productiveDeleteIdempotencyContract.payloadFingerprint ===
+    null,
+  "Produktiver Delete-Idempotenzvertrag wurde nicht vorbereitet"
+);
+
+const browserIssuedIdempotencyContract =
+  adapter.mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract({
+    operationScope:
+      "snapshot",
+    operation:
+      "write",
+    externalOperationIdentity:
+      "323e4567-e89b-42d3-8456-426614174002",
+    identitySource:
+      "browser_generated",
+    atomicityStrategy:
+      "database_unique_constraint",
+    resultReusePolicy:
+      "return_existing_result",
+    conflictPolicy:
+      "reject_payload_mismatch",
+    payloadFingerprint:
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  });
+
+expectEqual(
+  browserIssuedIdempotencyContract.reason,
+  "productive_idempotency_identity_source_invalid",
+  "Browsergenerierte Operations-ID"
+);
+
+const staticIdempotencyContract =
+  adapter.mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract({
+    operationScope:
+      "snapshot",
+    operation:
+      "write",
+    externalOperationIdentity:
+      "write",
+    identitySource:
+      "server_issued",
+    atomicityStrategy:
+      "database_unique_constraint",
+    resultReusePolicy:
+      "return_existing_result",
+    conflictPolicy:
+      "reject_payload_mismatch",
+    payloadFingerprint:
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  });
+
+expectEqual(
+  staticIdempotencyContract.reason,
+  "productive_idempotency_external_operation_identity_invalid",
+  "Statische Operations-ID"
+);
+
+const invalidWriteFingerprintContract =
+  adapter.mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract({
+    operationScope:
+      "snapshot",
+    operation:
+      "write",
+    externalOperationIdentity:
+      "423e4567-e89b-42d3-9456-426614174003",
+    identitySource:
+      "server_issued",
+    atomicityStrategy:
+      "database_unique_constraint",
+    resultReusePolicy:
+      "return_existing_result",
+    conflictPolicy:
+      "reject_payload_mismatch",
+    payloadFingerprint:
+      "zu-kurz"
+  });
+
+expectEqual(
+  invalidWriteFingerprintContract.reason,
+  "productive_idempotency_payload_fingerprint_invalid",
+  "Ungültiger Write-Payload-Fingerprint"
+);
+
+const invalidDeleteFingerprintContract =
+  adapter.mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract({
+    operationScope:
+      "cycle_registry",
+    operation:
+      "delete",
+    externalOperationIdentity:
+      "523e4567-e89b-42d3-a456-426614174004",
+    identitySource:
+      "server_issued",
+    atomicityStrategy:
+      "database_unique_constraint",
+    resultReusePolicy:
+      "return_existing_result",
+    conflictPolicy:
+      "reject_payload_mismatch",
+    payloadFingerprint:
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  });
+
+expectEqual(
+  invalidDeleteFingerprintContract.reason,
+  "productive_idempotency_delete_payload_fingerprint_not_allowed",
+  "Delete-Payload-Fingerprint"
+);
+
+let productiveIdempotencyAccessorReads = 0;
+
+const productiveIdempotencyAccessorInput = {
+  operationScope:
+    "snapshot",
+  operation:
+    "write",
+  identitySource:
+    "server_issued",
+  atomicityStrategy:
+    "database_unique_constraint",
+  resultReusePolicy:
+    "return_existing_result",
+  conflictPolicy:
+    "reject_payload_mismatch",
+  payloadFingerprint:
+    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+};
+
+Object.defineProperty(
+  productiveIdempotencyAccessorInput,
+  "externalOperationIdentity",
+  {
+    enumerable: true,
+    get() {
+      productiveIdempotencyAccessorReads +=
+        1;
+
+      throw new Error(
+        "Idempotenzvertrag darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorProductiveIdempotencyContract =
+  adapter.mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract(
+    productiveIdempotencyAccessorInput
+  );
+
+assert(
+  accessorProductiveIdempotencyContract.reason ===
+    "productive_idempotency_externalOperationIdentity_accessor_not_allowed" &&
+  productiveIdempotencyAccessorReads ===
+    0,
+  "Idempotenz-Getter wurde nicht geschlossen blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -8025,6 +8270,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Zyklus-Wiederholungs-Fixtures: einmalig, doppelt, verschieden, manipuliert und Accessor"
+);
+console.log(
+  "Produktive-Idempotenz-Fixtures: Write, Delete, Server-ID, Fingerprint und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"

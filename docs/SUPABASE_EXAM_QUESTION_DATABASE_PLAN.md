@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30x
+Stand: v27.31a
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1017,6 +1017,28 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_RECURSION_BOUNDARY_AUDIT.md`
 
+## Produktiver Idempotenz-Integrationsvertrag v27.31a
+
+Die Voraussetzungen für eine spätere produktive
+Idempotenzlösung sind jetzt als lokaler Vertrag vorbereitet.
+
+Jeder reale Write- oder Delete-Vorgang benötigt eine eigene
+serverseitig ausgestellte UUID. Schreibvorgänge benötigen
+zusätzlich einen kanonischen Payload-Fingerprint.
+
+Die spätere Datenbank muss die vollständige Operationsidentität
+atomar und eindeutig speichern. Wiederholte identische Vorgänge
+dürfen das bereits vorhandene Ergebnis verwenden. Dieselbe
+Operationsidentität mit abweichendem Payload muss geschlossen
+abgelehnt werden.
+
+Der lokale Vertrag behauptet weder eine bereits verifizierte
+Identitätsquelle noch eine bereits erzwungene Atomarität.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PRODUCTIVE_IDEMPOTENCY_INTEGRATION_CONTRACT_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1107,15 +1129,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30x` ist die
-v27.30-Persistenzreihe abgeschlossen.
+Nach GitHub-Bestätigung von `v27.31a` kann `v27.31b`
+eine sichere SQL-Migration für die geplante serverseitige
+Idempotenz-Operationstabelle vorbereiten.
 
-Als nächster technischer Abschnitt kann `v27.31a` einen
-sicheren lokalen Integrationsvertrag für produktive
-Idempotenz vorbereiten. Dieser muss eine extern bereitgestellte
-eindeutige Operationsidentität und spätere atomare
-Storage- oder Datenbanksemantik verlangen, weiterhin ohne
-Methoden-, Storage-, Live-RPC- oder UI-Aufruf.
+Sie muss eine eindeutige Operationsidentität, Bereich,
+Mutation, Payload-Fingerprint, Status und gespeichertes
+Ergebnis atomar absichern. Die Migration bleibt vorbereitet
+und wird nicht live ausgeführt.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1152,4 +1173,5 @@ Zyklusregister-Persistenz-Abschlussstate,
 Zyklusregister-Persistenz-Zyklusstate und
 Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard vorbereitet
 sowie die Persistenz-Rekursionsgrenze v27.30x dokumentiert;
+produktiver Idempotenz-Integrationsvertrag v27.31a vorbereitet;
 keine Live-Ausführung

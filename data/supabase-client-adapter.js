@@ -1,5 +1,5 @@
 // Accaoui §34a Lern-App – Supabase Client Adapter
-// Stand: v27.30w
+// Stand: v27.31a
 //
 // Aktuell bewusst OHNE aktiven Supabase-Client.
 // Keine echte Verbindung.
@@ -1952,6 +1952,11 @@
       isSnapshotPersistenceCycleRegistryCycleRepetitionGuardPrepared: true,
       canGuardSnapshotPersistenceCycleRegistryCycleRepetitions: true,
       initialSnapshotPersistenceCycleRegistryCycleRepetitionState: null,
+      productiveIdempotencyIntegrationContractName:
+        "mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract",
+      isProductiveIdempotencyIntegrationContractPrepared: true,
+      canMapProductiveIdempotencyIntegrationContracts: true,
+      initialProductiveIdempotencyIntegrationContractState: null,
       normalizedEntries: [],
       aggregate: null,
       mappedResponse: null,
@@ -2169,6 +2174,10 @@
       isDataSourceSnapshotPersistenceCycleRegistryCycleRepetitionGuardPrepared: participantDashboardExamHistoryDataSourceState.isSnapshotPersistenceCycleRegistryCycleRepetitionGuardPrepared === true,
       canGuardDataSourceSnapshotPersistenceCycleRegistryCycleRepetitions: participantDashboardExamHistoryDataSourceState.canGuardSnapshotPersistenceCycleRegistryCycleRepetitions === true,
       dataSourceInitialSnapshotPersistenceCycleRegistryCycleRepetitionState: participantDashboardExamHistoryDataSourceState.initialSnapshotPersistenceCycleRegistryCycleRepetitionState,
+      dataSourceProductiveIdempotencyIntegrationContractName: participantDashboardExamHistoryDataSourceState.productiveIdempotencyIntegrationContractName,
+      isDataSourceProductiveIdempotencyIntegrationContractPrepared: participantDashboardExamHistoryDataSourceState.isProductiveIdempotencyIntegrationContractPrepared === true,
+      canMapDataSourceProductiveIdempotencyIntegrationContracts: participantDashboardExamHistoryDataSourceState.canMapProductiveIdempotencyIntegrationContracts === true,
+      dataSourceInitialProductiveIdempotencyIntegrationContractState: participantDashboardExamHistoryDataSourceState.initialProductiveIdempotencyIntegrationContractState,
       dataSourceMetricsScope: "page_only",
       dataSourceRequest: participantDashboardExamHistoryDataSourceState.request,
       isDataSourcePrepared: participantDashboardExamHistoryDataSourceState.isPrepared === true,
@@ -3460,6 +3469,303 @@
     return ready(
       paginationState.nextOffset
     );
+  }
+
+  function mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract(input) {
+    const source =
+      input &&
+      typeof input === "object" &&
+      !Array.isArray(input)
+        ? input
+        : {};
+
+    const contractVersion = 1;
+
+    const idempotencyTableName =
+      "exam_history_idempotency_operations";
+
+    const uniqueConstraintName =
+      "exam_history_idempotency_operations_operation_identity_key";
+
+    const inspectOwnDataProperty = (
+      target,
+      propertyName
+    ) => {
+      try {
+        const descriptor =
+          Object.getOwnPropertyDescriptor(
+            target,
+            propertyName
+          );
+
+        if (!descriptor) {
+          return {
+            isPresent: false,
+            isValid: true,
+            value: null
+          };
+        }
+
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            descriptor,
+            "value"
+          )
+        ) {
+          return {
+            isPresent: true,
+            isValid: false,
+            value: null
+          };
+        }
+
+        return {
+          isPresent: true,
+          isValid: true,
+          value:
+            descriptor.value
+        };
+      } catch (_error) {
+        return {
+          isPresent: true,
+          isValid: false,
+          value: null
+        };
+      }
+    };
+
+    const createState = ({
+      status,
+      isValid,
+      canIntegrateLater,
+      operationScope = null,
+      operation = null,
+      externalOperationIdentity = null,
+      operationIdentity = null,
+      payloadFingerprint = null,
+      requiresPayloadFingerprint = false,
+      reason
+    }) => ({
+      version: "v27.31a",
+      status,
+      isValid,
+      isProductiveIdempotencyIntegrationContractOnly: true,
+      isLiveCall: false,
+      canIntegrateLater,
+      canExecuteNow: false,
+      canExecuteStorage: false,
+      canExecuteRpc: false,
+      canUseBrowserStorage: false,
+      contractVersion,
+      operationScope,
+      operation,
+      externalOperationIdentity,
+      operationIdentity,
+      identitySource:
+        isValid
+          ? "server_issued"
+          : null,
+      isIdentityAuthorityVerified: false,
+      requiresServerVerification: true,
+      atomicityStrategy:
+        isValid
+          ? "database_unique_constraint"
+          : null,
+      isAtomicityEnforcedNow: false,
+      requiresAtomicDatabaseWrite: true,
+      requiresTransaction: true,
+      requiresUniqueConstraint: true,
+      resultReusePolicy:
+        isValid
+          ? "return_existing_result"
+          : null,
+      conflictPolicy:
+        isValid
+          ? "reject_payload_mismatch"
+          : null,
+      payloadFingerprint,
+      requiresPayloadFingerprint,
+      idempotencyTableName,
+      uniqueConstraintName,
+      reason
+    });
+
+    const invalid = (reason) =>
+      createState({
+        status:
+          "exam_result_history_productive_idempotency_integration_invalid",
+        isValid: false,
+        canIntegrateLater: false,
+        reason
+      });
+
+    const requiredNames = [
+      "operationScope",
+      "operation",
+      "externalOperationIdentity",
+      "identitySource",
+      "atomicityStrategy",
+      "resultReusePolicy",
+      "conflictPolicy",
+      "payloadFingerprint"
+    ];
+
+    const values = {};
+
+    for (
+      let index = 0;
+      index < requiredNames.length;
+      index += 1
+    ) {
+      const propertyName =
+        requiredNames[index];
+
+      const property =
+        inspectOwnDataProperty(
+          source,
+          propertyName
+        );
+
+      if (!property.isPresent) {
+        return invalid(
+          "productive_idempotency_" +
+          propertyName +
+          "_missing"
+        );
+      }
+
+      if (!property.isValid) {
+        return invalid(
+          "productive_idempotency_" +
+          propertyName +
+          "_accessor_not_allowed"
+        );
+      }
+
+      values[propertyName] =
+        property.value;
+    }
+
+    if (
+      values.operationScope !==
+        "snapshot" &&
+      values.operationScope !==
+        "cycle_registry"
+    ) {
+      return invalid(
+        "productive_idempotency_operation_scope_invalid"
+      );
+    }
+
+    if (
+      values.operation !== "write" &&
+      values.operation !== "delete"
+    ) {
+      return invalid(
+        "productive_idempotency_operation_invalid"
+      );
+    }
+
+    if (
+      values.identitySource !==
+        "server_issued"
+    ) {
+      return invalid(
+        "productive_idempotency_identity_source_invalid"
+      );
+    }
+
+    if (
+      typeof values.externalOperationIdentity !==
+        "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+        values.externalOperationIdentity
+      )
+    ) {
+      return invalid(
+        "productive_idempotency_external_operation_identity_invalid"
+      );
+    }
+
+    if (
+      values.atomicityStrategy !==
+        "database_unique_constraint"
+    ) {
+      return invalid(
+        "productive_idempotency_atomicity_strategy_invalid"
+      );
+    }
+
+    if (
+      values.resultReusePolicy !==
+        "return_existing_result"
+    ) {
+      return invalid(
+        "productive_idempotency_result_reuse_policy_invalid"
+      );
+    }
+
+    if (
+      values.conflictPolicy !==
+        "reject_payload_mismatch"
+    ) {
+      return invalid(
+        "productive_idempotency_conflict_policy_invalid"
+      );
+    }
+
+    const requiresPayloadFingerprint =
+      values.operation === "write";
+
+    if (
+      requiresPayloadFingerprint &&
+      (
+        typeof values.payloadFingerprint !==
+          "string" ||
+        !/^[0-9a-f]{64}$/.test(
+          values.payloadFingerprint
+        )
+      )
+    ) {
+      return invalid(
+        "productive_idempotency_payload_fingerprint_invalid"
+      );
+    }
+
+    if (
+      !requiresPayloadFingerprint &&
+      values.payloadFingerprint !== null
+    ) {
+      return invalid(
+        "productive_idempotency_delete_payload_fingerprint_not_allowed"
+      );
+    }
+
+    const operationIdentity =
+      "exam_history_idempotency:" +
+      values.operationScope +
+      ":" +
+      values.operation +
+      ":" +
+      values.externalOperationIdentity;
+
+    return createState({
+      status:
+        "exam_result_history_productive_idempotency_integration_prepared",
+      isValid: true,
+      canIntegrateLater: true,
+      operationScope:
+        values.operationScope,
+      operation:
+        values.operation,
+      externalOperationIdentity:
+        values.externalOperationIdentity,
+      operationIdentity,
+      payloadFingerprint:
+        values.payloadFingerprint,
+      requiresPayloadFingerprint,
+      reason: null
+    });
   }
 
   function guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition(input) {
@@ -24856,7 +25162,7 @@
   }
 
   window.ACCAOUI_SUPABASE_ADAPTER = {
-    version: "v27.30w",
+    version: "v27.31a",
     isSupabaseLiveEnabled,
     getSupabaseFailSafeState,
     getSupabaseConfigLoaderState,
@@ -24954,6 +25260,7 @@
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCompletionState,
     mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleState,
     guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition,
+    mapParticipantFullExamResultHistoryProductiveIdempotencyIntegrationContract,
     guardParticipantFullExamResultHistoryRequestLifecycleTransition,
     guardParticipantFullExamResultHistoryResponseAcceptance,
     listParticipantFullExamResults,
