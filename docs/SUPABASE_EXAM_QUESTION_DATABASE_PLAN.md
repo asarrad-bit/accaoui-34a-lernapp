@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30t
+Stand: v27.30u
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -946,6 +946,21 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_RESULT_ACCEPTANCE_TEST.md`
 
+## Zyklusregister-Persistenz-Abschlussstate v27.30u
+
+Angenommene Zyklusregister-Persistenzergebnisse können jetzt in
+terminale kanonische Zustände überführt werden.
+
+Read wird als verwendbares Register oder leer abgeschlossen.
+Write wird eindeutig bestätigt. Delete wird idempotent als
+gelöscht oder bereits nicht vorhanden abgeschlossen.
+Identitätskette, Readiness und Ergebnisinhalt werden erneut
+geprüft. Keine Adaptermethode wird aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_COMPLETION_STATE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1036,11 +1051,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30t` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Abschlussstate vorbereitet
-werden, der angenommene Read-, Write- und Delete-Ergebnisse in
-terminale kanonische Zustände überführt, weiterhin ohne Methoden-,
-Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30u` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Zyklusstate vorbereitet werden,
+der Aufrufpaket, Ergebnisvertrag, Ergebnisannahme und terminalen
+Abschluss als zusammenhängenden Zyklus erneut prüft, weiterhin
+ohne Methoden-, Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1071,6 +1086,7 @@ Zyklusregister-Persistenz-Operationsfreigabe-State,
 Zyklusregister-Persistenz-Ausführungs-Guard,
 Zyklusregister-Persistenz-Aufrufvertrag,
 Zyklusregister-Persistenz-Aufrufpaket-State,
-Zyklusregister-Persistenz-Ergebnisvertrag und
-Zyklusregister-Persistenz-Ergebnisannahme-Guard vorbereitet;
+Zyklusregister-Persistenz-Ergebnisvertrag,
+Zyklusregister-Persistenz-Ergebnisannahme-Guard und
+Zyklusregister-Persistenz-Abschlussstate vorbereitet;
 keine Live-Ausführung
