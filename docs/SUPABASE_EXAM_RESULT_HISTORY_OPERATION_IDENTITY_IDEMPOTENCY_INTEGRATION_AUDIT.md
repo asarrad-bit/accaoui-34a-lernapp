@@ -197,3 +197,20 @@ angepasst. Der äußere Fachmutations-RPC bleibt gesperrt.
 Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
+
+
+## Speicher-Versionsstand-Schema v27.31p
+
+Die beiden internen Tabellen erhalten im vorbereiteten Schema
+jeweils:
+
+`expected_storage_version bigint not null`
+
+Der Wert besitzt keinen Default und muss mindestens 0 sein.
+
+Sobald vorhandene Zeilen erkannt werden, bricht die Migration
+ab. Es findet kein automatischer oder erfundener Backfill
+statt.
+
+Ausstellungs- und Reservierungshelper sind weiterhin nicht
+angepasst. Der äußere Fachmutations-RPC bleibt gesperrt.

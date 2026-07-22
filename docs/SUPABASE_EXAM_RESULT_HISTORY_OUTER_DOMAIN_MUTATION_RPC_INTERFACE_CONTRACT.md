@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31o
+Stand: v27.31p
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -242,6 +242,9 @@ Idempotenzreservierung weitergegeben werden.
 Er wird in beiden Grenzen Teil der kanonischen
 Anfrageidentität.
 
+Die beiden internen Tabellen sind seit v27.31p im
+vorbereiteten Schema erweitert.
+
 Eine Implementierung des äußeren RPCs bleibt gesperrt, bis die
-beiden internen Tabellen und Helper entsprechend erweitert
-wurden.
+Ausstellungs- und Reservierungshelper den Versionsstand
+ebenfalls verbindlich binden.

@@ -48,6 +48,10 @@ OPERATION_IDENTITY_ISSUANCES = (
 OPERATION_IDENTITY_ISSUE_RPC = (
     "20260722_v2731i_exam_history_operation_identity_issue_rpc.sql"
 )
+EXPECTED_STORAGE_VERSION_SCHEMA = (
+    "20260722_v2731p_"
+    "exam_history_expected_storage_version_schema.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -110,6 +114,7 @@ for required in (
     IDEMPOTENCY_COMPLETE_RPC,
     OPERATION_IDENTITY_ISSUANCES,
     OPERATION_IDENTITY_ISSUE_RPC,
+    EXPECTED_STORAGE_VERSION_SCHEMA,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -240,6 +245,14 @@ if files.index(OPERATION_IDENTITY_ISSUANCES) >= files.index(
         "Operations-ID-Ausstellungstabelle."
     )
 
+if files.index(OPERATION_IDENTITY_ISSUE_RPC) >= files.index(
+    EXPECTED_STORAGE_VERSION_SCHEMA
+):
+    fail(
+        "Speicher-Versionsstand-Schema steht vor dem "
+        "Operations-ID-Ausstellungs-RPC."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -320,6 +333,111 @@ operation_identity_issuances = (
 operation_identity_issue_rpc = (
     MIGRATIONS / OPERATION_IDENTITY_ISSUE_RPC
 ).read_text(encoding="utf-8")
+
+expected_storage_version_schema = (
+    MIGRATIONS / EXPECTED_STORAGE_VERSION_SCHEMA
+).read_text(encoding="utf-8")
+
+
+expected_storage_version_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    expected_storage_version_schema,
+    flags=re.MULTILINE,
+)
+expected_storage_version_lower = (
+    expected_storage_version_without_comments.lower()
+)
+
+for table_name, failure_code in (
+    (
+        "exam_history_operation_identity_issuances",
+        "exam_history_issuance_existing_rows_"
+        "require_expected_storage_version_backfill",
+    ),
+    (
+        "exam_history_idempotency_operations",
+        "exam_history_idempotency_existing_rows_"
+        "require_expected_storage_version_backfill",
+    ),
+):
+    if failure_code not in expected_storage_version_lower:
+        fail(
+            "Speicher-Versionsstand-Backfill-Abbruch fehlt: "
+            f"{table_name}"
+        )
+    column_pattern = (
+        r"alter\s+table\s+public\."
+        + re.escape(table_name)
+        + r"\s+add\s+column\s+"
+        r"expected_storage_version\s+"
+        r"bigint\s+not\s+null\s+"
+        r"constraint\s+[a-z0-9_]+\s+"
+        r"check\s*\(\s*"
+        r"expected_storage_version\s*>=\s*0\s*"
+        r"\)\s*;"
+    )
+    if not re.search(
+        column_pattern,
+        expected_storage_version_schema,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Speicher-Versionsstand-Spalte fehlt: "
+            f"{table_name}"
+        )
+    for protection_pattern, label in (
+        (
+            r"alter\s+table\s+public\."
+            + re.escape(table_name)
+            + r"\s+enable\s+row\s+level\s+security\s*;",
+            "RLS-Aktivierung",
+        ),
+        (
+            r"alter\s+table\s+public\."
+            + re.escape(table_name)
+            + r"\s+force\s+row\s+level\s+security\s*;",
+            "RLS-Erzwingung",
+        ),
+        (
+            r"revoke\s+all\s+on\s+table\s+public\."
+            + re.escape(table_name)
+            + r"\s+from\s+public\s*,\s*anon\s*,\s*"
+              r"authenticated\s*;",
+            "Tabellen-Revoke",
+        ),
+    ):
+        if not re.search(
+            protection_pattern,
+            expected_storage_version_schema,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            fail(f"{label} fehlt für: {table_name}")
+
+if re.search(
+    r"\bdefault\b",
+    expected_storage_version_without_comments,
+    flags=re.IGNORECASE,
+):
+    fail("Speicher-Versionsstand darf keinen Default besitzen.")
+
+if re.search(
+    r"\b(insert\s+into|update\s+public\.|delete\s+from)\b",
+    expected_storage_version_without_comments,
+    flags=re.IGNORECASE,
+):
+    fail("Speicher-Versionsstand-Schema verändert Daten.")
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "create or replace function",
+):
+    if forbidden in expected_storage_version_lower:
+        fail(
+            "Unzulässiger Inhalt im Speicher-Versionsstand-"
+            f"Schema: {forbidden}"
+        )
 
 question_schema_bundle = (
     question_schema
@@ -2356,6 +2474,10 @@ for forbidden in (
             f"{forbidden}"
         )
 
+print(
+    "Speicher-Versionsstand-Schema: beide internen Tabellen "
+    "ohne Default und ohne Datenmutation erweitert"
+)
 print("Supabase-Migrationsprüfung: OK")
 print(f"SQL-Dateien: {len(files)}")
 print(f"MVP-Tabellen: {len(EXPECTED_TABLES)}")

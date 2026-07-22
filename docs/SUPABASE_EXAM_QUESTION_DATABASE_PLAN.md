@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31o
+Stand: v27.31p
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1429,6 +1429,35 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
 
+## Speicher-Versionsstand-Schema v27.31p
+
+Eine vollständig gesperrte Schema-Migration ergänzt
+`expected_storage_version bigint not null` zu:
+
+- Operations-ID-Ausstellungen
+- Idempotenzoperationen
+
+Beide Spalten:
+
+- verlangen mindestens 0
+- besitzen bewusst keinen Default
+- bleiben ohne direkte App-Rechte
+- verändern keine vorhandenen Daten
+
+Enthält eine Zieltabelle bereits Zeilen, bricht die Migration
+kontrolliert ab. Ein unbekannter Versionsstand wird niemals
+automatisch auf 0 gesetzt.
+
+RLS, Force RLS und vollständige Tabellen-Rechtesperren werden
+erneut ausdrücklich erzwungen.
+
+Die internen Ausstellungs- und Reservierungshelper sind noch
+nicht angepasst.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1519,15 +1548,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31o` kann `v27.31p`
-eine vollständig gesperrte Schema-Migration vorbereiten, die
-`expected_storage_version` zu Operations-ID-Ausstellungen und
-Idempotenzoperationen ergänzt.
+Nach GitHub-Bestätigung von `v27.31p` kann `v27.31q`
+den internen Operations-ID-Ausstellungs-RPC um
+`p_expected_storage_version` erweitern.
 
-Die Migration muss bestehende Zeilen sicher behandeln,
-`bigint >= 0` erzwingen, RLS und direkte Rechtesperren
-beibehalten und darf noch keine Helper-, Fach- oder
-Live-Ausführung enthalten.
+Der Versionsstand muss validiert, in der Ausstellungszeile
+gespeichert und in den kanonischen Anfragefingerprint
+eingebunden werden. Gleicher Client-Wiederholungsschlüssel mit
+abweichendem Versionsstand muss geschlossen kollidieren.
+
+Direkte App-Ausführung, Reservierungshelper-Änderung und
+Live-Ausführung bleiben in diesem Schritt ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1581,5 +1612,6 @@ Preflight eingebunden und interner Fach-Payload-Validierungs-
 und Fingerprint-Helfer v27.31m vorbereitet sowie
 Domain-Speichervertrag v27.31n und Speicher-Versionsstand-
 Identitätsbindungsvertrag v27.31o dauerhaft in den Preflight
-eingebunden;
+eingebunden und gesperrte Speicher-Versionsstand-
+Schema-Migration v27.31p vorbereitet;
 keine Live-Ausführung

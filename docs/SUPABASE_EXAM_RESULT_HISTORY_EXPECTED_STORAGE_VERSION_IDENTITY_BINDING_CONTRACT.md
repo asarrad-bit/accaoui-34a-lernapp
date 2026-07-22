@@ -1,6 +1,6 @@
 # Speicher-Versionsstand-Identitätsbindung
 
-Stand: v27.31o
+Stand: v27.31p
 
 Status: verbindlicher lokaler Integrationsvertrag,
 nicht live ausgeführt
@@ -81,8 +81,11 @@ Zusätzlich erforderlich:
 
 ## Aktueller Stand
 
-Die bestehenden Tabellen und Helper binden den Versionsstand
-noch nicht.
+Die beiden internen Tabellenschemata enthalten jetzt
+`expected_storage_version bigint not null` mit Mindestwert 0.
+
+Die internen Ausstellungs- und Reservierungshelper binden den
+Versionsstand weiterhin noch nicht.
 
 Deshalb bleiben gesperrt:
 
@@ -93,7 +96,7 @@ Deshalb bleiben gesperrt:
 
 ## Sicherheitsgrenze
 
-- keine SQL-Migration in v27.31o
+- gesperrte Schema-Migration vorbereitet, nicht live ausgeführt
 - keine Tabellenänderung
 - keine Helper-Änderung
 - keine Fachmutation
@@ -105,3 +108,41 @@ Deshalb bleiben gesperrt:
 `tools/check-supabase-exam-history-expected-storage-version-identity-binding.py`
 
 Der Prüfer ist dauerhaft in `tools/preflight.py` eingebunden.
+
+
+## Schema-Migration v27.31p
+
+Die beiden internen Tabellen erhalten:
+
+`expected_storage_version bigint not null`
+
+mit der Bedingung:
+
+`expected_storage_version >= 0`
+
+Es existiert bewusst kein Default.
+
+Jeder spätere interne Insert muss den Wert ausdrücklich und
+geprüft übergeben.
+
+### Bestehende Zeilen
+
+Enthält eine der beiden Tabellen bereits Zeilen, bricht die
+Migration kontrolliert ab.
+
+Es wird niemals automatisch Version 0 oder ein anderer
+erfundener Wert gesetzt.
+
+### Unveränderte Sicherheitsgrenze
+
+- RLS bleibt aktiviert und erzwungen
+- keine Direktpolicy
+- vollständiger Revoke für `public`, `anon` und
+  `authenticated`
+- keine Helper-Änderung
+- keine Fachmutation
+- keine Live-Ausführung
+
+Migration:
+
+`supabase/migrations/20260722_v2731p_exam_history_expected_storage_version_schema.sql`

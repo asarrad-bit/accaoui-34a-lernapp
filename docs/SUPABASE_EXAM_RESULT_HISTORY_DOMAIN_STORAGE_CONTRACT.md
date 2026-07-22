@@ -1,6 +1,6 @@
 # Domain-Speichervertrag
 
-Stand: v27.31o
+Stand: v27.31p
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -143,8 +143,23 @@ Der Versionsstand muss:
 - bei vorhandenen Reservierungen exakt verglichen werden
 - beim Abschluss aus der Reservierung gelesen werden
 
-Die tatsächlichen Tabellen- und Helper-Migrationen fehlen noch.
+Die gesperrte Spaltenmigration ist seit v27.31p
+vorbereitet. Die notwendigen Helper-Migrationen fehlen noch.
 
 Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
+
+
+## Gesperrte Versionsspalten-Migration v27.31p
+
+Operations-ID-Ausstellungen und Idempotenzoperationen besitzen
+im vorbereiteten Schema jetzt jeweils eine nicht nullable
+`expected_storage_version`-Spalte ohne Default.
+
+Vorhandene Zeilen führen zum kontrollierten
+Migrationsabbruch. Ein unbekannter Versionsstand wird nicht
+erfunden.
+
+Die Domain-Speichertabelle selbst ist weiterhin nicht
+implementiert.

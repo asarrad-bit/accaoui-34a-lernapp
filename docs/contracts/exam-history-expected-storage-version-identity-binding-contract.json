@@ -1,5 +1,5 @@
 {
-  "version": "v27.31o",
+  "version": "v27.31p",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -86,7 +86,11 @@
     "columnNotNull": true,
     "columnMinimum": 0,
     "existingRowsMigrationStrategyRequired": true,
-    "currentTablesAlreadyContainColumn": false
+    "currentTablesAlreadyContainColumn": true,
+    "schemaMigrationPath": "supabase/migrations/20260722_v2731p_exam_history_expected_storage_version_schema.sql",
+    "schemaMigrationImplementationPresent": true,
+    "schemaMigrationLiveExecuted": false,
+    "existingRowsMigrationStrategy": "abort_if_any_target_table_contains_rows"
   },
   "helperRequirements": {
     "issuanceRpcExpectedVersionParameterRequired": true,
@@ -105,8 +109,8 @@
     "realParticipantData": false
   },
   "unresolvedRequirements": {
-    "issuanceTableMigration": true,
-    "idempotencyTableMigration": true,
+    "issuanceTableMigration": false,
+    "idempotencyTableMigration": false,
     "issuanceRpcMigration": true,
     "reserveRpcMigration": true,
     "storageTableImplementation": true,

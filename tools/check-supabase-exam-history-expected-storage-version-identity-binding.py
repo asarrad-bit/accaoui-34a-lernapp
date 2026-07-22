@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,6 +50,12 @@ CURRENT_SQL_FILES = [
     "20260722_v2731i_exam_history_operation_identity_issue_rpc.sql",
 ]
 
+SCHEMA_MIGRATION_PATH = (
+    MIGRATIONS
+    / "20260722_v2731p_"
+      "exam_history_expected_storage_version_schema.sql"
+)
+
 
 def fail(message: str) -> None:
     print(f"FEHLER: {message}")
@@ -72,8 +79,8 @@ contract = read_json(
     "Versionsbindungsvertrag",
 )
 
-if contract.get("version") != "v27.31o":
-    fail("Versionsbindungsvertrag besitzt nicht v27.31o.")
+if contract.get("version") != "v27.31p":
+    fail("Versionsbindungsvertrag besitzt nicht v27.31p.")
 
 if contract.get("contractVersion") != 1:
     fail("Versionsbindungsvertrag besitzt nicht Schema 1.")
@@ -170,12 +177,50 @@ for field in (
     "idempotencyTableExpectedVersionColumnRequired",
     "columnNotNull",
     "existingRowsMigrationStrategyRequired",
+    "schemaMigrationImplementationPresent",
 ):
     if schema.get(field) is not True:
         fail(f"Schema-Versionsanforderung fehlt: {field}")
 
-if schema.get("currentTablesAlreadyContainColumn") is not False:
-    fail("Bestehende Tabellen dürfen Version noch nicht enthalten.")
+if schema.get("columnType") != "bigint":
+    fail("Speicher-Versionsspalte besitzt nicht bigint.")
+
+if schema.get("columnMinimum") != 0:
+    fail("Speicher-Versionsspalte erlaubt keinen Mindestwert 0.")
+
+if schema.get("schemaMigrationPath") != (
+    "supabase/migrations/"
+    "20260722_v2731p_"
+    "exam_history_expected_storage_version_schema.sql"
+):
+    fail("Schema-Migrationspfad ist ungültig.")
+
+if schema.get("schemaMigrationLiveExecuted") is not False:
+    fail("Schema-Migration darf nicht live ausgeführt sein.")
+
+if schema.get("existingRowsMigrationStrategy") != (
+    "abort_if_any_target_table_contains_rows"
+):
+    fail("Strategie für bestehende Zeilen ist nicht geschlossen.")
+
+if schema.get("currentTablesAlreadyContainColumn") is not True:
+    fail("Zieltabellen enthalten die neue Spalte nicht.")
+
+expected_unresolved = {
+    "issuanceTableMigration": False,
+    "idempotencyTableMigration": False,
+    "issuanceRpcMigration": True,
+    "reserveRpcMigration": True,
+    "storageTableImplementation": True,
+    "outerDomainMutationRpcImplementation": True,
+    "liveDatabaseTests": True,
+    "concurrencyTests": True,
+    "authorizationTests": True,
+}
+
+if contract.get("unresolvedRequirements") != expected_unresolved:
+    fail("Offene Versionsbindungsanforderungen sind ungültig.")
+
 
 helpers = contract.get("helperRequirements", {})
 
@@ -280,19 +325,141 @@ for filename in CURRENT_SQL_FILES:
 
     if "expected_storage_version" in sql:
         fail(
-            "Bestehende Migration bindet den Versionsstand "
-            f"unerwartet bereits: {filename}"
+            "Ältere Migration wurde rückwirkend verändert: "
+            f"{filename}"
         )
 
-v2731o_sql_files = sorted(
-    path.name
-    for path in MIGRATIONS.glob("*v2731o*.sql")
-)
+if not SCHEMA_MIGRATION_PATH.is_file():
+    fail("Speicher-Versionsstand-Schema-Migration fehlt.")
 
-if v2731o_sql_files:
+schema_sql = SCHEMA_MIGRATION_PATH.read_text(encoding="utf-8")
+schema_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    schema_sql,
+    flags=re.MULTILINE,
+)
+schema_lower = schema_without_comments.lower()
+
+for table_name, failure_code in (
+    (
+        "exam_history_operation_identity_issuances",
+        "exam_history_issuance_existing_rows_"
+        "require_expected_storage_version_backfill",
+    ),
+    (
+        "exam_history_idempotency_operations",
+        "exam_history_idempotency_existing_rows_"
+        "require_expected_storage_version_backfill",
+    ),
+):
+    existing_rows_pattern = (
+        r"if\s+exists\s*\(\s*"
+        r"select\s+1\s+from\s+public\."
+        + re.escape(table_name)
+        + r"\s+limit\s+1\s*\)"
+    )
+    if not re.search(
+        existing_rows_pattern,
+        schema_sql,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Abbruchprüfung für bestehende Zeilen fehlt: "
+            f"{table_name}"
+        )
+    if failure_code not in schema_lower:
+        fail(
+            "Stabiler Backfill-Abbruchcode fehlt: "
+            f"{failure_code}"
+        )
+
+    column_pattern = (
+        r"alter\s+table\s+public\."
+        + re.escape(table_name)
+        + r"\s+add\s+column\s+"
+        r"expected_storage_version\s+"
+        r"bigint\s+not\s+null\s+"
+        r"constraint\s+[a-z0-9_]+\s+"
+        r"check\s*\(\s*"
+        r"expected_storage_version\s*>=\s*0\s*"
+        r"\)\s*;"
+    )
+    if not re.search(
+        column_pattern,
+        schema_sql,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Sichere Speicher-Versionsspalte fehlt: "
+            f"{table_name}"
+        )
+
+    for protection_pattern, label in (
+        (
+            r"alter\s+table\s+public\."
+            + re.escape(table_name)
+            + r"\s+enable\s+row\s+level\s+security\s*;",
+            "RLS-Aktivierung",
+        ),
+        (
+            r"alter\s+table\s+public\."
+            + re.escape(table_name)
+            + r"\s+force\s+row\s+level\s+security\s*;",
+            "RLS-Erzwingung",
+        ),
+        (
+            r"revoke\s+all\s+on\s+table\s+public\."
+            + re.escape(table_name)
+            + r"\s+from\s+public\s*,\s*anon\s*,\s*"
+              r"authenticated\s*;",
+            "Tabellen-Revoke",
+        ),
+    ):
+        if not re.search(
+            protection_pattern,
+            schema_sql,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            fail(f"{label} fehlt für: {table_name}")
+
+if re.search(
+    r"\bdefault\b",
+    schema_without_comments,
+    flags=re.IGNORECASE,
+):
+    fail("Speicher-Versionsspalte darf keinen Default besitzen.")
+
+if re.search(
+    r"\b(insert\s+into|update\s+public\.|delete\s+from)\b",
+    schema_without_comments,
+    flags=re.IGNORECASE,
+):
+    fail("Schema-Migration darf keine Daten verändern.")
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "create or replace function",
+    "auth.uid()",
+):
+    if forbidden in schema_lower:
+        fail(
+            "Unzulässiger Inhalt in Schema-Migration: "
+            f"{forbidden}"
+        )
+
+v2731p_sql_files = sorted(
+    path.name
+    for path in MIGRATIONS.glob("*v2731p*.sql")
+)
+if v2731p_sql_files != [
+    "20260722_v2731p_"
+    "exam_history_expected_storage_version_schema.sql"
+]:
     fail(
-        "v27.31o darf keine SQL-Migration erzeugen: "
-        f"{v2731o_sql_files}"
+        "Unerwartete v27.31p-SQL-Dateien: "
+        f"{v2731p_sql_files}"
     )
 
 for frontend_path in (
@@ -329,8 +496,10 @@ print(
     "sie nicht verändern"
 )
 print(
-    "Bestehende Tabellen und Helper bereits angepasst: nein"
+    "Tabellenschema angepasst: ja; vorhandene Zeilen führen "
+    "zum kontrollierten Abbruch"
 )
-print("SQL-Migration in v27.31o: nein")
+print("Helper bereits an erwartete Version angepasst: nein")
+print("SQL-Migration in v27.31p: vorbereitet")
 print("Produktive Freigabe: nein")
 print("Live-Ausführung: nein")

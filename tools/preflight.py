@@ -380,6 +380,7 @@ def main():
         "docs/contracts/exam-history-domain-storage-contract.json",
         "tools/check-supabase-exam-history-expected-storage-version-identity-binding.py",
         "docs/contracts/exam-history-expected-storage-version-identity-binding-contract.json",
+        "supabase/migrations/20260722_v2731p_exam_history_expected_storage_version_schema.sql",
     ]
 
     for file_path in required_files:
