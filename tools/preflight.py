@@ -121,6 +121,28 @@ def check_exam_result_history_idempotency_flow():
         )
 
 
+
+def check_exam_result_history_transactional_mutation_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-"
+        "transactional-mutation-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-transaktionaler "
+            "Fachmutationsvertrag fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -214,6 +236,8 @@ def main():
         "tools/check-supabase-exam-history-adapter.py",
         "tools/test-supabase-exam-history-fixtures.js",
         "tools/check-supabase-exam-history-idempotency-flow.py",
+        "tools/check-supabase-exam-history-transactional-mutation-contract.py",
+        "docs/contracts/exam-history-idempotency-transactional-mutation-contract.json",
     ]
 
     for file_path in required_files:
@@ -225,6 +249,7 @@ def main():
     check_exam_result_history_adapter()
     check_exam_result_history_fixtures()
     check_exam_result_history_idempotency_flow()
+    check_exam_result_history_transactional_mutation_contract()
     check_git_diff_check()
     check_protected_core_files_v2356()
 

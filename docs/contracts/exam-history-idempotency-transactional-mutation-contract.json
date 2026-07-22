@@ -1,0 +1,108 @@
+{
+  "version": "v27.31f",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "boundary": {
+    "rpcType": "single_security_definer_mutation_rpc",
+    "transactionScope": "single_database_transaction",
+    "reserveHelper": "public.accaoui_reserve_exam_history_idempotency_operation",
+    "completeHelper": "public.accaoui_complete_exam_history_idempotency_operation",
+    "helperDirectExecutionAllowed": false,
+    "directTableAccessAllowed": false,
+    "directClientMutationAllowed": false,
+    "liveExecution": false
+  },
+  "identity": {
+    "source": "trusted_server_or_database_issued",
+    "browserGeneratedAllowed": false,
+    "operationIdentityInputAllowed": false,
+    "verifiedNow": false,
+    "requiredParameters": [
+      "external_operation_id",
+      "operation_scope",
+      "operation",
+      "resource_identity",
+      "payload_fingerprint"
+    ]
+  },
+  "phases": [
+    {
+      "order": 1,
+      "name": "authenticate_and_validate"
+    },
+    {
+      "order": 2,
+      "name": "reserve_operation"
+    },
+    {
+      "order": 3,
+      "name": "branch_on_reservation_status"
+    },
+    {
+      "order": 4,
+      "name": "execute_domain_mutation"
+    },
+    {
+      "order": 5,
+      "name": "complete_operation"
+    },
+    {
+      "order": 6,
+      "name": "return_canonical_result"
+    }
+  ],
+  "decisionMatrix": [
+    {
+      "reservationStatus": "reserved_new",
+      "executeDomainMutation": true,
+      "completeOperation": true,
+      "responseSource": "new_domain_result"
+    },
+    {
+      "reservationStatus": "reserved_existing_pending",
+      "executeDomainMutation": false,
+      "completeOperation": false,
+      "responseSource": "in_progress_no_reexecution"
+    },
+    {
+      "reservationStatus": "reserved_existing_completed",
+      "executeDomainMutation": false,
+      "completeOperation": false,
+      "responseSource": "stored_result"
+    },
+    {
+      "reservationStatus": "reserved_existing_failed",
+      "executeDomainMutation": false,
+      "completeOperation": false,
+      "responseSource": "stored_failure"
+    }
+  ],
+  "transactionRules": {
+    "successfulMutationAndCompletedStateCommitTogether": true,
+    "expectedDomainFailureUsesSubtransactionRollback": true,
+    "expectedDomainFailureCompletesFailedAfterRollback": true,
+    "unexpectedInternalFailureReraises": true,
+    "unexpectedInternalFailureRollsBackWholeTransaction": true,
+    "rawErrorStorageAllowed": false,
+    "terminalOverwriteAllowed": false,
+    "existingPendingReexecutionAllowed": false,
+    "existingTerminalReexecutionAllowed": false,
+    "completionWithoutReservationAllowed": false
+  },
+  "securityRules": {
+    "authUserFromAuthUidOnly": true,
+    "participantIdParameterAllowed": false,
+    "authUserIdParameterAllowed": false,
+    "serviceRoleInFrontendAllowed": false,
+    "rawDatabaseErrorReturned": false,
+    "directHelperGrantAllowed": false,
+    "directIdempotencyTableGrantAllowed": false
+  },
+  "unresolvedRequirements": {
+    "trustedOperationIdentityIssuance": true,
+    "domainMutationRpcImplementation": true,
+    "liveDatabaseTests": true,
+    "concurrencyTests": true
+  }
+}

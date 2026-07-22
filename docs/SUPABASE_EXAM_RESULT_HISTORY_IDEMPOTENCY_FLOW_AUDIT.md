@@ -97,3 +97,29 @@ eingebunden.
 - keine echten Teilnehmerdaten
 - kein Browser-Storage
 - keine UI-Änderung
+
+
+## Vertragserweiterung v27.31f
+
+Der transaktionale Fachmutations-Integrationsvertrag legt
+zusätzlich verbindlich fest:
+
+- nur `reserved_new` darf die Fachmutation auslösen
+- `reserved_existing_pending` löst keine zweite Mutation aus
+- `reserved_existing_completed` verwendet das Ergebnis erneut
+- `reserved_existing_failed` verwendet den Fehlerstatus erneut
+- erfolgreiche Fachmutation und Completed-Abschluss committen
+  innerhalb derselben Datenbanktransaktion
+- erwartete Fachfehler rollen ihre Teilmutation zurück, bevor
+  ein stabiler Failed-Abschluss gespeichert wird
+- unerwartete interne Fehler rollen die gesamte Transaktion
+  einschließlich der Reservierung zurück
+- terminale Vorgänge werden niemals überschrieben
+
+Maschinenlesbarer Vertrag:
+
+`docs/contracts/exam-history-idempotency-transactional-mutation-contract.json`
+
+Automatische Prüfung:
+
+`tools/check-supabase-exam-history-transactional-mutation-contract.py`

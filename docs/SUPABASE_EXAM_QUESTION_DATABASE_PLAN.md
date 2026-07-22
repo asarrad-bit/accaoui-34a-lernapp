@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31e
+Stand: v27.31f
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1146,6 +1146,36 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_IDEMPOTENCY_FLOW_AUDIT.md`
 
+## Transaktionaler Fachmutations-Integrationsvertrag v27.31f
+
+Ein verbindlicher und maschinenlesbarer Vertrag legt jetzt die
+spätere Integrationsgrenze für produktive Fachmutationen fest.
+
+Verbindliche Reihenfolge:
+
+1. authentifizieren und validieren
+2. Operation atomar reservieren
+3. Reservierungsstatus auswerten
+4. ausschließlich bei `reserved_new` fachlich mutieren
+5. terminalen Abschluss speichern
+6. kanonisches Ergebnis zurückgeben
+
+Bestehende Pending-, Completed- oder Failed-Operationen dürfen
+keine erneute Fachmutation auslösen.
+
+Erwartete Fachfehler müssen ihre Teilmutation in einer
+Subtransaktion zurückrollen, bevor ein stabiler Failed-Abschluss
+gespeichert wird. Unerwartete Fehler müssen die vollständige
+Datenbanktransaktion zurückrollen.
+
+Der Vertrag ist dauerhaft im Preflight geprüft. Es wurde kein
+neuer SQL-RPC ergänzt und es besteht weiterhin keine
+produktive Freigabe.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_TRANSACTIONAL_MUTATION_INTEGRATION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1236,16 +1266,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31e` kann `v27.31f`
-einen verbindlichen transaktionalen
-Fachmutations-Integrationsvertrag vorbereiten.
+Nach GitHub-Bestätigung von `v27.31f` kann `v27.31g`
+eine sichere Grenze für die vertrauenswürdige Ausstellung und
+Wiederverwendung externer Operations-IDs vorbereiten.
 
-Der Vertrag muss die Reihenfolge Reservierung,
-Fachmutation und Abschluss innerhalb eines einzigen
-Security-Definer-Mutations-RPCs festlegen. Vorhandene
-Completed- oder Failed-Operationen dürfen keine erneute
-Fachmutation auslösen. Eine Live-Ausführung erfolgt weiterhin
-nicht.
+Sie muss verhindern, dass beliebige browsergenerierte oder
+fremde Operations-IDs als verifiziert gelten, und zugleich
+eine stabile Wiederholungs-ID für denselben echten Vorgang
+ermöglichen. Eine Live-Ausführung erfolgt weiterhin nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1285,7 +1313,8 @@ sowie die Persistenz-Rekursionsgrenze v27.30x dokumentiert;
 produktiver Idempotenz-Integrationsvertrag v27.31a und
 vollständig gesperrte Idempotenz-Operationstabelle v27.31b und
 interner atomarer Idempotenz-Reservierungs-RPC v27.31c und
-interner atomarer Idempotenz-Abschluss-RPC v27.31d vorbereitet
-und End-to-End-Idempotenz-RPC-Flow-Audit v27.31e dauerhaft in
-den Preflight eingebunden;
+interner atomarer Idempotenz-Abschluss-RPC v27.31d vorbereitet,
+End-to-End-Idempotenz-RPC-Flow-Audit v27.31e und transaktionaler
+Fachmutations-Integrationsvertrag v27.31f dauerhaft in den
+Preflight eingebunden;
 keine Live-Ausführung
