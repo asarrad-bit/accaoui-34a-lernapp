@@ -103,6 +103,24 @@ def check_exam_result_history_fixtures():
         )
 
 
+def check_exam_result_history_idempotency_flow():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-exam-history-idempotency-flow.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Idempotenz-End-to-End-Audit fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -195,6 +213,7 @@ def main():
         "tools/audit-categories.py",
         "tools/check-supabase-exam-history-adapter.py",
         "tools/test-supabase-exam-history-fixtures.js",
+        "tools/check-supabase-exam-history-idempotency-flow.py",
     ]
 
     for file_path in required_files:
@@ -205,6 +224,7 @@ def main():
     check_category_audit()
     check_exam_result_history_adapter()
     check_exam_result_history_fixtures()
+    check_exam_result_history_idempotency_flow()
     check_git_diff_check()
     check_protected_core_files_v2356()
 

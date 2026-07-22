@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31d
+Stand: v27.31e
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1118,6 +1118,34 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_IDEMPOTENCY_COMPLETION_RPC_TEST.md`
 
+## End-to-End-Idempotenz-RPC-Flow-Audit v27.31e
+
+Operationstabelle, Reservierungs-RPC und Abschluss-RPC werden
+jetzt durch einen eigenen statischen Audit zusammenhängend
+geprüft.
+
+Der Audit erzwingt:
+
+- dieselbe kanonische Identitätsparameterschnittstelle
+- dieselbe kanonische Operationsidentität
+- atomare Reservierung über die Unique Constraints
+- Abschluss ausschließlich aus dem Pending-Zustand
+- unveränderte Wiederverwendung identischer Terminalzustände
+- Blockierung abweichender zweiter Abschlüsse
+- vollständige direkte Zugriffssperre
+- keine Fachmutation innerhalb der beiden internen Helfer
+
+Der Audit stellt ausdrücklich fest, dass die spätere
+Fachmutation noch nicht mit Reservierung und Abschluss
+verbunden ist. Eine produktive Freigabe besteht deshalb noch
+nicht.
+
+Das Auditwerkzeug ist dauerhaft in den Preflight eingebunden.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_IDEMPOTENCY_FLOW_AUDIT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1208,15 +1236,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31d` kann `v27.31e`
-einen statischen End-to-End-Idempotenz-RPC-Flow-Audit
-vorbereiten.
+Nach GitHub-Bestätigung von `v27.31e` kann `v27.31f`
+einen verbindlichen transaktionalen
+Fachmutations-Integrationsvertrag vorbereiten.
 
-Der Audit muss Operationstabelle, Reservierung und Abschluss
-als gemeinsame Transaktionsgrenze prüfen, direkte App-Zugriffe
-weiterhin ausschließen und verhindern, dass eine spätere
-Fachmutation außerhalb des reservierten Vorgangs abgeschlossen
-wird. Es erfolgt keine Live-Ausführung.
+Der Vertrag muss die Reihenfolge Reservierung,
+Fachmutation und Abschluss innerhalb eines einzigen
+Security-Definer-Mutations-RPCs festlegen. Vorhandene
+Completed- oder Failed-Operationen dürfen keine erneute
+Fachmutation auslösen. Eine Live-Ausführung erfolgt weiterhin
+nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1256,5 +1285,7 @@ sowie die Persistenz-Rekursionsgrenze v27.30x dokumentiert;
 produktiver Idempotenz-Integrationsvertrag v27.31a und
 vollständig gesperrte Idempotenz-Operationstabelle v27.31b und
 interner atomarer Idempotenz-Reservierungs-RPC v27.31c und
-interner atomarer Idempotenz-Abschluss-RPC v27.31d vorbereitet;
+interner atomarer Idempotenz-Abschluss-RPC v27.31d vorbereitet
+und End-to-End-Idempotenz-RPC-Flow-Audit v27.31e dauerhaft in
+den Preflight eingebunden;
 keine Live-Ausführung
