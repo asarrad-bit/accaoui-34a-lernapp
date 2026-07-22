@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31l
+Stand: v27.31m
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -192,3 +192,20 @@ Fingerprintfelder sind unzulässig.
 Maschinenlesbarer Vertrag:
 
 `docs/contracts/exam-history-domain-payload-contract.json`
+
+
+## Interner Payload-Helfer v27.31m
+
+Die kanonische Payload-Prüfung und
+SHA-256-Fingerprint-Ableitung ist als vollständig gesperrter
+interner SQL-Helfer vorbereitet.
+
+Der spätere äußere Fachmutations-RPC muss diesen Helfer
+verwenden und darf keinen Browser-Fingerprint übernehmen.
+
+Der Helfer führt selbst keine Fach- oder Idempotenzmutation
+aus.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_PAYLOAD_VALIDATION_RPC_TEST.md`

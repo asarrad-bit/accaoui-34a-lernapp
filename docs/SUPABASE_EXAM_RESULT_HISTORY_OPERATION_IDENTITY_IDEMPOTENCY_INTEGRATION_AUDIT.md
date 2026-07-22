@@ -146,3 +146,22 @@ oder Anfrageidentitäten in den Fach-Payload einschleusen.
 Vertrag:
 
 `docs/contracts/exam-history-domain-payload-contract.json`
+
+
+## Payload-Validierungshelfer v27.31m
+
+Ein interner SQL-Helfer validiert jetzt statisch geprüft:
+
+- Operationsbereich und Operation
+- kanonische Snapshot- oder Registerhülle
+- Schema-Version
+- Inhaltsobjekt
+- rekursive Tiefe
+- gesperrte interne Schlüssel
+- kanonische UTF-8-Größe
+- serverseitigen SHA-256-Fingerprint
+
+Der Helfer verändert keine Tabelle und ruft keinen
+Idempotenz- oder Operations-ID-Helfer auf.
+
+Der äußere Fachmutations-RPC ist weiterhin nicht umgesetzt.

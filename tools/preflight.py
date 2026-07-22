@@ -332,6 +332,7 @@ def main():
         "docs/contracts/exam-history-outer-domain-mutation-rpc-interface-contract.json",
         "tools/check-supabase-exam-history-domain-payload-contract.py",
         "docs/contracts/exam-history-domain-payload-contract.json",
+        "supabase/migrations/20260722_v2731m_exam_history_domain_payload_validate_rpc.sql",
     ]
 
     for file_path in required_files:

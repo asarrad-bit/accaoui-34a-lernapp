@@ -1,5 +1,5 @@
 {
-  "version": "v27.31l",
+  "version": "v27.31m",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -11,7 +11,10 @@
     "fingerprintFormat": "lowercase_hex_64",
     "fingerprintGeneratedServerSide": true,
     "clientFingerprintAllowed": false,
-    "canonicalByteLengthGeneratedServerSide": true
+    "canonicalByteLengthGeneratedServerSide": true,
+    "validationHelper": "public.accaoui_validate_exam_history_domain_payload",
+    "validationHelperImplementationPresent": true,
+    "validationHelperDirectExecutionAllowed": false
   },
   "sharedRules": {
     "writePayloadRequired": true,
@@ -103,6 +106,7 @@
     "domainStorageImplementation": true,
     "liveDatabaseTests": true,
     "concurrencyTests": true,
-    "authorizationTests": true
+    "authorizationTests": true,
+    "payloadValidationHelperImplementation": false
   }
 }

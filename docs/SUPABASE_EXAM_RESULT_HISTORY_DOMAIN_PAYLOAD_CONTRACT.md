@@ -1,6 +1,6 @@
 # Kanonischer Fach-Payload-Vertrag
 
-Stand: v27.31l
+Stand: v27.31m
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -102,6 +102,24 @@ kleingeschriebene Fehlercodes.
 Rohe PostgreSQL-, Exception- oder Stack-Informationen dürfen
 nicht gespeichert oder an den Browser zurückgegeben werden.
 
+## SQL-Helfer v27.31m
+
+Ein interner Security-Definer-Helfer ist als SQL-Migration
+vorbereitet.
+
+Er:
+
+- validiert Bereich und Operation
+- erzwingt die exakten Snapshot- und Registerhüllen
+- prüft Schema-Version und Inhaltsobjekt
+- prüft maximal 16 Verschachtelungsebenen
+- blockiert rekursiv interne Schlüssel
+- prüft die kanonische UTF-8-Byteanzahl
+- bildet den SHA-256-Fingerprint serverseitig
+- akzeptiert Delete ausschließlich mit `null`
+- führt keine Tabellenmutation aus
+- besitzt keine direkte App-Ausführungsfreigabe
+
 ## Noch offen
 
 - äußerer Fachmutations-RPC
@@ -111,7 +129,7 @@ nicht gespeichert oder an den Browser zurückgegeben werden.
 
 ## Sicherheitsgrenze
 
-- keine SQL-Migration in v27.31l
+- SQL-Helfer vorbereitet, aber nicht live ausgeführt
 - keine Live-Ausführung
 - keine echten Teilnehmerdaten
 - keine direkte Helper-Freigabe

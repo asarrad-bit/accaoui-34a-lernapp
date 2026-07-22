@@ -2308,10 +2308,34 @@ if len(re.findall(r"\bto\s+authenticated\b", rls, flags=re.IGNORECASE)) != 17:
 if "auth.uid()" not in rls:
     fail("auth.uid()-Prüfung fehlt.")
 
-all_sql = "\n".join(
-    (MIGRATIONS / name).read_text(encoding="utf-8")
-    for name in files
-)
+sensitive_sql_parts = []
+
+for name in files:
+    migration_sql = (
+        MIGRATIONS / name
+    ).read_text(encoding="utf-8")
+
+    if name == (
+        "20260722_v2731m_"
+        "exam_history_domain_payload_validate_rpc.sql"
+    ):
+        allowed_blocked_key = "      'service_role',\n"
+
+        if migration_sql.count(allowed_blocked_key) != 1:
+            fail(
+                "Erwarteter gesperrter Payload-Schlüssel "
+                "service_role fehlt oder ist doppelt."
+            )
+
+        migration_sql = migration_sql.replace(
+            allowed_blocked_key,
+            "",
+            1,
+        )
+
+    sensitive_sql_parts.append(migration_sql)
+
+all_sql = "\n".join(sensitive_sql_parts)
 
 sql_without_comments = re.sub(
     r"--.*?$",
@@ -2319,9 +2343,18 @@ sql_without_comments = re.sub(
     all_sql,
     flags=re.MULTILINE,
 )
-for forbidden in ("service_role", "SUPABASE_SERVICE_ROLE_KEY", "postgresql://", "postgres://"):
+
+for forbidden in (
+    "service_role",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "postgresql://",
+    "postgres://",
+):
     if forbidden.lower() in sql_without_comments.lower():
-        fail(f"Verbotener sensitiver Inhalt gefunden: {forbidden}")
+        fail(
+            "Verbotener sensitiver Inhalt gefunden: "
+            f"{forbidden}"
+        )
 
 print("Supabase-Migrationsprüfung: OK")
 print(f"SQL-Dateien: {len(files)}")

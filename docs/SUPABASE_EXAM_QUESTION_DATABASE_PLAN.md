@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31l
+Stand: v27.31m
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1351,6 +1351,30 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_PAYLOAD_CONTRACT.md`
 
+## Fach-Payload-Validierungs-RPC v27.31m
+
+Ein vollständig gesperrter interner SQL-Helfer für kanonische
+Fach-Payload-Validierung und Fingerprint-Ableitung ist
+vorbereitet.
+
+Der Helfer prüft:
+
+- Snapshot- und Zyklusregister-Hüllen
+- Schema-Version und Inhaltsobjekt
+- maximal 16 Verschachtelungsebenen
+- gesperrte interne Schlüssel rekursiv
+- kanonische UTF-8-Byteanzahl
+- Delete ausschließlich mit `null`
+- serverseitiges SHA-256 aus PostgreSQL-JSONB-Text
+
+Er führt keine Tabellen-, Fach- oder Idempotenzmutation aus.
+Für `public`, `anon` und `authenticated` wurden sämtliche
+direkten Ausführungsrechte entzogen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_PAYLOAD_VALIDATION_RPC_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1441,15 +1465,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31l` kann `v27.31m`
-einen internen SQL-Helfer für kanonische Fach-Payload-
-Validierung und SHA-256-Fingerprint-Ableitung vorbereiten.
+Nach GitHub-Bestätigung von `v27.31m` kann `v27.31n`
+einen verbindlichen Domain-Speichervertrag für Snapshot und
+Zyklusregister vorbereiten.
 
-Der Helfer muss Snapshot- und Zyklusregister-Payloads nach den
-verbindlichen Verträgen prüfen, Delete ausschließlich mit
-`null` akzeptieren und darf keine Fach- oder
-Idempotenzmutation ausführen. Direkte App-Freigaben und
-Live-Ausführung bleiben ausgeschlossen.
+Der Vertrag muss Nutzerbindung, Ressourcenidentität,
+Versionsstand, Write-Upsert-, Delete- und Konkurrenzsemantik,
+Größenlimits sowie direkte Tabellenzugriffssperren festlegen.
+Erst danach darf der äußere Fachmutations-RPC vorbereitet
+werden. Eine Live-Ausführung erfolgt weiterhin nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1499,5 +1523,6 @@ Operations-ID-Ausstellungs- und Wiederverwendungs-RPC v27.31i
 vorbereitet und Operations-ID-/Idempotenz-Integrationsaudit v27.31j und
 äußerer Fachmutations-RPC-Schnittstellenvertrag v27.31k und
 kanonische Fach-Payload-Verträge v27.31l dauerhaft in den
-Preflight eingebunden;
+Preflight eingebunden und interner Fach-Payload-Validierungs-
+und Fingerprint-Helfer v27.31m vorbereitet;
 keine Live-Ausführung

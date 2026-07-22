@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,8 +62,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31l":
-    fail("Fach-Payload-Vertrag besitzt nicht v27.31l.")
+if contract["version"] != "v27.31m":
+    fail("Fach-Payload-Vertrag besitzt nicht v27.31m.")
 
 if contract["contractVersion"] != 1:
     fail("Fach-Payload-Vertrag besitzt nicht Schema 1.")
@@ -82,6 +83,12 @@ expected_canonicalization = {
     "fingerprintGeneratedServerSide": True,
     "clientFingerprintAllowed": False,
     "canonicalByteLengthGeneratedServerSide": True,
+    "validationHelper": (
+        "public."
+        "accaoui_validate_exam_history_domain_payload"
+    ),
+    "validationHelperImplementationPresent": True,
+    "validationHelperDirectExecutionAllowed": False,
 }
 
 if contract["canonicalization"] != expected_canonicalization:
@@ -224,6 +231,7 @@ for failure in all_failures:
 expected_unresolved = {
     "outerDomainMutationRpcImplementation": True,
     "domainStorageImplementation": True,
+    "payloadValidationHelperImplementation": False,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
     "authorizationTests": True,
@@ -282,15 +290,225 @@ if outer_unresolved.get(
         "Äußerer Fachmutations-RPC muss noch offen bleiben."
     )
 
-v2731l_sql_files = sorted(
-    path.name
-    for path in MIGRATIONS.glob("*v2731l*.sql")
+VALIDATION_RPC_PATH = (
+    MIGRATIONS
+    / "20260722_v2731m_"
+    "exam_history_domain_payload_validate_rpc.sql"
 )
 
-if v2731l_sql_files:
+if not VALIDATION_RPC_PATH.is_file():
+    fail("Fach-Payload-Validierungs-RPC fehlt.")
+
+validation_sql = VALIDATION_RPC_PATH.read_text(
+    encoding="utf-8"
+)
+
+validation_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    validation_sql.lower(),
+    flags=re.MULTILINE,
+)
+
+validation_compact = re.sub(
+    r"\s+",
+    " ",
+    validation_without_comments,
+).strip()
+
+function_name = (
+    "public."
+    "accaoui_validate_exam_history_domain_payload"
+)
+
+function_match = re.search(
+    r"function\s+"
+    r"public\.accaoui_validate_exam_history_domain_payload"
+    r"\s*\((.*?)\)\s*returns\s+table\s*"
+    r"\((.*?)\)\s*language\s+plpgsql",
+    validation_sql,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not function_match:
+    fail("Signatur des Fach-Payload-Validierungs-RPC fehlt.")
+
+parameters = re.sub(
+    r"\s+",
+    " ",
+    function_match.group(1).strip().lower(),
+)
+
+expected_parameters = (
+    "p_operation_scope text, "
+    "p_operation text, "
+    "p_domain_payload jsonb default null"
+)
+
+if parameters != expected_parameters:
     fail(
-        "v27.31l darf keine SQL-Migration erzeugen: "
-        f"{v2731l_sql_files}"
+        "Fach-Payload-Validierungs-RPC besitzt "
+        "unerwartete Parameter: "
+        f"{parameters}"
+    )
+
+returns = re.sub(
+    r"\s+",
+    " ",
+    function_match.group(2).strip().lower(),
+)
+
+expected_returns = (
+    "canonical_payload jsonb, "
+    "payload_fingerprint text, "
+    "canonical_byte_length integer"
+)
+
+if returns != expected_returns:
+    fail(
+        "Fach-Payload-Validierungs-RPC besitzt "
+        "unerwartete Rückgabe: "
+        f"{returns}"
+    )
+
+required_markers = (
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "p_operation_scope not in ( "
+    "'snapshot', 'cycle_registry' )",
+    "p_operation not in ( 'write', 'delete' )",
+    "jsonb_object_length(p_domain_payload) <> 2",
+    "p_domain_payload ? 'schema_version'",
+    "p_domain_payload ? 'snapshot'",
+    "p_domain_payload ? 'registry'",
+    "p_domain_payload ->> 'schema_version' <> '1'",
+    "p_domain_payload -> 'snapshot' = '{}'::jsonb",
+    "with recursive payload_nodes(value, depth) as",
+    "v_max_depth > 16",
+    "jsonb_object_keys(",
+    "v_canonical_text := p_domain_payload::text",
+    "octet_length( convert_to( "
+    "v_canonical_text, 'utf8' ) )",
+    "v_canonical_bytes > 262144",
+    "v_canonical_bytes > 131072",
+    "public.digest(",
+    "'sha256'",
+    "v_payload_fingerprint !~ '^[0-9a-f]{64}$'",
+    "select null::jsonb, null::text, 0::integer",
+    "select p_domain_payload, "
+    "v_payload_fingerprint, v_canonical_bytes",
+)
+
+for marker in required_markers:
+    if marker not in validation_compact:
+        fail(
+            "Fach-Payload-Validierungs-RPC: "
+            f"Anweisung fehlt: {marker}"
+        )
+
+stable_failures = (
+    contract["stableCommonFailures"]
+    + contract["scopes"]["snapshot"]["stableFailures"]
+    + contract["scopes"]["cycle_registry"]["stableFailures"]
+)
+
+for failure_code in stable_failures:
+    marker = f"message = '{failure_code}'"
+
+    if marker not in validation_compact:
+        fail(
+            "Stabiler Fachfehler fehlt im SQL-Helfer: "
+            f"{failure_code}"
+        )
+
+for forbidden_parameter in (
+    "p_external_operation_id",
+    "p_operation_identity",
+    "p_payload_fingerprint",
+    "p_client_request_key",
+    "p_auth_user_id",
+    "p_participant_id",
+):
+    if forbidden_parameter in parameters:
+        fail(
+            "Verbotener Parameter im Payload-Helfer: "
+            f"{forbidden_parameter}"
+        )
+
+mutation_targets = [
+    (
+        re.sub(r"\s+", " ", action.lower()),
+        table.lower(),
+    )
+    for action, table in re.findall(
+        r"\b(insert\s+into|update|delete\s+from)\s+"
+        r"(?:public\.)?([a-z_]+)",
+        validation_without_comments,
+        flags=re.IGNORECASE,
+    )
+]
+
+if mutation_targets:
+    fail(
+        "Payload-Helfer verändert unerwartete Tabellen: "
+        f"{mutation_targets}"
+    )
+
+for forbidden_content in (
+    "grant execute",
+    "create policy",
+    "auth.uid()",
+    "sqlerrm",
+    "stacked diagnostics",
+    "accaoui_issue_exam_history_operation_identity",
+    "accaoui_reserve_exam_history_idempotency_operation",
+    "accaoui_complete_exam_history_idempotency_operation",
+    "public.exam_history_idempotency_operations",
+    "public.exam_history_operation_identity_issuances",
+):
+    if forbidden_content in validation_without_comments:
+        fail(
+            "Unzulässiger Inhalt im Payload-Helfer: "
+            f"{forbidden_content}"
+        )
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_validate_exam_history_domain_payload"
+        r"\s*\(\s*text\s*,\s*text\s*,\s*jsonb\s*\)"
+        r"\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+
+    if not re.search(
+        revoke_pattern,
+        validation_sql,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Payload-Helfer-Revoke fehlt für: "
+            f"{role}"
+        )
+
+v2731m_sql_files = sorted(
+    path.name
+    for path in MIGRATIONS.glob("*v2731m*.sql")
+)
+
+if v2731m_sql_files != [
+    "20260722_v2731m_"
+    "exam_history_domain_payload_validate_rpc.sql"
+]:
+    fail(
+        "Unerwartete v27.31m-SQL-Dateien: "
+        f"{v2731m_sql_files}"
     )
 
 for frontend_path in (
@@ -310,6 +528,17 @@ for frontend_path in (
         )
 
 print("Kanonischer Fach-Payload-Vertrag: OK")
+print(
+    "Payload-Validierungs-RPC: Hülle, Tiefe, "
+    "Schlüssel und Größe serverseitig geprüft"
+)
+print(
+    "Payload-Fingerprint-Helfer: kanonisches JSONB "
+    "mit SHA-256 abgeleitet"
+)
+print(
+    "Payload-Helfer-Mutationen: keine"
+)
 print(
     "Snapshot Write: schema_version und Snapshot-Objekt, "
     "maximal 262144 kanonische Bytes"
