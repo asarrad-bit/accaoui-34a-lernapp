@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30w
+Stand: v27.30x
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -993,6 +993,30 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_CYCLE_REPETITION_TEST.md`
 
+## Persistenz-Rekursionsgrenze v27.30x
+
+Die geplante weitere Registrierung der
+Zyklusregister-Persistenzzyklen wurde nach einem
+Architektur-Audit bewusst nicht als neuer State umgesetzt.
+
+Die vorhandenen Register-Persistenz-Zyklusidentitäten
+unterscheiden nur `load`, `save` und `delete`. Ein dauerhaftes
+Folgeregister würde deshalb legitime spätere Vorgänge
+fälschlich blockieren.
+
+Die Persistenz eines solchen Folgeregisters würde außerdem
+erneut ein eigenes Wiederholungsregister erfordern und damit
+eine nicht abschließbare rekursive Kette erzeugen.
+
+Die v27.30-Reihe endet deshalb an dieser klaren Grenze.
+Produktive Idempotenz muss später über eindeutige
+Operationsidentitäten und atomare Storage- oder
+Datenbanksemantik umgesetzt werden.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_RECURSION_BOUNDARY_AUDIT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1083,12 +1107,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30w` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Zyklusregister-State
-vorbereitet werden, der freigegebene terminale
-Zyklusidentitäten kanonisch registriert und doppelte
-Identitäten unverändert beibehält, weiterhin ohne Methoden-,
-Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30x` ist die
+v27.30-Persistenzreihe abgeschlossen.
+
+Als nächster technischer Abschnitt kann `v27.31a` einen
+sicheren lokalen Integrationsvertrag für produktive
+Idempotenz vorbereiten. Dieser muss eine extern bereitgestellte
+eindeutige Operationsidentität und spätere atomare
+Storage- oder Datenbanksemantik verlangen, weiterhin ohne
+Methoden-, Storage-, Live-RPC- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1123,5 +1150,6 @@ Zyklusregister-Persistenz-Ergebnisvertrag,
 Zyklusregister-Persistenz-Ergebnisannahme-Guard,
 Zyklusregister-Persistenz-Abschlussstate,
 Zyklusregister-Persistenz-Zyklusstate und
-Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard vorbereitet;
+Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard vorbereitet
+sowie die Persistenz-Rekursionsgrenze v27.30x dokumentiert;
 keine Live-Ausführung

@@ -36,3 +36,18 @@ werden.
 - kein Supabase-Client
 - kein Netzwerk
 - keine sichtbare UI
+
+
+## Architekturgrenze v27.30x
+
+Dieser Guard bleibt ein lokaler Struktur- und Sicherheitstest.
+
+Die derzeitige Zyklusidentität unterscheidet nur `load`,
+`save` und `delete`. Sie ist deshalb nicht als dauerhaftes
+produktives Idempotenzregister für beliebig viele reale
+Aufrufe geeignet.
+
+Es wird kein weiteres Register zur Persistenz dieses Registers
+ergänzt. Produktive Idempotenz muss später über eine eindeutige
+Operationsidentität und atomare Storage- oder
+Datenbanksemantik umgesetzt werden.
