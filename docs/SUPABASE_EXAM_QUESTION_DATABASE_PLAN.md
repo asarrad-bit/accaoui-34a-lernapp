@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30u
+Stand: v27.30v
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -961,6 +961,22 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_COMPLETION_STATE_TEST.md`
 
+## Zyklusregister-Persistenz-Zyklusstate v27.30v
+
+Aufrufpaket, Ergebnisvertrag, Ergebnisannahme und terminaler
+Abschluss des Zyklusregisters können jetzt als ein
+zusammenhängender Persistenzzyklus erneut geprüft werden.
+
+Ergebnisannahme und Abschluss werden neu berechnet und müssen
+mit den bereitgestellten kanonischen Zuständen exakt
+übereinstimmen. Identitäten, Status, Readiness und Ergebnisdaten
+bleiben vollständig verbunden. Keine Adaptermethode wird
+aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_CYCLE_STATE_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1051,11 +1067,11 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30u` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Zyklusstate vorbereitet werden,
-der Aufrufpaket, Ergebnisvertrag, Ergebnisannahme und terminalen
-Abschluss als zusammenhängenden Zyklus erneut prüft, weiterhin
-ohne Methoden-, Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30v` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard
+vorbereitet werden, der eine erneute Verarbeitung derselben
+terminalen Zyklusidentität geschlossen blockiert, weiterhin ohne
+Methoden-, Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1087,6 +1103,7 @@ Zyklusregister-Persistenz-Ausführungs-Guard,
 Zyklusregister-Persistenz-Aufrufvertrag,
 Zyklusregister-Persistenz-Aufrufpaket-State,
 Zyklusregister-Persistenz-Ergebnisvertrag,
-Zyklusregister-Persistenz-Ergebnisannahme-Guard und
-Zyklusregister-Persistenz-Abschlussstate vorbereitet;
+Zyklusregister-Persistenz-Ergebnisannahme-Guard,
+Zyklusregister-Persistenz-Abschlussstate und
+Zyklusregister-Persistenz-Zyklusstate vorbereitet;
 keine Live-Ausführung
