@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31i
+Stand: v27.31j
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1254,6 +1254,33 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_ISSUANCE_RPC_TEST.md`
 
+## Operations-ID-/Idempotenz-Integrationsaudit v27.31j
+
+Ein eigener statischer Audit prüft jetzt die vollständige
+Vertrauensgrenze zwischen Operations-ID-Ausstellung,
+Idempotenzreservierung und Idempotenzabschluss.
+
+Der Audit erzwingt:
+
+- Browsergrenze ausschließlich über `client_request_key`
+- keine externe Operations-ID als Ausstellungsparameter
+- UUID-Erzeugung ausschließlich durch den Datenbank-Default
+- Rückgabe der UUID erst nach erfolgreicher Speicherung
+- identische kanonische Fachparameter in Ausstellung,
+  Reservierung und Abschluss
+- vollständigen Revoke aller drei internen Helfer
+- keine direkten Helper-Referenzen im Frontend
+- keine SQL-Migration oder vorzeitige Fachintegration in
+  v27.31j
+
+Der Audit dokumentiert ausdrücklich, dass der äußere
+Fachmutations-RPC noch fehlt. Die produktive Freigabe bleibt
+deshalb gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_IDEMPOTENCY_INTEGRATION_AUDIT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1344,17 +1371,18 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31i` kann `v27.31j`
-einen statischen Operations-ID-Ausstellungs- und
-Idempotenz-Integrationsaudit vorbereiten.
+Nach GitHub-Bestätigung von `v27.31j` kann `v27.31k`
+einen verbindlichen äußeren Fachmutations-RPC-
+Schnittstellenvertrag vorbereiten.
 
-Der Audit muss erzwingen, dass ein späterer äußerer
-Fachmutations-RPC nur den unvertrauenswürdigen
-Client-Wiederholungsschlüssel erhält, die UUID intern
-ausstellen lässt und ausschließlich die intern erhaltene UUID
-an die Reservierung weitergibt. Browserseitig übermittelte
-Operations-IDs dürfen nicht akzeptiert werden. Eine
-Live-Ausführung erfolgt weiterhin nicht.
+Der Vertrag muss ausschließlich den unvertrauenswürdigen
+Client-Wiederholungsschlüssel und die kanonischen Fachparameter
+akzeptieren. Eine externe Operations-ID als Browserparameter
+muss ausgeschlossen bleiben. Die verbindliche interne
+Reihenfolge lautet: Operations-ID ausstellen, reservieren,
+Status auswerten, ausschließlich bei `reserved_new` mutieren
+und terminal abschließen. Eine Live-Ausführung erfolgt
+weiterhin nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1401,5 +1429,6 @@ Operations-ID-Ausstellungsgrenze v27.31g dauerhaft in den
 Preflight eingebunden und vollständig gesperrte
 Operations-ID-Ausstellungstabelle v27.31h und interner
 Operations-ID-Ausstellungs- und Wiederverwendungs-RPC v27.31i
-vorbereitet;
+vorbereitet und Operations-ID-/Idempotenz-Integrationsaudit
+v27.31j dauerhaft in den Preflight eingebunden;
 keine Live-Ausführung

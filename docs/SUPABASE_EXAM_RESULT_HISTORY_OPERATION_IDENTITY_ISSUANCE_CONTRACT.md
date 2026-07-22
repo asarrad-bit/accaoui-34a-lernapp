@@ -1,6 +1,6 @@
 # Operations-ID-Ausstellungsvertrag
 
-Stand: v27.31i
+Stand: v27.31j
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -135,3 +135,31 @@ Deshalb bleibt die produktive Freigabe gesperrt.
 `tools/check-supabase-exam-history-operation-identity-issuance-contract.py`
 
 Der Prüfer ist dauerhaft in `tools/preflight.py` eingebunden.
+
+
+## Integrationsaudit v27.31j
+
+Der statische Audit bestätigt:
+
+- der Browser liefert ausschließlich den unvertrauenswürdigen
+  `client_request_key`
+- der Ausstellungs-RPC akzeptiert keine externe Operations-ID
+- die UUID wird durch den Datenbank-Default erzeugt
+- die UUID wird erst nach erfolgreicher Speicherung
+  zurückgegeben
+- Reservierung und Abschluss erwarten dieselbe intern
+  ausgestellte UUID
+- die kanonischen Bereichs-, Mutations-, Ressourcen- und
+  Fingerprint-Parameter stimmen zwischen allen Helfern überein
+- alle drei Helfer bleiben für App-Rollen gesperrt
+- im Frontend existiert keine direkte Helper-Referenz
+
+Noch nicht vorhanden ist der äußere Fachmutations-RPC, der
+Ausstellung, Reservierung, Fachmutation und Abschluss innerhalb
+derselben Datenbanktransaktion verbindet.
+
+Deshalb bleibt die produktive Freigabe gesperrt.
+
+Auditwerkzeug:
+
+`tools/check-supabase-exam-history-operation-identity-idempotency-integration.py`
