@@ -245,8 +245,8 @@ outer_contract = read_json(
     "Äußerer Fachmutations-RPC-Vertrag",
 )
 
-if outer_contract.get("version") != "v27.31l":
-    fail("Äußerer RPC-Vertrag besitzt nicht v27.31l.")
+if outer_contract.get("version") != "v27.31n":
+    fail("Äußerer RPC-Vertrag besitzt nicht v27.31n.")
 
 if outer_contract.get(
     "productiveReleaseAllowed"

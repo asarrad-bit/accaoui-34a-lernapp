@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31m
+Stand: v27.31n
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -21,7 +21,8 @@ Der äußere RPC akzeptiert ausschließlich:
 2. `p_operation_scope`
 3. `p_operation`
 4. `p_resource_identity`
-5. `p_domain_payload`
+5. `p_expected_storage_version`
+6. `p_domain_payload`
 
 ## Verbotene Browserparameter
 
@@ -209,3 +210,24 @@ aus.
 Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_PAYLOAD_VALIDATION_RPC_TEST.md`
+
+
+## Domain-Speichergrenze v27.31n
+
+Write und Delete müssen zusätzlich den erwarteten
+`storage_version`-Stand übermitteln.
+
+- Version 0 bedeutet ausschließlich Neuanlage
+- positive Version bedeutet exakter aktueller Stand
+- Abweichungen werden geschlossen als Versionskonflikt
+  abgelehnt
+- Delete erzeugt einen monotonen Tombstone
+- stilles Last-Write-Wins ist verboten
+
+Der Versionsstand muss vor der Umsetzung des äußeren RPCs noch
+in Operations-ID-Ausstellung und Idempotenzreservierung
+eingebunden werden.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_STORAGE_CONTRACT.md`

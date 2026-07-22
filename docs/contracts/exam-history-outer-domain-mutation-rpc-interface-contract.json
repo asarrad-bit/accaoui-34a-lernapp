@@ -1,5 +1,5 @@
 {
-  "version": "v27.31l",
+  "version": "v27.31n",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -22,6 +22,10 @@
       {
         "name": "p_resource_identity",
         "type": "text"
+      },
+      {
+        "name": "p_expected_storage_version",
+        "type": "bigint"
       },
       {
         "name": "p_domain_payload",
@@ -150,6 +154,7 @@
     "outerDomainMutationRpcImplementation": true,
     "liveDatabaseTests": true,
     "concurrencyTests": true,
-    "authorizationTests": true
+    "authorizationTests": true,
+    "expectedStorageVersionIdentityBinding": true
   }
 }

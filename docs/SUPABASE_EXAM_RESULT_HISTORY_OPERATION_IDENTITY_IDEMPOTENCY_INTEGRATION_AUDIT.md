@@ -165,3 +165,18 @@ Der Helfer verändert keine Tabelle und ruft keinen
 Idempotenz- oder Operations-ID-Helfer auf.
 
 Der äußere Fachmutations-RPC ist weiterhin nicht umgesetzt.
+
+
+## Domain-Speicher-Versionsgrenze v27.31n
+
+Snapshot und Zyklusregister erhalten einen monotonen
+Speicher-Versionsstand.
+
+Veraltete Write- oder Delete-Anfragen müssen geschlossen
+abgelehnt werden. Ein stilles Last-Write-Wins ist unzulässig.
+
+Der erwartete Versionsstand ist Teil der fachlichen
+Anfrageidentität. Die vorhandenen Operations-ID- und
+Idempotenzhelper binden ihn noch nicht.
+
+Diese Lücke blockiert weiterhin den äußeren Fachmutations-RPC.

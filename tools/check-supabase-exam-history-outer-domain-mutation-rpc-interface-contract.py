@@ -98,8 +98,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31l":
-    fail("Äußerer RPC-Vertrag besitzt nicht v27.31l.")
+if contract["version"] != "v27.31n":
+    fail("Äußerer RPC-Vertrag besitzt nicht v27.31n.")
 
 if contract["contractVersion"] != 1:
     fail("Äußerer RPC-Vertrag besitzt nicht Schema 1.")
@@ -129,6 +129,10 @@ expected_allowed_parameters = [
     {
         "name": "p_resource_identity",
         "type": "text",
+    },
+    {
+        "name": "p_expected_storage_version",
+        "type": "bigint",
     },
     {
         "name": "p_domain_payload",
@@ -335,6 +339,7 @@ if contract["securityRules"] != expected_security:
 expected_unresolved = {
     "scopeSpecificPayloadSchemas": False,
     "outerDomainMutationRpcImplementation": True,
+    "expectedStorageVersionIdentityBinding": True,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
     "authorizationTests": True,

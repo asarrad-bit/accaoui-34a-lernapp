@@ -1,0 +1,185 @@
+{
+  "version": "v27.31n",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "implementationPresent": false,
+  "storageModel": {
+    "proposedTable": "public.exam_history_domain_resources",
+    "rowIdentityFields": [
+      "auth_user_id",
+      "operation_scope",
+      "resource_identity"
+    ],
+    "oneCurrentRowPerIdentity": true,
+    "uniqueIdentityRequired": true,
+    "softDeleteTombstoneRequired": true,
+    "physicalDeleteByMutationRpcAllowed": false,
+    "monotonicStorageVersionRequired": true,
+    "versionResetAfterDeleteAllowed": false
+  },
+  "storedFields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "source": "database_default"
+    },
+    {
+      "name": "auth_user_id",
+      "type": "uuid",
+      "source": "auth_uid_only"
+    },
+    {
+      "name": "operation_scope",
+      "type": "text",
+      "allowed": [
+        "snapshot",
+        "cycle_registry"
+      ]
+    },
+    {
+      "name": "resource_identity",
+      "type": "text",
+      "minimumLength": 1,
+      "maximumLength": 512
+    },
+    {
+      "name": "schema_version",
+      "type": "smallint",
+      "value": 1
+    },
+    {
+      "name": "domain_payload",
+      "type": "jsonb_nullable_on_tombstone"
+    },
+    {
+      "name": "payload_fingerprint",
+      "type": "text_64_lowercase_hex_nullable_on_tombstone"
+    },
+    {
+      "name": "canonical_byte_length",
+      "type": "integer_nullable_on_tombstone"
+    },
+    {
+      "name": "storage_version",
+      "type": "bigint",
+      "minimum": 1
+    },
+    {
+      "name": "is_deleted",
+      "type": "boolean"
+    },
+    {
+      "name": "created_at",
+      "type": "timestamptz"
+    },
+    {
+      "name": "updated_at",
+      "type": "timestamptz"
+    }
+  ],
+  "ownershipRules": {
+    "authUserFromAuthUidOnly": true,
+    "authUserIdParameterAllowed": false,
+    "participantIdParameterAllowed": false,
+    "crossUserReadAllowed": false,
+    "crossUserWriteAllowed": false,
+    "crossUserDeleteAllowed": false
+  },
+  "expectedVersionInput": {
+    "parameter": "p_expected_storage_version",
+    "type": "bigint",
+    "minimum": 0,
+    "requiredForWrite": true,
+    "requiredForDelete": true,
+    "zeroMeansCreateOnly": true,
+    "positiveMeansExactCurrentVersion": true,
+    "clientMayInventCurrentVersion": false
+  },
+  "writeSemantics": {
+    "operation": "write",
+    "payloadValidationHelper": "public.accaoui_validate_exam_history_domain_payload",
+    "newResourceExpectedVersion": 0,
+    "newResourceStoredVersion": 1,
+    "existingLiveRowRequiresExactVersion": true,
+    "existingTombstoneRequiresExactVersion": true,
+    "successfulWriteIncrementsVersionBy": 1,
+    "samePayloadStillIncrementsVersion": false,
+    "silentLastWriteWinsAllowed": false,
+    "rowLockRequired": "select_for_update",
+    "upsertWithoutVersionGuardAllowed": false
+  },
+  "deleteSemantics": {
+    "operation": "delete",
+    "payloadMustBeNull": true,
+    "existingLiveRowRequiresExactVersion": true,
+    "successfulDeleteCreatesTombstone": true,
+    "successfulDeleteIncrementsVersionBy": 1,
+    "tombstonePayloadMustBeNull": true,
+    "tombstoneFingerprintMustBeNull": true,
+    "alreadyDeletedDoesNotIncrementVersion": true,
+    "neverExistingWithExpectedVersionZero": "already_absent",
+    "physicalDeleteAllowed": false,
+    "rowLockRequired": "select_for_update"
+  },
+  "concurrencyRules": {
+    "resourceRowLockedBeforeDecision": true,
+    "uniqueCreateConflictMustBeReevaluated": true,
+    "expectedVersionComparedInsideLock": true,
+    "staleWriteRejected": true,
+    "staleDeleteRejected": true,
+    "abaVersionReusePreventedByTombstone": true,
+    "domainMutationAndIdempotencyCompletionSameTransaction": true
+  },
+  "identityBinding": {
+    "expectedStorageVersionMustAffectRequestIdentity": true,
+    "currentIssuanceHelperBindsExpectedVersion": false,
+    "currentReservationHelperBindsExpectedVersion": false,
+    "outerRpcMayBeImplementedBeforeBinding": false
+  },
+  "scopeLimits": {
+    "snapshot": {
+      "maximumCanonicalBytes": 262144,
+      "payloadRequiredWhenLive": true
+    },
+    "cycle_registry": {
+      "maximumCanonicalBytes": 131072,
+      "payloadRequiredWhenLive": true
+    }
+  },
+  "accessRules": {
+    "rowLevelSecurityEnabled": true,
+    "rowLevelSecurityForced": true,
+    "directPoliciesAllowed": false,
+    "publicTableRightsAllowed": false,
+    "anonTableRightsAllowed": false,
+    "authenticatedTableRightsAllowed": false,
+    "directFrontendAccessAllowed": false,
+    "serviceRoleInFrontendAllowed": false,
+    "liveExecution": false
+  },
+  "stableOutcomes": [
+    "created",
+    "updated",
+    "deleted",
+    "already_absent",
+    "already_deleted"
+  ],
+  "stableFailures": [
+    "domain_storage_expected_version_invalid",
+    "domain_storage_version_conflict",
+    "domain_storage_resource_identity_invalid",
+    "domain_storage_scope_invalid",
+    "domain_storage_payload_invalid",
+    "domain_storage_state_invalid"
+  ],
+  "unresolvedRequirements": {
+    "expectedVersionIdentityBinding": true,
+    "storageTableImplementation": true,
+    "storageMutationHelperImplementation": true,
+    "outerDomainMutationRpcImplementation": true,
+    "liveDatabaseTests": true,
+    "concurrencyTests": true,
+    "authorizationTests": true
+  }
+}

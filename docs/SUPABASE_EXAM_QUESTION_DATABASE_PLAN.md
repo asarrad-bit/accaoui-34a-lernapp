@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31m
+Stand: v27.31n
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1375,6 +1375,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_PAYLOAD_VALIDATION_RPC_TEST.md`
 
+## Domain-Speichervertrag v27.31n
+
+Ein verbindlicher maschinenlesbarer Speichervertrag für
+Snapshot und Zyklusregister ist vorbereitet.
+
+Festgelegt sind:
+
+- Nutzer ausschließlich über `auth.uid()`
+- eindeutige Identität aus Nutzer, Bereich und Ressource
+- monotoner `storage_version`
+- Neuanlage ausschließlich mit erwarteter Version 0
+- Update und Delete nur gegen exakten aktuellen Stand
+- Row Lock und Versionsvergleich innerhalb der Sperre
+- Tombstone statt physischem Delete
+- kein stilles Last-Write-Wins
+- vollständig gesperrter direkter Tabellenzugriff
+
+Der erwartete Versionsstand muss noch in die Operations-ID-
+Ausstellung und Idempotenzreservierung eingebunden werden.
+Der äußere Fachmutations-RPC bleibt deshalb gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_STORAGE_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1465,15 +1490,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31m` kann `v27.31n`
-einen verbindlichen Domain-Speichervertrag für Snapshot und
-Zyklusregister vorbereiten.
+Nach GitHub-Bestätigung von `v27.31n` kann `v27.31o`
+einen verbindlichen Integrationsvertrag für die Bindung des
+erwarteten Speicher-Versionsstands an Operations-ID-
+Ausstellung und Idempotenzreservierung vorbereiten.
 
-Der Vertrag muss Nutzerbindung, Ressourcenidentität,
-Versionsstand, Write-Upsert-, Delete- und Konkurrenzsemantik,
-Größenlimits sowie direkte Tabellenzugriffssperren festlegen.
-Erst danach darf der äußere Fachmutations-RPC vorbereitet
-werden. Eine Live-Ausführung erfolgt weiterhin nicht.
+Erst wenn derselbe Client-Wiederholungsschlüssel mit
+abweichendem Versionsstand geschlossen kollidiert und die
+Reservierung den Versionsstand mitbindet, darf eine
+Speichertabellen- oder äußere Fachmutationsimplementierung
+folgen. Eine Live-Ausführung erfolgt weiterhin nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1524,5 +1550,7 @@ vorbereitet und Operations-ID-/Idempotenz-Integrationsaudit v27.31j und
 äußerer Fachmutations-RPC-Schnittstellenvertrag v27.31k und
 kanonische Fach-Payload-Verträge v27.31l dauerhaft in den
 Preflight eingebunden und interner Fach-Payload-Validierungs-
-und Fingerprint-Helfer v27.31m vorbereitet;
+und Fingerprint-Helfer v27.31m vorbereitet sowie
+Domain-Speichervertrag v27.31n dauerhaft in den Preflight
+eingebunden;
 keine Live-Ausführung
