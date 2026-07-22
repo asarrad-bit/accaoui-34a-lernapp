@@ -33,6 +33,9 @@ STAFF_ROLE_BOUNDARY = (
 EXAM_RESULT_HISTORY_RPC = (
     "20260717_v2729a_exam_result_history_rpc.sql"
 )
+IDEMPOTENCY_OPERATIONS = (
+    "20260722_v2731b_exam_history_idempotency_operations.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -50,6 +53,10 @@ QUESTION_TABLES = {
     "exam_question_answer_keys",
     "exam_attempt_questions",
     "exam_attempt_question_answer_keys",
+}
+
+IDEMPOTENCY_TABLES = {
+    "exam_history_idempotency_operations",
 }
 
 
@@ -82,6 +89,7 @@ for required in (
     EXAM_DIRECT_WRITE_LOCKDOWN,
     STAFF_ROLE_BOUNDARY,
     EXAM_RESULT_HISTORY_RPC,
+    IDEMPOTENCY_OPERATIONS,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -172,6 +180,14 @@ if files.index(STAFF_ROLE_BOUNDARY) >= files.index(
         "Mitarbeiter-Rollentrennung."
     )
 
+if files.index(EXAM_RESULT_HISTORY_RPC) >= files.index(
+    IDEMPOTENCY_OPERATIONS
+):
+    fail(
+        "Idempotenz-Operationstabelle steht vor der "
+        "Prüfungsergebnisliste."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -231,6 +247,10 @@ staff_role_boundary = (
 
 exam_result_history_rpc = (
     MIGRATIONS / EXAM_RESULT_HISTORY_RPC
+).read_text(encoding="utf-8")
+
+idempotency_operations = (
+    MIGRATIONS / IDEMPOTENCY_OPERATIONS
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -1147,6 +1167,99 @@ for forbidden_content in (
         )
 
 
+idempotency_operations_lower = (
+    idempotency_operations.lower()
+)
+idempotency_operations_compact = re.sub(
+    r"\s+",
+    " ",
+    idempotency_operations_lower,
+)
+
+idempotency_tables = set(
+    re.findall(
+        r"create\s+table\s+if\s+not\s+exists\s+"
+        r"(?:public\.)?([a-z_]+)",
+        idempotency_operations,
+        flags=re.IGNORECASE,
+    )
+)
+
+if idempotency_tables != IDEMPOTENCY_TABLES:
+    fail(
+        "Unerwartete Idempotenz-Operationstabellen: "
+        f"{sorted(idempotency_tables)}"
+    )
+
+required_idempotency_markers = (
+    "create table if not exists "
+    "public.exam_history_idempotency_operations",
+    "id uuid primary key default gen_random_uuid()",
+    "auth_user_id uuid not null",
+    "operation_identity text not null",
+    "external_operation_id uuid not null",
+    "external_operation_id::text ~ "
+    "'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-"
+    "[89ab][0-9a-f]{3}-[0-9a-f]{12}$'",
+    "operation_scope in ( 'snapshot', 'cycle_registry' )",
+    "operation in ( 'write', 'delete' )",
+    "resource_identity text not null",
+    "length(resource_identity) between 1 and 512",
+    "payload_fingerprint text",
+    "status text not null default 'pending'",
+    "status in ( 'pending', 'completed', 'failed' )",
+    "result_payload jsonb",
+    "failure_code text",
+    "completed_at timestamptz",
+    "unique (operation_identity)",
+    "unique ( operation_scope, operation, external_operation_id )",
+    "operation_identity = "
+    "'exam_history_idempotency:' || "
+    "operation_scope || ':' || operation || ':' || "
+    "external_operation_id::text",
+    "payload_fingerprint ~ '^[0-9a-f]{64}$'",
+    "jsonb_typeof(result_payload) = 'object'",
+    "status = 'pending'",
+    "status = 'completed'",
+    "status = 'failed'",
+    "updated_at >= created_at",
+    "completed_at >= created_at",
+    "alter table public.exam_history_idempotency_operations "
+    "enable row level security",
+    "alter table public.exam_history_idempotency_operations "
+    "force row level security",
+    "revoke all on table "
+    "public.exam_history_idempotency_operations "
+    "from public, anon, authenticated",
+)
+
+for marker in required_idempotency_markers:
+    if marker not in idempotency_operations_compact:
+        fail(
+            "Idempotenz-Operationstabellen-Anweisung fehlt: "
+            f"{marker}"
+        )
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "security definer",
+    "auth.uid()",
+    "service_role",
+    "insert into",
+    "update public.",
+    "delete from",
+    "drop table",
+    "truncate ",
+):
+    if forbidden in idempotency_operations_lower:
+        fail(
+            "Unzulässiger Inhalt in "
+            "Idempotenz-Operationstabelle: "
+            f"{forbidden}"
+        )
+
+
 exam_attempt_integrity_lower = (
     exam_attempt_integrity.lower()
 )
@@ -1581,7 +1694,7 @@ print(f"MVP-Tabellen: {len(EXPECTED_TABLES)}")
 print(f"Sichere Prüfungstabellen: {len(QUESTION_TABLES)}")
 print(
     f"Tabellen gesamt: "
-    f"{len(EXPECTED_TABLES) + len(QUESTION_TABLES)}"
+    f"{len(EXPECTED_TABLES) + len(QUESTION_TABLES) + len(IDEMPOTENCY_TABLES)}"
 )
 print(f"Basis-RLS-Policies: {len(policies)}")
 print(f"Effektive RLS-Policies: {effective_policy_count}")
@@ -1619,7 +1732,8 @@ print(
     "vor Vollsimulations-Zustandsintegrität "
     "vor direkter Prüfungs-Schreibsperre "
     "vor Mitarbeiter-Rollentrennung "
-    "vor Prüfungsergebnisliste"
+    "vor Prüfungsergebnisliste "
+    "vor Idempotenz-Operationstabelle"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -1635,6 +1749,14 @@ print("Ergebnisabruf-RPC: keine Lösungsschlüssel in der Rückgabe")
 print("Ergebnisabruf-RPC: historische Ergebnisse sicher abrufbar")
 print("Prüfungsergebnisliste: nur eigene abgeschlossene Versuche")
 print("Prüfungsergebnisliste: sichere begrenzte Pagination")
+print(
+    "Idempotenz-Operationstabelle: vollständig gesperrt "
+    "und atomar vorbereitet"
+)
+print(
+    "Idempotenz-Operationen: UUID, Ressource, Fingerprint "
+    "und Ergebnisstatus abgesichert"
+)
 print("Prüfungsversuch-Integrität: score_points <= max_points")
 print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
 print("Vollsimulation offen: 0 von 120 Punkten und nicht bestanden")

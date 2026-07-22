@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31a
+Stand: v27.31b
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1039,6 +1039,35 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PRODUCTIVE_IDEMPOTENCY_INTEGRATION_CONTRACT_TEST.md`
 
+## Idempotenz-Operationstabelle v27.31b
+
+Eine vollständig gesperrte serverseitige Tabelle für spätere
+produktive Idempotenz ist vorbereitet.
+
+Die Tabelle speichert pro realem Write- oder Delete-Vorgang:
+
+- serverseitig bestimmten Nutzerbezug
+- kanonische Operationsidentität
+- externe UUID Version 4
+- Operationsbereich und Mutation
+- Ressourcenidentität
+- Write-Payload-Fingerprint
+- Bearbeitungsstatus
+- kanonisches Ergebnis oder stabilen Fehlercode
+- Erstellungs-, Aktualisierungs- und Abschlusszeiten
+
+Unique Constraints sichern sowohl die vollständige
+Operationsidentität als auch Bereich, Mutation und externe UUID
+atomar ab.
+
+RLS ist aktiviert und erzwungen. Alle direkten Tabellenrechte
+für `public`, `anon` und `authenticated` sind entzogen. Es
+existiert keine Direktpolicy und keine App-Rollenfreigabe.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_IDEMPOTENCY_OPERATIONS_MIGRATION_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1129,14 +1158,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31a` kann `v27.31b`
-eine sichere SQL-Migration für die geplante serverseitige
-Idempotenz-Operationstabelle vorbereiten.
+Nach GitHub-Bestätigung von `v27.31b` kann `v27.31c`
+einen sicheren atomaren Reservierungs-RPC für
+Idempotenz-Operationen vorbereiten.
 
-Sie muss eine eindeutige Operationsidentität, Bereich,
-Mutation, Payload-Fingerprint, Status und gespeichertes
-Ergebnis atomar absichern. Die Migration bleibt vorbereitet
-und wird nicht live ausgeführt.
+Der RPC muss den Nutzer ausschließlich über `auth.uid()`
+bestimmen, eine neue Operation atomar reservieren, identische
+Wiederholungen erkennen und bei gleicher UUID mit abweichender
+Ressource oder abweichendem Fingerprint geschlossen abbrechen.
+Er wird nicht live ausgeführt.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1173,5 +1203,6 @@ Zyklusregister-Persistenz-Abschlussstate,
 Zyklusregister-Persistenz-Zyklusstate und
 Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard vorbereitet
 sowie die Persistenz-Rekursionsgrenze v27.30x dokumentiert;
-produktiver Idempotenz-Integrationsvertrag v27.31a vorbereitet;
+produktiver Idempotenz-Integrationsvertrag v27.31a und
+vollständig gesperrte Idempotenz-Operationstabelle v27.31b vorbereitet;
 keine Live-Ausführung
