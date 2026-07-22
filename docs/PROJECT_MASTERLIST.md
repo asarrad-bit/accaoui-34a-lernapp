@@ -755,6 +755,47 @@ Die **Vollsimulation** der schriftlichen Prüfung nutzt inzwischen **exakt 82 Co
 | Einbau (später) | farbige Infobox / Modul in **Dashboard**, **Lernkarten** oder **Fehlertraining** |
 | Geplante Version | **v24.x** oder **v25.x** |
 
+### Geplantes Teilmodul: Persönlicher Prüfungsvorbereitungsplan
+
+| Aspekt | Planung |
+|--------|---------|
+| Status | **vorgemerkt**, noch **kein Code** |
+| Prüfungstermin | Nutzer kann freiwillig einen schriftlichen oder mündlichen Prüfungstermin eingeben, ändern oder löschen |
+| Mit Prüfungstermin | Dynamischer Lernplan anhand der verbleibenden Tage bis zur Prüfung |
+| Ohne Prüfungstermin | Automatischer Standardlernplan |
+| Vorläufiger Standard | 20 Fragen pro Lerntag, ungefähr 10 bis 15 Minuten |
+| Lerninhalte | neue Fragen, Fehlerfragen, unsichere Fragen, schwache Sachgebiete, Lernkarten und mündliche Übungen |
+| Anpassung | Plan wird anhand des echten Lernstands täglich neu berechnet |
+| Ausgelassene Tage | Aufgaben werden nicht einfach gestapelt; der verbleibende Plan wird neu verteilt |
+| Erinnerungen | App-Benachrichtigung, E-Mail, beides oder keine Erinnerung |
+| Erinnerungszeit | vom Nutzer frei wählbar; später sinnvoller Standardwert |
+| Motivation | Tagesziel, Fortschritt und optionaler Streak |
+| Sonderfälle | Termin geändert, Termin vergangen, Lernpause, Prüfung bestanden |
+| Datenschutz | Erinnerungen nur nach aktiver Zustimmung; jederzeit deaktivierbar |
+
+#### Grundlogik
+
+1. Prüfungstermin vorhanden:
+   - verbleibende Lerntage berechnen
+   - neue Fragen und Wiederholungen verteilen
+   - schwache Sachgebiete stärker gewichten
+   - schriftliche und mündliche Aufgaben einplanen
+   - vor der Prüfung zunehmend Simulationen und Fehlertraining einsetzen
+
+2. Kein Prüfungstermin vorhanden:
+   - Standardlernplan aktivieren
+   - täglich etwa 20 Fragen beziehungsweise 10 bis 15 Minuten
+   - Fehler- und Wiederholungsfragen automatisch priorisieren
+   - Lernplan anhand des Fortschritts fortlaufend anpassen
+
+3. Erinnerung:
+   - konkretes Tagesziel anzeigen
+   - geschätzte Lernzeit nennen
+   - direkter Einstieg in das vorbereitete Tagestraining
+   - keine übermäßigen oder ungefragten Nachrichten
+
+**Hinweis:** Eigenes späteres Hauptmodul. Noch kein Sofort-Code-Task und keine E-Mail- oder Benachrichtigungsanbindung.
+
 Kernbotschaft für die App (Beispieltext):
 
 > *Wissen bleibt nicht durch einmaliges Lesen, sondern durch Wiederholung, Anwendung und aktive Abfrage.*
