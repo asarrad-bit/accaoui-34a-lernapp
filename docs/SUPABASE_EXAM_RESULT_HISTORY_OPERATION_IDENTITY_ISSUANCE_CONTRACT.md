@@ -1,6 +1,6 @@
 # Operations-ID-Ausstellungsvertrag
 
-Stand: v27.31g
+Stand: v27.31h
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -84,9 +84,22 @@ Verifiziert ist sie erst nach Abgleich von:
 - Ressource
 - Payload-Fingerprint
 
+## Umgesetzt in v27.31h
+
+Eine vollständig gesperrte Ausstellungsdatentabelle ist als
+SQL-Migration vorbereitet.
+
+Sie speichert ausschließlich:
+
+- authentifizierten Nutzerbezug
+- SHA-256-Hash des Client-Wiederholungsschlüssels
+- kanonischen Anfragefingerprint
+- serverseitig erzeugte UUID
+- Bereich, Mutation, Ressource und Payload-Fingerprint
+- Ausstellungszeit
+
 ## Noch nicht umgesetzt
 
-- Ausstellungsdatentabelle
 - Ausstellungs-RPC
 - produktiver Fachmutations-RPC
 - Live-Datenbanktests
@@ -96,7 +109,7 @@ Deshalb bleibt die produktive Freigabe gesperrt.
 
 ## Sicherheitsgrenze
 
-- keine SQL-Migration in v27.31g
+- SQL-Migration vorbereitet, aber nicht live ausgeführt
 - keine direkte Tabellenfreigabe
 - keine direkte RPC-Freigabe
 - kein Service-Role-Schlüssel im Frontend

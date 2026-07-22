@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,8 +63,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31g":
-    fail("Ausstellungsvertragsversion ist nicht v27.31g.")
+if contract["version"] != "v27.31h":
+    fail("Ausstellungsvertragsversion ist nicht v27.31h.")
 
 if contract["contractVersion"] != 1:
     fail("Ausstellungsvertragsschema ist nicht Version 1.")
@@ -188,7 +189,7 @@ if contract["securityRules"] != expected_security_rules:
     fail("Operations-ID-Sicherheitsregeln sind nicht kanonisch.")
 
 expected_unresolved = {
-    "issuanceTableImplementation": True,
+    "issuanceTableImplementation": False,
     "issuanceRpcImplementation": True,
     "domainMutationRpcImplementation": True,
     "liveDatabaseTests": True,
@@ -224,17 +225,90 @@ if transaction_unresolved.get(
         "darf noch nicht als umgesetzt gelten."
     )
 
-v2731g_sql_files = list(
-    (ROOT / "supabase" / "migrations").glob(
-        "*v2731g*.sql"
-    )
+ISSUANCE_TABLE_PATH = (
+    ROOT
+    / "supabase"
+    / "migrations"
+    / "20260722_v2731h_exam_history_operation_identity_issuances.sql"
 )
 
-if v2731g_sql_files:
-    fail(
-        "v27.31g darf noch keine SQL-Migration erzeugen: "
-        f"{[path.name for path in v2731g_sql_files]}"
-    )
+if not ISSUANCE_TABLE_PATH.is_file():
+    fail("Operations-ID-Ausstellungstabelle fehlt.")
+
+issuance_sql = ISSUANCE_TABLE_PATH.read_text(
+    encoding="utf-8"
+)
+
+issuance_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    issuance_sql.lower(),
+    flags=re.MULTILINE,
+)
+
+issuance_compact = re.sub(
+    r"\s+",
+    " ",
+    issuance_without_comments,
+).strip()
+
+required_issuance_markers = (
+    "create table if not exists "
+    "public.exam_history_operation_identity_issuances",
+    "auth_user_id uuid not null",
+    "client_request_key_hash text not null",
+    "client_request_key_hash ~ '^[0-9a-f]{64}$'",
+    "request_fingerprint text not null",
+    "request_fingerprint ~ '^[0-9a-f]{64}$'",
+    "external_operation_id uuid not null "
+    "default gen_random_uuid()",
+    "external_operation_id::text ~ "
+    "'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-"
+    "[89ab][0-9a-f]{3}-[0-9a-f]{12}$'",
+    "operation_scope in ( 'snapshot', 'cycle_registry' )",
+    "operation in ( 'write', 'delete' )",
+    "resource_identity = trim(resource_identity)",
+    "length(resource_identity) between 1 and 512",
+    "unique ( auth_user_id, client_request_key_hash )",
+    "unique ( external_operation_id )",
+    "payload_fingerprint ~ '^[0-9a-f]{64}$'",
+    "alter table "
+    "public.exam_history_operation_identity_issuances "
+    "enable row level security",
+    "alter table "
+    "public.exam_history_operation_identity_issuances "
+    "force row level security",
+    "revoke all on table "
+    "public.exam_history_operation_identity_issuances "
+    "from public, anon, authenticated",
+)
+
+for marker in required_issuance_markers:
+    if marker not in issuance_compact:
+        fail(
+            "Operations-ID-Ausstellungstabelle: "
+            f"Anweisung fehlt: {marker}"
+        )
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "security definer",
+    "auth.uid()",
+    "service_role",
+    "client_request_key text",
+    "insert into",
+    "update public.",
+    "delete from",
+    "drop table",
+    "truncate ",
+):
+    if forbidden in issuance_without_comments:
+        fail(
+            "Unzulässiger Inhalt in der "
+            "Operations-ID-Ausstellungstabelle: "
+            f"{forbidden}"
+        )
 
 for frontend_path in (
     ROOT / "index.html",
@@ -252,6 +326,10 @@ for frontend_path in (
         )
 
 print("Operations-ID-Ausstellungsvertrag: OK")
+print(
+    "Ausstellungstabelle: gehashter Retry-Schlüssel, "
+    "Anfragefingerprint und UUID gesperrt gespeichert"
+)
 print(
     "Browser-Schlüssel: erlaubt, aber ausschließlich "
     "unvertrauenswürdiger Wiederholungshinweis"

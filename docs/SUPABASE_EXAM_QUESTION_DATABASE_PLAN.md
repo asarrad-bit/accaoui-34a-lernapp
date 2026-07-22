@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31g
+Stand: v27.31h
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1205,6 +1205,29 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_ISSUANCE_CONTRACT.md`
 
+## Operations-ID-Ausstellungstabelle v27.31h
+
+Eine vollständig gesperrte serverseitige Tabelle für
+Operations-ID-Ausstellungsdatensätze ist vorbereitet.
+
+Sie verbindet eindeutig:
+
+- authentifizierten Nutzer
+- SHA-256-Hash des Client-Wiederholungsschlüssels
+- kanonischen Anfragefingerprint
+- serverseitig erzeugte UUID Version 4
+- Bereich, Mutation, Ressource und Payload-Fingerprint
+
+Der rohe Client-Wiederholungsschlüssel wird nicht gespeichert.
+
+RLS ist aktiviert und erzwungen. Direkte Rechte für `public`,
+`anon` und `authenticated` sind entzogen. Es existiert keine
+Direktpolicy und keine App-Rollenfreigabe.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_ISSUANCES_MIGRATION_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1295,15 +1318,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31g` kann `v27.31h`
-eine vollständig gesperrte SQL-Migration für serverseitige
-Operations-ID-Ausstellungsdatensätze vorbereiten.
+Nach GitHub-Bestätigung von `v27.31h` kann `v27.31i`
+einen internen atomaren Operations-ID-Ausstellungs- und
+Wiederverwendungs-RPC vorbereiten.
 
-Sie muss Nutzer, gehashten Client-Wiederholungsschlüssel,
-kanonischen Anfragefingerprint und ausgestellte UUID eindeutig
-verbinden. Direkte Tabellenrechte oder Policies für App-Rollen
-dürfen nicht entstehen. Eine Live-Ausführung erfolgt
-weiterhin nicht.
+Der RPC muss den Nutzer ausschließlich über `auth.uid()`
+bestimmen, Client-Schlüssel und kanonische Anfrage serverseitig
+hashen, neue UUIDs innerhalb der Datenbank erzeugen und bei
+identischen Retries dieselbe gespeicherte UUID zurückgeben.
+Direkte App-Freigaben und Live-Ausführung bleiben ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1347,5 +1370,6 @@ interner atomarer Idempotenz-Abschluss-RPC v27.31d vorbereitet,
 End-to-End-Idempotenz-RPC-Flow-Audit v27.31e, transaktionaler
 Fachmutations-Integrationsvertrag v27.31f und
 Operations-ID-Ausstellungsgrenze v27.31g dauerhaft in den
-Preflight eingebunden;
+Preflight eingebunden und vollständig gesperrte
+Operations-ID-Ausstellungstabelle v27.31h vorbereitet;
 keine Live-Ausführung

@@ -42,6 +42,9 @@ IDEMPOTENCY_RESERVE_RPC = (
 IDEMPOTENCY_COMPLETE_RPC = (
     "20260722_v2731d_exam_history_idempotency_complete_rpc.sql"
 )
+OPERATION_IDENTITY_ISSUANCES = (
+    "20260722_v2731h_exam_history_operation_identity_issuances.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -63,6 +66,10 @@ QUESTION_TABLES = {
 
 IDEMPOTENCY_TABLES = {
     "exam_history_idempotency_operations",
+}
+
+OPERATION_IDENTITY_ISSUANCE_TABLES = {
+    "exam_history_operation_identity_issuances",
 }
 
 
@@ -98,6 +105,7 @@ for required in (
     IDEMPOTENCY_OPERATIONS,
     IDEMPOTENCY_RESERVE_RPC,
     IDEMPOTENCY_COMPLETE_RPC,
+    OPERATION_IDENTITY_ISSUANCES,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -212,6 +220,14 @@ if files.index(IDEMPOTENCY_RESERVE_RPC) >= files.index(
         "Idempotenz-Reservierungs-RPC."
     )
 
+if files.index(IDEMPOTENCY_COMPLETE_RPC) >= files.index(
+    OPERATION_IDENTITY_ISSUANCES
+):
+    fail(
+        "Operations-ID-Ausstellungstabelle steht vor dem "
+        "Idempotenz-Abschluss-RPC."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -283,6 +299,10 @@ idempotency_reserve_rpc = (
 
 idempotency_complete_rpc = (
     MIGRATIONS / IDEMPOTENCY_COMPLETE_RPC
+).read_text(encoding="utf-8")
+
+operation_identity_issuances = (
+    MIGRATIONS / OPERATION_IDENTITY_ISSUANCES
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -1685,6 +1705,83 @@ for forbidden_content in (
         )
 
 
+operation_identity_issuances_lower = (
+    operation_identity_issuances.lower()
+)
+
+operation_identity_issuances_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    operation_identity_issuances_lower,
+    flags=re.MULTILINE,
+)
+
+operation_identity_issuances_compact = re.sub(
+    r"\s+",
+    " ",
+    operation_identity_issuances_without_comments,
+)
+
+issuance_tables = set(
+    re.findall(
+        r"create\s+table\s+if\s+not\s+exists\s+"
+        r"(?:public\.)?([a-z_]+)",
+        operation_identity_issuances,
+        flags=re.IGNORECASE,
+    )
+)
+
+if issuance_tables != OPERATION_IDENTITY_ISSUANCE_TABLES:
+    fail(
+        "Unerwartete Operations-ID-Ausstellungstabellen: "
+        f"{sorted(issuance_tables)}"
+    )
+
+for marker in (
+    "create table if not exists "
+    "public.exam_history_operation_identity_issuances",
+    "auth_user_id uuid not null",
+    "client_request_key_hash text not null",
+    "request_fingerprint text not null",
+    "external_operation_id uuid not null "
+    "default gen_random_uuid()",
+    "unique ( auth_user_id, client_request_key_hash )",
+    "unique ( external_operation_id )",
+    "alter table "
+    "public.exam_history_operation_identity_issuances "
+    "enable row level security",
+    "alter table "
+    "public.exam_history_operation_identity_issuances "
+    "force row level security",
+    "revoke all on table "
+    "public.exam_history_operation_identity_issuances "
+    "from public, anon, authenticated",
+):
+    if marker not in operation_identity_issuances_compact:
+        fail(
+            "Operations-ID-Ausstellungstabellen-Anweisung fehlt: "
+            f"{marker}"
+        )
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "security definer",
+    "service_role",
+    "insert into",
+    "update public.",
+    "delete from",
+    "drop table",
+    "truncate ",
+):
+    if forbidden in operation_identity_issuances_without_comments:
+        fail(
+            "Unzulässiger Inhalt in der "
+            "Operations-ID-Ausstellungstabelle: "
+            f"{forbidden}"
+        )
+
+
 exam_attempt_integrity_lower = (
     exam_attempt_integrity.lower()
 )
@@ -2119,7 +2216,7 @@ print(f"MVP-Tabellen: {len(EXPECTED_TABLES)}")
 print(f"Sichere Prüfungstabellen: {len(QUESTION_TABLES)}")
 print(
     f"Tabellen gesamt: "
-    f"{len(EXPECTED_TABLES) + len(QUESTION_TABLES) + len(IDEMPOTENCY_TABLES)}"
+    f"{len(EXPECTED_TABLES) + len(QUESTION_TABLES) + len(IDEMPOTENCY_TABLES) + len(OPERATION_IDENTITY_ISSUANCE_TABLES)}"
 )
 print(f"Basis-RLS-Policies: {len(policies)}")
 print(f"Effektive RLS-Policies: {effective_policy_count}")
@@ -2160,7 +2257,8 @@ print(
     "vor Prüfungsergebnisliste "
     "vor Idempotenz-Operationstabelle "
     "vor Idempotenz-Reservierungs-RPC "
-    "vor Idempotenz-Abschluss-RPC"
+    "vor Idempotenz-Abschluss-RPC "
+    "vor Operations-ID-Ausstellungstabelle"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -2207,6 +2305,14 @@ print(
 print(
     "Idempotenz-Abschlusskonflikte: abweichende zweite "
     "Abschlüsse blockiert"
+)
+print(
+    "Operations-ID-Ausstellungstabelle: gehashter "
+    "Retry-Schlüssel und serverseitige UUID gesperrt"
+)
+print(
+    "Operations-ID-Ausstellungszugriff: keine Policy und "
+    "keine direkten App-Rechte"
 )
 print("Prüfungsversuch-Integrität: score_points <= max_points")
 print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
