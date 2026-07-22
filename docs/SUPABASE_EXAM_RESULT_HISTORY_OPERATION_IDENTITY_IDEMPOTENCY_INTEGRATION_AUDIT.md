@@ -127,3 +127,22 @@ Teil der Clientantwort.
 Maschinenlesbarer Vertrag:
 
 `docs/contracts/exam-history-outer-domain-mutation-rpc-interface-contract.json`
+
+
+## Fach-Payload-Grenze v27.31l
+
+Snapshot und Zyklusregister besitzen jetzt getrennte
+kanonische Write-Payload-Hüllen.
+
+Delete akzeptiert in beiden Bereichen ausschließlich `null`.
+
+Payload-Fingerprint und kanonische Byteanzahl müssen später
+serverseitig aus dem normalisierten PostgreSQL-JSONB-Text
+abgeleitet werden.
+
+Der Browser darf weder Fingerprints noch interne Operations-
+oder Anfrageidentitäten in den Fach-Payload einschleusen.
+
+Vertrag:
+
+`docs/contracts/exam-history-domain-payload-contract.json`

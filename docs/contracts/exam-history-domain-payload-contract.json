@@ -1,0 +1,108 @@
+{
+  "version": "v27.31l",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "canonicalization": {
+    "inputType": "jsonb",
+    "canonicalTextSource": "postgres_jsonb_text",
+    "textEncoding": "UTF8",
+    "fingerprintAlgorithm": "sha256",
+    "fingerprintFormat": "lowercase_hex_64",
+    "fingerprintGeneratedServerSide": true,
+    "clientFingerprintAllowed": false,
+    "canonicalByteLengthGeneratedServerSide": true
+  },
+  "sharedRules": {
+    "writePayloadRequired": true,
+    "writePayloadMustBeObject": true,
+    "deletePayloadMustBeNull": true,
+    "additionalEnvelopeFieldsAllowed": false,
+    "maximumNestingDepth": 16,
+    "rawDatabaseErrorAllowed": false,
+    "rawPayloadStoredInIssuanceTable": false,
+    "rawPayloadStoredInIdempotencyTable": false,
+    "forbiddenRecursiveKeys": [
+      "external_operation_id",
+      "operation_identity",
+      "payload_fingerprint",
+      "client_request_key_hash",
+      "request_fingerprint",
+      "service_role",
+      "raw_database_error"
+    ]
+  },
+  "scopes": {
+    "snapshot": {
+      "operationScope": "snapshot",
+      "writeEnvelopeFields": [
+        "schema_version",
+        "snapshot"
+      ],
+      "schemaVersion": 1,
+      "contentField": "snapshot",
+      "contentType": "object",
+      "emptyContentAllowed": false,
+      "maximumCanonicalBytes": 262144,
+      "deletePayload": null,
+      "stableFailures": [
+        "snapshot_payload_required",
+        "snapshot_payload_must_be_object",
+        "snapshot_payload_fields_invalid",
+        "snapshot_schema_version_invalid",
+        "snapshot_content_invalid",
+        "snapshot_payload_too_large",
+        "snapshot_payload_depth_exceeded",
+        "snapshot_payload_forbidden_key"
+      ]
+    },
+    "cycle_registry": {
+      "operationScope": "cycle_registry",
+      "writeEnvelopeFields": [
+        "schema_version",
+        "registry"
+      ],
+      "schemaVersion": 1,
+      "contentField": "registry",
+      "contentType": "object",
+      "emptyContentAllowed": true,
+      "maximumCanonicalBytes": 131072,
+      "deletePayload": null,
+      "stableFailures": [
+        "cycle_registry_payload_required",
+        "cycle_registry_payload_must_be_object",
+        "cycle_registry_payload_fields_invalid",
+        "cycle_registry_schema_version_invalid",
+        "cycle_registry_content_invalid",
+        "cycle_registry_payload_too_large",
+        "cycle_registry_payload_depth_exceeded",
+        "cycle_registry_payload_forbidden_key"
+      ]
+    }
+  },
+  "operationRules": {
+    "write": {
+      "payloadRequired": true,
+      "payloadFingerprintRequired": true,
+      "payloadFingerprintSource": "server_canonical_payload"
+    },
+    "delete": {
+      "payloadRequired": false,
+      "payloadMustBeNull": true,
+      "payloadFingerprint": null
+    }
+  },
+  "stableCommonFailures": [
+    "domain_payload_scope_invalid",
+    "domain_payload_operation_invalid",
+    "domain_payload_delete_must_be_null",
+    "domain_payload_canonicalization_failed"
+  ],
+  "unresolvedRequirements": {
+    "outerDomainMutationRpcImplementation": true,
+    "domainStorageImplementation": true,
+    "liveDatabaseTests": true,
+    "concurrencyTests": true,
+    "authorizationTests": true
+  }
+}

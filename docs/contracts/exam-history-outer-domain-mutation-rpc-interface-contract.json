@@ -1,5 +1,5 @@
 {
-  "version": "v27.31k",
+  "version": "v27.31l",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -78,7 +78,7 @@
     "deleteFingerprintIsNull": true,
     "rawPayloadStoredInIssuanceTable": false,
     "rawPayloadStoredInIdempotencyTable": false,
-    "scopeSpecificSchemaStillRequired": true
+    "scopeSpecificSchemaStillRequired": false
   },
   "reservationDecisionMatrix": [
     {
@@ -146,7 +146,7 @@
     "liveExecution": false
   },
   "unresolvedRequirements": {
-    "scopeSpecificPayloadSchemas": true,
+    "scopeSpecificPayloadSchemas": false,
     "outerDomainMutationRpcImplementation": true,
     "liveDatabaseTests": true,
     "concurrencyTests": true,

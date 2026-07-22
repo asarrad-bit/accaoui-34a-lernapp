@@ -209,6 +209,27 @@ def check_exam_result_history_outer_domain_mutation_rpc_contract():
         )
 
 
+
+def check_exam_result_history_domain_payload_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-"
+        "domain-payload-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Fach-Payload-Vertrag fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -309,6 +330,8 @@ def main():
         "tools/check-supabase-exam-history-operation-identity-idempotency-integration.py",
         "tools/check-supabase-exam-history-outer-domain-mutation-rpc-interface-contract.py",
         "docs/contracts/exam-history-outer-domain-mutation-rpc-interface-contract.json",
+        "tools/check-supabase-exam-history-domain-payload-contract.py",
+        "docs/contracts/exam-history-domain-payload-contract.json",
     ]
 
     for file_path in required_files:
@@ -324,6 +347,7 @@ def main():
     check_exam_result_history_operation_identity_issuance_contract()
     check_exam_result_history_operation_identity_idempotency_integration()
     check_exam_result_history_outer_domain_mutation_rpc_contract()
+    check_exam_result_history_domain_payload_contract()
     check_git_diff_check()
     check_protected_core_files_v2356()
 

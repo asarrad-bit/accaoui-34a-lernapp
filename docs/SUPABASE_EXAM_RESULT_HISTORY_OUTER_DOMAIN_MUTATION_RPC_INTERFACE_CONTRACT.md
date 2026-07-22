@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31k
+Stand: v27.31l
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -65,8 +65,8 @@ vorgeben.
 - `p_domain_payload` muss `null` sein
 - der Payload-Fingerprint muss intern `null` sein
 
-Die konkreten Payload-Schemas für Snapshot und Zyklusregister
-sind noch verbindlich festzulegen.
+Die kanonischen Payload-Hüllen für Snapshot und
+Zyklusregister sind seit v27.31l verbindlich festgelegt.
 
 ## Verbindliche interne Reihenfolge
 
@@ -122,8 +122,6 @@ Nicht erlaubt:
 
 ## Noch nicht umgesetzt
 
-- bereichsspezifische Snapshot-Payload-Struktur
-- bereichsspezifische Zyklusregister-Payload-Struktur
 - äußerer Fachmutations-RPC
 - Live-Datenbanktests
 - Parallelitäts-, Autorisierungs- und Konkurrenztests
@@ -144,3 +142,53 @@ Deshalb bleibt die produktive Freigabe gesperrt.
 `tools/check-supabase-exam-history-outer-domain-mutation-rpc-interface-contract.py`
 
 Der Prüfer ist dauerhaft in `tools/preflight.py` eingebunden.
+
+
+## Kanonische Fach-Payloads v27.31l
+
+### Snapshot Write
+
+Exakte Hüllenfelder:
+
+- `schema_version`
+- `snapshot`
+
+`schema_version` ist exakt `1`.
+
+`snapshot` muss ein nicht leeres JSONB-Objekt sein.
+
+Die vollständige kanonische Payload darf höchstens
+262144 UTF-8-Bytes besitzen.
+
+### Zyklusregister Write
+
+Exakte Hüllenfelder:
+
+- `schema_version`
+- `registry`
+
+`schema_version` ist exakt `1`.
+
+`registry` muss ein JSONB-Objekt sein. Ein leeres Register ist
+zulässig.
+
+Die vollständige kanonische Payload darf höchstens
+131072 UTF-8-Bytes besitzen.
+
+### Delete
+
+Für Snapshot und Zyklusregister muss der Fach-Payload bei
+Delete exakt `null` sein.
+
+### Kanonisierung und Fingerprint
+
+Die Datenbank muss den normalisierten JSONB-Text verwenden und
+daraus serverseitig einen SHA-256-Fingerprint als
+64-stelligen kleingeschriebenen Hex-Wert bilden.
+
+Zusätzliche Hüllenfelder sowie interne Operations-, Hash- und
+Fingerprintfelder sind unzulässig.
+
+Maschinenlesbarer Vertrag:
+
+`docs/contracts/exam-history-domain-payload-contract.json`

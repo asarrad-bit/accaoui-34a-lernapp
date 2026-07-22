@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31k
+Stand: v27.31l
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1320,6 +1320,37 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_RPC_INTERFACE_CONTRACT.md`
 
+## Kanonische Fach-Payload-Verträge v27.31l
+
+Snapshot- und Zyklusregister-Mutationen besitzen jetzt
+getrennte maschinenlesbare Payload-Verträge.
+
+Snapshot Write:
+
+- Hüllenfelder `schema_version` und `snapshot`
+- Schema-Version exakt 1
+- nicht leeres Snapshot-Objekt
+- höchstens 262144 kanonische UTF-8-Bytes
+
+Zyklusregister Write:
+
+- Hüllenfelder `schema_version` und `registry`
+- Schema-Version exakt 1
+- Register als JSONB-Objekt
+- leeres Register zulässig
+- höchstens 131072 kanonische UTF-8-Bytes
+
+Delete verlangt in beiden Bereichen exakt `null`.
+
+Kanonischer Text, Byteanzahl und SHA-256-Payload-Fingerprint
+müssen später ausschließlich innerhalb der Datenbank erzeugt
+werden. Zusätzliche Hüllenfelder und interne Identitätsfelder
+sind gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_PAYLOAD_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1410,15 +1441,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31k` kann `v27.31l`
-verbindliche kanonische Fach-Payload-Verträge für Snapshot-
-und Zyklusregister-Mutationen vorbereiten.
+Nach GitHub-Bestätigung von `v27.31l` kann `v27.31m`
+einen internen SQL-Helfer für kanonische Fach-Payload-
+Validierung und SHA-256-Fingerprint-Ableitung vorbereiten.
 
-Sie müssen Write- und Delete-Payloads, erlaubte Felder,
-Größenbegrenzungen, kanonische Serialisierung sowie stabile
-Fachfehler getrennt festlegen. Erst danach darf ein äußerer
-Fachmutations-SQL-RPC vorbereitet werden. Eine Live-Ausführung
-erfolgt weiterhin nicht.
+Der Helfer muss Snapshot- und Zyklusregister-Payloads nach den
+verbindlichen Verträgen prüfen, Delete ausschließlich mit
+`null` akzeptieren und darf keine Fach- oder
+Idempotenzmutation ausführen. Direkte App-Freigaben und
+Live-Ausführung bleiben ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1466,6 +1497,7 @@ Preflight eingebunden und vollständig gesperrte
 Operations-ID-Ausstellungstabelle v27.31h und interner
 Operations-ID-Ausstellungs- und Wiederverwendungs-RPC v27.31i
 vorbereitet und Operations-ID-/Idempotenz-Integrationsaudit v27.31j und
-äußerer Fachmutations-RPC-Schnittstellenvertrag v27.31k
-dauerhaft in den Preflight eingebunden;
+äußerer Fachmutations-RPC-Schnittstellenvertrag v27.31k und
+kanonische Fach-Payload-Verträge v27.31l dauerhaft in den
+Preflight eingebunden;
 keine Live-Ausführung

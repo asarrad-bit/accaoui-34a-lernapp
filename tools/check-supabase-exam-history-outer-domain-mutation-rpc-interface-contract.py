@@ -98,8 +98,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31k":
-    fail("Äußerer RPC-Vertrag besitzt nicht v27.31k.")
+if contract["version"] != "v27.31l":
+    fail("Äußerer RPC-Vertrag besitzt nicht v27.31l.")
 
 if contract["contractVersion"] != 1:
     fail("Äußerer RPC-Vertrag besitzt nicht Schema 1.")
@@ -245,7 +245,7 @@ expected_payload_rules = {
     "deleteFingerprintIsNull": True,
     "rawPayloadStoredInIssuanceTable": False,
     "rawPayloadStoredInIdempotencyTable": False,
-    "scopeSpecificSchemaStillRequired": True,
+    "scopeSpecificSchemaStillRequired": False,
 }
 
 if contract["payloadRules"] != expected_payload_rules:
@@ -333,7 +333,7 @@ if contract["securityRules"] != expected_security:
     fail("Äußere RPC-Sicherheitsregeln sind nicht kanonisch.")
 
 expected_unresolved = {
-    "scopeSpecificPayloadSchemas": True,
+    "scopeSpecificPayloadSchemas": False,
     "outerDomainMutationRpcImplementation": True,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
@@ -420,15 +420,15 @@ for helper_name, migration_name in HELPER_MIGRATIONS.items():
     if "grant execute" in sql_without_comments:
         fail(f"Direktes Helper-Grant gefunden: {helper_name}")
 
-v2731k_sql_files = sorted(
+v2731l_sql_files = sorted(
     path.name
-    for path in MIGRATIONS.glob("*v2731k*.sql")
+    for path in MIGRATIONS.glob("*v2731l*.sql")
 )
 
-if v2731k_sql_files:
+if v2731l_sql_files:
     fail(
-        "v27.31k darf keine SQL-Migration erzeugen: "
-        f"{v2731k_sql_files}"
+        "v27.31l darf keine SQL-Migration erzeugen: "
+        f"{v2731l_sql_files}"
     )
 
 for frontend_path in (
