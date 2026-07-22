@@ -17,7 +17,7 @@ text = ADAPTER.read_text(encoding="utf-8")
 lower = text.lower()
 
 required_markers = (
-    "// stand: v27.30v",
+    "// stand: v27.30w",
     'version: "v27.29b"',
     'version: "v27.29c"',
     'version: "v27.29d"',
@@ -63,6 +63,7 @@ required_markers = (
     'version: "v27.30t"',
     'version: "v27.30u"',
     'version: "v27.30v"',
+    'version: "v27.30w"',
     "function getparticipantexamresulthistoryrpcstate()",
     "function normalizeparticipantexamresulthistorypagination(options)",
     "function listparticipantfullexamresults(options)",
@@ -754,6 +755,19 @@ required_markers = (
     "canmapdatasourcesnapshotpersistencecycleregistrycyclestates:",
     "datasourceinitialsnapshotpersistencecycleregistrycyclestate:",
     "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrycyclestate,",
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecycleregistrycyclerepetition(input)",
+    '"exam_result_history_persistence_cycle_registry_cycle_repetition_ready"',
+    '"exam_result_history_persistence_cycle_registry_cycle_repetition_blocked"',
+    '"exam_result_history_persistence_cycle_registry_cycle_repetition_invalid"',
+    "issnapshotpersistencecycleregistrycyclerepetitionguardonly: true",
+    "snapshotpersistencecycleregistrycyclerepetitionguardname:",
+    "issnapshotpersistencecycleregistrycyclerepetitionguardprepared: true",
+    "canguardsnapshotpersistencecycleregistrycyclerepetitions: true",
+    "datasourcesnapshotpersistencecycleregistrycyclerepetitionguardname:",
+    "isdatasourcesnapshotpersistencecycleregistrycyclerepetitionguardprepared:",
+    "canguarddatasourcesnapshotpersistencecycleregistrycyclerepetitions:",
+    "datasourceinitialsnapshotpersistencecycleregistrycyclerepetitionstate:",
+    "guardparticipantfullexamresulthistorysnapshotpersistencecycleregistrycyclerepetition,",
 )
 
 for marker in required_markers:
@@ -4360,6 +4374,102 @@ for forbidden in (
         )
 
 
+if text.count(
+    "function guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition(input)"
+) != 1:
+    fail(
+        "Persistenz-Zyklusregister-Zyklus-Wiederholungs-Guard "
+        "muss genau einmal vorhanden sein."
+    )
+
+registry_cycle_repetition_start = lower.index(
+    "function guardparticipantfullexamresulthistorysnapshotpersistencecycleregistrycyclerepetition(input)"
+)
+registry_cycle_start = lower.index(
+    "function mapparticipantfullexamresulthistorysnapshotpersistencecycleregistrycyclestate(input)",
+    registry_cycle_repetition_start,
+)
+registry_cycle_repetition_block = lower[
+    registry_cycle_repetition_start:
+    registry_cycle_start
+]
+
+for required in (
+    "object.getownpropertydescriptor(",
+    "object.prototype.hasownproperty.call(",
+    "object.keys(",
+    "json.stringify(",
+    "new set()",
+    "mapparticipantfullexamresulthistorysnapshotpersistencecycleregistryserializationstate({",
+    "const repetitionguardversion = 1",
+    "persistence_cycle_registry_cycle_repetition_cycle_state_missing",
+    "persistence_cycle_registry_cycle_repetition_registry_missing",
+    "persistence_cycle_registry_cycle_repetition_cycle_state_invalid",
+    "persistence_cycle_registry_cycle_repetition_outcome_invalid",
+    "persistence_cycle_registry_cycle_repetition_readiness_invalid",
+    "persistence_cycle_registry_cycle_repetition_capability_invalid",
+    "persistence_cycle_registry_cycle_repetition_identity_invalid",
+    "persistence_cycle_registry_cycle_repetition_read_ready_invalid",
+    "persistence_cycle_registry_cycle_repetition_read_registry_invalid",
+    "persistence_cycle_registry_cycle_repetition_read_empty_invalid",
+    "persistence_cycle_registry_cycle_repetition_write_invalid",
+    "persistence_cycle_registry_cycle_repetition_delete_invalid",
+    "persistence_cycle_registry_cycle_repetition_registry_identity_invalid",
+    "persistence_cycle_registry_cycle_repetition_registry_duplicate",
+    "persistence_cycle_registry_cycle_repetition_already_completed",
+    "persistence_cycle_registry_cycle_repetition_registry_limit_reached",
+    "exam_result_history_persistence_cycle_registry_cycle_repetition_ready",
+    "exam_result_history_persistence_cycle_registry_cycle_repetition_blocked",
+    "exam_result_history_persistence_cycle_registry_cycle_repetition_invalid",
+    "issnapshotpersistencecycleregistrycyclerepetitionguardonly: true",
+    "canacceptcycleonce",
+    "canregistercycleidentitylater",
+    "isduplicatecycle",
+    "completedcyclecount",
+    "nextcompletedcyclecount",
+    "completedcycleidentities",
+    "nextcompletedcycleidentities",
+    "canexecutestorage: false",
+):
+    if required not in registry_cycle_repetition_block:
+        fail(
+            "Persistenz-Zyklusregister-Zyklus-Wiederholungs-"
+            f"Anweisung fehlt: {required}"
+        )
+
+for forbidden in (
+    ".rpc(",
+    "createclient(",
+    "window.supabase",
+    "fetch(",
+    "xmlhttprequest",
+    "participant_id",
+    "service_role",
+    "date.now(",
+    "math.random(",
+    "crypto.",
+    "...source",
+    "...input",
+    "localstorage",
+    "sessionstorage",
+    "indexeddb",
+    "document.cookie",
+    "storageadapter.read(",
+    "storageadapter.write(",
+    "storageadapter.delete(",
+    ".setitem(",
+    ".getitem(",
+    ".removeitem(",
+    "rawerror",
+):
+    if forbidden in registry_cycle_repetition_block:
+        fail(
+            "Unzulässiger Inhalt im Zyklusregister-"
+            "Zyklus-Wiederholungs-Guard: "
+            f"{forbidden}"
+        )
+
+
 data_source_start = lower.index(
     "function getparticipantdashboardexamhistorydatasourcestate()"
 )
@@ -4462,6 +4572,7 @@ print("Persistenz-Zyklusregister-Ergebnisvertrag: Read, Write und Delete streng 
 print("Persistenz-Zyklusregister-Ergebnisannahme: nur aktuell passendes Aufrufpaket akzeptiert")
 print("Persistenz-Zyklusregister-Abschluss: Read, Write und Delete terminal abgeschlossen")
 print("Persistenz-Zyklusregister-Zyklus: Aufruf, Ergebnis, Annahme und Abschluss zusammenhängend geprüft")
+print("Persistenz-Zyklusregister-Zyklus-Wiederholung: terminale Zyklusidentität nur einmal freigegeben")
 print("Rohe RPC-Fehlerdetails: werden nicht übernommen")
 print("Globale Bestanden-/Nicht-bestanden-Zahlen: bewusst nicht abgeleitet")
 print("Private Prüfungsfelder in Normalizer: ausgeschlossen")

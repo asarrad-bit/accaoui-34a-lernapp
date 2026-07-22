@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.30v
+Stand: v27.30w
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -977,6 +977,22 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_CYCLE_STATE_TEST.md`
 
+## Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard v27.30w
+
+Ein terminal abgeschlossener Zyklusregister-Persistenzzyklus
+kann jetzt nur einmal zur weiteren lokalen Verarbeitung
+freigegeben werden.
+
+Zyklusstatus, Identitätskette, Readiness und Ergebnisinhalt
+werden erneut geprüft. Bereits registrierte Zyklusidentitäten
+werden geschlossen blockiert. Unterschiedliche neue
+Zyklusidentitäten bleiben zulässig. Keine Adaptermethode wird
+aufgerufen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_PERSISTENCE_CYCLE_REGISTRY_CYCLE_REPETITION_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1067,11 +1083,12 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.30v` kann ein sicherer
-lokaler Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard
-vorbereitet werden, der eine erneute Verarbeitung derselben
-terminalen Zyklusidentität geschlossen blockiert, weiterhin ohne
-Methoden-, Storage- oder UI-Aufruf.
+Nach GitHub-Bestätigung von `v27.30w` kann ein sicherer
+lokaler Zyklusregister-Persistenz-Zyklusregister-State
+vorbereitet werden, der freigegebene terminale
+Zyklusidentitäten kanonisch registriert und doppelte
+Identitäten unverändert beibehält, weiterhin ohne Methoden-,
+Storage- oder UI-Aufruf.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1104,6 +1121,7 @@ Zyklusregister-Persistenz-Aufrufvertrag,
 Zyklusregister-Persistenz-Aufrufpaket-State,
 Zyklusregister-Persistenz-Ergebnisvertrag,
 Zyklusregister-Persistenz-Ergebnisannahme-Guard,
-Zyklusregister-Persistenz-Abschlussstate und
-Zyklusregister-Persistenz-Zyklusstate vorbereitet;
+Zyklusregister-Persistenz-Abschlussstate,
+Zyklusregister-Persistenz-Zyklusstate und
+Zyklusregister-Persistenz-Zyklus-Wiederholungs-Guard vorbereitet;
 keine Live-Ausführung

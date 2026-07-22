@@ -2,7 +2,7 @@
 
 // Accaoui §34a Lern-App
 // Lokale Prüfungshistorie-Fixtures
-// Stand: v27.30v
+// Stand: v27.30w
 
 const fs = require("fs");
 const path = require("path");
@@ -113,7 +113,7 @@ assert(
 
 expectEqual(
   adapter.version,
-  "v27.30v",
+  "v27.30w",
   "Adapterversion"
 );
 
@@ -160,6 +160,7 @@ for (const functionName of [
   "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryResultAcceptance",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCompletionState",
   "mapParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleState",
+  "guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition",
   "guardParticipantFullExamResultHistoryRequestLifecycleTransition",
   "guardParticipantFullExamResultHistoryResponseAcceptance"
 ]) {
@@ -7718,6 +7719,178 @@ assert(
   "Zyklusregister-Zyklus-Getter wurde nicht blockiert"
 );
 
+const registryReadCycleRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition({
+    cycleState:
+      registryReadCycle,
+    completedCycleIdentities: [],
+    privateField:
+      "nicht übernehmen"
+  });
+
+assert(
+  registryReadCycleRepetition.status ===
+    "exam_result_history_persistence_cycle_registry_cycle_repetition_ready" &&
+  registryReadCycleRepetition.isValid ===
+    true &&
+  registryReadCycleRepetition.canAcceptCycleOnce ===
+    true &&
+  registryReadCycleRepetition.canRegisterCycleIdentityLater ===
+    true &&
+  registryReadCycleRepetition.isDuplicateCycle ===
+    false &&
+  registryReadCycleRepetition.completedCycleCount ===
+    0 &&
+  registryReadCycleRepetition.nextCompletedCycleCount ===
+    1 &&
+  registryReadCycleRepetition.nextCompletedCycleIdentities[0] ===
+    registryReadCycle.cycleIdentity &&
+  registryReadCycleRepetition.canExecuteStorage ===
+    false &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Zyklus wurde nicht einmalig freigegeben"
+);
+
+assert(
+  !Object.prototype.hasOwnProperty.call(
+    registryReadCycleRepetition,
+    "cycleState"
+  ) &&
+  !Object.prototype.hasOwnProperty.call(
+    registryReadCycleRepetition,
+    "privateField"
+  ),
+  "Roher Zyklusstate wurde im Wiederholungs-Guard übernommen"
+);
+
+const registryReadCycleDuplicate =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition({
+    cycleState:
+      registryReadCycle,
+    completedCycleIdentities:
+      registryReadCycleRepetition.nextCompletedCycleIdentities
+  });
+
+assert(
+  registryReadCycleDuplicate.status ===
+    "exam_result_history_persistence_cycle_registry_cycle_repetition_blocked" &&
+  registryReadCycleDuplicate.isValid ===
+    true &&
+  registryReadCycleDuplicate.canAcceptCycleOnce ===
+    false &&
+  registryReadCycleDuplicate.canRegisterCycleIdentityLater ===
+    false &&
+  registryReadCycleDuplicate.isDuplicateCycle ===
+    true &&
+  registryReadCycleDuplicate.completedCycleCount ===
+    1 &&
+  registryReadCycleDuplicate.nextCompletedCycleCount ===
+    1 &&
+  registryReadCycleDuplicate.reason ===
+    "persistence_cycle_registry_cycle_repetition_already_completed" &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Doppelter Zyklusregister-Zyklus wurde nicht blockiert"
+);
+
+const registryWriteCycleRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition({
+    cycleState:
+      registryWriteCycle,
+    completedCycleIdentities:
+      registryReadCycleRepetition.nextCompletedCycleIdentities
+  });
+
+assert(
+  registryWriteCycleRepetition.status ===
+    "exam_result_history_persistence_cycle_registry_cycle_repetition_ready" &&
+  registryWriteCycleRepetition.canAcceptCycleOnce ===
+    true &&
+  registryWriteCycleRepetition.isDuplicateCycle ===
+    false &&
+  registryWriteCycleRepetition.completedCycleCount ===
+    1 &&
+  registryWriteCycleRepetition.nextCompletedCycleCount ===
+    2 &&
+  registryWriteCycleRepetition.nextCompletedCycleIdentities.includes(
+    registryReadCycle.cycleIdentity
+  ) &&
+  registryWriteCycleRepetition.nextCompletedCycleIdentities.includes(
+    registryWriteCycle.cycleIdentity
+  ),
+  "Unterschiedlicher Zyklusregister-Zyklus wurde nicht freigegeben"
+);
+
+const tamperedRegistryCycleRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition({
+    cycleState: {
+      ...registryReadCycle,
+      completionIdentity:
+        "exam_history_persistence_cycle_registry_completion:save:v1"
+    },
+    completedCycleIdentities: []
+  });
+
+expectEqual(
+  tamperedRegistryCycleRepetition.reason,
+  "persistence_cycle_registry_cycle_repetition_identity_invalid",
+  "Manipulierte Zyklusregister-Zyklusidentität"
+);
+
+const duplicateRegistryCycleIdentities =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition({
+    cycleState:
+      registryWriteCycle,
+    completedCycleIdentities: [
+      registryReadCycle.cycleIdentity,
+      registryReadCycle.cycleIdentity
+    ]
+  });
+
+expectEqual(
+  duplicateRegistryCycleIdentities.reason,
+  "persistence_cycle_registry_cycle_repetition_registry_duplicate",
+  "Doppelte Zyklusregister-Zyklusidentitäten"
+);
+
+let registryCycleRepetitionAccessorReads = 0;
+
+const registryCycleRepetitionAccessorInput = {
+  completedCycleIdentities: []
+};
+
+Object.defineProperty(
+  registryCycleRepetitionAccessorInput,
+  "cycleState",
+  {
+    enumerable: true,
+    get() {
+      registryCycleRepetitionAccessorReads +=
+        1;
+
+      throw new Error(
+        "Zyklusregister-Zyklus-Wiederholung darf Getter nicht ausführen."
+      );
+    }
+  }
+);
+
+const accessorRegistryCycleRepetition =
+  adapter.guardParticipantFullExamResultHistorySnapshotPersistenceCycleRegistryCycleRepetition(
+    registryCycleRepetitionAccessorInput
+  );
+
+assert(
+  accessorRegistryCycleRepetition.reason ===
+    "persistence_cycle_registry_cycle_repetition_cycle_state_accessor_not_allowed" &&
+  registryCycleRepetitionAccessorReads ===
+    0 &&
+  registryStorageAdapterOperationCalls ===
+    0,
+  "Zyklusregister-Zyklus-Wiederholungs-Getter wurde nicht blockiert"
+);
+
 console.log(
   "Supabase-Ergebnishistorie-Fixtures: OK"
 );
@@ -7849,6 +8022,9 @@ console.log(
 );
 console.log(
   "Zyklusregister-Zyklus-Fixtures: Read, leer, Write, Delete, nicht vorhanden, veraltet, manipuliert und Accessor"
+);
+console.log(
+  "Zyklusregister-Zyklus-Wiederholungs-Fixtures: einmalig, doppelt, verschieden, manipuliert und Accessor"
 );
 console.log(
   "Rohe RPC-Fehlerdetails: ausgeschlossen"
