@@ -100,3 +100,30 @@ Deshalb bleibt die produktive Freigabe gesperrt.
 `tools/check-supabase-exam-history-transactional-mutation-contract.py`
 
 Der Prüfer ist dauerhaft in `tools/preflight.py` eingebunden.
+
+
+## Operations-ID-Grenze v27.31g
+
+Ein Browser darf einen `client_request_key` als
+Wiederholungshinweis erzeugen und bei einem Retry erneut
+mitsenden.
+
+Dieser Schlüssel:
+
+- ist niemals vertrauenswürdig
+- darf keine Mutation autorisieren
+- wird nicht selbst zur Operationsidentität
+- darf nur als serverseitiger Lookup-Schlüssel dienen
+- wird später ausschließlich gehasht gespeichert
+
+Die eigentliche Operations-UUID muss durch einen geprüften
+Security-Definer-RPC innerhalb der Datenbank erzeugt und
+zusammen mit Nutzer, Anfragefingerprint, Ressource und
+Mutation gespeichert werden.
+
+Nur ein vollständig passender Ausstellungsdatensatz darf die
+Operations-UUID als verifiziert bestätigen.
+
+Maschinenlesbarer Vertrag:
+
+`docs/contracts/exam-history-operation-identity-issuance-contract.json`

@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31f
+Stand: v27.31g
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1176,6 +1176,35 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_TRANSACTIONAL_MUTATION_INTEGRATION_CONTRACT.md`
 
+## Operations-ID-Ausstellungsgrenze v27.31g
+
+Ein verbindlicher und maschinenlesbarer Vertrag trennt jetzt
+zwischen einem unvertrauenswürdigen Browser-
+Wiederholungsschlüssel und einer verifizierten serverseitigen
+Operations-ID.
+
+Der Browser darf einen starken `client_request_key` nur als
+Retry-Hinweis bereitstellen. Dieser Schlüssel darf weder eine
+Mutation autorisieren noch selbst zur Operationsidentität
+werden.
+
+Die spätere Operations-UUID muss innerhalb der Datenbank
+erzeugt, vor Rückgabe gespeichert und vollständig gegen
+Nutzer, Anfragefingerprint, Bereich, Mutation, Ressource und
+Payload-Fingerprint geprüft werden.
+
+Identische Wiederholungsanfragen müssen dieselbe ausgestellte
+UUID erhalten. Derselbe Wiederholungsschlüssel mit
+abweichender Anfrage muss geschlossen abgelehnt werden.
+
+Der Vertrag ist dauerhaft im Preflight geprüft. Es wurde noch
+keine Ausstellungsdatentabelle und kein Ausstellungs-RPC
+ergänzt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_ISSUANCE_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1266,14 +1295,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31f` kann `v27.31g`
-eine sichere Grenze für die vertrauenswürdige Ausstellung und
-Wiederverwendung externer Operations-IDs vorbereiten.
+Nach GitHub-Bestätigung von `v27.31g` kann `v27.31h`
+eine vollständig gesperrte SQL-Migration für serverseitige
+Operations-ID-Ausstellungsdatensätze vorbereiten.
 
-Sie muss verhindern, dass beliebige browsergenerierte oder
-fremde Operations-IDs als verifiziert gelten, und zugleich
-eine stabile Wiederholungs-ID für denselben echten Vorgang
-ermöglichen. Eine Live-Ausführung erfolgt weiterhin nicht.
+Sie muss Nutzer, gehashten Client-Wiederholungsschlüssel,
+kanonischen Anfragefingerprint und ausgestellte UUID eindeutig
+verbinden. Direkte Tabellenrechte oder Policies für App-Rollen
+dürfen nicht entstehen. Eine Live-Ausführung erfolgt
+weiterhin nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1314,7 +1344,8 @@ produktiver Idempotenz-Integrationsvertrag v27.31a und
 vollständig gesperrte Idempotenz-Operationstabelle v27.31b und
 interner atomarer Idempotenz-Reservierungs-RPC v27.31c und
 interner atomarer Idempotenz-Abschluss-RPC v27.31d vorbereitet,
-End-to-End-Idempotenz-RPC-Flow-Audit v27.31e und transaktionaler
-Fachmutations-Integrationsvertrag v27.31f dauerhaft in den
+End-to-End-Idempotenz-RPC-Flow-Audit v27.31e, transaktionaler
+Fachmutations-Integrationsvertrag v27.31f und
+Operations-ID-Ausstellungsgrenze v27.31g dauerhaft in den
 Preflight eingebunden;
 keine Live-Ausführung

@@ -1,0 +1,90 @@
+{
+  "version": "v27.31g",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "identityAuthority": {
+    "authority": "database_persisted_issuance_record",
+    "issuer": "trusted_security_definer_rpc",
+    "externalOperationIdAlgorithm": "uuid_v4",
+    "generatedInsideDatabase": true,
+    "clientSuppliedOperationIdTrusted": false,
+    "clientSuppliedOperationIdAcceptedAsAuthority": false,
+    "operationIdAloneSufficientForVerification": false,
+    "verificationNow": false,
+    "liveExecution": false
+  },
+  "clientCorrelation": {
+    "fieldName": "client_request_key",
+    "source": "untrusted_client_correlation_hint",
+    "browserGeneratedAllowed": true,
+    "trusted": false,
+    "purpose": "retry_lookup_only",
+    "minimumEntropyBits": 128,
+    "rawStorageAllowed": false,
+    "storedRepresentation": "sha256_hash",
+    "mayAuthorizeMutation": false,
+    "becomesOperationIdentity": false,
+    "reuseRequiredForRetry": true
+  },
+  "issuanceRequest": {
+    "authUserSource": "auth_uid_only",
+    "authorizationRequiredBeforeIssuance": true,
+    "canonicalFields": [
+      "client_request_key",
+      "operation_scope",
+      "operation",
+      "resource_identity",
+      "payload_fingerprint"
+    ],
+    "requestFingerprintAlgorithm": "sha256_canonical_json",
+    "requestFingerprintGeneratedBy": "database_or_trusted_server",
+    "operationIdReturnedOnlyAfterPersistence": true
+  },
+  "verifiedIdentityRecord": {
+    "requiredFields": [
+      "auth_user_id",
+      "client_request_key_hash",
+      "request_fingerprint",
+      "external_operation_id",
+      "operation_scope",
+      "operation",
+      "resource_identity",
+      "payload_fingerprint",
+      "issued_at"
+    ],
+    "lookupRequiresFullCanonicalRequest": true,
+    "foreignUserLookupAllowed": false,
+    "missingRecordMeansUnverified": true
+  },
+  "reuseRules": {
+    "sameUserSameClientRequestKeySameFingerprintReturnsSameOperationId": true,
+    "sameUserSameClientRequestKeyDifferentFingerprintAllowed": false,
+    "sameOperationIdWithoutIssuanceRecordAllowed": false,
+    "retryMayExecuteDomainMutationWithoutReservation": false,
+    "identityReuseAcrossUsersAllowed": false
+  },
+  "conflictRules": {
+    "sameRequestKeyDifferentRequestFingerprint": "reject_request_key_conflict",
+    "suppliedOperationIdWithoutRecord": "reject_unverified_operation_id",
+    "suppliedOperationIdRecordMismatch": "reject_operation_identity_mismatch",
+    "foreignUserRecord": "reject_operation_owner_conflict",
+    "rawExistingValuesReturned": false
+  },
+  "securityRules": {
+    "authUserFromAuthUidOnly": true,
+    "participantIdParameterAllowed": false,
+    "authUserIdParameterAllowed": false,
+    "serviceRoleInFrontendAllowed": false,
+    "directIssuanceTableGrantAllowed": false,
+    "directIssuanceHelperGrantAllowed": false,
+    "rawDatabaseErrorReturned": false
+  },
+  "unresolvedRequirements": {
+    "issuanceTableImplementation": true,
+    "issuanceRpcImplementation": true,
+    "domainMutationRpcImplementation": true,
+    "liveDatabaseTests": true,
+    "concurrencyTests": true
+  }
+}

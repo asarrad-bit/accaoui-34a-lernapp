@@ -143,6 +143,28 @@ def check_exam_result_history_transactional_mutation_contract():
         )
 
 
+
+def check_exam_result_history_operation_identity_issuance_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-"
+        "operation-identity-issuance-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Operations-ID-Ausstellungsvertrag "
+            "fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -238,6 +260,8 @@ def main():
         "tools/check-supabase-exam-history-idempotency-flow.py",
         "tools/check-supabase-exam-history-transactional-mutation-contract.py",
         "docs/contracts/exam-history-idempotency-transactional-mutation-contract.json",
+        "tools/check-supabase-exam-history-operation-identity-issuance-contract.py",
+        "docs/contracts/exam-history-operation-identity-issuance-contract.json",
     ]
 
     for file_path in required_files:
@@ -250,6 +274,7 @@ def main():
     check_exam_result_history_fixtures()
     check_exam_result_history_idempotency_flow()
     check_exam_result_history_transactional_mutation_contract()
+    check_exam_result_history_operation_identity_issuance_contract()
     check_git_diff_check()
     check_protected_core_files_v2356()
 
