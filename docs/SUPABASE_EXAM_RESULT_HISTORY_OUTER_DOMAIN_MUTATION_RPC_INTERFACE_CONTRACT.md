@@ -1,0 +1,146 @@
+# Äußerer Fachmutations-RPC-Schnittstellenvertrag
+
+Stand: v27.31k
+
+Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
+
+## Ziel
+
+Der spätere äußere Security-Definer-RPC ist der einzige
+zulässige Einstiegspunkt für eine produktive
+Prüfungshistorien-Fachmutation.
+
+Interne Operations-ID-, Reservierungs- und Abschlusshelfer
+dürfen nicht direkt vom Browser aufgerufen werden.
+
+## Erlaubte Browserparameter
+
+Der äußere RPC akzeptiert ausschließlich:
+
+1. `p_client_request_key`
+2. `p_operation_scope`
+3. `p_operation`
+4. `p_resource_identity`
+5. `p_domain_payload`
+
+## Verbotene Browserparameter
+
+Nicht akzeptiert werden insbesondere:
+
+- externe Operations-UUID
+- kanonische Operationsidentität
+- Payload-Fingerprint
+- Hash des Client-Wiederholungsschlüssels
+- Anfragefingerprint
+- Nutzer-ID
+- Teilnehmer-ID
+- Ergebnis-Payload
+- Fehlercode
+- interner Status
+
+## Serverseitige Ableitungen
+
+Der äußere RPC muss selbst:
+
+- den Nutzer ausschließlich über `auth.uid()` bestimmen
+- den Fach-Payload kanonisieren
+- bei Write den SHA-256-Payload-Fingerprint berechnen
+- bei Delete einen `null`-Fingerprint verwenden
+- die Operations-UUID intern ausstellen oder wiederverwenden
+- die kanonische Operationsidentität intern reservieren
+
+Der Browser darf keine dieser abgeleiteten Identitäten
+vorgeben.
+
+## Payload-Regeln
+
+### Write
+
+- `p_domain_payload` muss ein JSONB-Objekt sein
+- der Payload muss zum späteren bereichsspezifischen Schema passen
+- der Fingerprint wird ausschließlich serverseitig berechnet
+
+### Delete
+
+- `p_domain_payload` muss `null` sein
+- der Payload-Fingerprint muss intern `null` sein
+
+Die konkreten Payload-Schemas für Snapshot und Zyklusregister
+sind noch verbindlich festzulegen.
+
+## Verbindliche interne Reihenfolge
+
+1. authentifizieren und autorisieren
+2. Eingaben validieren
+3. Fach-Payload kanonisieren
+4. Payload-Fingerprint ableiten
+5. Operations-ID intern ausstellen oder wiederverwenden
+6. Idempotenzoperation reservieren
+7. Reservierungsstatus geschlossen auswerten
+8. ausschließlich bei `reserved_new` fachlich mutieren
+9. Operation terminal abschließen
+10. kanonische Clientantwort zurückgeben
+
+## Reservierungsstatus
+
+### `reserved_new`
+
+- Fachmutation erlaubt
+- terminaler Abschluss erforderlich
+
+### `reserved_existing_pending`
+
+- keine erneute Fachmutation
+- kontrollierter In-Progress-Zustand
+
+### `reserved_existing_completed`
+
+- keine erneute Fachmutation
+- gespeichertes Ergebnis wiederverwenden
+
+### `reserved_existing_failed`
+
+- keine erneute Fachmutation
+- gespeicherten stabilen Fehler wiederverwenden
+
+## Clientantwort
+
+Erlaubt:
+
+- fachliches Ergebnis
+- sicherer Operationsstatus
+- stabiler Fehlercode
+- Retry-Hinweis
+
+Nicht erlaubt:
+
+- Operations-UUID
+- Operationsidentität
+- interne Hashes oder Fingerprints
+- Nutzer- oder Teilnehmer-ID
+- rohe Datenbankfehler
+
+## Noch nicht umgesetzt
+
+- bereichsspezifische Snapshot-Payload-Struktur
+- bereichsspezifische Zyklusregister-Payload-Struktur
+- äußerer Fachmutations-RPC
+- Live-Datenbanktests
+- Parallelitäts-, Autorisierungs- und Konkurrenztests
+
+Deshalb bleibt die produktive Freigabe gesperrt.
+
+## Sicherheitsgrenze
+
+- kein SQL-RPC in v27.31k
+- keine direkte Helper-Ausführungsfreigabe
+- keine direkte Tabellenfreigabe
+- keine echten Teilnehmerdaten
+- keine Live-Ausführung
+- keine UI-Änderung
+
+## Automatische Prüfung
+
+`tools/check-supabase-exam-history-outer-domain-mutation-rpc-interface-contract.py`
+
+Der Prüfer ist dauerhaft in `tools/preflight.py` eingebunden.

@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31j
+Stand: v27.31k
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1281,6 +1281,45 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_IDEMPOTENCY_INTEGRATION_AUDIT.md`
 
+## Äußerer Fachmutations-RPC-Schnittstellenvertrag v27.31k
+
+Ein verbindlicher maschinenlesbarer Vertrag definiert jetzt
+die spätere öffentliche Fachmutationsschnittstelle.
+
+Der Browser darf ausschließlich übermitteln:
+
+- Client-Wiederholungsschlüssel
+- Operationsbereich
+- Mutation
+- Ressourcenidentität
+- Fach-Payload
+
+Operations-UUID, Operationsidentität, Payload-Fingerprint,
+Nutzer-ID, Teilnehmer-ID und interne Ergebniszustände sind als
+Browserparameter ausdrücklich verboten.
+
+Der äußere RPC muss Nutzer, kanonischen Payload-Fingerprint,
+Operations-UUID und Operationsidentität intern ableiten.
+
+Die verbindliche Reihenfolge lautet:
+
+1. authentifizieren und validieren
+2. Payload kanonisieren
+3. Fingerprint ableiten
+4. Operations-ID intern ausstellen
+5. Idempotenzoperation reservieren
+6. Status auswerten
+7. nur bei `reserved_new` mutieren
+8. terminal abschließen
+9. sichere Clientantwort zurückgeben
+
+Der Vertrag ist dauerhaft in den Preflight eingebunden. Ein
+äußerer SQL-RPC wurde noch nicht ergänzt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_RPC_INTERFACE_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1371,18 +1410,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31j` kann `v27.31k`
-einen verbindlichen äußeren Fachmutations-RPC-
-Schnittstellenvertrag vorbereiten.
+Nach GitHub-Bestätigung von `v27.31k` kann `v27.31l`
+verbindliche kanonische Fach-Payload-Verträge für Snapshot-
+und Zyklusregister-Mutationen vorbereiten.
 
-Der Vertrag muss ausschließlich den unvertrauenswürdigen
-Client-Wiederholungsschlüssel und die kanonischen Fachparameter
-akzeptieren. Eine externe Operations-ID als Browserparameter
-muss ausgeschlossen bleiben. Die verbindliche interne
-Reihenfolge lautet: Operations-ID ausstellen, reservieren,
-Status auswerten, ausschließlich bei `reserved_new` mutieren
-und terminal abschließen. Eine Live-Ausführung erfolgt
-weiterhin nicht.
+Sie müssen Write- und Delete-Payloads, erlaubte Felder,
+Größenbegrenzungen, kanonische Serialisierung sowie stabile
+Fachfehler getrennt festlegen. Erst danach darf ein äußerer
+Fachmutations-SQL-RPC vorbereitet werden. Eine Live-Ausführung
+erfolgt weiterhin nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1429,6 +1465,7 @@ Operations-ID-Ausstellungsgrenze v27.31g dauerhaft in den
 Preflight eingebunden und vollständig gesperrte
 Operations-ID-Ausstellungstabelle v27.31h und interner
 Operations-ID-Ausstellungs- und Wiederverwendungs-RPC v27.31i
-vorbereitet und Operations-ID-/Idempotenz-Integrationsaudit
-v27.31j dauerhaft in den Preflight eingebunden;
+vorbereitet und Operations-ID-/Idempotenz-Integrationsaudit v27.31j und
+äußerer Fachmutations-RPC-Schnittstellenvertrag v27.31k
+dauerhaft in den Preflight eingebunden;
 keine Live-Ausführung

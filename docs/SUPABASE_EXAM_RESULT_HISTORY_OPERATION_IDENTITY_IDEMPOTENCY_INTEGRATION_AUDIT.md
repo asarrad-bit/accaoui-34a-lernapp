@@ -96,3 +96,34 @@ Der Audit ist dauerhaft in `tools/preflight.py` eingebunden.
 - keine echten Teilnehmerdaten
 - keine Live-Ausführung
 - keine UI-Änderung
+
+
+## Äußerer RPC-Schnittstellenvertrag v27.31k
+
+Der spätere äußere Fachmutations-RPC darf ausschließlich
+folgende Browserparameter akzeptieren:
+
+- Client-Wiederholungsschlüssel
+- Operationsbereich
+- Mutation
+- Ressourcenidentität
+- Fach-Payload
+
+Nicht als Browserparameter erlaubt sind insbesondere:
+
+- Operations-UUID
+- Operationsidentität
+- Payload-Fingerprint
+- Nutzer- oder Teilnehmer-ID
+- Ergebnis- oder Fehlerstatus
+
+Der äußere RPC muss den Payload kanonisieren und den
+Payload-Fingerprint serverseitig ableiten.
+
+Die intern ausgestellte UUID darf ausschließlich intern an
+Reservierung und Abschluss weitergegeben werden. Sie wird nicht
+Teil der Clientantwort.
+
+Maschinenlesbarer Vertrag:
+
+`docs/contracts/exam-history-outer-domain-mutation-rpc-interface-contract.json`
