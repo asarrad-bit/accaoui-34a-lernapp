@@ -36,6 +36,9 @@ EXAM_RESULT_HISTORY_RPC = (
 IDEMPOTENCY_OPERATIONS = (
     "20260722_v2731b_exam_history_idempotency_operations.sql"
 )
+IDEMPOTENCY_RESERVE_RPC = (
+    "20260722_v2731c_exam_history_idempotency_reserve_rpc.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -90,6 +93,7 @@ for required in (
     STAFF_ROLE_BOUNDARY,
     EXAM_RESULT_HISTORY_RPC,
     IDEMPOTENCY_OPERATIONS,
+    IDEMPOTENCY_RESERVE_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -188,6 +192,14 @@ if files.index(EXAM_RESULT_HISTORY_RPC) >= files.index(
         "Prüfungsergebnisliste."
     )
 
+if files.index(IDEMPOTENCY_OPERATIONS) >= files.index(
+    IDEMPOTENCY_RESERVE_RPC
+):
+    fail(
+        "Idempotenz-Reservierungs-RPC steht vor der "
+        "Idempotenz-Operationstabelle."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -251,6 +263,10 @@ exam_result_history_rpc = (
 
 idempotency_operations = (
     MIGRATIONS / IDEMPOTENCY_OPERATIONS
+).read_text(encoding="utf-8")
+
+idempotency_reserve_rpc = (
+    MIGRATIONS / IDEMPOTENCY_RESERVE_RPC
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -1260,6 +1276,185 @@ for forbidden in (
         )
 
 
+idempotency_reserve_rpc_lower = (
+    idempotency_reserve_rpc.lower()
+)
+idempotency_reserve_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    idempotency_reserve_rpc_lower,
+)
+
+required_idempotency_reserve_markers = (
+    "function "
+    "public.accaoui_reserve_exam_history_idempotency_operation(",
+    "language plpgsql",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "message = 'authentication_required'",
+    "message = 'external_operation_id_invalid'",
+    "message = 'operation_scope_invalid'",
+    "message = 'operation_invalid'",
+    "message = 'resource_identity_invalid'",
+    "message = 'payload_fingerprint_invalid'",
+    "message = 'delete_payload_fingerprint_not_allowed'",
+    "'exam_history_idempotency:' || "
+    "p_operation_scope || ':' || "
+    "p_operation || ':' || "
+    "p_external_operation_id::text",
+    "insert into "
+    "public.exam_history_idempotency_operations",
+    "on conflict do nothing",
+    "returning id into v_inserted_id",
+    "'reserved_new'::text",
+    "select io.* into v_existing "
+    "from public.exam_history_idempotency_operations io",
+    "for update",
+    "message = 'idempotency_reservation_conflict_unresolved'",
+    "message = 'idempotency_operation_owner_conflict'",
+    "message = 'idempotency_operation_identity_conflict'",
+    "message = 'idempotency_operation_resource_conflict'",
+    "is distinct from p_payload_fingerprint",
+    "message = 'idempotency_operation_payload_conflict'",
+    "'reserved_existing_pending'",
+    "'reserved_existing_completed'",
+    "'reserved_existing_failed'",
+    "revoke all on function "
+    "public.accaoui_reserve_exam_history_idempotency_operation( "
+    "uuid, text, text, text, text ) from public",
+    "revoke all on function "
+    "public.accaoui_reserve_exam_history_idempotency_operation( "
+    "uuid, text, text, text, text ) from anon",
+    "revoke all on function "
+    "public.accaoui_reserve_exam_history_idempotency_operation( "
+    "uuid, text, text, text, text ) from authenticated",
+)
+
+for marker in required_idempotency_reserve_markers:
+    if marker not in idempotency_reserve_rpc_compact:
+        fail(
+            "Idempotenz-Reservierungs-RPC-Anweisung fehlt: "
+            f"{marker}"
+        )
+
+if len(
+    re.findall(
+        r"create\s+or\s+replace\s+function\s+"
+        r"public\.accaoui_reserve_exam_history_idempotency_operation"
+        r"\s*\(",
+        idempotency_reserve_rpc,
+        flags=re.IGNORECASE,
+    )
+) != 1:
+    fail(
+        "Idempotenz-Reservierungs-RPC muss genau einmal "
+        "vorhanden sein."
+    )
+
+reserve_match = re.search(
+    r"function\s+"
+    r"public\.accaoui_reserve_exam_history_idempotency_operation"
+    r"\s*\((.*?)\)\s*returns\s+table\s*"
+    r"\((.*?)\)\s*language\s+plpgsql",
+    idempotency_reserve_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not reserve_match:
+    fail(
+        "Signatur des Idempotenz-Reservierungs-RPC fehlt."
+    )
+
+reserve_parameters = re.sub(
+    r"\s+",
+    " ",
+    reserve_match.group(1).strip().lower(),
+)
+
+expected_reserve_parameters = (
+    "p_external_operation_id uuid, "
+    "p_operation_scope text, "
+    "p_operation text, "
+    "p_resource_identity text, "
+    "p_payload_fingerprint text default null"
+)
+
+if reserve_parameters != expected_reserve_parameters:
+    fail(
+        "Idempotenz-Reservierungs-RPC besitzt "
+        "unerwartete Parameter: "
+        f"{reserve_parameters}"
+    )
+
+reserve_returns = re.sub(
+    r"\s+",
+    " ",
+    reserve_match.group(2).strip().lower(),
+)
+
+expected_reserve_returns = (
+    "operation_identity text, "
+    "reservation_status text, "
+    "operation_status text, "
+    "result_payload jsonb, "
+    "failure_code text, "
+    "is_new boolean"
+)
+
+if reserve_returns != expected_reserve_returns:
+    fail(
+        "Idempotenz-Reservierungs-RPC gibt "
+        "unerwartete Spalten zurück: "
+        f"{reserve_returns}"
+    )
+
+for forbidden_parameter in (
+    "p_auth_user_id",
+    "p_participant_id",
+    "p_result_payload",
+    "p_failure_code",
+    "p_operation_identity",
+    "p_status",
+):
+    if forbidden_parameter in reserve_parameters:
+        fail(
+            "Verbotener Browserparameter im "
+            "Idempotenz-Reservierungs-RPC: "
+            f"{forbidden_parameter}"
+        )
+
+idempotency_reserve_rpc_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    idempotency_reserve_rpc_lower,
+    flags=re.MULTILINE,
+)
+
+for forbidden_content in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "sqlerrm",
+    "stacked diagnostics",
+    "insert into public.exam_attempts",
+    "insert into public.exam_answers",
+    "update public.exam_attempts",
+    "update public.exam_answers",
+    "delete from public.exam_attempts",
+    "delete from public.exam_answers",
+    "public.exam_question_answer_keys",
+    "public.exam_attempt_question_answer_keys",
+):
+    if forbidden_content in idempotency_reserve_rpc_without_comments:
+        fail(
+            "Unzulässiger Inhalt im "
+            "Idempotenz-Reservierungs-RPC: "
+            f"{forbidden_content}"
+        )
+
+
 exam_attempt_integrity_lower = (
     exam_attempt_integrity.lower()
 )
@@ -1733,7 +1928,8 @@ print(
     "vor direkter Prüfungs-Schreibsperre "
     "vor Mitarbeiter-Rollentrennung "
     "vor Prüfungsergebnisliste "
-    "vor Idempotenz-Operationstabelle"
+    "vor Idempotenz-Operationstabelle "
+    "vor Idempotenz-Reservierungs-RPC"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -1756,6 +1952,18 @@ print(
 print(
     "Idempotenz-Operationen: UUID, Ressource, Fingerprint "
     "und Ergebnisstatus abgesichert"
+)
+print(
+    "Idempotenz-Reservierungs-RPC: neue Operation atomar "
+    "reserviert"
+)
+print(
+    "Idempotenz-Wiederholung: bestehender Status sicher "
+    "wiederverwendet"
+)
+print(
+    "Idempotenz-Konflikte: Nutzer, Ressource und Fingerprint "
+    "geschlossen geprüft"
 )
 print("Prüfungsversuch-Integrität: score_points <= max_points")
 print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
