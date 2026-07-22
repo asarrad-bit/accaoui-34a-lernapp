@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31h
+Stand: v27.31i
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1228,6 +1228,32 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_ISSUANCES_MIGRATION_TEST.md`
 
+## Operations-ID-Ausstellungs-RPC v27.31i
+
+Ein interner atomarer Operations-ID-Ausstellungs- und
+Wiederverwendungs-RPC ist vorbereitet.
+
+Der RPC:
+
+- bestimmt den Nutzer ausschließlich über `auth.uid()`
+- akzeptiert keine Nutzer-, Teilnehmer- oder Operations-ID
+- verlangt einen 256-Bit-Client-Wiederholungsschlüssel
+- speichert ausschließlich dessen SHA-256-Hash
+- bildet den kanonischen Anfragefingerprint serverseitig
+- lässt die UUID innerhalb der Datenbank erzeugen
+- gibt die UUID erst nach erfolgreicher Speicherung zurück
+- verwendet bei identischen Retries dieselbe UUID
+- sperrt vorhandene Datensätze mit `FOR UPDATE`
+- blockiert abweichende Anfragen mit demselben Schlüssel
+
+Der RPC bleibt intern. Für `public`, `anon` und
+`authenticated` wurden sämtliche Ausführungsrechte entzogen.
+Eine direkte App-Freigabe besteht nicht.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OPERATION_IDENTITY_ISSUANCE_RPC_TEST.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1318,15 +1344,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31h` kann `v27.31i`
-einen internen atomaren Operations-ID-Ausstellungs- und
-Wiederverwendungs-RPC vorbereiten.
+Nach GitHub-Bestätigung von `v27.31i` kann `v27.31j`
+einen statischen Operations-ID-Ausstellungs- und
+Idempotenz-Integrationsaudit vorbereiten.
 
-Der RPC muss den Nutzer ausschließlich über `auth.uid()`
-bestimmen, Client-Schlüssel und kanonische Anfrage serverseitig
-hashen, neue UUIDs innerhalb der Datenbank erzeugen und bei
-identischen Retries dieselbe gespeicherte UUID zurückgeben.
-Direkte App-Freigaben und Live-Ausführung bleiben ausgeschlossen.
+Der Audit muss erzwingen, dass ein späterer äußerer
+Fachmutations-RPC nur den unvertrauenswürdigen
+Client-Wiederholungsschlüssel erhält, die UUID intern
+ausstellen lässt und ausschließlich die intern erhaltene UUID
+an die Reservierung weitergibt. Browserseitig übermittelte
+Operations-IDs dürfen nicht akzeptiert werden. Eine
+Live-Ausführung erfolgt weiterhin nicht.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1371,5 +1399,7 @@ End-to-End-Idempotenz-RPC-Flow-Audit v27.31e, transaktionaler
 Fachmutations-Integrationsvertrag v27.31f und
 Operations-ID-Ausstellungsgrenze v27.31g dauerhaft in den
 Preflight eingebunden und vollständig gesperrte
-Operations-ID-Ausstellungstabelle v27.31h vorbereitet;
+Operations-ID-Ausstellungstabelle v27.31h und interner
+Operations-ID-Ausstellungs- und Wiederverwendungs-RPC v27.31i
+vorbereitet;
 keine Live-Ausführung

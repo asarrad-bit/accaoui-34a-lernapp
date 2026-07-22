@@ -1,6 +1,6 @@
 # Operations-ID-Ausstellungsvertrag
 
-Stand: v27.31h
+Stand: v27.31i
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -84,7 +84,7 @@ Verifiziert ist sie erst nach Abgleich von:
 - Ressource
 - Payload-Fingerprint
 
-## Umgesetzt in v27.31h
+## Umgesetzt in v27.31h und v27.31i
 
 Eine vollständig gesperrte Ausstellungsdatentabelle ist als
 SQL-Migration vorbereitet.
@@ -98,9 +98,21 @@ Sie speichert ausschließlich:
 - Bereich, Mutation, Ressource und Payload-Fingerprint
 - Ausstellungszeit
 
+Der interne Ausstellungs-RPC ist ebenfalls vorbereitet.
+
+Er:
+
+- bestimmt den Nutzer ausschließlich über `auth.uid()`
+- akzeptiert einen 256-Bit-Client-Wiederholungsschlüssel
+- hasht Client-Schlüssel und kanonische Anfrage serverseitig
+- lässt die UUID durch den Datenbank-Default erzeugen
+- gibt die UUID erst nach erfolgreicher Speicherung zurück
+- verwendet bei einem identischen Retry dieselbe UUID
+- blockiert abweichende Anfragen mit demselben Client-Schlüssel
+- besitzt keine direkte Ausführungsfreigabe für App-Rollen
+
 ## Noch nicht umgesetzt
 
-- Ausstellungs-RPC
 - produktiver Fachmutations-RPC
 - Live-Datenbanktests
 - Parallelitäts- und Konkurrenztests
@@ -111,6 +123,7 @@ Deshalb bleibt die produktive Freigabe gesperrt.
 
 - SQL-Migration vorbereitet, aber nicht live ausgeführt
 - keine direkte Tabellenfreigabe
+- interner Ausstellungs-RPC vorbereitet
 - keine direkte RPC-Freigabe
 - kein Service-Role-Schlüssel im Frontend
 - keine echten Teilnehmerdaten

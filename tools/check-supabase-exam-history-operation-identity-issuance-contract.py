@@ -63,8 +63,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31h":
-    fail("Ausstellungsvertragsversion ist nicht v27.31h.")
+if contract["version"] != "v27.31i":
+    fail("Ausstellungsvertragsversion ist nicht v27.31i.")
 
 if contract["contractVersion"] != 1:
     fail("Ausstellungsvertragsschema ist nicht Version 1.")
@@ -190,7 +190,7 @@ if contract["securityRules"] != expected_security_rules:
 
 expected_unresolved = {
     "issuanceTableImplementation": False,
-    "issuanceRpcImplementation": True,
+    "issuanceRpcImplementation": False,
     "domainMutationRpcImplementation": True,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
@@ -310,6 +310,243 @@ for forbidden in (
             f"{forbidden}"
         )
 
+
+ISSUANCE_RPC_PATH = (
+    ROOT
+    / "supabase"
+    / "migrations"
+    / "20260722_v2731i_exam_history_operation_identity_issue_rpc.sql"
+)
+
+if not ISSUANCE_RPC_PATH.is_file():
+    fail("Operations-ID-Ausstellungs-RPC fehlt.")
+
+issuance_rpc = ISSUANCE_RPC_PATH.read_text(
+    encoding="utf-8"
+)
+
+issuance_rpc_lower = issuance_rpc.lower()
+
+issuance_rpc_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    issuance_rpc_lower,
+    flags=re.MULTILINE,
+)
+
+issuance_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    issuance_rpc_without_comments,
+).strip()
+
+required_rpc_markers = (
+    "create or replace function "
+    "public.accaoui_issue_exam_history_operation_identity(",
+    "language plpgsql",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "message = 'authentication_required'",
+    "p_client_request_key !~ '^[0-9a-f]{64}$'",
+    "message = 'client_request_key_invalid'",
+    "message = 'operation_scope_invalid'",
+    "message = 'operation_invalid'",
+    "message = 'resource_identity_invalid'",
+    "message = 'payload_fingerprint_invalid'",
+    "message = 'delete_payload_fingerprint_not_allowed'",
+    "digest( convert_to( p_client_request_key, 'utf8' ), "
+    "'sha256' )",
+    "jsonb_build_object(",
+    "'client_request_key', p_client_request_key",
+    "'operation_scope', p_operation_scope",
+    "'operation', p_operation",
+    "'resource_identity', p_resource_identity",
+    "'payload_fingerprint', p_payload_fingerprint",
+    "insert into "
+    "public.exam_history_operation_identity_issuances "
+    "as issuance",
+    "on conflict do nothing",
+    "issuance.external_operation_id",
+    "'issued_new'::text",
+    "select issuance.* into v_existing",
+    "for update",
+    "message = "
+    "'operation_identity_issuance_conflict_unresolved'",
+    "v_existing.request_fingerprint <> "
+    "v_request_fingerprint",
+    "v_existing.payload_fingerprint "
+    "is distinct from p_payload_fingerprint",
+    "message = "
+    "'operation_identity_request_key_conflict'",
+    "'issued_existing'::text",
+)
+
+for marker in required_rpc_markers:
+    if marker not in issuance_rpc_compact:
+        fail(
+            "Operations-ID-Ausstellungs-RPC: "
+            f"Anweisung fehlt: {marker}"
+        )
+
+if len(
+    re.findall(
+        r"create\s+or\s+replace\s+function\s+"
+        r"public\.accaoui_issue_exam_history_"
+        r"operation_identity\s*\(",
+        issuance_rpc,
+        flags=re.IGNORECASE,
+    )
+) != 1:
+    fail(
+        "Operations-ID-Ausstellungs-RPC muss genau einmal "
+        "vorhanden sein."
+    )
+
+rpc_match = re.search(
+    r"function\s+"
+    r"public\.accaoui_issue_exam_history_operation_identity"
+    r"\s*\((.*?)\)\s*returns\s+table\s*"
+    r"\((.*?)\)\s*language\s+plpgsql",
+    issuance_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+
+if not rpc_match:
+    fail(
+        "Signatur des Operations-ID-Ausstellungs-RPC fehlt."
+    )
+
+rpc_parameters = re.sub(
+    r"\s+",
+    " ",
+    rpc_match.group(1).strip().lower(),
+)
+
+expected_rpc_parameters = (
+    "p_client_request_key text, "
+    "p_operation_scope text, "
+    "p_operation text, "
+    "p_resource_identity text, "
+    "p_payload_fingerprint text default null"
+)
+
+if rpc_parameters != expected_rpc_parameters:
+    fail(
+        "Operations-ID-Ausstellungs-RPC besitzt "
+        "unerwartete Parameter: "
+        f"{rpc_parameters}"
+    )
+
+rpc_returns = re.sub(
+    r"\s+",
+    " ",
+    rpc_match.group(2).strip().lower(),
+)
+
+expected_rpc_returns = (
+    "external_operation_id uuid, "
+    "issuance_status text, "
+    "issued_at timestamptz, "
+    "is_new boolean"
+)
+
+if rpc_returns != expected_rpc_returns:
+    fail(
+        "Operations-ID-Ausstellungs-RPC gibt "
+        "unerwartete Spalten zurück: "
+        f"{rpc_returns}"
+    )
+
+for forbidden_parameter in (
+    "p_auth_user_id",
+    "p_participant_id",
+    "p_external_operation_id",
+    "p_client_request_key_hash",
+    "p_request_fingerprint",
+    "p_issued_at",
+):
+    if forbidden_parameter in rpc_parameters:
+        fail(
+            "Verbotener Browserparameter im "
+            "Operations-ID-Ausstellungs-RPC: "
+            f"{forbidden_parameter}"
+        )
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_issue_exam_history_"
+        r"operation_identity\s*\(\s*"
+        r"text\s*,\s*text\s*,\s*text\s*,\s*"
+        r"text\s*,\s*text\s*"
+        r"\)\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+
+    if not re.search(
+        revoke_pattern,
+        issuance_rpc,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Operations-ID-Ausstellungs-RPC-Revoke fehlt für: "
+            f"{role}"
+        )
+
+mutation_targets = [
+    (
+        re.sub(r"\s+", " ", action.lower()),
+        table.lower(),
+    )
+    for action, table in re.findall(
+        r"\b(insert\s+into|update|delete\s+from)\s+"
+        r"(?:public\.)?([a-z_]+)",
+        issuance_rpc_without_comments,
+        flags=re.IGNORECASE,
+    )
+]
+
+if mutation_targets != [
+    (
+        "insert into",
+        "exam_history_operation_identity_issuances",
+    ),
+]:
+    fail(
+        "Operations-ID-Ausstellungs-RPC verändert "
+        "unerwartete Tabellen: "
+        f"{mutation_targets}"
+    )
+
+for forbidden_content in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "sqlerrm",
+    "stacked diagnostics",
+    "insert into public.exam_history_idempotency_operations",
+    "update public.exam_history_operation_identity_issuances",
+    "delete from public.exam_history_operation_identity_issuances",
+    "public.exam_attempts",
+    "public.exam_answers",
+    "public.exam_attempt_questions",
+    "public.exam_question_answer_keys",
+    "public.exam_attempt_question_answer_keys",
+):
+    if forbidden_content in issuance_rpc_without_comments:
+        fail(
+            "Unzulässiger Inhalt im "
+            "Operations-ID-Ausstellungs-RPC: "
+            f"{forbidden_content}"
+        )
+
 for frontend_path in (
     ROOT / "index.html",
     ROOT / "app.js",
@@ -329,6 +566,14 @@ print("Operations-ID-Ausstellungsvertrag: OK")
 print(
     "Ausstellungstabelle: gehashter Retry-Schlüssel, "
     "Anfragefingerprint und UUID gesperrt gespeichert"
+)
+print(
+    "Ausstellungs-RPC: Client-Schlüssel und kanonische "
+    "Anfrage serverseitig gehasht"
+)
+print(
+    "Ausstellungs-RPC: neue UUID gespeichert oder "
+    "identische UUID wiederverwendet"
 )
 print(
     "Browser-Schlüssel: erlaubt, aber ausschließlich "

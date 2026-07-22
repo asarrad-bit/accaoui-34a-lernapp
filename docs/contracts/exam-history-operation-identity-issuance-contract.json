@@ -1,5 +1,5 @@
 {
-  "version": "v27.31h",
+  "version": "v27.31i",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -82,7 +82,7 @@
   },
   "unresolvedRequirements": {
     "issuanceTableImplementation": false,
-    "issuanceRpcImplementation": true,
+    "issuanceRpcImplementation": false,
     "domainMutationRpcImplementation": true,
     "liveDatabaseTests": true,
     "concurrencyTests": true

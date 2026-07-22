@@ -45,6 +45,9 @@ IDEMPOTENCY_COMPLETE_RPC = (
 OPERATION_IDENTITY_ISSUANCES = (
     "20260722_v2731h_exam_history_operation_identity_issuances.sql"
 )
+OPERATION_IDENTITY_ISSUE_RPC = (
+    "20260722_v2731i_exam_history_operation_identity_issue_rpc.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -106,6 +109,7 @@ for required in (
     IDEMPOTENCY_RESERVE_RPC,
     IDEMPOTENCY_COMPLETE_RPC,
     OPERATION_IDENTITY_ISSUANCES,
+    OPERATION_IDENTITY_ISSUE_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -228,6 +232,14 @@ if files.index(IDEMPOTENCY_COMPLETE_RPC) >= files.index(
         "Idempotenz-Abschluss-RPC."
     )
 
+if files.index(OPERATION_IDENTITY_ISSUANCES) >= files.index(
+    OPERATION_IDENTITY_ISSUE_RPC
+):
+    fail(
+        "Operations-ID-Ausstellungs-RPC steht vor der "
+        "Operations-ID-Ausstellungstabelle."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -303,6 +315,10 @@ idempotency_complete_rpc = (
 
 operation_identity_issuances = (
     MIGRATIONS / OPERATION_IDENTITY_ISSUANCES
+).read_text(encoding="utf-8")
+
+operation_identity_issue_rpc = (
+    MIGRATIONS / OPERATION_IDENTITY_ISSUE_RPC
 ).read_text(encoding="utf-8")
 
 question_schema_bundle = (
@@ -1782,6 +1798,103 @@ for forbidden in (
         )
 
 
+operation_identity_issue_rpc_lower = (
+    operation_identity_issue_rpc.lower()
+)
+
+operation_identity_issue_rpc_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    operation_identity_issue_rpc_lower,
+    flags=re.MULTILINE,
+)
+
+operation_identity_issue_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    operation_identity_issue_rpc_without_comments,
+)
+
+for marker in (
+    "create or replace function "
+    "public.accaoui_issue_exam_history_operation_identity(",
+    "language plpgsql",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "message = 'authentication_required'",
+    "message = 'client_request_key_invalid'",
+    "digest(",
+    "jsonb_build_object(",
+    "insert into "
+    "public.exam_history_operation_identity_issuances "
+    "as issuance",
+    "on conflict do nothing",
+    "returning issuance.id, "
+    "issuance.external_operation_id, "
+    "issuance.issued_at",
+    "'issued_new'::text",
+    "select issuance.* into v_existing",
+    "for update",
+    "'issued_existing'::text",
+    "message = "
+    "'operation_identity_request_key_conflict'",
+    "revoke all on function "
+    "public.accaoui_issue_exam_history_operation_identity( "
+    "text, text, text, text, text ) from public",
+    "revoke all on function "
+    "public.accaoui_issue_exam_history_operation_identity( "
+    "text, text, text, text, text ) from anon",
+    "revoke all on function "
+    "public.accaoui_issue_exam_history_operation_identity( "
+    "text, text, text, text, text ) from authenticated",
+):
+    if marker not in operation_identity_issue_rpc_compact:
+        fail(
+            "Operations-ID-Ausstellungs-RPC-Anweisung fehlt: "
+            f"{marker}"
+        )
+
+if len(
+    re.findall(
+        r"create\s+or\s+replace\s+function\s+"
+        r"public\.accaoui_issue_exam_history_"
+        r"operation_identity\s*\(",
+        operation_identity_issue_rpc,
+        flags=re.IGNORECASE,
+    )
+) != 1:
+    fail(
+        "Operations-ID-Ausstellungs-RPC muss genau einmal "
+        "vorhanden sein."
+    )
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "sqlerrm",
+    "stacked diagnostics",
+    "p_auth_user_id",
+    "p_participant_id",
+    "p_external_operation_id",
+    "insert into public.exam_history_idempotency_operations",
+    "update public.exam_history_operation_identity_issuances",
+    "delete from public.exam_history_operation_identity_issuances",
+    "public.exam_attempts",
+    "public.exam_answers",
+    "public.exam_question_answer_keys",
+    "public.exam_attempt_question_answer_keys",
+):
+    if forbidden in operation_identity_issue_rpc_without_comments:
+        fail(
+            "Unzulässiger Inhalt im "
+            "Operations-ID-Ausstellungs-RPC: "
+            f"{forbidden}"
+        )
+
+
 exam_attempt_integrity_lower = (
     exam_attempt_integrity.lower()
 )
@@ -2258,7 +2371,8 @@ print(
     "vor Idempotenz-Operationstabelle "
     "vor Idempotenz-Reservierungs-RPC "
     "vor Idempotenz-Abschluss-RPC "
-    "vor Operations-ID-Ausstellungstabelle"
+    "vor Operations-ID-Ausstellungstabelle "
+    "vor Operations-ID-Ausstellungs-RPC"
 )
 print("Prüfungsabschluss-RPC: serverseitige Bewertung vorbereitet")
 print("Prüfungsabschluss-RPC: Teilpunkte ohne Punktabzug")
@@ -2313,6 +2427,18 @@ print(
 print(
     "Operations-ID-Ausstellungszugriff: keine Policy und "
     "keine direkten App-Rechte"
+)
+print(
+    "Operations-ID-Ausstellungs-RPC: neue UUID atomar "
+    "ausgestellt"
+)
+print(
+    "Operations-ID-Wiederverwendung: identischer Retry "
+    "erhält dieselbe UUID"
+)
+print(
+    "Operations-ID-Ausstellungskonflikt: gleicher Schlüssel "
+    "mit anderer Anfrage blockiert"
 )
 print("Prüfungsversuch-Integrität: score_points <= max_points")
 print("Prüfungsversuch-Integrität: Abschluss nicht vor Start")
