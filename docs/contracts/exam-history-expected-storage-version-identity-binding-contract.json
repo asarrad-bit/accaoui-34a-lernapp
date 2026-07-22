@@ -1,0 +1,118 @@
+{
+  "version": "v27.31o",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "implementationPresent": false,
+  "browserBoundary": {
+    "parameter": "p_expected_storage_version",
+    "type": "bigint",
+    "minimum": 0,
+    "acceptedOnlyByOuterRpc": true,
+    "directHelperAccessAllowed": false,
+    "authUserIdParameterAllowed": false,
+    "participantIdParameterAllowed": false,
+    "externalOperationIdParameterAllowed": false
+  },
+  "operationIdentityIssuanceBinding": {
+    "lookupIdentityFields": [
+      "auth_user_id",
+      "client_request_key_hash"
+    ],
+    "requestFingerprintFields": [
+      "operation_scope",
+      "operation",
+      "resource_identity",
+      "expected_storage_version",
+      "payload_fingerprint"
+    ],
+    "sameClientKeySameFingerprintReusesUuid": true,
+    "sameClientKeyDifferentExpectedVersionConflicts": true,
+    "expectedVersionStoredInIssuanceRow": true,
+    "expectedVersionMinimum": 0,
+    "rawClientKeyStored": false
+  },
+  "idempotencyReservationBinding": {
+    "operationIdentityFields": [
+      "auth_user_id",
+      "operation_scope",
+      "operation",
+      "resource_identity",
+      "expected_storage_version",
+      "payload_fingerprint"
+    ],
+    "expectedVersionStoredInReservationRow": true,
+    "expectedVersionComparedOnExistingReservation": true,
+    "sameUuidDifferentExpectedVersionConflicts": true,
+    "sameIdentityDifferentExpectedVersionIsDistinct": true,
+    "payloadFingerprintMayBeNullForDelete": true
+  },
+  "completionBinding": {
+    "expectedVersionAcceptedFromBrowser": false,
+    "expectedVersionReadFromReservedOperation": true,
+    "completionMayChangeExpectedVersion": false,
+    "completionMayOverwriteIdentity": false
+  },
+  "conflictMatrix": [
+    {
+      "case": "same_client_key_same_request",
+      "result": "reuse_same_operation_uuid"
+    },
+    {
+      "case": "same_client_key_different_expected_version",
+      "result": "client_request_key_reused_with_different_request"
+    },
+    {
+      "case": "same_uuid_same_full_identity",
+      "result": "reuse_existing_reservation_status"
+    },
+    {
+      "case": "same_uuid_different_expected_version",
+      "result": "operation_identity_conflict"
+    },
+    {
+      "case": "different_request_keys_same_expected_version",
+      "result": "independent_requests_same_domain_precondition"
+    },
+    {
+      "case": "different_request_keys_different_expected_version",
+      "result": "independent_requests_storage_version_decides"
+    }
+  ],
+  "schemaRequirements": {
+    "issuanceTableExpectedVersionColumnRequired": true,
+    "idempotencyTableExpectedVersionColumnRequired": true,
+    "columnType": "bigint",
+    "columnNotNull": true,
+    "columnMinimum": 0,
+    "existingRowsMigrationStrategyRequired": true,
+    "currentTablesAlreadyContainColumn": false
+  },
+  "helperRequirements": {
+    "issuanceRpcExpectedVersionParameterRequired": true,
+    "reserveRpcExpectedVersionParameterRequired": true,
+    "completeRpcExpectedVersionParameterRequired": false,
+    "issuanceRpcRequestFingerprintMustBindVersion": true,
+    "reserveRpcOperationIdentityMustBindVersion": true,
+    "outerRpcMustPassSameVersionToBothHelpers": true,
+    "currentHelpersAlreadyBindVersion": false
+  },
+  "securityRules": {
+    "directTableRightsAllowed": false,
+    "directHelperExecutionAllowed": false,
+    "frontendInternalHelperReferencesAllowed": false,
+    "liveExecution": false,
+    "realParticipantData": false
+  },
+  "unresolvedRequirements": {
+    "issuanceTableMigration": true,
+    "idempotencyTableMigration": true,
+    "issuanceRpcMigration": true,
+    "reserveRpcMigration": true,
+    "storageTableImplementation": true,
+    "outerDomainMutationRpcImplementation": true,
+    "liveDatabaseTests": true,
+    "concurrencyTests": true,
+    "authorizationTests": true
+  }
+}

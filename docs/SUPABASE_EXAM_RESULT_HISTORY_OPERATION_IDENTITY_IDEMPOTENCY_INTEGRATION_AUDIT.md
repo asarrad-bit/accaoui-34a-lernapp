@@ -180,3 +180,20 @@ Anfrageidentität. Die vorhandenen Operations-ID- und
 Idempotenzhelper binden ihn noch nicht.
 
 Diese Lücke blockiert weiterhin den äußeren Fachmutations-RPC.
+
+
+## Speicher-Versionsstand-Identitätsbindung v27.31o
+
+Der erwartete `storage_version`-Stand ist verbindlich als Teil
+des Operations-ID-Anfragefingerprints und der vollständigen
+Idempotenzidentität definiert.
+
+Gleicher Client-Wiederholungsschlüssel mit abweichendem
+Versionsstand muss geschlossen kollidieren.
+
+Die bestehenden Tabellen und Helper wurden noch nicht
+angepasst. Der äußere Fachmutations-RPC bleibt gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`

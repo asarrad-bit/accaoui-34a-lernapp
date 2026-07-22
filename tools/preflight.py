@@ -251,6 +251,28 @@ def check_exam_result_history_domain_storage_contract():
         )
 
 
+
+def check_exam_result_history_expected_storage_version_binding():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-"
+        "expected-storage-version-identity-binding.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Speicher-Versionsstand-"
+            "Identitätsbindung fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -356,6 +378,8 @@ def main():
         "supabase/migrations/20260722_v2731m_exam_history_domain_payload_validate_rpc.sql",
         "tools/check-supabase-exam-history-domain-storage-contract.py",
         "docs/contracts/exam-history-domain-storage-contract.json",
+        "tools/check-supabase-exam-history-expected-storage-version-identity-binding.py",
+        "docs/contracts/exam-history-expected-storage-version-identity-binding-contract.json",
     ]
 
     for file_path in required_files:
@@ -373,6 +397,7 @@ def main():
     check_exam_result_history_outer_domain_mutation_rpc_contract()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
+    check_exam_result_history_expected_storage_version_binding()
     check_git_diff_check()
     check_protected_core_files_v2356()
 

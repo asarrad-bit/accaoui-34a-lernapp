@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31n
+Stand: v27.31o
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1400,6 +1400,35 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_STORAGE_CONTRACT.md`
 
+## Speicher-Versionsstand-Identitätsbindung v27.31o
+
+Ein verbindlicher Integrationsvertrag legt fest, wie der
+erwartete `storage_version`-Stand künftig gebunden wird.
+
+Operations-ID-Ausstellung:
+
+- Versionsstand im kanonischen Anfragefingerprint
+- gleicher Client-Schlüssel und gleiche Anfrage verwenden
+  dieselbe UUID
+- gleicher Client-Schlüssel mit abweichender Version
+  kollidiert geschlossen
+
+Idempotenzreservierung:
+
+- Versionsstand als gespeichertes Identitätsfeld
+- exakter Vergleich bei vorhandener Reservierung
+- abweichender Stand ist keine identische Operation
+
+Der Abschluss liest den Stand aus der Reservierung und darf ihn
+nicht ändern.
+
+Die bestehenden Tabellen und Helper sind noch nicht angepasst.
+Es wurde keine SQL-Migration ergänzt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1490,16 +1519,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31n` kann `v27.31o`
-einen verbindlichen Integrationsvertrag für die Bindung des
-erwarteten Speicher-Versionsstands an Operations-ID-
-Ausstellung und Idempotenzreservierung vorbereiten.
+Nach GitHub-Bestätigung von `v27.31o` kann `v27.31p`
+eine vollständig gesperrte Schema-Migration vorbereiten, die
+`expected_storage_version` zu Operations-ID-Ausstellungen und
+Idempotenzoperationen ergänzt.
 
-Erst wenn derselbe Client-Wiederholungsschlüssel mit
-abweichendem Versionsstand geschlossen kollidiert und die
-Reservierung den Versionsstand mitbindet, darf eine
-Speichertabellen- oder äußere Fachmutationsimplementierung
-folgen. Eine Live-Ausführung erfolgt weiterhin nicht.
+Die Migration muss bestehende Zeilen sicher behandeln,
+`bigint >= 0` erzwingen, RLS und direkte Rechtesperren
+beibehalten und darf noch keine Helper-, Fach- oder
+Live-Ausführung enthalten.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1551,6 +1579,7 @@ vorbereitet und Operations-ID-/Idempotenz-Integrationsaudit v27.31j und
 kanonische Fach-Payload-Verträge v27.31l dauerhaft in den
 Preflight eingebunden und interner Fach-Payload-Validierungs-
 und Fingerprint-Helfer v27.31m vorbereitet sowie
-Domain-Speichervertrag v27.31n dauerhaft in den Preflight
+Domain-Speichervertrag v27.31n und Speicher-Versionsstand-
+Identitätsbindungsvertrag v27.31o dauerhaft in den Preflight
 eingebunden;
 keine Live-Ausführung

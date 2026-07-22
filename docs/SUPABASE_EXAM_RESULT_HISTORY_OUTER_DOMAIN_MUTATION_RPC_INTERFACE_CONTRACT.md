@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31n
+Stand: v27.31o
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -231,3 +231,17 @@ eingebunden werden.
 Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_STORAGE_CONTRACT.md`
+
+
+## Versionsstand-Identitätsbindung v27.31o
+
+Der vom Browser übermittelte erwartete Speicher-Versionsstand
+muss intern unverändert an Operations-ID-Ausstellung und
+Idempotenzreservierung weitergegeben werden.
+
+Er wird in beiden Grenzen Teil der kanonischen
+Anfrageidentität.
+
+Eine Implementierung des äußeren RPCs bleibt gesperrt, bis die
+beiden internen Tabellen und Helper entsprechend erweitert
+wurden.

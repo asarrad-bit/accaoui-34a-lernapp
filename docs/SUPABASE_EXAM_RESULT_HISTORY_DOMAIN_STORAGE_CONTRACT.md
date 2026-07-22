@@ -1,6 +1,6 @@
 # Domain-Speichervertrag
 
-Stand: v27.31n
+Stand: v27.31o
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -128,3 +128,23 @@ Die spätere Tabelle muss:
 `tools/check-supabase-exam-history-domain-storage-contract.py`
 
 Der Prüfer ist dauerhaft in `tools/preflight.py` eingebunden.
+
+
+## Identitätsbindungsvertrag v27.31o
+
+Die notwendige Bindung des erwarteten Speicher-Versionsstands
+ist jetzt verbindlich festgelegt.
+
+Der Versionsstand muss:
+
+- im Anfragefingerprint der Operations-ID-Ausstellung liegen
+- in der Idempotenzreservierung gespeichert werden
+- Teil der vollständigen Operationsidentität sein
+- bei vorhandenen Reservierungen exakt verglichen werden
+- beim Abschluss aus der Reservierung gelesen werden
+
+Die tatsächlichen Tabellen- und Helper-Migrationen fehlen noch.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
