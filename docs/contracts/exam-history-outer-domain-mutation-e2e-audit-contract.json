@@ -1,0 +1,90 @@
+{
+  "version": "v27.31v",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "auditType": "static_source_audit",
+  "implementation": {
+    "outerRpc": "public.accaoui_mutate_exam_history_domain",
+    "outerRpcMigrationPath": "supabase/migrations/20260723_v2731u_exam_history_outer_domain_mutation_rpc.sql",
+    "auditCheckerPath": "tools/check-supabase-exam-history-outer-domain-mutation-e2e-audit.py",
+    "auditDocumentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_E2E_AUDIT.md",
+    "sqlMigrationCreated": false,
+    "liveDatabaseExecution": false,
+    "frontendIntegration": false
+  },
+  "scenarioMatrix": {
+    "reservedNew": {
+      "domainMutationExecutedExactlyOnce": true,
+      "completedExactlyOnce": true,
+      "returnsTerminalCompleted": true
+    },
+    "reservedExistingPending": {
+      "domainMutationExecuted": false,
+      "completionExecuted": false,
+      "outcome": "in_progress",
+      "operationStatus": "pending",
+      "retryable": true
+    },
+    "reservedExistingCompleted": {
+      "domainMutationExecuted": false,
+      "completionExecuted": false,
+      "storedResultReturned": true,
+      "operationStatus": "completed",
+      "retryable": false
+    },
+    "reservedExistingFailed": {
+      "domainMutationExecuted": false,
+      "completionExecuted": false,
+      "storedFailureReturned": true,
+      "operationStatus": "failed",
+      "retryable": false
+    }
+  },
+  "rollbackMatrix": {
+    "expectedDomainFailure": {
+      "innerSubtransactionRollbackRequired": true,
+      "idempotencyCompletionAfterRollback": "failed",
+      "stableFailureCodeRequired": true,
+      "rawDatabaseErrorAllowed": false
+    },
+    "unexpectedFailure": {
+      "caughtByWhenOthers": false,
+      "reraised": true,
+      "wholeOuterCallRollbackRequired": true,
+      "failedTerminalStatePersisted": false
+    }
+  },
+  "responseBoundary": {
+    "allowedColumns": [
+      "outcome",
+      "operation_status",
+      "result",
+      "failure_code",
+      "retryable"
+    ],
+    "internalOperationIdAllowed": false,
+    "operationIdentityAllowed": false,
+    "payloadFingerprintAllowed": false,
+    "requestFingerprintAllowed": false,
+    "clientRequestKeyHashAllowed": false,
+    "authUserIdAllowed": false,
+    "rawDatabaseErrorAllowed": false
+  },
+  "securityBoundary": {
+    "directPublicExecutionAllowed": false,
+    "directAnonExecutionAllowed": false,
+    "directAuthenticatedExecutionAllowed": false,
+    "grantExecutePresent": false,
+    "directTableMutationInOuterRpc": false,
+    "frontendReferenceAllowed": false,
+    "serviceRoleInFrontendAllowed": false
+  },
+  "unresolvedRequirements": {
+    "liveDatabaseTests": true,
+    "concurrencyTests": true,
+    "authorizationTests": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}

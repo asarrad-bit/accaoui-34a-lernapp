@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31u
+Stand: v27.31v
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1595,6 +1595,26 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_RPC_INTERFACE_CONTRACT.md`
 
+## Äußerer Fachmutations-End-to-End-Audit v27.31v
+
+Ein dauerhafter statischer Prüfer kontrolliert den äußeren
+Fachmutations-RPC für:
+
+- neue Reservierung mit genau einer Domain-Mutation
+- bestehende Pending-Reservierung ohne erneute Mutation
+- bestehende Completed-Reservierung mit gespeichertem Ergebnis
+- bestehende Failed-Reservierung mit stabilem Fehler
+- erwartete Domain-Fehler mit innerem Teilrollback
+- unerwartete Fehler mit vollständigem Rollback
+- Ausschluss interner UUIDs, Identitäten und Fingerprints
+
+v27.31v erzeugt keine SQL-Migration, keine direkte
+Ausführungsfreigabe und keine UI-Anbindung.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_E2E_AUDIT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1685,17 +1705,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31u` kann `v27.31v`
-einen statischen End-to-End-Audit für den äußeren
-Fachmutations-RPC ergänzen.
+Nach GitHub-Bestätigung von `v27.31v` kann `v27.31w`
+einen weiterhin nicht live ausgeführten Datenbank-Testvertrag
+für den äußeren Fachmutationsweg vorbereiten.
 
-Der Audit muss neue, Pending-, Completed- und Failed-Vorgänge,
-erwartete Domain-Fehler mit Teilrollback, unerwartete Fehler mit
-Gesamtrollback sowie den Ausschluss interner UUIDs und
-Fingerprints aus der Clientantwort prüfen.
+Der Testvertrag muss spätere Authentifizierungs-, Konkurrenz-,
+Retry-, Versionskonflikt- und Rollbacktests eindeutig
+beschreiben, ohne echte Teilnehmerdaten oder Live-Ausführung.
 
-Live-Datenbankausführung, direkte App-Freigabe und UI-Anbindung
-bleiben weiterhin ausgeschlossen.
+Direkte App-Freigabe und UI-Anbindung bleiben weiterhin
+ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1755,5 +1774,7 @@ Ausstellungsbindung v27.31q, gesperrte Idempotenz-
 Reservierungsbindung v27.31r, vollständig gesperrte
 Domain-Speichertabelle v27.31s, vollständig gesperrter
 Domain-Speicher-Mutationshelper v27.31t und vollständig
-gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet;
+gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet
+und statischer äußerer End-to-End-Audit v27.31v dauerhaft
+eingebunden;
 keine Live-Ausführung

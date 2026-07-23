@@ -347,6 +347,28 @@ def check_protected_core_files_v2356():
             "Nur committen, wenn diese Datei ausdrücklich für den aktuellen Task freigegeben wurde."
         )
 
+
+def check_exam_result_history_outer_domain_mutation_e2e_audit():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-"
+        "outer-domain-mutation-e2e-audit.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-äußerer Fachmutations-"
+            "End-to-End-Audit fehlgeschlagen"
+        )
+
+
 def main():
     print("Accaoui Preflight läuft...\n")
 
@@ -373,6 +395,8 @@ def main():
         "tools/check-supabase-exam-history-operation-identity-idempotency-integration.py",
         "tools/check-supabase-exam-history-outer-domain-mutation-rpc-interface-contract.py",
         "docs/contracts/exam-history-outer-domain-mutation-rpc-interface-contract.json",
+        "tools/check-supabase-exam-history-outer-domain-mutation-e2e-audit.py",
+        "docs/contracts/exam-history-outer-domain-mutation-e2e-audit-contract.json",
         "tools/check-supabase-exam-history-domain-payload-contract.py",
         "docs/contracts/exam-history-domain-payload-contract.json",
         "supabase/migrations/20260722_v2731m_exam_history_domain_payload_validate_rpc.sql",
@@ -401,6 +425,7 @@ def main():
     check_exam_result_history_operation_identity_issuance_contract()
     check_exam_result_history_operation_identity_idempotency_integration()
     check_exam_result_history_outer_domain_mutation_rpc_contract()
+    check_exam_result_history_outer_domain_mutation_e2e_audit()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()
