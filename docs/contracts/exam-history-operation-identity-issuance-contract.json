@@ -1,5 +1,5 @@
 {
-  "version": "v27.31q",
+  "version": "v27.31u",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -11,7 +11,7 @@
     "clientSuppliedOperationIdTrusted": false,
     "clientSuppliedOperationIdAcceptedAsAuthority": false,
     "operationIdAloneSufficientForVerification": false,
-    "verificationNow": false,
+    "verificationNow": true,
     "liveExecution": false
   },
   "clientCorrelation": {
@@ -86,7 +86,7 @@
   "unresolvedRequirements": {
     "issuanceTableImplementation": false,
     "issuanceRpcImplementation": false,
-    "domainMutationRpcImplementation": true,
+    "domainMutationRpcImplementation": false,
     "liveDatabaseTests": true,
     "concurrencyTests": true,
     "issuanceExpectedStorageVersionBinding": false

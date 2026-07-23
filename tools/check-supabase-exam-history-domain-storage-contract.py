@@ -75,8 +75,8 @@ def compact(text: str) -> str:
 
 contract = read_json(CONTRACT_PATH, "Domain-Speichervertrag")
 
-if contract.get("version") != "v27.31t":
-    fail("Domain-Speichervertrag besitzt nicht v27.31t.")
+if contract.get("version") != "v27.31u":
+    fail("Domain-Speichervertrag besitzt nicht v27.31u.")
 
 if contract.get("contractVersion") != 1:
     fail("Domain-Speichervertrag besitzt nicht Schema 1.")
@@ -292,10 +292,10 @@ if contract.get("stableFailures") != [
     fail("Stabile Domain-Speicherfehler sind ungültig.")
 
 expected_unresolved = {
-    "expectedVersionIdentityBinding": True,
+    "expectedVersionIdentityBinding": False,
     "storageTableImplementation": False,
     "storageMutationHelperImplementation": False,
-    "outerDomainMutationRpcImplementation": True,
+    "outerDomainMutationRpcImplementation": False,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
     "authorizationTests": True,
@@ -328,20 +328,37 @@ if mutation_helper != {
 }:
     fail("Domain-Speicher-Mutationshelpervertrag ist ungültig.")
 
+
+outer_rpc = contract.get("outerRpc", {})
+if outer_rpc != {
+    "name": "public.accaoui_mutate_exam_history_domain",
+    "implementationPresent": True,
+    "migrationPath": (
+        "supabase/migrations/"
+        "20260723_v2731u_"
+        "exam_history_outer_domain_mutation_rpc.sql"
+    ),
+    "migrationLiveExecuted": False,
+    "directExecutionGrantPresent": False,
+    "passesSameExpectedVersionToAllHelpers": True,
+    "returnsInternalIdentity": False,
+}:
+    fail("Äußere Domain-RPC-Bindung ist ungültig.")
+
 outer = read_json(
     OUTER_CONTRACT_PATH,
     "Äußerer Fachmutations-RPC-Vertrag",
 )
-if outer.get("version") != "v27.31n":
-    fail("Äußerer RPC-Vertrag besitzt nicht v27.31n.")
+if outer.get("version") != "v27.31u":
+    fail("Äußerer RPC-Vertrag besitzt nicht v27.31u.")
 if outer.get("unresolvedRequirements", {}).get(
     "expectedStorageVersionIdentityBinding"
-) is not True:
-    fail("End-to-End-Versionsbindung ist im äußeren Vertrag nicht offen.")
+) is not False:
+    fail("End-to-End-Versionsbindung ist nicht geschlossen.")
 
 payload = read_json(PAYLOAD_CONTRACT_PATH, "Fach-Payload-Vertrag")
-if payload.get("version") != "v27.31m":
-    fail("Fach-Payload-Vertrag besitzt nicht v27.31m.")
+if payload.get("version") != "v27.31u":
+    fail("Fach-Payload-Vertrag besitzt nicht v27.31u.")
 
 if not VALIDATION_RPC_PATH.is_file():
     fail("Fach-Payload-Validierungs-RPC fehlt.")

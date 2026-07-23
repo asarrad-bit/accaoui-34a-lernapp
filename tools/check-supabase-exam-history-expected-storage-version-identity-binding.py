@@ -91,8 +91,8 @@ contract = read_json(
     "Versionsbindungsvertrag",
 )
 
-if contract.get("version") != "v27.31r":
-    fail("Versionsbindungsvertrag besitzt nicht v27.31r.")
+if contract.get("version") != "v27.31u":
+    fail("Versionsbindungsvertrag besitzt nicht v27.31u.")
 
 if contract.get("contractVersion") != 1:
     fail("Versionsbindungsvertrag besitzt nicht Schema 1.")
@@ -103,8 +103,8 @@ if contract.get("status") != "prepared_not_live":
 if contract.get("productiveReleaseAllowed") is not False:
     fail("Produktive Freigabe darf nicht erlaubt sein.")
 
-if contract.get("implementationPresent") is not False:
-    fail("Versionsbindung darf noch nicht umgesetzt sein.")
+if contract.get("implementationPresent") is not True:
+    fail("End-to-End-Versionsbindung ist nicht umgesetzt.")
 
 browser = contract.get("browserBoundary", {})
 
@@ -235,8 +235,8 @@ expected_unresolved = {
     "idempotencyTableMigration": False,
     "issuanceRpcMigration": False,
     "reserveRpcMigration": False,
-    "storageTableImplementation": True,
-    "outerDomainMutationRpcImplementation": True,
+    "storageTableImplementation": False,
+    "outerDomainMutationRpcImplementation": False,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
     "authorizationTests": True,
@@ -281,8 +281,8 @@ storage = read_json(
     "Domain-Speichervertrag",
 )
 
-if storage.get("version") != "v27.31t":
-    fail("Domain-Speichervertrag besitzt nicht v27.31t.")
+if storage.get("version") != "v27.31u":
+    fail("Domain-Speichervertrag besitzt nicht v27.31u.")
 
 identity_binding = storage.get("identityBinding", {})
 
@@ -299,8 +299,8 @@ outer = read_json(
     "Äußerer RPC-Vertrag",
 )
 
-if outer.get("version") != "v27.31n":
-    fail("Äußerer RPC-Vertrag besitzt nicht v27.31n.")
+if outer.get("version") != "v27.31u":
+    fail("Äußerer RPC-Vertrag besitzt nicht v27.31u.")
 
 outer_parameters = outer.get(
     "publicInterface",
@@ -326,8 +326,50 @@ if outer.get(
     {},
 ).get(
     "expectedStorageVersionIdentityBinding"
-) is not True:
-    fail("Äußerer RPC-Vertrag markiert die Versionsbindung nicht offen.")
+) is not False:
+    fail("Äußerer RPC-Vertrag schließt die Versionsbindung nicht.")
+
+
+outer_rpc_path = (
+    ROOT
+    / "supabase"
+    / "migrations"
+    / "20260723_v2731u_"
+      "exam_history_outer_domain_mutation_rpc.sql"
+)
+
+if not outer_rpc_path.is_file():
+    fail("Äußerer Fachmutations-RPC fehlt.")
+
+outer_rpc_compact = re.sub(
+    r"\s+",
+    " ",
+    re.sub(
+        r"--.*?$",
+        "",
+        outer_rpc_path.read_text(encoding="utf-8").lower(),
+        flags=re.MULTILINE,
+    ),
+).strip()
+
+for helper_name in (
+    "public.accaoui_issue_exam_history_operation_identity",
+    "public.accaoui_reserve_exam_history_idempotency_operation",
+    "public.accaoui_mutate_exam_history_domain_resource",
+):
+    helper_call = re.search(
+        re.escape(helper_name)
+        + r"\s*\((.*?)\)",
+        outer_rpc_compact,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not helper_call:
+        fail(f"Äußerer Versionsbindungs-Helperaufruf fehlt: {helper_name}")
+    if "p_expected_storage_version" not in helper_call.group(1):
+        fail(
+            "Äußerer RPC übergibt nicht denselben erwarteten "
+            f"Versionsstand an: {helper_name}"
+        )
 
 issuance_contract = read_json(
     ISSUANCE_CONTRACT_PATH,

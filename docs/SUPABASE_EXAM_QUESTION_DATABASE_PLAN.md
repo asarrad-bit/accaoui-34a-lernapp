@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31t
+Stand: v27.31u
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1570,6 +1570,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_STORAGE_CONTRACT.md`
 
+## Äußerer Fachmutations-RPC v27.31u
+
+Eine vollständig gesperrte Folgemigration erstellt:
+
+`public.accaoui_mutate_exam_history_domain`
+
+Der RPC verbindet Authentifizierung, Payload-Kanonisierung,
+Operations-ID-Ausstellung, Idempotenzreservierung,
+Domain-Speichermutation und Idempotenzabschluss in derselben
+Datenbanktransaktion.
+
+Nur neue Reservierungen mutieren. Pending- und
+Terminalwiederholungen verwenden den gespeicherten Zustand.
+Erwartete Domain-Fehler werden nach Teilrollback stabil als
+Failed abgeschlossen; unerwartete Fehler rollen den gesamten
+Aufruf zurück.
+
+Die Clientantwort enthält keine internen UUIDs, Hashes oder
+Fingerprints. Direkte Ausführung und Live-Anbindung bleiben
+gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_RPC_INTERFACE_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1660,17 +1685,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31t` kann `v27.31u`
-den vollständig gesperrten äußeren Fachmutations-RPC
-vorbereiten.
+Nach GitHub-Bestätigung von `v27.31u` kann `v27.31v`
+einen statischen End-to-End-Audit für den äußeren
+Fachmutations-RPC ergänzen.
 
-Der äußere RPC muss Authentifizierung, Payload-Kanonisierung,
-Operations-ID-Ausstellung, Idempotenzreservierung,
-Domain-Speichermutation und Idempotenzabschluss in derselben
-Datenbanktransaktion verbinden.
+Der Audit muss neue, Pending-, Completed- und Failed-Vorgänge,
+erwartete Domain-Fehler mit Teilrollback, unerwartete Fehler mit
+Gesamtrollback sowie den Ausschluss interner UUIDs und
+Fingerprints aus der Clientantwort prüfen.
 
-Direkte Tabellenrechte, interne UUID- oder Fingerprintausgabe,
-Live-Ausführung und UI-Anbindung bleiben ausgeschlossen.
+Live-Datenbankausführung, direkte App-Freigabe und UI-Anbindung
+bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1728,6 +1753,7 @@ eingebunden und gesperrte Speicher-Versionsstand-
 Schema-Migration v27.31p, gesperrte Operations-ID-
 Ausstellungsbindung v27.31q, gesperrte Idempotenz-
 Reservierungsbindung v27.31r, vollständig gesperrte
-Domain-Speichertabelle v27.31s und vollständig gesperrter
-Domain-Speicher-Mutationshelper v27.31t vorbereitet;
+Domain-Speichertabelle v27.31s, vollständig gesperrter
+Domain-Speicher-Mutationshelper v27.31t und vollständig
+gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet;
 keine Live-Ausführung

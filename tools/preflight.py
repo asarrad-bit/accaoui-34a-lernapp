@@ -385,6 +385,7 @@ def main():
         "supabase/migrations/20260722_v2731r_exam_history_idempotency_expected_version_reserve_rpc.sql",
         "supabase/migrations/20260723_v2731s_exam_history_domain_resources.sql",
         "supabase/migrations/20260723_v2731t_exam_history_domain_resource_mutate_rpc.sql",
+        "supabase/migrations/20260723_v2731u_exam_history_outer_domain_mutation_rpc.sql",
     ]
 
     for file_path in required_files:

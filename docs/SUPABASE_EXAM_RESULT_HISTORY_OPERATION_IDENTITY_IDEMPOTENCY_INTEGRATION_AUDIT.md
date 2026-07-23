@@ -250,3 +250,19 @@ und kann die gespeicherte Identität nicht überschreiben.
 
 Damit sind die beiden inneren Versionsgrenzen vorbereitet. Die
 äußere transaktionale Fachintegration bleibt weiterhin offen.
+
+
+## Äußere transaktionale Integration v27.31u
+
+Der äußere RPC verbindet Operations-ID-Ausstellung,
+Idempotenzreservierung, Domain-Mutation und
+Idempotenzabschluss in einem Datenbankaufruf.
+
+Pending- und Terminalwiederholungen führen keine erneute
+Domain-Mutation aus. Erwartete Domain-Fehler werden nach
+Teilrollback stabil abgeschlossen; unerwartete Fehler rollen
+den gesamten Aufruf zurück.
+
+Interne UUIDs und Fingerprints bleiben aus der Clientantwort
+ausgeschlossen. Eine direkte Ausführungsfreigabe existiert
+noch nicht.

@@ -255,10 +255,10 @@ transaction_contract = read_json(
     "Transaktionaler Fachmutationsvertrag",
 )
 
-if issuance_contract.get("version") != "v27.31q":
+if issuance_contract.get("version") != "v27.31u":
     fail(
         "Operations-ID-Ausstellungsvertrag besitzt "
-        "nicht v27.31q."
+        "nicht v27.31u."
     )
 
 if issuance_contract.get(
@@ -278,7 +278,7 @@ if issuance_unresolved != {
     "issuanceTableImplementation": False,
     "issuanceRpcImplementation": False,
     "issuanceExpectedStorageVersionBinding": False,
-    "domainMutationRpcImplementation": True,
+    "domainMutationRpcImplementation": False,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
 }:
@@ -347,10 +347,10 @@ if transaction_identity.get(
 
 if transaction_identity.get(
     "verifiedNow"
-) is not False:
+) is not True:
     fail(
-        "Operations-ID-Integration darf noch nicht "
-        "als vollständig verifiziert gelten."
+        "Operations-ID-Integration ist nicht "
+        "vollständig verifiziert."
     )
 
 transaction_unresolved = transaction_contract.get(
@@ -360,17 +360,18 @@ transaction_unresolved = transaction_contract.get(
 
 if transaction_unresolved.get(
     "trustedOperationIdentityIssuance"
-) is not True:
+) is not False:
     fail(
         "Vertrauenswürdige Operations-ID-Ausstellung "
-        "muss bis zur äußeren Integration offen bleiben."
+        "ist nicht geschlossen integriert."
     )
 
 if transaction_unresolved.get(
     "domainMutationRpcImplementation"
-) is not True:
+) is not False:
     fail(
-        "Äußerer Fachmutations-RPC muss noch offen sein."
+        "Äußerer Fachmutations-RPC ist nicht als "
+        "implementiert markiert."
     )
 
 issue_parameters = parse_parameters(
@@ -681,10 +682,12 @@ for sql_path in MIGRATIONS.glob("*.sql"):
     ):
         integrated_sql_files.append(sql_path.name)
 
-if integrated_sql_files:
+if integrated_sql_files != [
+    "20260723_v2731u_"
+    "exam_history_outer_domain_mutation_rpc.sql"
+]:
     fail(
-        "Äußerer Integrations-RPC wurde in v27.31j "
-        "unerwartet bereits ergänzt: "
+        "Äußerer Integrations-RPC ist nicht eindeutig: "
         f"{integrated_sql_files}"
     )
 
@@ -709,8 +712,12 @@ print(
     "erst danach zurückgegeben"
 )
 print(
-    "Schnittstelle: Ausstellungs- und Reservierungshelper "
-    "binden denselben erwarteten Versionsstand"
+    "Schnittstelle: Ausstellungs-, Reservierungs- und "
+    "Domain-Helfer erhalten denselben erwarteten Versionsstand"
+)
+print(
+    "Äußerer RPC: transaktionale Integration vorbereitet, "
+    "direkte Ausführung weiterhin gesperrt"
 )
 print(
     "Direkte Helper-Ausführung: für public, anon und "

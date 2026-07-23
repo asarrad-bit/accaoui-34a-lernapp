@@ -1,9 +1,9 @@
 {
-  "version": "v27.31r",
+  "version": "v27.31u",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
-  "implementationPresent": false,
+  "implementationPresent": true,
   "browserBoundary": {
     "parameter": "p_expected_storage_version",
     "type": "bigint",
@@ -120,8 +120,8 @@
     "idempotencyTableMigration": false,
     "issuanceRpcMigration": false,
     "reserveRpcMigration": false,
-    "storageTableImplementation": true,
-    "outerDomainMutationRpcImplementation": true,
+    "storageTableImplementation": false,
+    "outerDomainMutationRpcImplementation": false,
     "liveDatabaseTests": true,
     "concurrencyTests": true,
     "authorizationTests": true

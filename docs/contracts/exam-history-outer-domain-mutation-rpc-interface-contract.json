@@ -1,9 +1,9 @@
 {
-  "version": "v27.31n",
+  "version": "v27.31u",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
-  "implementationPresent": false,
+  "implementationPresent": true,
   "publicInterface": {
     "rpcType": "single_security_definer_domain_mutation_rpc",
     "allowedParameters": [
@@ -151,10 +151,21 @@
   },
   "unresolvedRequirements": {
     "scopeSpecificPayloadSchemas": false,
-    "outerDomainMutationRpcImplementation": true,
+    "outerDomainMutationRpcImplementation": false,
     "liveDatabaseTests": true,
     "concurrencyTests": true,
     "authorizationTests": true,
-    "expectedStorageVersionIdentityBinding": true
+    "expectedStorageVersionIdentityBinding": false
+  },
+  "implementation": {
+    "name": "public.accaoui_mutate_exam_history_domain",
+    "migrationPath": "supabase/migrations/20260723_v2731u_exam_history_outer_domain_mutation_rpc.sql",
+    "implementationPresent": true,
+    "migrationLiveExecuted": false,
+    "directExecutionGrantPresent": false,
+    "singleDatabaseTransaction": true,
+    "returnsInternalOperationId": false,
+    "returnsInternalFingerprints": false,
+    "directTableMutation": false
   }
 }

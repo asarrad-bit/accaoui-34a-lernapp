@@ -63,8 +63,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31q":
-    fail("Ausstellungsvertragsversion ist nicht v27.31q.")
+if contract["version"] != "v27.31u":
+    fail("Ausstellungsvertragsversion ist nicht v27.31u.")
 
 if contract["contractVersion"] != 1:
     fail("Ausstellungsvertragsschema ist nicht Version 1.")
@@ -83,7 +83,7 @@ expected_authority = {
     "clientSuppliedOperationIdTrusted": False,
     "clientSuppliedOperationIdAcceptedAsAuthority": False,
     "operationIdAloneSufficientForVerification": False,
-    "verificationNow": False,
+    "verificationNow": True,
     "liveExecution": False,
 }
 
@@ -197,7 +197,7 @@ expected_unresolved = {
     "issuanceTableImplementation": False,
     "issuanceRpcImplementation": False,
     "issuanceExpectedStorageVersionBinding": False,
-    "domainMutationRpcImplementation": True,
+    "domainMutationRpcImplementation": False,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
 }
@@ -225,10 +225,10 @@ transaction_unresolved = transaction_contract.get(
 
 if transaction_unresolved.get(
     "trustedOperationIdentityIssuance"
-) is not True:
+) is not False:
     fail(
         "Vertrauenswürdige Operations-ID-Ausstellung "
-        "darf noch nicht als umgesetzt gelten."
+        "ist nicht vollständig integriert."
     )
 
 ISSUANCE_TABLE_PATH = (
@@ -619,6 +619,10 @@ print(
 print(
     "Operations-ID allein: kein ausreichender "
     "Vertrauensnachweis"
+)
+print(
+    "Äußere Integration: Ausstellung wird ausschließlich "
+    "innerhalb des gesperrten Fachmutations-RPC verwendet"
 )
 print("Produktive Freigabe: nein")
 print("Live-Ausführung: nein")

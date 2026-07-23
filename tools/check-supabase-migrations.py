@@ -68,6 +68,10 @@ DOMAIN_STORAGE_MUTATION_HELPER = (
     "20260723_v2731t_"
     "exam_history_domain_resource_mutate_rpc.sql"
 )
+OUTER_DOMAIN_MUTATION_RPC = (
+    "20260723_v2731u_"
+    "exam_history_outer_domain_mutation_rpc.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -135,6 +139,7 @@ for required in (
     IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC,
     DOMAIN_STORAGE_TABLE,
     DOMAIN_STORAGE_MUTATION_HELPER,
+    OUTER_DOMAIN_MUTATION_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -303,6 +308,14 @@ if files.index(DOMAIN_STORAGE_TABLE) >= files.index(
     fail(
         "Domain-Speicher-Mutationshelper steht vor der "
         "Domain-Speichertabelle."
+    )
+
+if files.index(DOMAIN_STORAGE_MUTATION_HELPER) >= files.index(
+    OUTER_DOMAIN_MUTATION_RPC
+):
+    fail(
+        "Äußerer Domain-Mutations-RPC steht vor dem "
+        "internen Domain-Speicher-Mutationshelper."
     )
 
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
@@ -831,6 +844,89 @@ if v2731t_sql_files != [
     "20260723_v2731t_exam_history_domain_resource_mutate_rpc.sql"
 ]:
     fail(f"Unerwartete v27.31t-SQL-Dateien: {v2731t_sql_files}")
+
+
+outer_domain_mutation_rpc = (
+    MIGRATIONS / OUTER_DOMAIN_MUTATION_RPC
+).read_text(encoding="utf-8")
+
+outer_domain_mutation_clean = re.sub(
+    r"--.*?$",
+    "",
+    outer_domain_mutation_rpc,
+    flags=re.MULTILINE,
+)
+outer_domain_mutation_compact = re.sub(
+    r"\s+",
+    " ",
+    outer_domain_mutation_clean.lower(),
+).strip()
+
+for marker in (
+    "function public.accaoui_mutate_exam_history_domain(",
+    "p_client_request_key text",
+    "p_expected_storage_version bigint",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "public.accaoui_validate_exam_history_domain_payload(",
+    "public.accaoui_issue_exam_history_operation_identity(",
+    "public.accaoui_reserve_exam_history_idempotency_operation(",
+    "public.accaoui_mutate_exam_history_domain_resource(",
+    "public.accaoui_complete_exam_history_idempotency_operation(",
+    "'reserved_existing_pending'",
+    "'reserved_existing_completed'",
+    "'reserved_existing_failed'",
+    "'reserved_new'",
+    "get stacked diagnostics v_failure_code = message_text",
+):
+    if marker not in outer_domain_mutation_compact:
+        fail(f"Äußere Domain-Mutations-RPC-Anweisung fehlt: {marker}")
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_mutate_exam_history_domain"
+        r"\s*\(\s*text\s*,\s*text\s*,\s*text\s*,\s*"
+        r"text\s*,\s*bigint\s*,\s*jsonb\s*\)\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+    if not re.search(
+        revoke_pattern,
+        outer_domain_mutation_rpc,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(f"Äußerer Domain-Mutations-RPC-Revoke fehlt: {role}")
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "sqlerrm",
+    "insert into public.",
+    "update public.",
+    "delete from public.",
+    "exam_history_domain_resources",
+    "exam_history_idempotency_operations",
+    "exam_history_operation_identity_issuances",
+):
+    if forbidden in outer_domain_mutation_compact:
+        fail(f"Unzulässiger Inhalt im äußeren Domain-RPC: {forbidden}")
+
+v2731u_sql_files = sorted(
+    path.name for path in MIGRATIONS.glob("*v2731u*.sql")
+)
+if v2731u_sql_files != [
+    "20260723_v2731u_"
+    "exam_history_outer_domain_mutation_rpc.sql"
+]:
+    fail(f"Unerwartete v27.31u-SQL-Dateien: {v2731u_sql_files}")
 
 question_schema_bundle = (
     question_schema
@@ -3009,4 +3105,9 @@ print("Live-Ausführung: nein")
 print(
     "Domain-Speicher-Mutationshelper: auth.uid(), Payload-Validierung, "
     "Row Lock, Versionsvergleich und Tombstone vorbereitet"
+)
+
+print(
+    "Äußerer Domain-Mutations-RPC: transaktionale Helperkette "
+    "vorbereitet und direkte Ausführung gesperrt"
 )

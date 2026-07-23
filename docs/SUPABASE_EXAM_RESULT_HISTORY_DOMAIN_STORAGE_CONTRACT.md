@@ -1,6 +1,6 @@
 # Domain-Speichervertrag
 
-Stand: v27.31t
+Stand: v27.31u
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -255,3 +255,17 @@ die Live-Ausführung bleiben offen.
 Migration:
 
 `supabase/migrations/20260723_v2731t_exam_history_domain_resource_mutate_rpc.sql`
+
+
+## Transaktionale äußere Bindung v27.31u
+
+Der äußere Fachmutations-RPC übergibt denselben erwarteten
+Speicher-Versionsstand an:
+
+- Operations-ID-Ausstellung
+- Idempotenzreservierung
+- Domain-Speicher-Mutationshelper
+
+Die End-to-End-Versionsbindung ist damit statisch geschlossen.
+Die Migration bleibt nicht live ausgeführt und besitzt noch
+keine direkte App-Ausführungsfreigabe.

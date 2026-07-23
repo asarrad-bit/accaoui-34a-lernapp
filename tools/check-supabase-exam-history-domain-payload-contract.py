@@ -62,8 +62,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31m":
-    fail("Fach-Payload-Vertrag besitzt nicht v27.31m.")
+if contract["version"] != "v27.31u":
+    fail("Fach-Payload-Vertrag besitzt nicht v27.31u.")
 
 if contract["contractVersion"] != 1:
     fail("Fach-Payload-Vertrag besitzt nicht Schema 1.")
@@ -229,8 +229,8 @@ for failure in all_failures:
         fail(f"Ungültiger stabiler Fachfehler: {failure}")
 
 expected_unresolved = {
-    "outerDomainMutationRpcImplementation": True,
-    "domainStorageImplementation": True,
+    "outerDomainMutationRpcImplementation": False,
+    "domainStorageImplementation": False,
     "payloadValidationHelperImplementation": False,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
@@ -245,8 +245,8 @@ outer_contract = read_json(
     "Äußerer Fachmutations-RPC-Vertrag",
 )
 
-if outer_contract.get("version") != "v27.31n":
-    fail("Äußerer RPC-Vertrag besitzt nicht v27.31n.")
+if outer_contract.get("version") != "v27.31u":
+    fail("Äußerer RPC-Vertrag besitzt nicht v27.31u.")
 
 if outer_contract.get(
     "productiveReleaseAllowed"
@@ -255,8 +255,8 @@ if outer_contract.get(
 
 if outer_contract.get(
     "implementationPresent"
-) is not False:
-    fail("Äußerer RPC darf noch nicht umgesetzt sein.")
+) is not True:
+    fail("Äußerer RPC ist nicht als umgesetzt markiert.")
 
 payload_rules = outer_contract.get(
     "payloadRules",
@@ -285,9 +285,9 @@ if outer_unresolved.get(
 
 if outer_unresolved.get(
     "outerDomainMutationRpcImplementation"
-) is not True:
+) is not False:
     fail(
-        "Äußerer Fachmutations-RPC muss noch offen bleiben."
+        "Äußerer Fachmutations-RPC ist nicht geschlossen."
     )
 
 VALIDATION_RPC_PATH = (
@@ -533,6 +533,10 @@ print(
     "Schlüssel und Größe serverseitig geprüft"
 )
 print(
+    "Äußere Integration: kanonischer Payload wird im "
+    "gesperrten Fachmutations-RPC verwendet"
+)
+print(
     "Payload-Fingerprint-Helfer: kanonisches JSONB "
     "mit SHA-256 abgeleitet"
 )
@@ -561,6 +565,9 @@ print(
     "Zusätzliche Hüllenfelder und interne Identitätsfelder: "
     "gesperrt"
 )
-print("Äußerer RPC implementiert: nein")
+print(
+    "Äußerer RPC implementiert: vorbereitet und "
+    "vollständig gesperrt"
+)
 print("Produktive Freigabe: nein")
 print("Live-Ausführung: nein")

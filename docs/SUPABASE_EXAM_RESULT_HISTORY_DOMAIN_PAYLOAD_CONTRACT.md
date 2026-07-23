@@ -1,7 +1,6 @@
 # Kanonischer Fach-Payload-Vertrag
 
-Stand: v27.31m
-
+Stand: v27.31u
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -122,10 +121,9 @@ Er:
 
 ## Noch offen
 
-- äußerer Fachmutations-RPC
-- produktive Domain-Speicherung
 - Live-Datenbanktests
 - Parallelitäts-, Autorisierungs- und Konkurrenztests
+- direkte App-Freigabe und UI-Anbindung
 
 ## Sicherheitsgrenze
 
@@ -140,3 +138,17 @@ Er:
 `tools/check-supabase-exam-history-domain-payload-contract.py`
 
 Der Prüfer ist dauerhaft in `tools/preflight.py` eingebunden.
+
+
+## Äußere Payload-Integration v27.31u
+
+Der vollständig gesperrte äußere Fachmutations-RPC ruft den
+kanonischen Fach-Payload-Validierungshelper vor
+Operations-ID-Ausstellung und Idempotenzreservierung auf.
+
+Nur der serverseitig kanonisierte Payload und dessen interner
+Fingerprint werden an die nachfolgenden Helper weitergegeben.
+Der Fingerprint bleibt aus der Clientantwort ausgeschlossen.
+
+Die Integration ist statisch vorbereitet, aber weiterhin nicht
+live ausgeführt.

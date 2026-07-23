@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31t
+Stand: v27.31u
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -275,3 +275,39 @@ Idempotenzreservierung und Domain-Mutationshelper weitergeben
 und alle Schritte in einer Datenbanktransaktion verbinden.
 
 Direkte Browserausführung des internen Helpers bleibt verboten.
+
+
+## Gesperrter äußerer Fachmutations-RPC v27.31u
+
+Der äußere Security-Definer-RPC
+
+`public.accaoui_mutate_exam_history_domain`
+
+verbindet in einem einzelnen Datenbankaufruf:
+
+1. Authentifizierung
+2. kanonische Payload-Validierung
+3. Operations-ID-Ausstellung
+4. Idempotenzreservierung
+5. Domain-Speichermutation
+6. Idempotenzabschluss
+
+Nur `reserved_new` darf die Domain-Mutation ausführen.
+Bestehende Pending-, Completed- oder Failed-Vorgänge werden
+ohne erneute Mutation beantwortet.
+
+Erwartete Domain-Fehler rollen ausschließlich den inneren
+Mutationsblock zurück und werden danach stabil als Failed
+abgeschlossen. Unerwartete Fehler werden erneut ausgelöst und
+rollen den gesamten Datenbankaufruf zurück.
+
+Die Clientantwort enthält keine Operations-UUID,
+Operationsidentität, Hashes, Fingerprints oder rohen
+Datenbankfehler.
+
+Direkte Ausführung für `public`, `anon` und `authenticated`
+bleibt bis zur späteren Live-Freigabe vollständig gesperrt.
+
+Migration:
+
+`supabase/migrations/20260723_v2731u_exam_history_outer_domain_mutation_rpc.sql`

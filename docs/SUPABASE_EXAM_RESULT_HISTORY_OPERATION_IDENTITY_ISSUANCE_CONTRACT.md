@@ -1,7 +1,6 @@
 # Operations-ID-Ausstellungsvertrag
 
-Stand: v27.31q
-
+Stand: v27.31u
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -193,3 +192,16 @@ im nächsten getrennten Schritt erweitert.
 Migration:
 
 `supabase/migrations/20260722_v2731q_exam_history_operation_identity_expected_version_rpc.sql`
+
+
+## Äußere Integrationsbindung v27.31u
+
+Die serverseitig ausgestellte Operations-UUID wird jetzt
+ausschließlich innerhalb des vollständig gesperrten äußeren
+Fachmutations-RPCs an die Idempotenzreservierung weitergegeben.
+
+Der Browser übermittelt weiterhin nur den unvertrauenswürdigen
+Client-Wiederholungsschlüssel. Die interne UUID bleibt aus der
+Clientantwort ausgeschlossen.
+
+Live-Ausführung und direkte App-Freigabe bleiben offen.

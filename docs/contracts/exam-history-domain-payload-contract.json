@@ -1,5 +1,5 @@
 {
-  "version": "v27.31m",
+  "version": "v27.31u",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -102,8 +102,8 @@
     "domain_payload_canonicalization_failed"
   ],
   "unresolvedRequirements": {
-    "outerDomainMutationRpcImplementation": true,
-    "domainStorageImplementation": true,
+    "outerDomainMutationRpcImplementation": false,
+    "domainStorageImplementation": false,
     "liveDatabaseTests": true,
     "concurrencyTests": true,
     "authorizationTests": true,
