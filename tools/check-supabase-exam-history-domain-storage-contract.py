@@ -39,6 +39,12 @@ STORAGE_TABLE_PATH = (
       "exam_history_domain_resources.sql"
 )
 
+MUTATION_HELPER_PATH = (
+    MIGRATIONS
+    / "20260723_v2731t_"
+      "exam_history_domain_resource_mutate_rpc.sql"
+)
+
 
 def fail(message: str) -> None:
     print(f"FEHLER: {message}")
@@ -69,8 +75,8 @@ def compact(text: str) -> str:
 
 contract = read_json(CONTRACT_PATH, "Domain-Speichervertrag")
 
-if contract.get("version") != "v27.31s":
-    fail("Domain-Speichervertrag besitzt nicht v27.31s.")
+if contract.get("version") != "v27.31t":
+    fail("Domain-Speichervertrag besitzt nicht v27.31t.")
 
 if contract.get("contractVersion") != 1:
     fail("Domain-Speichervertrag besitzt nicht Schema 1.")
@@ -288,7 +294,7 @@ if contract.get("stableFailures") != [
 expected_unresolved = {
     "expectedVersionIdentityBinding": True,
     "storageTableImplementation": False,
-    "storageMutationHelperImplementation": True,
+    "storageMutationHelperImplementation": False,
     "outerDomainMutationRpcImplementation": True,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
@@ -296,6 +302,31 @@ expected_unresolved = {
 }
 if contract.get("unresolvedRequirements") != expected_unresolved:
     fail("Offene Domain-Speicheranforderungen sind ungültig.")
+
+
+mutation_helper = contract.get("mutationHelper", {})
+if mutation_helper != {
+    "name": (
+        "public."
+        "accaoui_mutate_exam_history_domain_resource"
+    ),
+    "implementationPresent": True,
+    "migrationPath": (
+        "supabase/migrations/"
+        "20260723_v2731t_"
+        "exam_history_domain_resource_mutate_rpc.sql"
+    ),
+    "migrationLiveExecuted": False,
+    "directExecutionAllowed": False,
+    "authUserFromAuthUidOnly": True,
+    "usesPayloadValidationHelper": True,
+    "resourceLock": "select_for_update",
+    "expectedVersionComparedInsideLock": True,
+    "physicalDeleteAllowed": False,
+    "samePayloadCreatesNewVersion": False,
+    "uniqueCreateConflictReevaluated": True,
+}:
+    fail("Domain-Speicher-Mutationshelpervertrag ist ungültig.")
 
 outer = read_json(
     OUTER_CONTRACT_PATH,
@@ -412,6 +443,129 @@ if v2731s_sql_files != [
 ]:
     fail(f"Unerwartete v27.31s-SQL-Dateien: {v2731s_sql_files}")
 
+
+if not MUTATION_HELPER_PATH.is_file():
+    fail("Domain-Speicher-Mutationshelper-Migration fehlt.")
+
+helper_sql = MUTATION_HELPER_PATH.read_text(encoding="utf-8")
+helper_clean = without_comments(helper_sql)
+helper_lower = helper_clean.lower()
+helper_compact = compact(helper_clean)
+
+required_helper_markers = (
+    "function public.accaoui_mutate_exam_history_domain_resource(",
+    "p_operation_scope text",
+    "p_operation text",
+    "p_resource_identity text",
+    "p_expected_storage_version bigint",
+    "p_domain_payload jsonb default null",
+    "language plpgsql",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "message = 'authentication_required'",
+    "message = 'domain_storage_scope_invalid'",
+    "message = 'domain_storage_resource_identity_invalid'",
+    "message = 'domain_storage_expected_version_invalid'",
+    "public.accaoui_validate_exam_history_domain_payload(",
+    "message = 'domain_storage_payload_invalid'",
+    "from public.exam_history_domain_resources resource",
+    "for update",
+    "message = 'domain_storage_version_conflict'",
+    "message = 'domain_storage_state_invalid'",
+    "insert into public.exam_history_domain_resources",
+    "when unique_violation then",
+    "update public.exam_history_domain_resources",
+    "storage_version = storage_version + 1",
+    "is_deleted = true",
+    "domain_payload = null",
+    "payload_fingerprint = null",
+    "canonical_byte_length = null",
+    "'created'::text",
+    "'updated'::text",
+    "'deleted'::text",
+    "'already_absent'::text",
+    "'already_deleted'::text",
+)
+
+for marker in required_helper_markers:
+    if marker not in helper_compact:
+        fail(f"Domain-Speicher-Mutationshelper-Anweisung fehlt: {marker}")
+
+if len(re.findall(
+    r"create\s+or\s+replace\s+function\s+"
+    r"public\.accaoui_mutate_exam_history_domain_resource\s*\(",
+    helper_sql,
+    flags=re.IGNORECASE,
+)) != 1:
+    fail("Domain-Speicher-Mutationshelper muss genau einmal vorkommen.")
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_mutate_exam_history_domain_resource"
+        r"\s*\(\s*text\s*,\s*text\s*,\s*text\s*,\s*"
+        r"bigint\s*,\s*jsonb\s*\)\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+    if not re.search(
+        revoke_pattern,
+        helper_sql,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(f"Domain-Speicher-Mutationshelper-Revoke fehlt: {role}")
+
+mutation_targets = [
+    (
+        re.sub(r"\s+", " ", action.lower()),
+        table.lower(),
+    )
+    for action, table in re.findall(
+        r"\b(insert\s+into|update|delete\s+from)\s+"
+        r"(?:public\.)?([a-z_]+)",
+        helper_clean,
+        flags=re.IGNORECASE,
+    )
+]
+
+if mutation_targets != [
+    ("insert into", "exam_history_domain_resources"),
+    ("update", "exam_history_domain_resources"),
+    ("update", "exam_history_domain_resources"),
+]:
+    fail(
+        "Domain-Speicher-Mutationshelper verändert unerwartete Tabellen: "
+        f"{mutation_targets}"
+    )
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "participant_id",
+    "exam_history_idempotency_operations",
+    "exam_history_operation_identity_issuances",
+    "delete from public.exam_history_domain_resources",
+    "sqlerrm",
+    "stacked diagnostics",
+):
+    if forbidden in helper_lower:
+        fail(f"Unzulässiger Inhalt im Domain-Speicher-Mutationshelper: {forbidden}")
+
+v2731t_sql_files = sorted(
+    path.name for path in MIGRATIONS.glob("*v2731t*.sql")
+)
+if v2731t_sql_files != [
+    "20260723_v2731t_exam_history_domain_resource_mutate_rpc.sql"
+]:
+    fail(f"Unerwartete v27.31t-SQL-Dateien: {v2731t_sql_files}")
+
 for frontend_path in (
     ROOT / "index.html",
     ROOT / "app.js",
@@ -423,6 +577,8 @@ for frontend_path in (
         "exam_history_domain_resources",
         CONTRACT_PATH.name.lower(),
         STORAGE_TABLE_PATH.name.lower(),
+        MUTATION_HELPER_PATH.name.lower(),
+        "accaoui_mutate_exam_history_domain_resource",
     ):
         if forbidden_reference in frontend_text:
             fail(
@@ -453,6 +609,6 @@ print(
     "Direkter Zugriff: RLS erzwungen und App-Rollen vollständig gesperrt"
 )
 print("Speichertabelle implementiert: vorbereitet, nicht live")
-print("Mutationshelper implementiert: nein")
+print("Mutationshelper implementiert: vorbereitet, nicht live")
 print("Produktive Freigabe: nein")
 print("Live-Ausführung: nein")

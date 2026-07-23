@@ -1,6 +1,6 @@
 # Domain-Speichervertrag
 
-Stand: v27.31s
+Stand: v27.31t
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -224,3 +224,34 @@ Policy und alle Tabellenrechte für `public`, `anon` und
 Migration:
 
 `supabase/migrations/20260723_v2731s_exam_history_domain_resources.sql`
+
+
+## Gesperrter Domain-Speicher-Mutationshelper v27.31t
+
+Der interne Security-Definer-Helper
+
+`public.accaoui_mutate_exam_history_domain_resource`
+
+bindet den Nutzer ausschließlich über `auth.uid()` und
+akzeptiert Bereich, Operation, Ressourcenidentität, erwarteten
+Versionsstand und Fach-Payload.
+
+Der Helper:
+
+- verwendet den kanonischen Fach-Payload-Validierungshelper
+- sperrt vorhandene Ressourcen mit `SELECT ... FOR UPDATE`
+- erlaubt Create nur mit erwarteter Version 0
+- verlangt bei Update und Delete den exakten aktuellen Stand
+- erhöht erfolgreiche Zustandsänderungen monoton um 1
+- erzeugt bei Delete einen Tombstone
+- führt niemals ein physisches Delete aus
+- erzeugt bei identischem Live-Payload keine unnötige Version
+- bewertet konkurrierende Unique-Konflikte erneut
+
+Direkte Ausführung für `public`, `anon` und `authenticated`
+bleibt vollständig gesperrt. Der äußere Fachmutations-RPC und
+die Live-Ausführung bleiben offen.
+
+Migration:
+
+`supabase/migrations/20260723_v2731t_exam_history_domain_resource_mutate_rpc.sql`

@@ -1,5 +1,5 @@
 {
-  "version": "v27.31s",
+  "version": "v27.31t",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -179,10 +179,24 @@
   "unresolvedRequirements": {
     "expectedVersionIdentityBinding": true,
     "storageTableImplementation": false,
-    "storageMutationHelperImplementation": true,
+    "storageMutationHelperImplementation": false,
     "outerDomainMutationRpcImplementation": true,
     "liveDatabaseTests": true,
     "concurrencyTests": true,
     "authorizationTests": true
+  },
+  "mutationHelper": {
+    "name": "public.accaoui_mutate_exam_history_domain_resource",
+    "implementationPresent": true,
+    "migrationPath": "supabase/migrations/20260723_v2731t_exam_history_domain_resource_mutate_rpc.sql",
+    "migrationLiveExecuted": false,
+    "directExecutionAllowed": false,
+    "authUserFromAuthUidOnly": true,
+    "usesPayloadValidationHelper": true,
+    "resourceLock": "select_for_update",
+    "expectedVersionComparedInsideLock": true,
+    "physicalDeleteAllowed": false,
+    "samePayloadCreatesNewVersion": false,
+    "uniqueCreateConflictReevaluated": true
   }
 }

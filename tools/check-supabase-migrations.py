@@ -64,6 +64,10 @@ DOMAIN_STORAGE_TABLE = (
     "20260723_v2731s_"
     "exam_history_domain_resources.sql"
 )
+DOMAIN_STORAGE_MUTATION_HELPER = (
+    "20260723_v2731t_"
+    "exam_history_domain_resource_mutate_rpc.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -130,6 +134,7 @@ for required in (
     OPERATION_IDENTITY_EXPECTED_VERSION_RPC,
     IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC,
     DOMAIN_STORAGE_TABLE,
+    DOMAIN_STORAGE_MUTATION_HELPER,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -290,6 +295,14 @@ if files.index(IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC) >= files.index(
     fail(
         "Domain-Speichertabelle steht vor der vollständigen "
         "inneren Versionsbindung."
+    )
+
+if files.index(DOMAIN_STORAGE_TABLE) >= files.index(
+    DOMAIN_STORAGE_MUTATION_HELPER
+):
+    fail(
+        "Domain-Speicher-Mutationshelper steht vor der "
+        "Domain-Speichertabelle."
     )
 
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
@@ -732,6 +745,92 @@ if v2731s_sql_files != [
         "Unerwartete v27.31s-SQL-Dateien: "
         f"{v2731s_sql_files}"
     )
+
+
+domain_storage_mutation_helper = (
+    MIGRATIONS / DOMAIN_STORAGE_MUTATION_HELPER
+).read_text(encoding="utf-8")
+
+domain_storage_mutation_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    domain_storage_mutation_helper,
+    flags=re.MULTILINE,
+)
+domain_storage_mutation_lower = (
+    domain_storage_mutation_without_comments.lower()
+)
+domain_storage_mutation_compact = re.sub(
+    r"\s+",
+    " ",
+    domain_storage_mutation_lower,
+).strip()
+
+for marker in (
+    "function public.accaoui_mutate_exam_history_domain_resource(",
+    "p_expected_storage_version bigint",
+    "security definer",
+    "set search_path = pg_catalog, public",
+    "set row_security = off",
+    "v_auth_user_id := auth.uid()",
+    "public.accaoui_validate_exam_history_domain_payload(",
+    "from public.exam_history_domain_resources resource",
+    "for update",
+    "message = 'domain_storage_version_conflict'",
+    "insert into public.exam_history_domain_resources",
+    "when unique_violation then",
+    "update public.exam_history_domain_resources",
+    "storage_version = storage_version + 1",
+    "is_deleted = true",
+):
+    if marker not in domain_storage_mutation_compact:
+        fail(
+            "Domain-Speicher-Mutationshelper-Anweisung fehlt: "
+            f"{marker}"
+        )
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_mutate_exam_history_domain_resource"
+        r"\s*\(\s*text\s*,\s*text\s*,\s*text\s*,\s*"
+        r"bigint\s*,\s*jsonb\s*\)\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+    if not re.search(
+        revoke_pattern,
+        domain_storage_mutation_helper,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(f"Domain-Speicher-Mutationshelper-Revoke fehlt: {role}")
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "participant_id",
+    "exam_history_idempotency_operations",
+    "exam_history_operation_identity_issuances",
+    "delete from public.exam_history_domain_resources",
+):
+    if forbidden in domain_storage_mutation_lower:
+        fail(
+            "Unzulässiger Inhalt im Domain-Speicher-Mutationshelper: "
+            f"{forbidden}"
+        )
+
+v2731t_sql_files = sorted(
+    path.name for path in MIGRATIONS.glob("*v2731t*.sql")
+)
+if v2731t_sql_files != [
+    "20260723_v2731t_exam_history_domain_resource_mutate_rpc.sql"
+]:
+    fail(f"Unerwartete v27.31t-SQL-Dateien: {v2731t_sql_files}")
 
 question_schema_bundle = (
     question_schema
@@ -2906,3 +3005,8 @@ print("Prüfungsdaten: Schreiben ausschließlich über geprüfte RPCs")
 print("Mitarbeiterrollen: Support nur lesend")
 print("Mitarbeiterrollen: Verwaltung nur Admin/Dozent")
 print("Live-Ausführung: nein")
+
+print(
+    "Domain-Speicher-Mutationshelper: auth.uid(), Payload-Validierung, "
+    "Row Lock, Versionsvergleich und Tombstone vorbereitet"
+)

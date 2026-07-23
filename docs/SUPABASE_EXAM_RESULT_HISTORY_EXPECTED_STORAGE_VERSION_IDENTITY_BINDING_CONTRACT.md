@@ -1,6 +1,6 @@
 # Speicher-Versionsstand-Identitätsbindung
 
-Stand: v27.31s
+Stand: v27.31t
 Status: verbindlicher lokaler Integrationsvertrag,
 nicht live ausgeführt
 
@@ -220,3 +220,15 @@ Neuanlage mit 1.
 
 Die End-to-End-Weitergabe des erwarteten Versionsstands durch
 den äußeren Fachmutations-RPC bleibt weiterhin offen.
+
+
+## Domain-Mutationsbindung v27.31t
+
+Der erwartete Speicher-Versionsstand wird jetzt zusätzlich im
+internen Domain-Speicher-Mutationshelper innerhalb der
+Zeilensperre exakt verglichen.
+
+Die vollständige äußere Weitergabe desselben Werts an
+Operations-ID-Ausstellung, Idempotenzreservierung und
+Domain-Mutation bleibt Aufgabe des späteren äußeren
+Fachmutations-RPCs.

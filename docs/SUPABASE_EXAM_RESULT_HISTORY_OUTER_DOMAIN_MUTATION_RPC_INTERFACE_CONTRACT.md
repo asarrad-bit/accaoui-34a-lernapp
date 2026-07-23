@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31s
+Stand: v27.31t
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -263,3 +263,15 @@ Der äußere Fachmutations-RPC bleibt gesperrt, bis ein interner
 Speicher-Mutationshelper den Payload-Validierungshelfer, exakten
 Versionsvergleich, Row Lock, monotone Versionserhöhung und
 Tombstone-Übergang atomar verbindet.
+
+
+## Interner Domain-Mutationshelper v27.31t
+
+Die innere Domain-Speichermutation ist jetzt vorbereitet.
+
+Der spätere äußere Fachmutations-RPC muss denselben erwarteten
+Versionsstand an Operations-ID-Ausstellung,
+Idempotenzreservierung und Domain-Mutationshelper weitergeben
+und alle Schritte in einer Datenbanktransaktion verbinden.
+
+Direkte Browserausführung des internen Helpers bleibt verboten.
