@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32b
+Stand: v27.32c
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1734,6 +1734,30 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_HARNESS_GATE_INTEGRATION.md`
 
+## Disposable PostgreSQL-Treiberauswahlvertrag v27.32c
+
+Für den späteren ausschließlich lokalen disposable Testbetrieb
+wurde verbindlich ausgewählt:
+
+`psycopg[binary]==3.3.4`
+
+Festgelegt sind:
+
+- Import ausschließlich im späteren Verbindungsadapter
+- exakte Versions- und Binary-Implementierungsprüfung
+- Verbindungs-, Statement-, Lock- und Szenario-Timeouts
+- explizite Transaktionen und vollständige Rollback-Regeln
+- stabile geschlossene Fehlercodes
+- keine Rohfehlerausgabe
+
+Es wurden keine Dependency-Datei, virtuelle Umgebung oder
+Systeminstallation verändert. Der Treiber wird nicht importiert
+und keine Verbindung geöffnet.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_DRIVER_SELECTION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1824,16 +1848,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32b` kann `v27.32c`
-einen verbindlichen Vertrag für die Auswahl eines ausschließlich
-lokalen disposable PostgreSQL-Testtreibers vorbereiten.
+Nach GitHub-Bestätigung von `v27.32c` kann `v27.32d`
+einen verbindungsfreien Treiber-Verfügbarkeits- und
+Versions-Readiness-Resolver vorbereiten.
 
-Der Vertrag muss Treiberversion, Importgrenze, Timeout und
-geschlossene Fehlerfälle festlegen, ohne einen Treiber zu
-installieren oder eine Verbindung zu öffnen.
+Der Resolver darf ausschließlich Paketmetadaten auswerten, ohne
+das Treibermodul zu importieren, eine Dependency zu installieren
+oder eine Datenbankverbindung zu öffnen.
 
-Treiberinstallation, Datenbankverbindung, Testausführung, direkte
-App-Freigabe und UI-Anbindung bleiben ausgeschlossen.
+Treiberinstallation, Treiberimport, Datenbankverbindung,
+Testausführung, direkte App-Freigabe und UI-Anbindung bleiben
+weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1899,6 +1924,7 @@ Datenbank-Testvertrag v27.31w, synthetischer Fixture- und
 Harness-Vertrag v27.31x, verbindungsfreier Fixture-Katalog und
 Harness-Readiness v27.31y, disposable Datenbank-
 Umgebungs-Gate-Vertrag v27.31z sowie verbindungsfreier
-Gate-Evaluator und Adapter-Readiness-State v27.32a sowie
-gesperrte Harness-Gate-Integration v27.32b dauerhaft eingebunden;
+Gate-Evaluator und Adapter-Readiness-State v27.32a,
+gesperrte Harness-Gate-Integration v27.32b sowie disposable
+PostgreSQL-Treiberauswahlvertrag v27.32c dauerhaft eingebunden;
 keine Live-Ausführung

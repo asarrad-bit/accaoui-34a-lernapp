@@ -398,6 +398,28 @@ def check_exam_result_history_disposable_database_harness_gate_integration():
         errors.append("Supabase-disposable Harness-Gate-Integration fehlgeschlagen")
 
 
+
+def check_exam_result_history_disposable_postgresql_driver_selection_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-disposable-postgresql-"
+        "driver-selection-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable PostgreSQL-"
+            "Treiberauswahlvertrag fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -534,6 +556,8 @@ def main():
         "tools/accaoui_disposable_connection_adapter_readiness.py",
         "docs/contracts/exam-history-disposable-database-gate-evaluator-adapter-readiness-contract.json",
         "docs/contracts/exam-history-disposable-database-harness-gate-integration-contract.json",
+        "docs/contracts/exam-history-disposable-postgresql-driver-selection-contract.json",
+        "tools/check-supabase-exam-history-disposable-postgresql-driver-selection-contract.py",
         "tools/check-supabase-exam-history-disposable-database-harness-gate-integration.py",
         "tools/check-supabase-exam-history-disposable-database-gate-evaluator-adapter-readiness.py",
         "tools/check-supabase-exam-history-disposable-database-environment-gate-contract.py",
@@ -573,6 +597,7 @@ def main():
     check_exam_result_history_disposable_database_environment_gate_contract()
     check_exam_result_history_disposable_database_gate_evaluator_adapter_readiness()
     check_exam_result_history_disposable_database_harness_gate_integration()
+    check_exam_result_history_disposable_postgresql_driver_selection_contract()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()

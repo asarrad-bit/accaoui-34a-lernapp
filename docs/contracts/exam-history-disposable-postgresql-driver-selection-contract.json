@@ -1,0 +1,133 @@
+{
+  "version": "v27.32c",
+  "contractVersion": 1,
+  "status": "selected_not_installed_not_live",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceHarnessIntegrationContractPath": "docs/contracts/exam-history-disposable-database-harness-gate-integration-contract.json",
+    "harnessPath": "tools/run-supabase-exam-history-outer-domain-mutation-harness.py",
+    "evaluatorPath": "tools/accaoui_disposable_environment_gate.py",
+    "adapterReadinessPath": "tools/accaoui_disposable_connection_adapter_readiness.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-postgresql-driver-selection-contract.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_DRIVER_SELECTION_CONTRACT.md",
+    "driverSelectedByContract": true,
+    "driverDependencyDeclared": false,
+    "driverInstalledByProject": false,
+    "driverImportedByRuntime": false,
+    "connectionAdapterImplemented": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "selectedDriver": {
+    "distributionName": "psycopg",
+    "extra": "binary",
+    "installSpecification": "psycopg[binary]==3.3.4",
+    "importName": "psycopg",
+    "pinnedVersion": "3.3.4",
+    "majorGeneration": 3,
+    "binaryDistributionRequired": true,
+    "systemLibpqRequired": false,
+    "sourceBuildAllowed": false,
+    "purePythonFallbackAllowed": false,
+    "poolExtraSelected": false,
+    "asyncModeSelected": false
+  },
+  "compatibilityBoundary": {
+    "pythonMinimum": "3.10",
+    "pythonMaximum": "3.14",
+    "postgresqlMinimum": 10,
+    "postgresqlMaximum": 18,
+    "operatingSystems": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "projectPrimaryRuntime": "python",
+    "localDisposableOnly": true,
+    "productionUseAllowed": false
+  },
+  "importBoundary": {
+    "moduleLevelImportAllowed": false,
+    "harnessImportAllowed": false,
+    "evaluatorImportAllowed": false,
+    "adapterReadinessImportAllowed": false,
+    "frontendImportAllowed": false,
+    "futureAdapterFunctionOnly": true,
+    "requiresEligibleGateResult": true,
+    "requiresExactVersionMatch": true,
+    "requiresExplicitDisposableMode": true,
+    "importFailureDecision": "deny",
+    "versionMismatchDecision": "deny",
+    "implementationMismatchDecision": "deny"
+  },
+  "timeoutBoundary": {
+    "connectTimeoutSeconds": 3,
+    "statementTimeoutMilliseconds": 5000,
+    "lockTimeoutMilliseconds": 2000,
+    "idleInTransactionTimeoutMilliseconds": 10000,
+    "scenarioTimeoutSeconds": 15,
+    "timeoutDecision": "rollback_and_fail_closed",
+    "retryOnConnectionTimeout": false,
+    "retryOnStatementTimeout": false,
+    "retryOnLockTimeout": false
+  },
+  "transactionBoundary": {
+    "autocommit": false,
+    "explicitTransactionRequired": true,
+    "oneScenarioPerTransaction": true,
+    "rollbackAfterAssertions": true,
+    "commitFixtureDataAllowed": false,
+    "savepointForExpectedDomainFailure": true,
+    "unexpectedFailureFullRollback": true,
+    "connectionReuseAcrossScenariosAllowed": false,
+    "resetDatabaseBetweenScenarios": true
+  },
+  "closedFailureMatrix": {
+    "driverMissing": "driver_not_installed",
+    "driverVersionMismatch": "driver_version_mismatch",
+    "driverImplementationMismatch": "binary_driver_implementation_required",
+    "gateDenied": "environment_gate_denied",
+    "descriptorInvalid": "validated_descriptor_invalid",
+    "connectionTimeout": "database_connection_timeout",
+    "connectionRefused": "database_connection_refused",
+    "authenticationFailure": "database_authentication_failed",
+    "databaseMissing": "disposable_database_missing",
+    "statementTimeout": "database_statement_timeout",
+    "lockTimeout": "database_lock_timeout",
+    "unexpectedDriverFailure": "unexpected_database_driver_failure",
+    "rawDriverErrorExposed": false,
+    "retryableByDefault": false
+  },
+  "credentialBoundary": {
+    "passwordInContractAllowed": false,
+    "passwordInRepositoryAllowed": false,
+    "databaseUrlAllowed": false,
+    "connectionStringAllowed": false,
+    "serviceRoleKeyAllowed": false,
+    "productionSecretAllowed": false,
+    "credentialResolutionImplemented": false
+  },
+  "installationBoundary": {
+    "installationCommandExecuted": false,
+    "requirementsFileModified": false,
+    "pyprojectModified": false,
+    "lockFileModified": false,
+    "virtualEnvironmentModified": false,
+    "systemPackageInstalled": false,
+    "networkDownloadExecuted": false
+  },
+  "unresolvedRequirements": {
+    "isolatedTestDependencyManifest": true,
+    "driverAvailabilityReadinessProbe": true,
+    "connectionAdapterImplementation": true,
+    "credentialResolutionContract": true,
+    "testOnlyFaultInjectionImplementation": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}
