@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31w
+Stand: v27.31x
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1636,6 +1636,27 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_DATABASE_TEST_CONTRACT.md`
 
+## Synthetischer Fixture- und Harness-Vertrag v27.31x
+
+Ein verbindlicher, noch nicht umgesetzter Vertrag definiert:
+
+- zwei feste synthetische UUID-v4-Testnutzer
+- Snapshot- und Zyklusregister-Ressourcen
+- eindeutige 256-Bit-Client-Wiederholungsschlüssel
+- kanonische Write- und Delete-Payloads
+- feste Create-, Update-, Delete- und stale Versionsstände
+- deterministische Szenariobindungen
+- zwei gleichzeitige Zwei-Parteien-Konkurrenzbarrieren
+- Reset-, Transaktions- und Beobachtungsregeln des Harness
+- ausschließlich testseitige Fehlerinjektionsgrenze
+
+v27.31x erzeugt keine SQL-Migration, implementiert keinen
+Datenbank-Harness und startet keine Datenbank.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_FIXTURE_HARNESS_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1726,14 +1747,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31w` kann `v27.31x`
-einen synthetischen Fixture- und Harness-Vertrag für die
-spätere disposable Datenbank-Testausführung vorbereiten.
+Nach GitHub-Bestätigung von `v27.31x` kann `v27.31y`
+den tatsächlichen synthetischen Fixture-Katalog und ein
+verbindungsfreies Harness-Gerüst vorbereiten.
 
-Der Vertrag muss deterministische Testnutzer, Ressourcen,
-Client-Wiederholungsschlüssel, Payloads, erwartete
-Speicherversionen und Konkurrenzbarrieren festlegen, ohne eine
-Datenbank zu starten oder echte Teilnehmerdaten zu verwenden.
+Das Gerüst muss den Vertrag laden und vollständig validieren,
+aber ohne ausdrücklich gesetzte spätere Testumgebung keine
+Datenbankverbindung öffnen und keinen Test ausführen.
 
 Live-Ausführung, direkte App-Freigabe und UI-Anbindung bleiben
 weiterhin ausgeschlossen.
@@ -1797,6 +1817,7 @@ Reservierungsbindung v27.31r, vollständig gesperrte
 Domain-Speichertabelle v27.31s, vollständig gesperrter
 Domain-Speicher-Mutationshelper v27.31t und vollständig
 gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet,
-statischer äußerer End-to-End-Audit v27.31v und äußerer
-Datenbank-Testvertrag v27.31w dauerhaft eingebunden;
+statischer äußerer End-to-End-Audit v27.31v, äußerer
+Datenbank-Testvertrag v27.31w und synthetischer Fixture- und
+Harness-Vertrag v27.31x dauerhaft eingebunden;
 keine Live-Ausführung

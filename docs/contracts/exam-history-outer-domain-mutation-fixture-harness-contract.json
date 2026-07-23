@@ -1,0 +1,289 @@
+{
+  "version": "v27.31x",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "fixtureType": "deterministic_synthetic_fixture_harness_contract",
+  "implementation": {
+    "databaseTestContractPath": "docs/contracts/exam-history-outer-domain-mutation-database-test-contract.json",
+    "fixtureHarnessCheckerPath": "tools/check-supabase-exam-history-outer-domain-mutation-fixture-harness-contract.py",
+    "fixtureHarnessDocumentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_FIXTURE_HARNESS_CONTRACT.md",
+    "fixtureCatalogImplemented": false,
+    "databaseHarnessImplemented": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "safetyBoundary": {
+    "syntheticValuesOnly": true,
+    "realParticipantDataAllowed": false,
+    "realEmailAddressesAllowed": false,
+    "realNamesAllowed": false,
+    "productionSecretsAllowed": false,
+    "databaseUrlStoredAllowed": false,
+    "serviceRoleKeyStoredAllowed": false,
+    "frontendReferenceAllowed": false,
+    "networkExecutionAllowed": false
+  },
+  "users": [
+    {
+      "id": "user_alpha",
+      "authUserId": "00000000-0000-4000-8000-000000000101",
+      "purpose": "primary_owner"
+    },
+    {
+      "id": "user_beta",
+      "authUserId": "00000000-0000-4000-8000-000000000102",
+      "purpose": "cross_user_isolation"
+    }
+  ],
+  "resources": [
+    {
+      "id": "snapshot_primary",
+      "operationScope": "snapshot",
+      "resourceIdentity": "fixture:snapshot:alpha:primary",
+      "ownerUserId": "user_alpha"
+    },
+    {
+      "id": "snapshot_concurrent",
+      "operationScope": "snapshot",
+      "resourceIdentity": "fixture:snapshot:alpha:concurrent",
+      "ownerUserId": "user_alpha"
+    },
+    {
+      "id": "snapshot_create_race",
+      "operationScope": "snapshot",
+      "resourceIdentity": "fixture:snapshot:alpha:create-race",
+      "ownerUserId": "user_alpha"
+    },
+    {
+      "id": "cycle_registry_primary",
+      "operationScope": "cycle_registry",
+      "resourceIdentity": "fixture:cycle-registry:alpha:primary",
+      "ownerUserId": "user_alpha"
+    },
+    {
+      "id": "snapshot_foreign",
+      "operationScope": "snapshot",
+      "resourceIdentity": "fixture:snapshot:beta:foreign",
+      "ownerUserId": "user_beta"
+    }
+  ],
+  "clientRequestKeys": {
+    "snapshot_create": "0a0600f7276c86cf1243ddc8547ca9bfc4a8259e0e1b99313f2ac24946cacb79",
+    "snapshot_retry": "ad34905ba21fac87fcd14c775846d6cf272d3fa4cc6aa56a88578d3bdc3318e3",
+    "snapshot_update": "13484c6e9d51522f605a56f77bae5c05508112a3ff300419e557fad50d96ab53",
+    "snapshot_delete": "28ab1d7f9ba9e64908583b654e2ee1d6f583eb529e61d72f8b225b0a039cb9a8",
+    "snapshot_failed": "4e0eecc033583d268192533d358d9cb899250ab224d9a0feb8575461321ba879",
+    "registry_create": "7551d0ffeb7aa5f38238c9c463f70581e9e9ff37fb95f3736ab55785e7346f95",
+    "concurrent_write_a": "4d341b047baf6d4326455d7e38a1e5a6a118a2d63f5c629f0418fadc9299d0b2",
+    "concurrent_write_b": "5efe7e942d5d08e1dd8c34ef26be08813c3b00b70dfdfeb03a3e375d34e2383b",
+    "concurrent_create_a": "cf24b7a8012b0c511b0830589fd9dc258e572c49dddfea414653cca03b641d3a",
+    "concurrent_create_b": "01adbd92dadf5e251e339a4a4286d2e34958a938b8d896a8e8204f39fbec88cd",
+    "unexpected_failure": "e05632a1be0d66170758e4496de591cc89ca1e30e1bb7e7f99746117087acb17"
+  },
+  "payloads": {
+    "snapshot_v1": {
+      "schema_version": 1,
+      "snapshot": {
+        "fixture_id": "snapshot-v1",
+        "answers": [
+          {
+            "question_id": "fixture-question-001",
+            "answer": "a"
+          }
+        ]
+      }
+    },
+    "snapshot_v2": {
+      "schema_version": 1,
+      "snapshot": {
+        "fixture_id": "snapshot-v2",
+        "answers": [
+          {
+            "question_id": "fixture-question-001",
+            "answer": "b"
+          }
+        ]
+      }
+    },
+    "snapshot_concurrent_a": {
+      "schema_version": 1,
+      "snapshot": {
+        "fixture_id": "snapshot-concurrent-a",
+        "answers": [
+          {
+            "question_id": "fixture-question-002",
+            "answer": "a"
+          }
+        ]
+      }
+    },
+    "snapshot_concurrent_b": {
+      "schema_version": 1,
+      "snapshot": {
+        "fixture_id": "snapshot-concurrent-b",
+        "answers": [
+          {
+            "question_id": "fixture-question-002",
+            "answer": "b"
+          }
+        ]
+      }
+    },
+    "cycle_registry_v1": {
+      "schema_version": 1,
+      "registry": {
+        "fixture_id": "cycle-registry-v1",
+        "cycle_id": "fixture-cycle-001",
+        "completed": false
+      }
+    },
+    "delete": null
+  },
+  "expectedVersions": {
+    "create": 0,
+    "afterCreate": 1,
+    "afterUpdate": 2,
+    "afterDelete": 3,
+    "stale": 0
+  },
+  "scenarios": [
+    {
+      "id": "snapshot_create_completed",
+      "userId": "user_alpha",
+      "resourceId": "snapshot_primary",
+      "clientKeyId": "snapshot_create",
+      "operation": "write",
+      "payloadId": "snapshot_v1",
+      "expectedStorageVersion": 0,
+      "expectedOutcome": "created"
+    },
+    {
+      "id": "snapshot_identical_retry",
+      "userId": "user_alpha",
+      "resourceId": "snapshot_primary",
+      "clientKeyId": "snapshot_create",
+      "operation": "write",
+      "payloadId": "snapshot_v1",
+      "expectedStorageVersion": 0,
+      "expectedOutcome": "created"
+    },
+    {
+      "id": "snapshot_update_exact",
+      "userId": "user_alpha",
+      "resourceId": "snapshot_primary",
+      "clientKeyId": "snapshot_update",
+      "operation": "write",
+      "payloadId": "snapshot_v2",
+      "expectedStorageVersion": 1,
+      "expectedOutcome": "updated"
+    },
+    {
+      "id": "snapshot_stale_update",
+      "userId": "user_alpha",
+      "resourceId": "snapshot_primary",
+      "clientKeyId": "snapshot_failed",
+      "operation": "write",
+      "payloadId": "snapshot_v1",
+      "expectedStorageVersion": 0,
+      "expectedFailureCode": "domain_storage_version_conflict"
+    },
+    {
+      "id": "snapshot_delete_exact",
+      "userId": "user_alpha",
+      "resourceId": "snapshot_primary",
+      "clientKeyId": "snapshot_delete",
+      "operation": "delete",
+      "payloadId": "delete",
+      "expectedStorageVersion": 2,
+      "expectedOutcome": "deleted"
+    },
+    {
+      "id": "cycle_registry_create",
+      "userId": "user_alpha",
+      "resourceId": "cycle_registry_primary",
+      "clientKeyId": "registry_create",
+      "operation": "write",
+      "payloadId": "cycle_registry_v1",
+      "expectedStorageVersion": 0,
+      "expectedOutcome": "created"
+    },
+    {
+      "id": "cross_user_isolation",
+      "userId": "user_alpha",
+      "resourceId": "snapshot_foreign",
+      "clientKeyId": "snapshot_retry",
+      "operation": "write",
+      "payloadId": "snapshot_v1",
+      "expectedStorageVersion": 0,
+      "expectedFailureCode": "cross_user_access_denied"
+    }
+  ],
+  "concurrencyBarriers": [
+    {
+      "id": "same_version_write_barrier",
+      "parties": 2,
+      "resourceId": "snapshot_concurrent",
+      "clientKeyIds": [
+        "concurrent_write_a",
+        "concurrent_write_b"
+      ],
+      "payloadIds": [
+        "snapshot_concurrent_a",
+        "snapshot_concurrent_b"
+      ],
+      "expectedStorageVersion": 1,
+      "releaseMode": "simultaneous",
+      "timeoutSeconds": 10,
+      "expectedWinnerCount": 1,
+      "expectedConflictCount": 1
+    },
+    {
+      "id": "same_identity_create_barrier",
+      "parties": 2,
+      "resourceId": "snapshot_create_race",
+      "clientKeyIds": [
+        "concurrent_create_a",
+        "concurrent_create_b"
+      ],
+      "payloadIds": [
+        "snapshot_concurrent_a",
+        "snapshot_concurrent_b"
+      ],
+      "expectedStorageVersion": 0,
+      "releaseMode": "simultaneous",
+      "timeoutSeconds": 10,
+      "expectedWinnerCount": 1,
+      "expectedConflictCount": 1
+    }
+  ],
+  "harnessLifecycle": {
+    "migrationOrderSource": "supabase/migrations_filename_order",
+    "resetBeforeEachScenario": true,
+    "seedSyntheticAuthUsers": true,
+    "setAuthUidOnlyInsideTransaction": true,
+    "inspectInternalTablesOnlyAfterClientResponse": true,
+    "rollbackScenarioTransactionAfterAssertions": true,
+    "persistFixtureRowsBetweenScenarios": false,
+    "parallelWorkersForBarrier": 2
+  },
+  "faultInjectionContract": {
+    "label": "after_domain_mutation_before_idempotency_completion",
+    "clientSelectable": false,
+    "productionCodeHookAllowed": false,
+    "testHarnessOnly": true,
+    "mechanismImplemented": false
+  },
+  "unresolvedRequirements": {
+    "fixtureCatalogImplementation": true,
+    "databaseHarnessImplementation": true,
+    "testOnlyFaultInjectionImplementation": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}
