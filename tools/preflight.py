@@ -383,6 +383,7 @@ def main():
         "supabase/migrations/20260722_v2731p_exam_history_expected_storage_version_schema.sql",
         "supabase/migrations/20260722_v2731q_exam_history_operation_identity_expected_version_rpc.sql",
         "supabase/migrations/20260722_v2731r_exam_history_idempotency_expected_version_reserve_rpc.sql",
+        "supabase/migrations/20260723_v2731s_exam_history_domain_resources.sql",
     ]
 
     for file_path in required_files:

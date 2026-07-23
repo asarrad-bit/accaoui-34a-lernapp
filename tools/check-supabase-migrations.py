@@ -60,6 +60,10 @@ IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC = (
     "20260722_v2731r_"
     "exam_history_idempotency_expected_version_reserve_rpc.sql"
 )
+DOMAIN_STORAGE_TABLE = (
+    "20260723_v2731s_"
+    "exam_history_domain_resources.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -125,6 +129,7 @@ for required in (
     EXPECTED_STORAGE_VERSION_SCHEMA,
     OPERATION_IDENTITY_EXPECTED_VERSION_RPC,
     IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC,
+    DOMAIN_STORAGE_TABLE,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -277,6 +282,14 @@ if files.index(OPERATION_IDENTITY_EXPECTED_VERSION_RPC) >= files.index(
     fail(
         "Idempotenz-Reservierungs-Versionsbindungs-RPC steht "
         "vor dem Operations-ID-Versionsbindungs-RPC."
+    )
+
+if files.index(IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC) >= files.index(
+    DOMAIN_STORAGE_TABLE
+):
+    fail(
+        "Domain-Speichertabelle steht vor der vollständigen "
+        "inneren Versionsbindung."
     )
 
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
@@ -643,6 +656,81 @@ if v2731r_sql_files != [
     fail(
         "Unerwartete v27.31r-SQL-Dateien: "
         f"{v2731r_sql_files}"
+    )
+
+
+domain_storage_table = (
+    MIGRATIONS / DOMAIN_STORAGE_TABLE
+).read_text(encoding="utf-8")
+
+domain_storage_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    domain_storage_table,
+    flags=re.MULTILINE,
+)
+domain_storage_lower = domain_storage_without_comments.lower()
+domain_storage_compact = re.sub(
+    r"\s+",
+    " ",
+    domain_storage_lower,
+).strip()
+
+for marker in (
+    "message = 'exam_history_domain_resources_already_exists'",
+    "create table public.exam_history_domain_resources (",
+    "auth_user_id uuid not null",
+    "operation_scope in ( 'snapshot', 'cycle_registry' )",
+    "resource_identity = trim(resource_identity)",
+    "length(resource_identity) between 1 and 512",
+    "schema_version smallint not null default 1",
+    "storage_version bigint not null",
+    "check (storage_version >= 1)",
+    "unique ( auth_user_id, operation_scope, resource_identity )",
+    "jsonb_typeof(domain_payload) = 'object'",
+    "canonical_byte_length <= 262144",
+    "canonical_byte_length <= 131072",
+    "is_deleted = true",
+    "domain_payload is null",
+    "payload_fingerprint is null",
+    "canonical_byte_length is null",
+    "alter table public.exam_history_domain_resources enable row level security",
+    "alter table public.exam_history_domain_resources force row level security",
+    "revoke all on table public.exam_history_domain_resources from public, anon, authenticated",
+):
+    if marker not in domain_storage_compact:
+        fail(f"Domain-Speichertabellen-Anweisung fehlt: {marker}")
+
+for forbidden in (
+    "create policy",
+    "grant ",
+    "create or replace function",
+    "auth.uid()",
+    "service_role",
+    "participant_id",
+):
+    if forbidden in domain_storage_lower:
+        fail(
+            "Unzulässiger Inhalt in Domain-Speichertabelle: "
+            f"{forbidden}"
+        )
+
+if re.search(
+    r"\b(insert\s+into|update\s+public\.|delete\s+from)\b",
+    domain_storage_without_comments,
+    flags=re.IGNORECASE,
+):
+    fail("Domain-Speichertabellen-Migration verändert Daten.")
+
+v2731s_sql_files = sorted(
+    path.name for path in MIGRATIONS.glob("*v2731s*.sql")
+)
+if v2731s_sql_files != [
+    "20260723_v2731s_exam_history_domain_resources.sql"
+]:
+    fail(
+        "Unerwartete v27.31s-SQL-Dateien: "
+        f"{v2731s_sql_files}"
     )
 
 question_schema_bundle = (

@@ -1,9 +1,9 @@
 {
-  "version": "v27.31r",
+  "version": "v27.31s",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
-  "implementationPresent": false,
+  "implementationPresent": true,
   "storageModel": {
     "proposedTable": "public.exam_history_domain_resources",
     "rowIdentityFields": [
@@ -16,7 +16,10 @@
     "softDeleteTombstoneRequired": true,
     "physicalDeleteByMutationRpcAllowed": false,
     "monotonicStorageVersionRequired": true,
-    "versionResetAfterDeleteAllowed": false
+    "versionResetAfterDeleteAllowed": false,
+    "implementationPresent": true,
+    "migrationPath": "supabase/migrations/20260723_v2731s_exam_history_domain_resources.sql",
+    "migrationLiveExecuted": false
   },
   "storedFields": [
     {
@@ -175,7 +178,7 @@
   ],
   "unresolvedRequirements": {
     "expectedVersionIdentityBinding": true,
-    "storageTableImplementation": true,
+    "storageTableImplementation": false,
     "storageMutationHelperImplementation": true,
     "outerDomainMutationRpcImplementation": true,
     "liveDatabaseTests": true,

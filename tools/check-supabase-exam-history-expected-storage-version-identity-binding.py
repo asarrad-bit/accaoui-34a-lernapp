@@ -281,8 +281,8 @@ storage = read_json(
     "Domain-Speichervertrag",
 )
 
-if storage.get("version") != "v27.31r":
-    fail("Domain-Speichervertrag besitzt nicht v27.31r.")
+if storage.get("version") != "v27.31s":
+    fail("Domain-Speichervertrag besitzt nicht v27.31s.")
 
 identity_binding = storage.get("identityBinding", {})
 

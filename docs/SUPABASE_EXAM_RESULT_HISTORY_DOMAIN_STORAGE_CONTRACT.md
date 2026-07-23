@@ -1,6 +1,6 @@
 # Domain-Speichervertrag
 
-Stand: v27.31r
+Stand: v27.31s
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -25,7 +25,7 @@ Vorgesehene Tabelle:
 
 `public.exam_history_domain_resources`
 
-Eine Implementierung wurde in v27.31n noch nicht erstellt.
+Die Tabelle wird seit v27.31s als vollständig gesperrte Schema-Migration vorbereitet.
 
 ## Speicher-Versionsstand
 
@@ -82,17 +82,19 @@ Erforderlich sind:
 - Ablehnung veralteter Deletes
 - gemeinsame Transaktion mit Idempotenzabschluss
 
-## Wichtige offene Identitätsbindung
+## Versionsbindung
 
 Der erwartete Speicher-Versionsstand beeinflusst die Bedeutung
 eines Vorgangs.
 
-Er muss deshalb später in die Operations-ID-Ausstellung und
-Idempotenzreservierung eingebunden werden.
+Seit v27.31r binden deshalb beide internen Identitätshelper
+denselben Stand:
 
-Die vorhandenen Helper binden diesen Wert noch nicht. Deshalb
-darf der äußere Fachmutations-RPC noch nicht implementiert oder
-produktiv freigegeben werden.
+- Operations-ID-Ausstellung
+- Idempotenzreservierung
+
+Die End-to-End-Weitergabe durch den äußeren Fachmutations-RPC
+bleibt weiterhin offen.
 
 ## Direkter Zugriff
 
@@ -107,19 +109,17 @@ Die spätere Tabelle muss:
 
 ## Noch offen
 
-- Versionsbindung in Operations-ID und Idempotenz
-- Speichertabellen-Migration
 - interner Speicher-Mutationshelfer
 - äußerer Fachmutations-RPC
 - Live-, Parallelitäts- und Autorisierungstests
 
 ## Sicherheitsgrenze
 
-- keine SQL-Migration in v27.31n
-- keine Speichertabelle
+- gesperrte SQL-Schema-Migration, nicht live ausgeführt
+- Speichertabelle ohne direkten App-Zugriff
+- kein Speicher-Mutationshelfer
 - keine Fachmutation
-- keine direkten App-Rechte
-- keine Live-Ausführung
+- kein äußerer Fachmutations-RPC
 - keine UI-Änderung
 
 ## Automatische Prüfung
@@ -143,7 +143,8 @@ Der Versionsstand muss:
 - beim Abschluss aus der Reservierung gelesen werden
 
 Die gesperrte Spaltenmigration ist seit v27.31p
-vorbereitet. Die notwendigen Helper-Migrationen fehlen noch.
+vorbereitet. Ausstellungs- und Reservierungshelper binden den
+Versionsstand seit v27.31r.
 
 Details:
 
@@ -160,8 +161,8 @@ Vorhandene Zeilen führen zum kontrollierten
 Migrationsabbruch. Ein unbekannter Versionsstand wird nicht
 erfunden.
 
-Die Domain-Speichertabelle selbst ist weiterhin nicht
-implementiert.
+Die Domain-Speichertabelle wird seit v27.31s als
+vollständig gesperrte Schema-Migration vorbereitet.
 
 
 ## Teilweise Identitätsbindung v27.31q
@@ -188,3 +189,38 @@ denselben Versionsstand.
 Die Domain-Speichertabelle und der äußere Fachmutations-RPC
 sind weiterhin nicht implementiert. Die End-to-End-Bindung
 bleibt deshalb produktiv gesperrt.
+
+
+## Gesperrte Domain-Speichertabelle v27.31s
+
+Die vorbereitete Tabelle
+`public.exam_history_domain_resources` speichert Snapshot und
+Zyklusregister über dieselbe Sicherheitsgrenze.
+
+Eindeutige Zeilenidentität:
+
+- `auth_user_id`
+- `operation_scope`
+- `resource_identity`
+
+Der gespeicherte Zustand enthält:
+
+- Schema-Version 1
+- kanonischen Fach-Payload
+- serverseitigen SHA-256-Fingerprint
+- kanonische Byteanzahl
+- monotonen `storage_version`-Stand ab 1
+- Live- oder Tombstone-Zustand
+- Erstellungs- und Änderungszeit
+
+Live-Zeilen erzwingen Payload, Fingerprint und das jeweilige
+Bereichsgrößenlimit. Tombstones erzwingen `null` für Payload,
+Fingerprint und Byteanzahl.
+
+RLS ist aktiviert und erzwungen. Es existiert keine direkte
+Policy und alle Tabellenrechte für `public`, `anon` und
+`authenticated` sind entzogen.
+
+Migration:
+
+`supabase/migrations/20260723_v2731s_exam_history_domain_resources.sql`

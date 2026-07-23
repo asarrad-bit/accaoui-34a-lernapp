@@ -1,6 +1,6 @@
 # Speicher-Versionsstand-Identitätsbindung
 
-Stand: v27.31r
+Stand: v27.31s
 Status: verbindlicher lokaler Integrationsvertrag,
 nicht live ausgeführt
 
@@ -207,3 +207,16 @@ liest den Stand ausschließlich aus der reservierten Zeile.
 Migration:
 
 `supabase/migrations/20260722_v2731r_exam_history_idempotency_expected_version_reserve_rpc.sql`
+
+
+## Domain-Speichertabelle v27.31s
+
+Nach der vollständigen inneren Versionsbindung steht jetzt die
+gesperrte Domain-Speichertabelle bereit.
+
+Der `storage_version`-Stand besitzt keinen Default und beginnt
+bei einer durch den späteren Mutationshelper kontrollierten
+Neuanlage mit 1.
+
+Die End-to-End-Weitergabe des erwarteten Versionsstands durch
+den äußeren Fachmutations-RPC bleibt weiterhin offen.

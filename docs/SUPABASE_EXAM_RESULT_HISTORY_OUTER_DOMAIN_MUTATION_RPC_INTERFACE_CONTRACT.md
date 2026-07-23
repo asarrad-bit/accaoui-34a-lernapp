@@ -1,6 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31r
+Stand: v27.31s
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -252,3 +252,14 @@ denselben erwarteten Versionsstand verbindlich.
 Eine Implementierung des äußeren RPCs bleibt dennoch gesperrt,
 bis Domain-Speichertabelle und Fachmutationsweg vorbereitet
 sind.
+
+
+## Domain-Speichertabelle v27.31s
+
+Die vollständig gesperrte Domain-Speichertabelle ist jetzt als
+Schema-Migration vorbereitet.
+
+Der äußere Fachmutations-RPC bleibt gesperrt, bis ein interner
+Speicher-Mutationshelper den Payload-Validierungshelfer, exakten
+Versionsvergleich, Row Lock, monotone Versionserhöhung und
+Tombstone-Übergang atomar verbindet.

@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31r
+Stand: v27.31s
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1514,6 +1514,37 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
 
+## Domain-Speichertabelle v27.31s
+
+Eine vollständig gesperrte Schema-Migration erstellt:
+
+`public.exam_history_domain_resources`
+
+Die Tabelle verbindet eindeutig:
+
+- authentifizierten Nutzer
+- Operationsbereich
+- Ressourcenidentität
+
+Sie speichert Schema-Version, Fach-Payload, serverseitigen
+Fingerprint, kanonische Byteanzahl, monotonen
+`storage_version`-Stand sowie Live- oder Tombstone-Zustand.
+
+Live-Zeilen erzwingen Payload, Fingerprint und das jeweilige
+Bereichsgrößenlimit. Tombstones besitzen keinen Payload,
+Fingerprint oder Bytewert.
+
+RLS und Force RLS sind aktiv. Direkte Policies und Rechte für
+`public`, `anon` und `authenticated` bleiben vollständig
+gesperrt.
+
+Es gibt in diesem Schritt noch keinen Mutationshelper, keinen
+äußeren Fachmutations-RPC und keine Live-Ausführung.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DOMAIN_STORAGE_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1604,16 +1635,18 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31r` kann `v27.31s`
-die vollständig gesperrte Domain-Speichertabelle für Snapshot
-und Zyklusregister vorbereiten.
+Nach GitHub-Bestätigung von `v27.31s` kann `v27.31t`
+den vollständig gesperrten internen Domain-Speicher-
+Mutationshelper vorbereiten.
 
-Die Tabelle muss Nutzer, Bereich und Ressourcenidentität
-eindeutig binden, einen monotonen `storage_version`-Stand
-führen und Tombstones statt physischem Löschen verwenden.
+Der Helper muss Nutzer ausschließlich über `auth.uid()` binden,
+den Fach-Payload-Validierungshelfer verwenden, die Ressource
+mit `FOR UPDATE` sperren, den erwarteten Versionsstand exakt
+vergleichen und Write oder Tombstone atomar mit monotoner
+Version ausführen.
 
-Direkte App-Rechte, Fachmutationshelper, äußerer Mutations-RPC
-und Live-Ausführung bleiben in diesem Schritt ausgeschlossen.
+Direkte App-Ausführung, äußerer Fachmutations-RPC und
+Live-Ausführung bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1669,6 +1702,7 @@ Domain-Speichervertrag v27.31n und Speicher-Versionsstand-
 Identitätsbindungsvertrag v27.31o dauerhaft in den Preflight
 eingebunden und gesperrte Speicher-Versionsstand-
 Schema-Migration v27.31p, gesperrte Operations-ID-
-Ausstellungsbindung v27.31q und gesperrte Idempotenz-
-Reservierungsbindung v27.31r vorbereitet;
+Ausstellungsbindung v27.31q, gesperrte Idempotenz-
+Reservierungsbindung v27.31r und vollständig gesperrte
+Domain-Speichertabelle v27.31s vorbereitet;
 keine Live-Ausführung
