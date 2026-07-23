@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31z
+Stand: v27.32a
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1700,6 +1700,29 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_ENVIRONMENT_GATE_CONTRACT.md`
 
+## Disposable Gate-Evaluator und Adapter-Readiness v27.32a
+
+Der v27.31z-Vertrag wurde verbindungsfrei umgesetzt als:
+
+- deterministischer Mapping-basierter Gate-Evaluator
+- geschlossene Entscheidungsmatrix
+- kanonische Loopback-Descriptor-Normalisierung
+- verbindungsunfähiger Adapter-Readiness-State
+- dauerhafter statischer und ausführender Preflight-Prüfer
+
+Remote, unbekannte, unvollständige und produktive Ziele werden
+geschlossen abgelehnt.
+
+Auch ein gültiger lokaler Descriptor bleibt
+`descriptor_valid_connection_locked`.
+
+Es existieren kein Datenbanktreiber, kein DNS, kein Netzwerk,
+keine Verbindung und keine Testausführung.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_GATE_EVALUATOR_ADAPTER_READINESS.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1790,13 +1813,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31z` kann `v27.32a`
-den verbindungsfreien disposable Umgebungs-Gate-Evaluator und
-einen Datenbank-Verbindungsadapter-Readiness-State umsetzen.
+Nach GitHub-Bestätigung von `v27.32a` kann `v27.32b`
+den Gate-Evaluator und den Adapter-Readiness-State in den
+gesperrten Harness-Datenbankmodus integrieren.
 
-Der Evaluator muss vollständige lokale Descriptoren rein
-deterministisch klassifizieren und alle entfernten, unbekannten,
-unvollständigen oder produktiven Ziele geschlossen ablehnen.
+Der Harness muss vollständige Descriptoren über den Evaluator
+klassifizieren und das Adapter-Ergebnis ausgeben, aber weiterhin
+vor jeder Treiberladung oder Verbindung geschlossen stoppen.
 
 Datenbanktreiber, Verbindung, Testausführung, direkte
 App-Freigabe und UI-Anbindung bleiben weiterhin ausgeschlossen.
@@ -1863,6 +1886,8 @@ gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet,
 statischer äußerer End-to-End-Audit v27.31v, äußerer
 Datenbank-Testvertrag v27.31w, synthetischer Fixture- und
 Harness-Vertrag v27.31x, verbindungsfreier Fixture-Katalog und
-Harness-Readiness v27.31y sowie disposable Datenbank-
-Umgebungs-Gate-Vertrag v27.31z dauerhaft eingebunden;
+Harness-Readiness v27.31y, disposable Datenbank-
+Umgebungs-Gate-Vertrag v27.31z sowie verbindungsfreier
+Gate-Evaluator und Adapter-Readiness-State v27.32a dauerhaft
+eingebunden;
 keine Live-Ausführung

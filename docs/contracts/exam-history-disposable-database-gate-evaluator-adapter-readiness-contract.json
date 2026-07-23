@@ -1,0 +1,147 @@
+{
+  "version": "v27.32a",
+  "contractVersion": 1,
+  "status": "implemented_connection_free_not_live",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceGateContractPath": "docs/contracts/exam-history-disposable-database-environment-gate-contract.json",
+    "harnessReadinessContractPath": "docs/contracts/exam-history-outer-domain-mutation-harness-readiness-contract.json",
+    "evaluatorPath": "tools/accaoui_disposable_environment_gate.py",
+    "adapterReadinessPath": "tools/accaoui_disposable_connection_adapter_readiness.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-database-gate-evaluator-adapter-readiness.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_GATE_EVALUATOR_ADAPTER_READINESS.md",
+    "environmentGateEvaluatorImplemented": true,
+    "connectionAdapterReadinessStateImplemented": true,
+    "harnessIntegrationImplemented": false,
+    "databaseDriverPresent": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "evaluatorBoundary": {
+    "inputType": "mapping",
+    "readsProcessEnvironmentDirectly": false,
+    "allowedInputKeys": [
+      "ACCAOUI_DB_TEST_MODE",
+      "ACCAOUI_DB_TEST_TARGET_KIND",
+      "ACCAOUI_DB_TEST_HOST",
+      "ACCAOUI_DB_TEST_PORT",
+      "ACCAOUI_DB_TEST_DATABASE",
+      "ACCAOUI_DB_TEST_CONFIRM"
+    ],
+    "unknownInputKeyDecision": "deny",
+    "missingInputDecision": "deny",
+    "defaultDecision": "deny",
+    "dnsResolutionAllowed": false,
+    "ipResolutionAllowed": false,
+    "networkExecutionAllowed": false,
+    "databaseDriverImportAllowed": false,
+    "connectionOpenAllowed": false
+  },
+  "decisionMatrix": {
+    "noVariables": {
+      "decision": "deny",
+      "reason": "environment_gate_not_configured"
+    },
+    "modeOnly": {
+      "decision": "deny",
+      "reason": "environment_gate_incomplete"
+    },
+    "unknownField": {
+      "decision": "deny",
+      "reason": "unknown_environment_field"
+    },
+    "invalidMode": {
+      "decision": "deny",
+      "reason": "environment_mode_invalid"
+    },
+    "invalidTargetKind": {
+      "decision": "deny",
+      "reason": "target_kind_invalid"
+    },
+    "remoteHost": {
+      "decision": "deny",
+      "reason": "remote_target_forbidden"
+    },
+    "unknownHost": {
+      "decision": "deny",
+      "reason": "unknown_target_forbidden"
+    },
+    "forbiddenDatabaseName": {
+      "decision": "deny",
+      "reason": "protected_database_forbidden"
+    },
+    "invalidPort": {
+      "decision": "deny",
+      "reason": "invalid_local_port"
+    },
+    "confirmationMismatch": {
+      "decision": "deny",
+      "reason": "destructive_confirmation_required"
+    },
+    "urlOrConnectionString": {
+      "decision": "deny",
+      "reason": "connection_string_forbidden"
+    },
+    "completeLoopbackDescriptor": {
+      "decision": "eligible_but_connection_locked",
+      "reason": "adapter_not_implemented"
+    }
+  },
+  "canonicalEligibleDescriptor": {
+    "mode": "disposable",
+    "targetKind": "local_postgres",
+    "host": "localhost",
+    "port": 5432,
+    "database": "accaoui_exam_history_disposable_test"
+  },
+  "adapterReadinessBoundary": {
+    "inputType": "evaluated_gate_result_only",
+    "readsProcessEnvironmentDirectly": false,
+    "acceptsRawConnectionParameters": false,
+    "eligibleStatus": "descriptor_valid_connection_locked",
+    "eligibleReason": "database_driver_not_selected",
+    "deniedStatus": "blocked",
+    "driverSelected": false,
+    "connectionAllowed": false,
+    "connectionCreated": false,
+    "returnsConnection": false,
+    "importsDatabaseDriver": false,
+    "opensSocket": false,
+    "appliesMigrations": false,
+    "executesTests": false
+  },
+  "determinismBoundary": {
+    "sameInputSameResult": true,
+    "inputMutationAllowed": false,
+    "normalizesHostLowercase": true,
+    "trimsTrailingHostDot": true,
+    "normalizesDatabaseLowercase": true,
+    "confirmationReturnedToAdapter": false
+  },
+  "securityBoundary": {
+    "realParticipantDataAllowed": false,
+    "realEmailAddressAllowed": false,
+    "realNameAllowed": false,
+    "productionSecretsAllowed": false,
+    "databaseUrlStoredAllowed": false,
+    "serviceRoleKeyStoredAllowed": false,
+    "passwordInputAllowed": false,
+    "networkExecutionAllowed": false,
+    "frontendReferenceAllowed": false,
+    "clientSelectableTargetAllowed": false,
+    "clientSelectableFaultInjectionAllowed": false
+  },
+  "unresolvedRequirements": {
+    "harnessGateIntegration": true,
+    "databaseDriverSelection": true,
+    "databaseConnectionImplementation": true,
+    "testOnlyFaultInjectionImplementation": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}
