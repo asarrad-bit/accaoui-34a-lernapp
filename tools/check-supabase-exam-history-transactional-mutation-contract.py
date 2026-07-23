@@ -15,7 +15,7 @@ RESERVE_PATH = (
     ROOT
     / "supabase"
     / "migrations"
-    / "20260722_v2731c_exam_history_idempotency_reserve_rpc.sql"
+    / "20260722_v2731r_exam_history_idempotency_expected_version_reserve_rpc.sql"
 )
 
 COMPLETE_PATH = (
@@ -61,8 +61,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31f":
-    fail("Vertragsversion ist nicht v27.31f.")
+if contract["version"] != "v27.31r":
+    fail("Vertragsversion ist nicht v27.31r.")
 
 if contract["contractVersion"] != 1:
     fail("Vertragsschemaversion ist nicht 1.")
@@ -107,6 +107,7 @@ expected_identity = {
         "operation_scope",
         "operation",
         "resource_identity",
+        "expected_storage_version",
         "payload_fingerprint",
     ],
 }
@@ -246,6 +247,28 @@ for path, function_name in (
 
     if "set row_security = off" not in sql:
         fail(f"row_security-Grenze fehlt: {function_name}")
+
+
+reserve_sql = RESERVE_PATH.read_text(encoding="utf-8").lower()
+complete_sql = COMPLETE_PATH.read_text(encoding="utf-8").lower()
+
+for marker in (
+    "p_expected_storage_version bigint",
+    "expected_storage_version,",
+    "p_expected_storage_version,",
+    "v_existing.expected_storage_version <>",
+):
+    if marker not in reserve_sql:
+        fail(
+            "Reservierungshelper bindet den erwarteten "
+            f"Versionsstand nicht: {marker}"
+        )
+
+if "p_expected_storage_version bigint" in complete_sql:
+    fail(
+        "Abschlusshelper darf keinen neuen "
+        "Browser-Versionsparameter besitzen."
+    )
 
 v2731f_sql_files = list(
     (ROOT / "supabase" / "migrations").glob(

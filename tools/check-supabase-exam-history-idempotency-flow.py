@@ -9,7 +9,8 @@ OPERATIONS_FILE = (
     "20260722_v2731b_exam_history_idempotency_operations.sql"
 )
 RESERVE_FILE = (
-    "20260722_v2731c_exam_history_idempotency_reserve_rpc.sql"
+    "20260722_v2731r_"
+    "exam_history_idempotency_expected_version_reserve_rpc.sql"
 )
 COMPLETE_FILE = (
     "20260722_v2731d_exam_history_idempotency_complete_rpc.sql"
@@ -258,6 +259,12 @@ require_markers(
         "'idempotency_operation_resource_conflict'",
         "message = "
         "'idempotency_operation_payload_conflict'",
+        "p_expected_storage_version bigint",
+        "message = 'expected_storage_version_invalid'",
+        "expected_storage_version, payload_fingerprint",
+        "p_expected_storage_version, p_payload_fingerprint",
+        "v_existing.expected_storage_version <> "
+        "p_expected_storage_version",
     ),
     "Idempotenz-Reservierungs-RPC",
 )
@@ -284,7 +291,16 @@ require_markers(
     "Idempotenz-Abschluss-RPC",
 )
 
-identity_parameters = [
+reserve_identity_parameters = [
+    ("p_external_operation_id", "uuid"),
+    ("p_operation_scope", "text"),
+    ("p_operation", "text"),
+    ("p_resource_identity", "text"),
+    ("p_expected_storage_version", "bigint"),
+    ("p_payload_fingerprint", "text"),
+]
+
+complete_identity_parameters = [
     ("p_external_operation_id", "uuid"),
     ("p_operation_scope", "text"),
     ("p_operation", "text"),
@@ -301,16 +317,25 @@ complete_parameters = function_parameters(
     complete_name,
 )
 
-if reserve_parameters != identity_parameters:
+if reserve_parameters != reserve_identity_parameters:
     fail(
-        "Reservierungs-RPC besitzt keine kanonische "
+        "Reservierungs-RPC besitzt keine versionierte "
         "Identitätsparameterschnittstelle."
     )
 
-if complete_parameters[:5] != identity_parameters:
+if complete_parameters[:5] != complete_identity_parameters:
     fail(
-        "Abschluss-RPC verwendet nicht dieselbe "
-        "Identitätsparameterschnittstelle."
+        "Abschluss-RPC verwendet nicht die kanonische "
+        "gespeicherte Identität."
+    )
+
+if any(
+    name == "p_expected_storage_version"
+    for name, _ in complete_parameters
+):
+    fail(
+        "Abschluss-RPC darf keinen Browser-Versionsparameter "
+        "akzeptieren."
     )
 
 expected_complete_suffix = [
@@ -396,8 +421,14 @@ for role in (
 
 print("Idempotenz-End-to-End-Audit: OK")
 print("Operationstabelle: RLS-erzwungen und direkt gesperrt")
-print("Operationsidentität: in Tabelle und beiden RPCs kanonisch")
-print("Reservierung: atomar über Unique Constraints vorbereitet")
+print(
+    "Operationsidentität: Reservierung bindet erwarteten "
+    "Versionsstand; Abschluss liest die gespeicherte Zeile"
+)
+print(
+    "Reservierung: atomar über Unique Constraints und "
+    "exakten Versionsvergleich vorbereitet"
+)
 print("Abschluss: nur Pending und ohne terminales Überschreiben")
 print("Direkte App-Ausführung: für beide internen RPCs gesperrt")
 print("Fremde Fachmutationen: in beiden Helfern ausgeschlossen")

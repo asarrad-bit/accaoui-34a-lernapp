@@ -230,3 +230,23 @@ gehashter Lookup-Hinweis.
 
 Reservierungs- und Abschlussgrenze wurden nicht verändert.
 Die vollständige Integration bleibt deshalb offen.
+
+
+## Idempotenz-Versionsbindung v27.31r
+
+Der interne Reservierungs-RPC erhält denselben
+`p_expected_storage_version`-Wert wie der
+Operations-ID-Ausstellungshelper.
+
+Der Wert wird:
+
+- auf mindestens 0 validiert
+- in der Idempotenzoperationszeile gespeichert
+- bei einer vorhandenen Reservierung exakt verglichen
+- bei Abweichung als Identitätskonflikt geschlossen abgelehnt
+
+Der Abschlusshelper akzeptiert keinen neuen Versionsparameter
+und kann die gespeicherte Identität nicht überschreiben.
+
+Damit sind die beiden inneren Versionsgrenzen vorbereitet. Die
+äußere transaktionale Fachintegration bleibt weiterhin offen.

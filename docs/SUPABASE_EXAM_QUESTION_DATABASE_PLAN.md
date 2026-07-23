@@ -1,7 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31q
-
+Stand: v27.31r
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1486,6 +1485,35 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
 
+## Idempotenz-Reservierungsbindung v27.31r
+
+Eine vollständig gesperrte Folgemigration erweitert den
+internen Idempotenz-Reservierungs-RPC um:
+
+`p_expected_storage_version bigint`
+
+Der Versionsstand:
+
+- muss mindestens 0 sein
+- wird in der Idempotenzoperationszeile gespeichert
+- ergänzt die vollständige Operationsidentität
+- wird bei vorhandenen Reservierungen exakt verglichen
+- blockiert dieselbe Operations-UUID mit abweichendem Stand
+
+Die `operation_identity`-Zeichenfolge bleibt unverändert an
+Bereich, Operation und serverseitig ausgestellte UUID gebunden.
+Der Versionsstand wird als zusätzlicher Identitätsbestandteil
+separat gespeichert und geprüft.
+
+Die alte Fünf-Parameter-Funktionsüberladung wird entfernt.
+Direkte App-Ausführung bleibt vollständig gesperrt.
+
+Der Abschlusshelper erhält keinen neuen Browserparameter.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1576,17 +1604,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31q` kann `v27.31r`
-den internen Idempotenz-Reservierungs-RPC um
-`p_expected_storage_version` erweitern.
+Nach GitHub-Bestätigung von `v27.31r` kann `v27.31s`
+die vollständig gesperrte Domain-Speichertabelle für Snapshot
+und Zyklusregister vorbereiten.
 
-Der Versionsstand muss in der Idempotenzoperationszeile
-gespeichert, Bestandteil der vollständigen Operationsidentität
-und bei vorhandenen Reservierungen exakt verglichen werden.
+Die Tabelle muss Nutzer, Bereich und Ressourcenidentität
+eindeutig binden, einen monotonen `storage_version`-Stand
+führen und Tombstones statt physischem Löschen verwenden.
 
-Der Abschlusshelper erhält keinen neuen Browserparameter.
-Äußerer Fachmutations-RPC, Domain-Speichertabelle und
-Live-Ausführung bleiben weiterhin ausgeschlossen.
+Direkte App-Rechte, Fachmutationshelper, äußerer Mutations-RPC
+und Live-Ausführung bleiben in diesem Schritt ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1641,6 +1668,7 @@ und Fingerprint-Helfer v27.31m vorbereitet sowie
 Domain-Speichervertrag v27.31n und Speicher-Versionsstand-
 Identitätsbindungsvertrag v27.31o dauerhaft in den Preflight
 eingebunden und gesperrte Speicher-Versionsstand-
-Schema-Migration v27.31p und gesperrte Operations-ID-
-Ausstellungsbindung v27.31q vorbereitet;
+Schema-Migration v27.31p, gesperrte Operations-ID-
+Ausstellungsbindung v27.31q und gesperrte Idempotenz-
+Reservierungsbindung v27.31r vorbereitet;
 keine Live-Ausführung

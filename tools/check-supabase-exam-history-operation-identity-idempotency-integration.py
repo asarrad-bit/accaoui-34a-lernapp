@@ -20,8 +20,8 @@ ISSUE_RPC_PATH = (
 
 RESERVE_RPC_PATH = (
     MIGRATIONS
-    / "20260722_v2731c_"
-    "exam_history_idempotency_reserve_rpc.sql"
+    / "20260722_v2731r_"
+      "exam_history_idempotency_expected_version_reserve_rpc.sql"
 )
 
 COMPLETE_RPC_PATH = (
@@ -402,10 +402,17 @@ expected_reserve_parameters = [
     ("p_operation_scope", "text"),
     ("p_operation", "text"),
     ("p_resource_identity", "text"),
+    ("p_expected_storage_version", "bigint"),
     ("p_payload_fingerprint", "text"),
 ]
 
-expected_complete_prefix = expected_reserve_parameters
+expected_complete_prefix = [
+    ("p_external_operation_id", "uuid"),
+    ("p_operation_scope", "text"),
+    ("p_operation", "text"),
+    ("p_resource_identity", "text"),
+    ("p_payload_fingerprint", "text"),
+]
 
 if issue_parameters != expected_issue_parameters:
     fail(
@@ -424,21 +431,21 @@ if reserve_parameters != expected_reserve_parameters:
 if complete_parameters[:5] != expected_complete_prefix:
     fail(
         "Idempotenz-Abschluss-RPC besitzt keine "
-        "identische Operationsschnittstelle."
+        "kanonische Abschlussidentität."
     )
 
-issue_shared_parameters = (
+if issue_parameters[1:] != reserve_parameters[1:]:
+    fail(
+        "Ausstellung und Reservierung verwenden nicht "
+        "dieselben versionierten Fachparameter."
+    )
+
+issue_completion_parameters = (
     issue_parameters[1:4]
     + issue_parameters[5:6]
 )
 
-if issue_shared_parameters != reserve_parameters[1:]:
-    fail(
-        "Ausstellung und Reservierung verwenden "
-        "abweichende gemeinsame Fachparameter."
-    )
-
-if issue_shared_parameters != complete_parameters[1:5]:
+if issue_completion_parameters != complete_parameters[1:5]:
     fail(
         "Ausstellung und Abschluss verwenden "
         "abweichende gemeinsame Fachparameter."
@@ -450,13 +457,19 @@ if issue_parameters[4] != (
 ):
     fail("Ausstellungs-RPC besitzt keine Versionsbindung.")
 
+if reserve_parameters[4] != (
+    "p_expected_storage_version",
+    "bigint",
+):
+    fail("Reservierungs-RPC besitzt keine Versionsbindung.")
+
 if any(
     name == "p_expected_storage_version"
-    for name, _ in reserve_parameters
+    for name, _ in complete_parameters
 ):
     fail(
-        "Reservierungs-RPC darf in v27.31q noch nicht "
-        "als angepasst gelten."
+        "Abschluss-RPC darf keinen neuen "
+        "Versionsparameter akzeptieren."
     )
 
 if any(
@@ -566,6 +579,10 @@ for marker in (
     "p_external_operation_id::text",
     "external_operation_id,",
     "p_external_operation_id,",
+    "expected_storage_version,",
+    "p_expected_storage_version,",
+    "v_existing.expected_storage_version <> "
+    "p_expected_storage_version",
     "'exam_history_idempotency:' || "
     "p_operation_scope || ':' || "
     "p_operation || ':' || "
@@ -692,8 +709,8 @@ print(
     "erst danach zurückgegeben"
 )
 print(
-    "Schnittstelle: Ausstellungshelper bindet Version; "
-    "Reservierungshelper bleibt als nächster Schritt offen"
+    "Schnittstelle: Ausstellungs- und Reservierungshelper "
+    "binden denselben erwarteten Versionsstand"
 )
 print(
     "Direkte Helper-Ausführung: für public, anon und "

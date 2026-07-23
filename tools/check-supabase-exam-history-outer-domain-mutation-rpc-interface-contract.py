@@ -32,15 +32,15 @@ HELPER_MIGRATIONS = {
         "public."
         "accaoui_issue_exam_history_operation_identity"
     ): (
-        "20260722_v2731i_"
-        "exam_history_operation_identity_issue_rpc.sql"
+        "20260722_v2731q_"
+        "exam_history_operation_identity_expected_version_rpc.sql"
     ),
     (
         "public."
         "accaoui_reserve_exam_history_idempotency_operation"
     ): (
-        "20260722_v2731c_"
-        "exam_history_idempotency_reserve_rpc.sql"
+        "20260722_v2731r_"
+        "exam_history_idempotency_expected_version_reserve_rpc.sql"
     ),
     (
         "public."

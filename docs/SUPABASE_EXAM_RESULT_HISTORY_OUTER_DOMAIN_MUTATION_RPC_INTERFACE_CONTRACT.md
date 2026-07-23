@@ -1,7 +1,6 @@
 # Äußerer Fachmutations-RPC-Schnittstellenvertrag
 
-Stand: v27.31q
-
+Stand: v27.31r
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -247,6 +246,9 @@ vorbereiteten Schema erweitert.
 
 Der Ausstellungshelper bindet den Versionsstand seit v27.31q.
 
-Eine Implementierung des äußeren RPCs bleibt gesperrt, bis auch
-der Reservierungshelper denselben Versionsstand verbindlich
-speichert und bei Wiederholungen vergleicht.
+Ausstellungs- und Reservierungshelper binden seit v27.31r
+denselben erwarteten Versionsstand verbindlich.
+
+Eine Implementierung des äußeren RPCs bleibt dennoch gesperrt,
+bis Domain-Speichertabelle und Fachmutationsweg vorbereitet
+sind.

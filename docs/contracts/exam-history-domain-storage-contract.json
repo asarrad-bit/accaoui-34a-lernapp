@@ -1,5 +1,5 @@
 {
-  "version": "v27.31q",
+  "version": "v27.31r",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -134,7 +134,7 @@
   "identityBinding": {
     "expectedStorageVersionMustAffectRequestIdentity": true,
     "currentIssuanceHelperBindsExpectedVersion": true,
-    "currentReservationHelperBindsExpectedVersion": false,
+    "currentReservationHelperBindsExpectedVersion": true,
     "outerRpcMayBeImplementedBeforeBinding": false
   },
   "scopeLimits": {

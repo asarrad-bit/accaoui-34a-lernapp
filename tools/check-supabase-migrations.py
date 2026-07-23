@@ -56,6 +56,10 @@ OPERATION_IDENTITY_EXPECTED_VERSION_RPC = (
     "20260722_v2731q_"
     "exam_history_operation_identity_expected_version_rpc.sql"
 )
+IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC = (
+    "20260722_v2731r_"
+    "exam_history_idempotency_expected_version_reserve_rpc.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -120,6 +124,7 @@ for required in (
     OPERATION_IDENTITY_ISSUE_RPC,
     EXPECTED_STORAGE_VERSION_SCHEMA,
     OPERATION_IDENTITY_EXPECTED_VERSION_RPC,
+    IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -264,6 +269,14 @@ if files.index(EXPECTED_STORAGE_VERSION_SCHEMA) >= files.index(
     fail(
         "Operations-ID-Versionsbindungs-RPC steht vor dem "
         "Speicher-Versionsstand-Schema."
+    )
+
+if files.index(OPERATION_IDENTITY_EXPECTED_VERSION_RPC) >= files.index(
+    IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC
+):
+    fail(
+        "Idempotenz-Reservierungs-Versionsbindungs-RPC steht "
+        "vor dem Operations-ID-Versionsbindungs-RPC."
     )
 
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
@@ -508,6 +521,129 @@ for forbidden in (
             "Unzulässiger Inhalt im Operations-ID-"
             f"Versionsbindungs-RPC: {forbidden}"
         )
+
+
+idempotency_expected_version_reserve_rpc = (
+    MIGRATIONS / IDEMPOTENCY_EXPECTED_VERSION_RESERVE_RPC
+).read_text(encoding="utf-8")
+
+idempotency_expected_version_reserve_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    idempotency_expected_version_reserve_rpc,
+    flags=re.MULTILINE,
+)
+
+idempotency_expected_version_reserve_lower = (
+    idempotency_expected_version_reserve_without_comments.lower()
+)
+
+idempotency_expected_version_reserve_compact = re.sub(
+    r"\s+",
+    " ",
+    idempotency_expected_version_reserve_lower,
+).strip()
+
+for marker in (
+    "p_expected_storage_version bigint",
+    "message = 'expected_storage_version_invalid'",
+    "expected_storage_version, payload_fingerprint",
+    "p_expected_storage_version, p_payload_fingerprint",
+    "v_existing.expected_storage_version <> "
+    "p_expected_storage_version",
+):
+    if marker not in idempotency_expected_version_reserve_compact:
+        fail(
+            "Idempotenz-Reservierungs-Versionsbindungs-"
+            f"Anweisung fehlt: {marker}"
+        )
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_reserve_exam_history_"
+        r"idempotency_operation"
+        r"\s*\(\s*uuid\s*,\s*text\s*,\s*text\s*,\s*"
+        r"text\s*,\s*bigint\s*,\s*text\s*\)\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+    if not re.search(
+        revoke_pattern,
+        idempotency_expected_version_reserve_rpc,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Idempotenz-Reservierungs-Versionsbindungs-"
+            f"Revoke fehlt für: {role}"
+        )
+
+if not re.search(
+    r"drop\s+function\s+if\s+exists\s+"
+    r"public\.accaoui_reserve_exam_history_"
+    r"idempotency_operation"
+    r"\s*\(\s*uuid\s*,\s*text\s*,\s*text\s*,\s*"
+    r"text\s*,\s*text\s*\)\s*;",
+    idempotency_expected_version_reserve_rpc,
+    flags=re.IGNORECASE | re.DOTALL,
+):
+    fail("Alte Reservierungsfunktions-Überladung bleibt erhalten.")
+
+reserve_targets = [
+    (
+        re.sub(r"\s+", " ", action.lower()),
+        table.lower(),
+    )
+    for action, table in re.findall(
+        r"\b(insert\s+into|update|delete\s+from)\s+"
+        r"(?:public\.)?([a-z_]+)",
+        idempotency_expected_version_reserve_without_comments,
+        flags=re.IGNORECASE,
+    )
+]
+
+if reserve_targets != [
+    (
+        "insert into",
+        "exam_history_idempotency_operations",
+    ),
+]:
+    fail(
+        "Idempotenz-Reservierungs-Versionsbindung verändert "
+        f"unerwartete Tabellen: {reserve_targets}"
+    )
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "exam_history_domain_resources",
+    "public.exam_attempts",
+    "public.exam_answers",
+):
+    if forbidden in idempotency_expected_version_reserve_lower:
+        fail(
+            "Unzulässiger Inhalt im Idempotenz-Reservierungs-"
+            f"Versionsbindungs-RPC: {forbidden}"
+        )
+
+v2731r_sql_files = sorted(
+    path.name
+    for path in MIGRATIONS.glob("*v2731r*.sql")
+)
+
+if v2731r_sql_files != [
+    "20260722_v2731r_"
+    "exam_history_idempotency_expected_version_reserve_rpc.sql"
+]:
+    fail(
+        "Unerwartete v27.31r-SQL-Dateien: "
+        f"{v2731r_sql_files}"
+    )
 
 question_schema_bundle = (
     question_schema
@@ -2551,6 +2687,10 @@ print(
 print(
     "Operations-ID-Ausstellungs-RPC: erwartete Version "
     "gespeichert, gehasht und bei Retry verglichen"
+)
+print(
+    "Idempotenz-Reservierungs-RPC: erwartete Version "
+    "gespeichert und in der vollständigen Identität verglichen"
 )
 print("Supabase-Migrationsprüfung: OK")
 print(f"SQL-Dateien: {len(files)}")

@@ -55,8 +55,8 @@ contract = read_json(
     "Domain-Speichervertrag",
 )
 
-if contract.get("version") != "v27.31q":
-    fail("Domain-Speichervertrag besitzt nicht v27.31q.")
+if contract.get("version") != "v27.31r":
+    fail("Domain-Speichervertrag besitzt nicht v27.31r.")
 
 if contract.get("contractVersion") != 1:
     fail("Domain-Speichervertrag besitzt nicht Schema 1.")
@@ -202,7 +202,7 @@ identity_binding = contract.get(
 if identity_binding != {
     "expectedStorageVersionMustAffectRequestIdentity": True,
     "currentIssuanceHelperBindsExpectedVersion": True,
-    "currentReservationHelperBindsExpectedVersion": False,
+    "currentReservationHelperBindsExpectedVersion": True,
     "outerRpcMayBeImplementedBeforeBinding": False,
 }:
     fail("Versionsstand-Identitätsbindung ist ungültig.")
@@ -360,8 +360,8 @@ print(
     "nicht wiederverwendet"
 )
 print(
-    "Operationsidentität: Ausstellungshelper bindet Version; "
-    "Reservierungshelper bleibt offen"
+    "Operationsidentität: Ausstellungs- und Reservierungshelper "
+    "binden den erwarteten Versionsstand"
 )
 print("Speichertabelle implementiert: nein")
 print("Produktive Freigabe: nein")

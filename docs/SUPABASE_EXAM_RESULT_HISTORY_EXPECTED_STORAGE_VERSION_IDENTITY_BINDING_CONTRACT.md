@@ -1,7 +1,6 @@
 # Speicher-Versionsstand-Identitätsbindung
 
-Stand: v27.31q
-
+Stand: v27.31r
 Status: verbindlicher lokaler Integrationsvertrag,
 nicht live ausgeführt
 
@@ -89,7 +88,8 @@ Versionsstand jetzt im Anfragefingerprint, in der gespeicherten
 Ausstellungszeile und beim Retry-Vergleich.
 
 Der Idempotenz-Reservierungshelper bindet den Versionsstand
-weiterhin noch nicht.
+jetzt ebenfalls in der gespeicherten Operationszeile und im
+exakten Retry-Vergleich.
 
 Deshalb bleiben gesperrt:
 
@@ -176,3 +176,34 @@ Direkte Ausführung für App-Rollen bleibt vollständig gesperrt.
 Migration:
 
 `supabase/migrations/20260722_v2731q_exam_history_operation_identity_expected_version_rpc.sql`
+
+
+## Idempotenz-Reservierungsbindung v27.31r
+
+Der interne Reservierungs-RPC akzeptiert zusätzlich:
+
+`p_expected_storage_version bigint`
+
+Der Wert:
+
+- muss mindestens 0 sein
+- wird in der Idempotenzoperationszeile gespeichert
+- gehört zur vollständigen Operationsidentität
+- wird bei einer vorhandenen Reservierung exakt verglichen
+- führt bei derselben Operations-UUID mit abweichendem Stand
+  zu `idempotency_operation_identity_conflict`
+
+Die kanonische `operation_identity`-Zeichenfolge bleibt an
+Bereich, Operation und serverseitig ausgestellte UUID gebunden.
+Der erwartete Versionsstand wird als zusätzlicher
+Identitätsbestandteil separat gespeichert und geprüft.
+
+Die alte Fünf-Parameter-Funktionsüberladung wird entfernt.
+Direkte Ausführung für App-Rollen bleibt vollständig gesperrt.
+
+Der Abschlusshelper erhält keinen neuen Versionsparameter. Er
+liest den Stand ausschließlich aus der reservierten Zeile.
+
+Migration:
+
+`supabase/migrations/20260722_v2731r_exam_history_idempotency_expected_version_reserve_rpc.sql`

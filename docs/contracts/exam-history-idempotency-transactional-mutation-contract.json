@@ -1,5 +1,5 @@
 {
-  "version": "v27.31f",
+  "version": "v27.31r",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -23,6 +23,7 @@
       "operation_scope",
       "operation",
       "resource_identity",
+      "expected_storage_version",
       "payload_fingerprint"
     ]
   },

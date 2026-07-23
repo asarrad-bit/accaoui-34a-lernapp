@@ -1,5 +1,5 @@
 {
-  "version": "v27.31q",
+  "version": "v27.31r",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -47,7 +47,10 @@
     "expectedVersionComparedOnExistingReservation": true,
     "sameUuidDifferentExpectedVersionConflicts": true,
     "sameIdentityDifferentExpectedVersionIsDistinct": true,
-    "payloadFingerprintMayBeNullForDelete": true
+    "payloadFingerprintMayBeNullForDelete": true,
+    "implementationPresent": true,
+    "migrationPath": "supabase/migrations/20260722_v2731r_exam_history_idempotency_expected_version_reserve_rpc.sql",
+    "expectedVersionMinimum": 0
   },
   "completionBinding": {
     "expectedVersionAcceptedFromBrowser": false,
@@ -101,9 +104,9 @@
     "issuanceRpcRequestFingerprintMustBindVersion": true,
     "reserveRpcOperationIdentityMustBindVersion": true,
     "outerRpcMustPassSameVersionToBothHelpers": true,
-    "currentHelpersAlreadyBindVersion": false,
+    "currentHelpersAlreadyBindVersion": true,
     "currentIssuanceHelperBindsVersion": true,
-    "currentReservationHelperBindsVersion": false
+    "currentReservationHelperBindsVersion": true
   },
   "securityRules": {
     "directTableRightsAllowed": false,
@@ -116,7 +119,7 @@
     "issuanceTableMigration": false,
     "idempotencyTableMigration": false,
     "issuanceRpcMigration": false,
-    "reserveRpcMigration": true,
+    "reserveRpcMigration": false,
     "storageTableImplementation": true,
     "outerDomainMutationRpcImplementation": true,
     "liveDatabaseTests": true,

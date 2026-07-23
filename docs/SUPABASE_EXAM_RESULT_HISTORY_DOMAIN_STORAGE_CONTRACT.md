@@ -1,7 +1,6 @@
 # Domain-Speichervertrag
 
-Stand: v27.31q
-
+Stand: v27.31r
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
 ## Ziel
@@ -173,3 +172,19 @@ Operations-ID-Ausstellungshelper gebunden.
 Noch offen bleibt seine verbindliche Einbindung in den
 Idempotenz-Reservierungshelper. Bis dahin bleiben die gesamte
 Identitätsbindung und der äußere Fachmutations-RPC gesperrt.
+
+
+## Vollständige innere Versionsbindung v27.31r
+
+Der erwartete Speicher-Versionsstand wird jetzt durch beide
+internen Identitätshelper gebunden:
+
+- Operations-ID-Ausstellung
+- Idempotenzreservierung
+
+Ausstellung und Reservierung speichern und vergleichen
+denselben Versionsstand.
+
+Die Domain-Speichertabelle und der äußere Fachmutations-RPC
+sind weiterhin nicht implementiert. Die End-to-End-Bindung
+bleibt deshalb produktiv gesperrt.

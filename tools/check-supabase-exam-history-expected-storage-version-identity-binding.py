@@ -62,6 +62,12 @@ ISSUANCE_VERSION_RPC_PATH = (
       "exam_history_operation_identity_expected_version_rpc.sql"
 )
 
+RESERVATION_VERSION_RPC_PATH = (
+    MIGRATIONS
+    / "20260722_v2731r_"
+      "exam_history_idempotency_expected_version_reserve_rpc.sql"
+)
+
 
 def fail(message: str) -> None:
     print(f"FEHLER: {message}")
@@ -85,8 +91,8 @@ contract = read_json(
     "Versionsbindungsvertrag",
 )
 
-if contract.get("version") != "v27.31q":
-    fail("Versionsbindungsvertrag besitzt nicht v27.31q.")
+if contract.get("version") != "v27.31r":
+    fail("Versionsbindungsvertrag besitzt nicht v27.31r.")
 
 if contract.get("contractVersion") != 1:
     fail("Versionsbindungsvertrag besitzt nicht Schema 1.")
@@ -163,9 +169,20 @@ for field in (
     "expectedVersionComparedOnExistingReservation",
     "sameUuidDifferentExpectedVersionConflicts",
     "sameIdentityDifferentExpectedVersionIsDistinct",
+    "implementationPresent",
 ):
     if reservation.get(field) is not True:
         fail(f"Idempotenz-Versionsregel fehlt: {field}")
+
+if reservation.get("expectedVersionMinimum") != 0:
+    fail("Reservierungshelper erlaubt keinen Mindestwert 0.")
+
+if reservation.get("migrationPath") != (
+    "supabase/migrations/"
+    "20260722_v2731r_"
+    "exam_history_idempotency_expected_version_reserve_rpc.sql"
+):
+    fail("Reservierungs-Versionsbindungs-Migrationspfad ist ungültig.")
 
 completion = contract.get("completionBinding", {})
 
@@ -217,7 +234,7 @@ expected_unresolved = {
     "issuanceTableMigration": False,
     "idempotencyTableMigration": False,
     "issuanceRpcMigration": False,
-    "reserveRpcMigration": True,
+    "reserveRpcMigration": False,
     "storageTableImplementation": True,
     "outerDomainMutationRpcImplementation": True,
     "liveDatabaseTests": True,
@@ -246,8 +263,8 @@ if helpers.get(
 ) is not False:
     fail("Abschluss-RPC darf keinen neuen Versionsparameter verlangen.")
 
-if helpers.get("currentHelpersAlreadyBindVersion") is not False:
-    fail("Beide Helper dürfen noch nicht als gebunden gelten.")
+if helpers.get("currentHelpersAlreadyBindVersion") is not True:
+    fail("Beide internen Helper binden Version nicht vollständig.")
 
 if helpers.get(
     "currentIssuanceHelperBindsVersion"
@@ -256,23 +273,23 @@ if helpers.get(
 
 if helpers.get(
     "currentReservationHelperBindsVersion"
-) is not False:
-    fail("Reservierungshelper darf Version noch nicht binden.")
+) is not True:
+    fail("Reservierungshelper bindet Version nicht.")
 
 storage = read_json(
     STORAGE_CONTRACT_PATH,
     "Domain-Speichervertrag",
 )
 
-if storage.get("version") != "v27.31q":
-    fail("Domain-Speichervertrag besitzt nicht v27.31q.")
+if storage.get("version") != "v27.31r":
+    fail("Domain-Speichervertrag besitzt nicht v27.31r.")
 
 identity_binding = storage.get("identityBinding", {})
 
 if identity_binding != {
     "expectedStorageVersionMustAffectRequestIdentity": True,
     "currentIssuanceHelperBindsExpectedVersion": True,
-    "currentReservationHelperBindsExpectedVersion": False,
+    "currentReservationHelperBindsExpectedVersion": True,
     "outerRpcMayBeImplementedBeforeBinding": False,
 }:
     fail("Speichervertrag beschreibt die Versionslücke nicht exakt.")
@@ -581,6 +598,130 @@ if v2731q_sql_files != [
         f"{v2731q_sql_files}"
     )
 
+
+if not RESERVATION_VERSION_RPC_PATH.is_file():
+    fail("Idempotenz-Reservierungs-Versionsbindungs-RPC fehlt.")
+
+reservation_version_sql = RESERVATION_VERSION_RPC_PATH.read_text(
+    encoding="utf-8"
+)
+reservation_version_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    reservation_version_sql,
+    flags=re.MULTILINE,
+)
+reservation_version_lower = (
+    reservation_version_without_comments.lower()
+)
+reservation_version_compact = re.sub(
+    r"\s+",
+    " ",
+    reservation_version_lower,
+).strip()
+
+for marker in (
+    "p_expected_storage_version bigint",
+    "message = 'expected_storage_version_invalid'",
+    "expected_storage_version, payload_fingerprint",
+    "p_expected_storage_version, p_payload_fingerprint",
+    "v_existing.expected_storage_version <> "
+    "p_expected_storage_version",
+    "message = 'idempotency_operation_identity_conflict'",
+):
+    if marker not in reservation_version_compact:
+        fail(
+            "Idempotenz-Reservierungs-Versionsbindungs-RPC-"
+            f"Anweisung fehlt: {marker}"
+        )
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_reserve_exam_history_"
+        r"idempotency_operation"
+        r"\s*\(\s*uuid\s*,\s*text\s*,\s*text\s*,\s*"
+        r"text\s*,\s*bigint\s*,\s*text\s*\)\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+    if not re.search(
+        revoke_pattern,
+        reservation_version_sql,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Reservierungs-Versionsbindungs-RPC-Revoke "
+            f"fehlt für: {role}"
+        )
+
+if not re.search(
+    r"drop\s+function\s+if\s+exists\s+"
+    r"public\.accaoui_reserve_exam_history_"
+    r"idempotency_operation"
+    r"\s*\(\s*uuid\s*,\s*text\s*,\s*text\s*,\s*"
+    r"text\s*,\s*text\s*\)\s*;",
+    reservation_version_sql,
+    flags=re.IGNORECASE | re.DOTALL,
+):
+    fail("Alte Fünf-Parameter-Reservierungsfunktion bleibt erhalten.")
+
+reservation_mutations = [
+    (
+        re.sub(r"\s+", " ", action.lower()),
+        table.lower(),
+    )
+    for action, table in re.findall(
+        r"\b(insert\s+into|update|delete\s+from)\s+"
+        r"(?:public\.)?([a-z_]+)",
+        reservation_version_without_comments,
+        flags=re.IGNORECASE,
+    )
+]
+
+if reservation_mutations != [
+    (
+        "insert into",
+        "exam_history_idempotency_operations",
+    ),
+]:
+    fail(
+        "Reservierungs-Versionsbindungs-RPC verändert "
+        f"unerwartete Tabellen: {reservation_mutations}"
+    )
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "exam_history_domain_resources",
+    "public.exam_attempts",
+    "public.exam_answers",
+):
+    if forbidden in reservation_version_lower:
+        fail(
+            "Unzulässiger Inhalt im Reservierungs-"
+            f"Versionsbindungs-RPC: {forbidden}"
+        )
+
+v2731r_sql_files = sorted(
+    path.name
+    for path in MIGRATIONS.glob("*v2731r*.sql")
+)
+
+if v2731r_sql_files != [
+    "20260722_v2731r_"
+    "exam_history_idempotency_expected_version_reserve_rpc.sql"
+]:
+    fail(
+        "Unerwartete v27.31r-SQL-Dateien: "
+        f"{v2731r_sql_files}"
+    )
+
 for frontend_path in (
     ROOT / "index.html",
     ROOT / "app.js",
@@ -607,8 +748,8 @@ print(
     "abweichende Version kollidiert"
 )
 print(
-    "Idempotenzreservierung: erwartete Version wird Teil der "
-    "vollständigen Operationsidentität"
+    "Idempotenzreservierung: erwartete Version ist gespeichert, "
+    "Teil der vollständigen Operationsidentität und Retry-Prüfung"
 )
 print(
     "Abschluss: liest Version aus der Reservierung und darf "
@@ -619,9 +760,9 @@ print(
     "zum kontrollierten Abbruch"
 )
 print(
-    "Helperstatus: Ausstellungshelper angepasst; "
-    "Reservierungshelper noch offen"
+    "Helperstatus: Ausstellungs- und Reservierungshelper "
+    "binden denselben erwarteten Versionsstand"
 )
-print("SQL-Migration in v27.31q: vorbereitet")
+print("SQL-Migration in v27.31r: vorbereitet")
 print("Produktive Freigabe: nein")
 print("Live-Ausführung: nein")
