@@ -1,0 +1,73 @@
+{
+  "version": "v27.31y",
+  "contractVersion": 1,
+  "status": "implemented_connection_free_not_live",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceContractPath": "docs/contracts/exam-history-outer-domain-mutation-fixture-harness-contract.json",
+    "databaseTestContractPath": "docs/contracts/exam-history-outer-domain-mutation-database-test-contract.json",
+    "fixtureCatalogPath": "tools/fixtures/exam-history-outer-domain-mutation-fixtures.json",
+    "harnessPath": "tools/run-supabase-exam-history-outer-domain-mutation-harness.py",
+    "checkerPath": "tools/check-supabase-exam-history-outer-domain-mutation-harness-readiness.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_HARNESS_READINESS.md",
+    "fixtureCatalogImplemented": true,
+    "connectionFreeHarnessScaffoldImplemented": true,
+    "databaseDriverPresent": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "catalogIntegrity": {
+    "canonicalSha256": "201a7d40cf9e9321f5243c025791dcf8e94395c240c067600837ceb8dd34f471",
+    "userCount": 2,
+    "resourceCount": 5,
+    "clientRequestKeyCount": 11,
+    "payloadCount": 6,
+    "scenarioCount": 7,
+    "concurrencyBarrierCount": 2
+  },
+  "harnessModes": {
+    "defaultMode": "validate_only",
+    "validateOnlyExitCode": 0,
+    "databaseRunFlag": "--run-database",
+    "explicitEnvironmentVariable": "ACCAOUI_DB_TEST_MODE",
+    "requiredFutureEnvironmentValue": "disposable",
+    "databaseRunImplemented": false,
+    "databaseRunClosedExitCode": 2
+  },
+  "safetyBoundary": {
+    "networkCodeAllowed": false,
+    "databaseDriverAllowed": false,
+    "databaseUrlAllowed": false,
+    "productionSecretAllowed": false,
+    "serviceRoleKeyAllowed": false,
+    "realParticipantDataAllowed": false,
+    "realEmailAddressAllowed": false,
+    "realNameAllowed": false,
+    "frontendReferenceAllowed": false,
+    "clientSelectableFaultInjectionAllowed": false
+  },
+  "validationBoundary": {
+    "loadsSourceContract": true,
+    "loadsFixtureCatalog": true,
+    "verifiesSourceProjection": true,
+    "verifiesCanonicalCatalogFingerprint": true,
+    "verifiesSyntheticIdentifiers": true,
+    "verifiesClientKeyWidth": true,
+    "verifiesScenarioReferences": true,
+    "verifiesConcurrencyBarrierReferences": true,
+    "opensDatabaseConnection": false,
+    "executesDatabaseTest": false
+  },
+  "unresolvedRequirements": {
+    "disposableEnvironmentGateImplementation": true,
+    "databaseConnectionAdapterImplementation": true,
+    "testOnlyFaultInjectionImplementation": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}

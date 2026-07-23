@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31x
+Stand: v27.31y
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1657,6 +1657,26 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_FIXTURE_HARNESS_CONTRACT.md`
 
+## Synthetischer Fixture-Katalog und Harness-Readiness v27.31y
+
+Der v27.31x-Vertrag wurde materialisiert als:
+
+- kanonischer synthetischer Fixture-Katalog
+- SHA-256-gebundener Readiness-Vertrag
+- lokal ausführbares Validate-only-Harness-Gerüst
+- statischer und ausführender Preflight-Prüfer
+
+Der Standardmodus validiert ausschließlich lokale Dateien.
+Der vorbereitete Datenbankmodus stoppt geschlossen mit
+Exitcode 2.
+
+Es existieren kein Datenbanktreiber, keine Datenbank-URL, kein
+Netzwerkcode, keine Verbindung und keine Testausführung.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_HARNESS_READINESS.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1747,16 +1767,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31x` kann `v27.31y`
-den tatsächlichen synthetischen Fixture-Katalog und ein
-verbindungsfreies Harness-Gerüst vorbereiten.
+Nach GitHub-Bestätigung von `v27.31y` kann `v27.31z`
+einen vollständig gesperrten Vertrag für das disposable
+Umgebungs-Gate und den späteren Datenbank-Verbindungsadapter
+vorbereiten.
 
-Das Gerüst muss den Vertrag laden und vollständig validieren,
-aber ohne ausdrücklich gesetzte spätere Testumgebung keine
-Datenbankverbindung öffnen und keinen Test ausführen.
+Der Vertrag muss lokale Testdatenbanken eindeutig von
+Produktions- oder unbekannten Zielen unterscheiden und weiterhin
+jede Verbindung standardmäßig geschlossen blockieren.
 
-Live-Ausführung, direkte App-Freigabe und UI-Anbindung bleiben
-weiterhin ausgeschlossen.
+Datenbankverbindung, Testausführung, direkte App-Freigabe und
+UI-Anbindung bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1818,6 +1839,7 @@ Domain-Speichertabelle v27.31s, vollständig gesperrter
 Domain-Speicher-Mutationshelper v27.31t und vollständig
 gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet,
 statischer äußerer End-to-End-Audit v27.31v, äußerer
-Datenbank-Testvertrag v27.31w und synthetischer Fixture- und
-Harness-Vertrag v27.31x dauerhaft eingebunden;
+Datenbank-Testvertrag v27.31w, synthetischer Fixture- und
+Harness-Vertrag v27.31x sowie verbindungsfreier Fixture-Katalog
+und Harness-Readiness v27.31y dauerhaft eingebunden;
 keine Live-Ausführung
