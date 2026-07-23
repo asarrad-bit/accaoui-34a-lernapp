@@ -1,5 +1,5 @@
 {
-  "version": "v27.31i",
+  "version": "v27.31q",
   "contractVersion": 1,
   "status": "prepared_not_live",
   "productiveReleaseAllowed": false,
@@ -31,15 +31,16 @@
     "authUserSource": "auth_uid_only",
     "authorizationRequiredBeforeIssuance": true,
     "canonicalFields": [
-      "client_request_key",
       "operation_scope",
       "operation",
       "resource_identity",
+      "expected_storage_version",
       "payload_fingerprint"
     ],
     "requestFingerprintAlgorithm": "sha256_canonical_json",
     "requestFingerprintGeneratedBy": "database_or_trusted_server",
-    "operationIdReturnedOnlyAfterPersistence": true
+    "operationIdReturnedOnlyAfterPersistence": true,
+    "clientRequestKeyIncludedInRequestFingerprint": false
   },
   "verifiedIdentityRecord": {
     "requiredFields": [
@@ -50,6 +51,7 @@
       "operation_scope",
       "operation",
       "resource_identity",
+      "expected_storage_version",
       "payload_fingerprint",
       "issued_at"
     ],
@@ -69,7 +71,8 @@
     "suppliedOperationIdWithoutRecord": "reject_unverified_operation_id",
     "suppliedOperationIdRecordMismatch": "reject_operation_identity_mismatch",
     "foreignUserRecord": "reject_operation_owner_conflict",
-    "rawExistingValuesReturned": false
+    "rawExistingValuesReturned": false,
+    "sameRequestKeyDifferentExpectedStorageVersion": "reject_request_key_conflict"
   },
   "securityRules": {
     "authUserFromAuthUidOnly": true,
@@ -85,6 +88,7 @@
     "issuanceRpcImplementation": false,
     "domainMutationRpcImplementation": true,
     "liveDatabaseTests": true,
-    "concurrencyTests": true
+    "concurrencyTests": true,
+    "issuanceExpectedStorageVersionBinding": false
   }
 }

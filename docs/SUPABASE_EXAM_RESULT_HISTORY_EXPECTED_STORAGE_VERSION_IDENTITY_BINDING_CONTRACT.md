@@ -1,6 +1,6 @@
 # Speicher-Versionsstand-Identitätsbindung
 
-Stand: v27.31p
+Stand: v27.31q
 
 Status: verbindlicher lokaler Integrationsvertrag,
 nicht live ausgeführt
@@ -84,8 +84,12 @@ Zusätzlich erforderlich:
 Die beiden internen Tabellenschemata enthalten jetzt
 `expected_storage_version bigint not null` mit Mindestwert 0.
 
-Die internen Ausstellungs- und Reservierungshelper binden den
-Versionsstand weiterhin noch nicht.
+Der interne Operations-ID-Ausstellungshelper bindet den
+Versionsstand jetzt im Anfragefingerprint, in der gespeicherten
+Ausstellungszeile und beim Retry-Vergleich.
+
+Der Idempotenz-Reservierungshelper bindet den Versionsstand
+weiterhin noch nicht.
 
 Deshalb bleiben gesperrt:
 
@@ -146,3 +150,29 @@ erfundener Wert gesetzt.
 Migration:
 
 `supabase/migrations/20260722_v2731p_exam_history_expected_storage_version_schema.sql`
+
+
+## Operations-ID-Ausstellungsbindung v27.31q
+
+Der interne Ausstellungs-RPC akzeptiert zusätzlich:
+
+`p_expected_storage_version bigint`
+
+Der Wert:
+
+- muss mindestens 0 sein
+- liegt im kanonischen Anfragefingerprint
+- wird in der Ausstellungszeile gespeichert
+- wird bei einem bestehenden Retry exakt verglichen
+- führt bei abweichender Wiederverwendung desselben
+  Client-Schlüssels zu einem geschlossenen Konflikt
+
+Der rohe Client-Wiederholungsschlüssel wird nur separat gehasht
+und ist kein Bestandteil des kanonischen Anfragefingerprints.
+
+Die alte Fünf-Parameter-Funktionsüberladung wird entfernt.
+Direkte Ausführung für App-Rollen bleibt vollständig gesperrt.
+
+Migration:
+
+`supabase/migrations/20260722_v2731q_exam_history_operation_identity_expected_version_rpc.sql`

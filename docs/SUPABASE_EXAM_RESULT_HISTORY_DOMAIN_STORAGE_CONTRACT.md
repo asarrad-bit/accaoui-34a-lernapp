@@ -1,6 +1,6 @@
 # Domain-Speichervertrag
 
-Stand: v27.31p
+Stand: v27.31q
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -163,3 +163,13 @@ erfunden.
 
 Die Domain-Speichertabelle selbst ist weiterhin nicht
 implementiert.
+
+
+## Teilweise Identitätsbindung v27.31q
+
+Der erwartete Speicher-Versionsstand wird jetzt durch den
+Operations-ID-Ausstellungshelper gebunden.
+
+Noch offen bleibt seine verbindliche Einbindung in den
+Idempotenz-Reservierungshelper. Bis dahin bleiben die gesamte
+Identitätsbindung und der äußere Fachmutations-RPC gesperrt.

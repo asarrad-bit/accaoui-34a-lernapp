@@ -63,8 +63,8 @@ if set(contract) != expected_top_level_keys:
         f"{sorted(set(contract) - expected_top_level_keys)}"
     )
 
-if contract["version"] != "v27.31i":
-    fail("Ausstellungsvertragsversion ist nicht v27.31i.")
+if contract["version"] != "v27.31q":
+    fail("Ausstellungsvertragsversion ist nicht v27.31q.")
 
 if contract["contractVersion"] != 1:
     fail("Ausstellungsvertragsschema ist nicht Version 1.")
@@ -111,12 +111,13 @@ expected_issuance_request = {
     "authUserSource": "auth_uid_only",
     "authorizationRequiredBeforeIssuance": True,
     "canonicalFields": [
-        "client_request_key",
         "operation_scope",
         "operation",
         "resource_identity",
+        "expected_storage_version",
         "payload_fingerprint",
     ],
+    "clientRequestKeyIncludedInRequestFingerprint": False,
     "requestFingerprintAlgorithm": "sha256_canonical_json",
     "requestFingerprintGeneratedBy": (
         "database_or_trusted_server"
@@ -136,6 +137,7 @@ expected_record = {
         "operation_scope",
         "operation",
         "resource_identity",
+        "expected_storage_version",
         "payload_fingerprint",
         "issued_at",
     ],
@@ -169,6 +171,9 @@ expected_conflict_rules = {
         "reject_operation_identity_mismatch"
     ),
     "foreignUserRecord": "reject_operation_owner_conflict",
+    "sameRequestKeyDifferentExpectedStorageVersion": (
+        "reject_request_key_conflict"
+    ),
     "rawExistingValuesReturned": False,
 }
 
@@ -191,6 +196,7 @@ if contract["securityRules"] != expected_security_rules:
 expected_unresolved = {
     "issuanceTableImplementation": False,
     "issuanceRpcImplementation": False,
+    "issuanceExpectedStorageVersionBinding": False,
     "domainMutationRpcImplementation": True,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
@@ -315,7 +321,8 @@ ISSUANCE_RPC_PATH = (
     ROOT
     / "supabase"
     / "migrations"
-    / "20260722_v2731i_exam_history_operation_identity_issue_rpc.sql"
+    / "20260722_v2731q_"
+      "exam_history_operation_identity_expected_version_rpc.sql"
 )
 
 if not ISSUANCE_RPC_PATH.is_file():
@@ -354,15 +361,18 @@ required_rpc_markers = (
     "message = 'operation_scope_invalid'",
     "message = 'operation_invalid'",
     "message = 'resource_identity_invalid'",
+    "p_expected_storage_version bigint",
+    "message = 'expected_storage_version_invalid'",
     "message = 'payload_fingerprint_invalid'",
     "message = 'delete_payload_fingerprint_not_allowed'",
     "digest( convert_to( p_client_request_key, 'utf8' ), "
     "'sha256' )",
     "jsonb_build_object(",
-    "'client_request_key', p_client_request_key",
     "'operation_scope', p_operation_scope",
     "'operation', p_operation",
     "'resource_identity', p_resource_identity",
+    "'expected_storage_version', "
+    "p_expected_storage_version",
     "'payload_fingerprint', p_payload_fingerprint",
     "insert into "
     "public.exam_history_operation_identity_issuances "
@@ -376,6 +386,8 @@ required_rpc_markers = (
     "'operation_identity_issuance_conflict_unresolved'",
     "v_existing.request_fingerprint <> "
     "v_request_fingerprint",
+    "v_existing.expected_storage_version <> "
+    "p_expected_storage_version",
     "v_existing.payload_fingerprint "
     "is distinct from p_payload_fingerprint",
     "message = "
@@ -429,6 +441,7 @@ expected_rpc_parameters = (
     "p_operation_scope text, "
     "p_operation text, "
     "p_resource_identity text, "
+    "p_expected_storage_version bigint, "
     "p_payload_fingerprint text default null"
 )
 
@@ -484,7 +497,7 @@ for role in (
         r"public\.accaoui_issue_exam_history_"
         r"operation_identity\s*\(\s*"
         r"text\s*,\s*text\s*,\s*text\s*,\s*"
-        r"text\s*,\s*text\s*"
+        r"text\s*,\s*bigint\s*,\s*text\s*"
         r"\)\s+from\s+"
         + re.escape(role)
         + r"\s*;"
@@ -499,6 +512,18 @@ for role in (
             "Operations-ID-Ausstellungs-RPC-Revoke fehlt für: "
             f"{role}"
         )
+
+if (
+    "'client_request_key', p_client_request_key"
+    in issuance_rpc_compact
+):
+    fail(
+        "Roher Client-Wiederholungsschlüssel darf nicht im "
+        "kanonischen Anfragefingerprint liegen."
+    )
+
+if "expected_storage_version" not in issuance_rpc_compact:
+    fail("Ausstellungs-RPC bindet den Versionsstand nicht.")
 
 mutation_targets = [
     (
@@ -568,8 +593,8 @@ print(
     "Anfragefingerprint und UUID gesperrt gespeichert"
 )
 print(
-    "Ausstellungs-RPC: Client-Schlüssel und kanonische "
-    "Anfrage serverseitig gehasht"
+    "Ausstellungs-RPC: Client-Schlüssel separat gehasht; "
+    "kanonische Anfrage bindet den erwarteten Versionsstand"
 )
 print(
     "Ausstellungs-RPC: neue UUID gespeichert oder "

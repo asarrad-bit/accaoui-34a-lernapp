@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31p
+Stand: v27.31q
 
 Status: Datenbankplan, nicht live ausgeführt
 
@@ -1458,6 +1458,34 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
 
+## Operations-ID-Ausstellungsbindung v27.31q
+
+Eine vollständig gesperrte Folgemigration erweitert den
+internen Operations-ID-Ausstellungs-RPC um:
+
+`p_expected_storage_version bigint`
+
+Der Versionsstand:
+
+- muss mindestens 0 sein
+- wird in der Ausstellungszeile gespeichert
+- liegt im kanonischen Anfragefingerprint
+- wird bei einem bestehenden Retry exakt verglichen
+- blockiert eine abweichende Wiederverwendung desselben
+  Client-Wiederholungsschlüssels
+
+Der rohe Client-Schlüssel wird getrennt gehasht und nicht in
+den kanonischen Anfragefingerprint aufgenommen.
+
+Die alte Fünf-Parameter-Funktionsüberladung wird entfernt.
+Direkte App-Ausführung bleibt vollständig gesperrt.
+
+Der Idempotenz-Reservierungshelper wurde noch nicht angepasst.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_EXPECTED_STORAGE_VERSION_IDENTITY_BINDING_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1548,17 +1576,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31p` kann `v27.31q`
-den internen Operations-ID-Ausstellungs-RPC um
+Nach GitHub-Bestätigung von `v27.31q` kann `v27.31r`
+den internen Idempotenz-Reservierungs-RPC um
 `p_expected_storage_version` erweitern.
 
-Der Versionsstand muss validiert, in der Ausstellungszeile
-gespeichert und in den kanonischen Anfragefingerprint
-eingebunden werden. Gleicher Client-Wiederholungsschlüssel mit
-abweichendem Versionsstand muss geschlossen kollidieren.
+Der Versionsstand muss in der Idempotenzoperationszeile
+gespeichert, Bestandteil der vollständigen Operationsidentität
+und bei vorhandenen Reservierungen exakt verglichen werden.
 
-Direkte App-Ausführung, Reservierungshelper-Änderung und
-Live-Ausführung bleiben in diesem Schritt ausgeschlossen.
+Der Abschlusshelper erhält keinen neuen Browserparameter.
+Äußerer Fachmutations-RPC, Domain-Speichertabelle und
+Live-Ausführung bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1613,5 +1641,6 @@ und Fingerprint-Helfer v27.31m vorbereitet sowie
 Domain-Speichervertrag v27.31n und Speicher-Versionsstand-
 Identitätsbindungsvertrag v27.31o dauerhaft in den Preflight
 eingebunden und gesperrte Speicher-Versionsstand-
-Schema-Migration v27.31p vorbereitet;
+Schema-Migration v27.31p und gesperrte Operations-ID-
+Ausstellungsbindung v27.31q vorbereitet;
 keine Live-Ausführung

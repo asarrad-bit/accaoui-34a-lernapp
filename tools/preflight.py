@@ -381,6 +381,7 @@ def main():
         "tools/check-supabase-exam-history-expected-storage-version-identity-binding.py",
         "docs/contracts/exam-history-expected-storage-version-identity-binding-contract.json",
         "supabase/migrations/20260722_v2731p_exam_history_expected_storage_version_schema.sql",
+        "supabase/migrations/20260722_v2731q_exam_history_operation_identity_expected_version_rpc.sql",
     ]
 
     for file_path in required_files:

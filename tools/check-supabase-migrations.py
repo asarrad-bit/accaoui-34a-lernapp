@@ -52,6 +52,10 @@ EXPECTED_STORAGE_VERSION_SCHEMA = (
     "20260722_v2731p_"
     "exam_history_expected_storage_version_schema.sql"
 )
+OPERATION_IDENTITY_EXPECTED_VERSION_RPC = (
+    "20260722_v2731q_"
+    "exam_history_operation_identity_expected_version_rpc.sql"
+)
 
 EXPECTED_TABLES = {
     "participants",
@@ -115,6 +119,7 @@ for required in (
     OPERATION_IDENTITY_ISSUANCES,
     OPERATION_IDENTITY_ISSUE_RPC,
     EXPECTED_STORAGE_VERSION_SCHEMA,
+    OPERATION_IDENTITY_EXPECTED_VERSION_RPC,
 ):
     if required not in files:
         fail(f"Migration fehlt: {required}")
@@ -253,6 +258,14 @@ if files.index(OPERATION_IDENTITY_ISSUE_RPC) >= files.index(
         "Operations-ID-Ausstellungs-RPC."
     )
 
+if files.index(EXPECTED_STORAGE_VERSION_SCHEMA) >= files.index(
+    OPERATION_IDENTITY_EXPECTED_VERSION_RPC
+):
+    fail(
+        "Operations-ID-Versionsbindungs-RPC steht vor dem "
+        "Speicher-Versionsstand-Schema."
+    )
+
 schema = (MIGRATIONS / SCHEMA).read_text(encoding="utf-8")
 rls = (MIGRATIONS / RLS).read_text(encoding="utf-8")
 lockdown = (MIGRATIONS / LOCKDOWN).read_text(encoding="utf-8")
@@ -336,6 +349,10 @@ operation_identity_issue_rpc = (
 
 expected_storage_version_schema = (
     MIGRATIONS / EXPECTED_STORAGE_VERSION_SCHEMA
+).read_text(encoding="utf-8")
+
+operation_identity_expected_version_rpc = (
+    MIGRATIONS / OPERATION_IDENTITY_EXPECTED_VERSION_RPC
 ).read_text(encoding="utf-8")
 
 
@@ -437,6 +454,59 @@ for forbidden in (
         fail(
             "Unzulässiger Inhalt im Speicher-Versionsstand-"
             f"Schema: {forbidden}"
+        )
+
+
+operation_identity_expected_version_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    operation_identity_expected_version_rpc,
+    flags=re.MULTILINE,
+)
+operation_identity_expected_version_lower = (
+    operation_identity_expected_version_without_comments.lower()
+)
+operation_identity_expected_version_compact = re.sub(
+    r"\s+",
+    " ",
+    operation_identity_expected_version_lower,
+).strip()
+
+for marker in (
+    "p_expected_storage_version bigint",
+    "message = 'expected_storage_version_invalid'",
+    "'expected_storage_version', p_expected_storage_version",
+    "expected_storage_version, payload_fingerprint",
+    "p_expected_storage_version, p_payload_fingerprint",
+    "v_existing.expected_storage_version <> "
+    "p_expected_storage_version",
+):
+    if marker not in operation_identity_expected_version_compact:
+        fail(
+            "Operations-ID-Versionsbindungs-RPC-Anweisung "
+            f"fehlt: {marker}"
+        )
+
+if (
+    "'client_request_key', p_client_request_key"
+    in operation_identity_expected_version_compact
+):
+    fail(
+        "Roher Client-Schlüssel liegt im kanonischen "
+        "Operations-ID-Anfragefingerprint."
+    )
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "exam_history_idempotency_operations",
+    "exam_history_domain_resources",
+):
+    if forbidden in operation_identity_expected_version_lower:
+        fail(
+            "Unzulässiger Inhalt im Operations-ID-"
+            f"Versionsbindungs-RPC: {forbidden}"
         )
 
 question_schema_bundle = (
@@ -2477,6 +2547,10 @@ for forbidden in (
 print(
     "Speicher-Versionsstand-Schema: beide internen Tabellen "
     "ohne Default und ohne Datenmutation erweitert"
+)
+print(
+    "Operations-ID-Ausstellungs-RPC: erwartete Version "
+    "gespeichert, gehasht und bei Retry verglichen"
 )
 print("Supabase-Migrationsprüfung: OK")
 print(f"SQL-Dateien: {len(files)}")

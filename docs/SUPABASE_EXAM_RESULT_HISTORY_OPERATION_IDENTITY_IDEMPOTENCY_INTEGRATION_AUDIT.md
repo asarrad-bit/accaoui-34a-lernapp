@@ -214,3 +214,19 @@ statt.
 
 Ausstellungs- und Reservierungshelper sind weiterhin nicht
 angepasst. Der äußere Fachmutations-RPC bleibt gesperrt.
+
+
+## Operations-ID-Versionsbindung v27.31q
+
+Der interne Operations-ID-Ausstellungs-RPC bindet jetzt den
+erwarteten Speicher-Versionsstand in:
+
+- den kanonischen Anfragefingerprint
+- die gespeicherte Ausstellungszeile
+- den exakten Retry-Vergleich
+
+Der rohe Client-Wiederholungsschlüssel bleibt ein getrennt
+gehashter Lookup-Hinweis.
+
+Reservierungs- und Abschlussgrenze wurden nicht verändert.
+Die vollständige Integration bleibt deshalb offen.

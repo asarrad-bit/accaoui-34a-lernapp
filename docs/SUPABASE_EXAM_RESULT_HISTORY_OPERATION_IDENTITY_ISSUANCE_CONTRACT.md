@@ -1,6 +1,6 @@
 # Operations-ID-Ausstellungsvertrag
 
-Stand: v27.31j
+Stand: v27.31q
 
 Status: verbindlicher lokaler Vertrag, nicht live ausgeführt
 
@@ -59,6 +59,7 @@ Derselbe Client-Wiederholungsschlüssel mit abweichendem:
 - Operationsbereich
 - Mutationstyp
 - Ressourcenbezug
+- erwarteter Speicher-Versionsstand
 - Payload-Fingerprint
 
 muss geschlossen abgelehnt werden.
@@ -82,6 +83,7 @@ Verifiziert ist sie erst nach Abgleich von:
 - Bereich
 - Mutation
 - Ressource
+- erwarteter Speicher-Versionsstand
 - Payload-Fingerprint
 
 ## Umgesetzt in v27.31h und v27.31i
@@ -163,3 +165,31 @@ Deshalb bleibt die produktive Freigabe gesperrt.
 Auditwerkzeug:
 
 `tools/check-supabase-exam-history-operation-identity-idempotency-integration.py`
+
+
+## Speicher-Versionsstand-Erweiterung v27.31q
+
+Der interne Ausstellungs-RPC wurde um
+`p_expected_storage_version bigint` erweitert.
+
+Der kanonische Anfragefingerprint besteht jetzt aus:
+
+- Operationsbereich
+- Operation
+- Ressourcenidentität
+- erwartetem Speicher-Versionsstand
+- Payload-Fingerprint
+
+Der Client-Wiederholungsschlüssel wird getrennt gehasht und
+nicht in diesen Fingerprint aufgenommen.
+
+Die Ausstellungszeile speichert den erwarteten Versionsstand.
+Ein Retry mit demselben Client-Schlüssel muss denselben Stand
+besitzen; andernfalls wird er geschlossen abgelehnt.
+
+Der Idempotenz-Reservierungshelper bleibt unverändert und wird
+im nächsten getrennten Schritt erweitert.
+
+Migration:
+
+`supabase/migrations/20260722_v2731q_exam_history_operation_identity_expected_version_rpc.sql`

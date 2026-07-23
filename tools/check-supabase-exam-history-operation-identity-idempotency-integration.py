@@ -14,8 +14,8 @@ ISSUANCE_TABLE_PATH = (
 
 ISSUE_RPC_PATH = (
     MIGRATIONS
-    / "20260722_v2731i_"
-    "exam_history_operation_identity_issue_rpc.sql"
+    / "20260722_v2731q_"
+      "exam_history_operation_identity_expected_version_rpc.sql"
 )
 
 RESERVE_RPC_PATH = (
@@ -255,10 +255,10 @@ transaction_contract = read_json(
     "Transaktionaler Fachmutationsvertrag",
 )
 
-if issuance_contract.get("version") != "v27.31i":
+if issuance_contract.get("version") != "v27.31q":
     fail(
         "Operations-ID-Ausstellungsvertrag besitzt "
-        "nicht v27.31i."
+        "nicht v27.31q."
     )
 
 if issuance_contract.get(
@@ -277,6 +277,7 @@ issuance_unresolved = issuance_contract.get(
 if issuance_unresolved != {
     "issuanceTableImplementation": False,
     "issuanceRpcImplementation": False,
+    "issuanceExpectedStorageVersionBinding": False,
     "domainMutationRpcImplementation": True,
     "liveDatabaseTests": True,
     "concurrencyTests": True,
@@ -392,6 +393,7 @@ expected_issue_parameters = [
     ("p_operation_scope", "text"),
     ("p_operation", "text"),
     ("p_resource_identity", "text"),
+    ("p_expected_storage_version", "bigint"),
     ("p_payload_fingerprint", "text"),
 ]
 
@@ -425,16 +427,36 @@ if complete_parameters[:5] != expected_complete_prefix:
         "identische Operationsschnittstelle."
     )
 
-if issue_parameters[1:] != reserve_parameters[1:]:
+issue_shared_parameters = (
+    issue_parameters[1:4]
+    + issue_parameters[5:6]
+)
+
+if issue_shared_parameters != reserve_parameters[1:]:
     fail(
         "Ausstellung und Reservierung verwenden "
-        "abweichende kanonische Fachparameter."
+        "abweichende gemeinsame Fachparameter."
     )
 
-if issue_parameters[1:] != complete_parameters[1:5]:
+if issue_shared_parameters != complete_parameters[1:5]:
     fail(
         "Ausstellung und Abschluss verwenden "
-        "abweichende kanonische Fachparameter."
+        "abweichende gemeinsame Fachparameter."
+    )
+
+if issue_parameters[4] != (
+    "p_expected_storage_version",
+    "bigint",
+):
+    fail("Ausstellungs-RPC besitzt keine Versionsbindung.")
+
+if any(
+    name == "p_expected_storage_version"
+    for name, _ in reserve_parameters
+):
+    fail(
+        "Reservierungs-RPC darf in v27.31q noch nicht "
+        "als angepasst gelten."
     )
 
 if any(
@@ -502,6 +524,7 @@ expected_insert_columns = [
     "operation_scope",
     "operation",
     "resource_identity",
+    "expected_storage_version",
     "payload_fingerprint",
 ]
 
@@ -669,8 +692,8 @@ print(
     "erst danach zurückgegeben"
 )
 print(
-    "Schnittstelle: ausgestellte UUID passt exakt zur "
-    "Reservierungs- und Abschlussgrenze"
+    "Schnittstelle: Ausstellungshelper bindet Version; "
+    "Reservierungshelper bleibt als nächster Schritt offen"
 )
 print(
     "Direkte Helper-Ausführung: für public, anon und "

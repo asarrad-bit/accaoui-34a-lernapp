@@ -56,6 +56,12 @@ SCHEMA_MIGRATION_PATH = (
       "exam_history_expected_storage_version_schema.sql"
 )
 
+ISSUANCE_VERSION_RPC_PATH = (
+    MIGRATIONS
+    / "20260722_v2731q_"
+      "exam_history_operation_identity_expected_version_rpc.sql"
+)
+
 
 def fail(message: str) -> None:
     print(f"FEHLER: {message}")
@@ -79,8 +85,8 @@ contract = read_json(
     "Versionsbindungsvertrag",
 )
 
-if contract.get("version") != "v27.31p":
-    fail("Versionsbindungsvertrag besitzt nicht v27.31p.")
+if contract.get("version") != "v27.31q":
+    fail("Versionsbindungsvertrag besitzt nicht v27.31q.")
 
 if contract.get("contractVersion") != 1:
     fail("Versionsbindungsvertrag besitzt nicht Schema 1.")
@@ -132,6 +138,7 @@ for field in (
     "sameClientKeySameFingerprintReusesUuid",
     "sameClientKeyDifferentExpectedVersionConflicts",
     "expectedVersionStoredInIssuanceRow",
+    "implementationPresent",
 ):
     if issuance.get(field) is not True:
         fail(f"Operations-ID-Versionsregel fehlt: {field}")
@@ -209,7 +216,7 @@ if schema.get("currentTablesAlreadyContainColumn") is not True:
 expected_unresolved = {
     "issuanceTableMigration": False,
     "idempotencyTableMigration": False,
-    "issuanceRpcMigration": True,
+    "issuanceRpcMigration": False,
     "reserveRpcMigration": True,
     "storageTableImplementation": True,
     "outerDomainMutationRpcImplementation": True,
@@ -240,21 +247,31 @@ if helpers.get(
     fail("Abschluss-RPC darf keinen neuen Versionsparameter verlangen.")
 
 if helpers.get("currentHelpersAlreadyBindVersion") is not False:
-    fail("Bestehende Helper dürfen Version noch nicht binden.")
+    fail("Beide Helper dürfen noch nicht als gebunden gelten.")
+
+if helpers.get(
+    "currentIssuanceHelperBindsVersion"
+) is not True:
+    fail("Operations-ID-Ausstellungshelper bindet Version nicht.")
+
+if helpers.get(
+    "currentReservationHelperBindsVersion"
+) is not False:
+    fail("Reservierungshelper darf Version noch nicht binden.")
 
 storage = read_json(
     STORAGE_CONTRACT_PATH,
     "Domain-Speichervertrag",
 )
 
-if storage.get("version") != "v27.31n":
-    fail("Domain-Speichervertrag besitzt nicht v27.31n.")
+if storage.get("version") != "v27.31q":
+    fail("Domain-Speichervertrag besitzt nicht v27.31q.")
 
 identity_binding = storage.get("identityBinding", {})
 
 if identity_binding != {
     "expectedStorageVersionMustAffectRequestIdentity": True,
-    "currentIssuanceHelperBindsExpectedVersion": False,
+    "currentIssuanceHelperBindsExpectedVersion": True,
     "currentReservationHelperBindsExpectedVersion": False,
     "outerRpcMayBeImplementedBeforeBinding": False,
 }:
@@ -462,6 +479,108 @@ if v2731p_sql_files != [
         f"{v2731p_sql_files}"
     )
 
+if not ISSUANCE_VERSION_RPC_PATH.is_file():
+    fail("Operations-ID-Versionsbindungs-RPC fehlt.")
+
+issuance_version_sql = ISSUANCE_VERSION_RPC_PATH.read_text(
+    encoding="utf-8"
+)
+issuance_version_without_comments = re.sub(
+    r"--.*?$",
+    "",
+    issuance_version_sql,
+    flags=re.MULTILINE,
+)
+issuance_version_lower = issuance_version_without_comments.lower()
+issuance_version_compact = re.sub(
+    r"\s+",
+    " ",
+    issuance_version_lower,
+).strip()
+
+for marker in (
+    "p_expected_storage_version bigint",
+    "message = 'expected_storage_version_invalid'",
+    "'expected_storage_version', p_expected_storage_version",
+    "expected_storage_version, payload_fingerprint",
+    "p_expected_storage_version, p_payload_fingerprint",
+    "v_existing.expected_storage_version <> "
+    "p_expected_storage_version",
+):
+    if marker not in issuance_version_compact:
+        fail(
+            "Operations-ID-Versionsbindungs-RPC-Anweisung "
+            f"fehlt: {marker}"
+        )
+
+if (
+    "'client_request_key', p_client_request_key"
+    in issuance_version_compact
+):
+    fail(
+        "Roher Client-Schlüssel liegt im kanonischen "
+        "Anfragefingerprint."
+    )
+
+for role in (
+    "public",
+    "anon",
+    "authenticated",
+):
+    revoke_pattern = (
+        r"revoke\s+all\s+on\s+function\s+"
+        r"public\.accaoui_issue_exam_history_operation_identity"
+        r"\s*\(\s*text\s*,\s*text\s*,\s*text\s*,\s*"
+        r"text\s*,\s*bigint\s*,\s*text\s*\)\s+from\s+"
+        + re.escape(role)
+        + r"\s*;"
+    )
+    if not re.search(
+        revoke_pattern,
+        issuance_version_sql,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        fail(
+            "Operations-ID-Versionsbindungs-RPC-Revoke "
+            f"fehlt für: {role}"
+        )
+
+if not re.search(
+    r"drop\s+function\s+if\s+exists\s+"
+    r"public\.accaoui_issue_exam_history_operation_identity"
+    r"\s*\(\s*text\s*,\s*text\s*,\s*text\s*,\s*"
+    r"text\s*,\s*text\s*\)\s*;",
+    issuance_version_sql,
+    flags=re.IGNORECASE | re.DOTALL,
+):
+    fail("Alte Fünf-Parameter-Ausstellungsfunktion bleibt erhalten.")
+
+for forbidden in (
+    "grant execute",
+    "create policy",
+    "service_role",
+    "exam_history_idempotency_operations",
+    "exam_history_domain_resources",
+):
+    if forbidden in issuance_version_lower:
+        fail(
+            "Unzulässiger Inhalt im Operations-ID-"
+            f"Versionsbindungs-RPC: {forbidden}"
+        )
+
+v2731q_sql_files = sorted(
+    path.name
+    for path in MIGRATIONS.glob("*v2731q*.sql")
+)
+if v2731q_sql_files != [
+    "20260722_v2731q_"
+    "exam_history_operation_identity_expected_version_rpc.sql"
+]:
+    fail(
+        "Unerwartete v27.31q-SQL-Dateien: "
+        f"{v2731q_sql_files}"
+    )
+
 for frontend_path in (
     ROOT / "index.html",
     ROOT / "app.js",
@@ -480,8 +599,8 @@ for frontend_path in (
 
 print("Speicher-Versionsstand-Identitätsbindung: OK")
 print(
-    "Operations-ID-Ausstellung: erwartete Version muss in "
-    "den Anfragefingerprint"
+    "Operations-ID-Ausstellung: erwartete Version ist im "
+    "Anfragefingerprint und in der Ausstellungszeile gebunden"
 )
 print(
     "Client-Retry: gleiche Version verwendet dieselbe UUID, "
@@ -499,7 +618,10 @@ print(
     "Tabellenschema angepasst: ja; vorhandene Zeilen führen "
     "zum kontrollierten Abbruch"
 )
-print("Helper bereits an erwartete Version angepasst: nein")
-print("SQL-Migration in v27.31p: vorbereitet")
+print(
+    "Helperstatus: Ausstellungshelper angepasst; "
+    "Reservierungshelper noch offen"
+)
+print("SQL-Migration in v27.31q: vorbereitet")
 print("Produktive Freigabe: nein")
 print("Live-Ausführung: nein")
