@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31y
+Stand: v27.31z
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1677,6 +1677,29 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_HARNESS_READINESS.md`
 
+## Disposable Datenbank-Umgebungs-Gate-Vertrag v27.31z
+
+Ein vollständig gesperrter Vertrag definiert:
+
+- alle später zwingenden Umgebungsvariablen
+- ausschließlich Loopback als erlaubte Zielklasse
+- exakten disposable Testdatenbanknamen
+- gültigen lokalen Portbereich
+- destruktive ausdrückliche Bestätigung
+- geschlossene Ablehnung von remote, unbekannt und produktiv
+- Verbot von URL und Connection-String
+- spätere Adaptereingabe nur als validierter Descriptor
+
+Auch ein vollständiger lokaler Descriptor bleibt in v27.31z
+`eligible_but_connection_locked`.
+
+Es existieren kein Gate-Evaluator, kein Datenbanktreiber, keine
+Verbindung und keine Testausführung.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_ENVIRONMENT_GATE_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1767,17 +1790,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31y` kann `v27.31z`
-einen vollständig gesperrten Vertrag für das disposable
-Umgebungs-Gate und den späteren Datenbank-Verbindungsadapter
-vorbereiten.
+Nach GitHub-Bestätigung von `v27.31z` kann `v27.32a`
+den verbindungsfreien disposable Umgebungs-Gate-Evaluator und
+einen Datenbank-Verbindungsadapter-Readiness-State umsetzen.
 
-Der Vertrag muss lokale Testdatenbanken eindeutig von
-Produktions- oder unbekannten Zielen unterscheiden und weiterhin
-jede Verbindung standardmäßig geschlossen blockieren.
+Der Evaluator muss vollständige lokale Descriptoren rein
+deterministisch klassifizieren und alle entfernten, unbekannten,
+unvollständigen oder produktiven Ziele geschlossen ablehnen.
 
-Datenbankverbindung, Testausführung, direkte App-Freigabe und
-UI-Anbindung bleiben weiterhin ausgeschlossen.
+Datenbanktreiber, Verbindung, Testausführung, direkte
+App-Freigabe und UI-Anbindung bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1840,6 +1862,7 @@ Domain-Speicher-Mutationshelper v27.31t und vollständig
 gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet,
 statischer äußerer End-to-End-Audit v27.31v, äußerer
 Datenbank-Testvertrag v27.31w, synthetischer Fixture- und
-Harness-Vertrag v27.31x sowie verbindungsfreier Fixture-Katalog
-und Harness-Readiness v27.31y dauerhaft eingebunden;
+Harness-Vertrag v27.31x, verbindungsfreier Fixture-Katalog und
+Harness-Readiness v27.31y sowie disposable Datenbank-
+Umgebungs-Gate-Vertrag v27.31z dauerhaft eingebunden;
 keine Live-Ausführung

@@ -1,0 +1,164 @@
+{
+  "version": "v27.31z",
+  "contractVersion": 1,
+  "status": "prepared_locked_not_live",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "harnessReadinessContractPath": "docs/contracts/exam-history-outer-domain-mutation-harness-readiness-contract.json",
+    "databaseTestContractPath": "docs/contracts/exam-history-outer-domain-mutation-database-test-contract.json",
+    "harnessPath": "tools/run-supabase-exam-history-outer-domain-mutation-harness.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-database-environment-gate-contract.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_ENVIRONMENT_GATE_CONTRACT.md",
+    "environmentGateImplemented": false,
+    "databaseConnectionAdapterImplemented": false,
+    "databaseDriverPresent": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "requiredEnvironment": {
+    "modeVariable": "ACCAOUI_DB_TEST_MODE",
+    "modeValue": "disposable",
+    "targetKindVariable": "ACCAOUI_DB_TEST_TARGET_KIND",
+    "targetKindValue": "local_postgres",
+    "hostVariable": "ACCAOUI_DB_TEST_HOST",
+    "portVariable": "ACCAOUI_DB_TEST_PORT",
+    "databaseVariable": "ACCAOUI_DB_TEST_DATABASE",
+    "confirmationVariable": "ACCAOUI_DB_TEST_CONFIRM",
+    "confirmationValue": "DESTROY_SYNTHETIC_TEST_DATA",
+    "allFieldsRequired": true,
+    "missingFieldDecision": "deny",
+    "unknownFieldDecision": "deny"
+  },
+  "targetClassification": {
+    "allowedHosts": [
+      "127.0.0.1",
+      "localhost",
+      "::1"
+    ],
+    "hostnameNormalization": "lowercase_trim_trailing_dot",
+    "loopbackOnly": true,
+    "dnsResolutionAllowed": false,
+    "ipResolutionAllowed": false,
+    "allowedDatabaseName": "accaoui_exam_history_disposable_test",
+    "portMinimum": 1024,
+    "portMaximum": 65535,
+    "urlInputAllowed": false,
+    "connectionStringInputAllowed": false,
+    "remoteAddressAllowed": false,
+    "productionTargetAllowed": false,
+    "unknownTargetAllowed": false
+  },
+  "forbiddenTargets": {
+    "databaseNames": [
+      "postgres",
+      "template0",
+      "template1",
+      "production",
+      "prod",
+      "main",
+      "default"
+    ],
+    "hostnameSuffixes": [
+      ".supabase.co",
+      ".supabase.com",
+      ".amazonaws.com",
+      ".azure.com",
+      ".googleusercontent.com"
+    ],
+    "hostTokens": [
+      "prod",
+      "production",
+      "live",
+      "remote",
+      "cloud"
+    ],
+    "databaseTokens": [
+      "prod",
+      "production",
+      "live",
+      "customer",
+      "participant"
+    ]
+  },
+  "decisionMatrix": {
+    "noVariables": {
+      "decision": "deny",
+      "reason": "environment_gate_not_configured"
+    },
+    "modeOnly": {
+      "decision": "deny",
+      "reason": "environment_gate_incomplete"
+    },
+    "completeLoopbackDescriptor": {
+      "decision": "eligible_but_connection_locked",
+      "reason": "adapter_not_implemented"
+    },
+    "remoteHost": {
+      "decision": "deny",
+      "reason": "remote_target_forbidden"
+    },
+    "unknownHost": {
+      "decision": "deny",
+      "reason": "unknown_target_forbidden"
+    },
+    "forbiddenDatabaseName": {
+      "decision": "deny",
+      "reason": "protected_database_forbidden"
+    },
+    "invalidPort": {
+      "decision": "deny",
+      "reason": "invalid_local_port"
+    },
+    "confirmationMismatch": {
+      "decision": "deny",
+      "reason": "destructive_confirmation_required"
+    },
+    "urlOrConnectionString": {
+      "decision": "deny",
+      "reason": "connection_string_forbidden"
+    }
+  },
+  "connectionAdapterBoundary": {
+    "adapterPurpose": "future_disposable_local_postgres_test_connection",
+    "inputSource": "validated_gate_descriptor_only",
+    "readsRawProcessEnvironmentDirectly": false,
+    "acceptsUrl": false,
+    "acceptsConnectionString": false,
+    "acceptsPassword": false,
+    "acceptsServiceRoleKey": false,
+    "acceptsProductionSecret": false,
+    "performsDnsLookup": false,
+    "opensSocket": false,
+    "importsDatabaseDriver": false,
+    "appliesMigrations": false,
+    "executesTests": false,
+    "returnsConnection": false,
+    "defaultDecision": "deny"
+  },
+  "securityBoundary": {
+    "realParticipantDataAllowed": false,
+    "realEmailAddressAllowed": false,
+    "realNameAllowed": false,
+    "productionSecretsAllowed": false,
+    "databaseUrlStoredAllowed": false,
+    "serviceRoleKeyStoredAllowed": false,
+    "networkExecutionAllowed": false,
+    "frontendReferenceAllowed": false,
+    "clientSelectableTargetAllowed": false,
+    "clientSelectableFaultInjectionAllowed": false
+  },
+  "unresolvedRequirements": {
+    "environmentGateImplementation": true,
+    "connectionAdapterReadinessState": true,
+    "databaseDriverSelection": true,
+    "databaseConnectionImplementation": true,
+    "testOnlyFaultInjectionImplementation": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}

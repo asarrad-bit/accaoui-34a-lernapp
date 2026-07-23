@@ -339,6 +339,28 @@ def check_exam_result_history_outer_domain_mutation_harness_readiness():
         )
 
 
+
+def check_exam_result_history_disposable_database_environment_gate_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-disposable-"
+        "database-environment-gate-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable Datenbank-"
+            "Umgebungs-Gate-Vertrag fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -470,6 +492,8 @@ def main():
         "tools/fixtures/exam-history-outer-domain-mutation-fixtures.json",
         "tools/run-supabase-exam-history-outer-domain-mutation-harness.py",
         "docs/contracts/exam-history-outer-domain-mutation-harness-readiness-contract.json",
+        "docs/contracts/exam-history-disposable-database-environment-gate-contract.json",
+        "tools/check-supabase-exam-history-disposable-database-environment-gate-contract.py",
         "tools/check-supabase-exam-history-outer-domain-mutation-harness-readiness.py",
         "tools/check-supabase-exam-history-domain-payload-contract.py",
         "docs/contracts/exam-history-domain-payload-contract.json",
@@ -503,6 +527,7 @@ def main():
     check_exam_result_history_outer_domain_mutation_database_test_contract()
     check_exam_result_history_outer_domain_mutation_fixture_harness_contract()
     check_exam_result_history_outer_domain_mutation_harness_readiness()
+    check_exam_result_history_disposable_database_environment_gate_contract()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()
