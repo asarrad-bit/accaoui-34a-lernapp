@@ -1,0 +1,151 @@
+{
+  "version": "v27.31w",
+  "contractVersion": 1,
+  "status": "prepared_not_live",
+  "productiveReleaseAllowed": false,
+  "testType": "future_disposable_database_contract",
+  "implementation": {
+    "outerRpc": "public.accaoui_mutate_exam_history_domain",
+    "outerRpcMigrationPath": "supabase/migrations/20260723_v2731u_exam_history_outer_domain_mutation_rpc.sql",
+    "sourceAuditContractPath": "docs/contracts/exam-history-outer-domain-mutation-e2e-audit-contract.json",
+    "databaseTestCheckerPath": "tools/check-supabase-exam-history-outer-domain-mutation-database-test-contract.py",
+    "databaseTestDocumentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_DATABASE_TEST_CONTRACT.md",
+    "sqlMigrationCreated": false,
+    "databaseTestExecuted": false,
+    "liveDatabaseExecution": false,
+    "frontendIntegration": false
+  },
+  "environmentBoundary": {
+    "dedicatedDisposableDatabaseRequired": true,
+    "productionDatabaseAllowed": false,
+    "realParticipantDataAllowed": false,
+    "syntheticUsersOnly": true,
+    "migrationsAppliedInRepositoryOrder": true,
+    "databaseResetBetweenCases": true,
+    "testOwnerOrControlledHarnessRequired": true,
+    "permanentGrantChangesAllowed": false,
+    "serviceRoleInFrontendAllowed": false
+  },
+  "authorizationMatrix": {
+    "publicDirectExecute": "permission_denied",
+    "anonDirectExecute": "permission_denied",
+    "authenticatedDirectExecute": "permission_denied",
+    "controlledHarnessWithoutAuthUid": "authentication_required",
+    "controlledHarnessWithSyntheticAuthUid": "scenario_execution_allowed",
+    "authUserIdInputParameterAllowed": false,
+    "participantIdInputParameterAllowed": false,
+    "crossUserMutationAllowed": false
+  },
+  "retryMatrix": {
+    "sameClientKeySameCompletedRequest": {
+      "sameTerminalResultRequired": true,
+      "newDomainMutationAllowed": false,
+      "newStorageVersionAllowed": false,
+      "newIssuanceRowAllowed": false,
+      "newReservationRowAllowed": false
+    },
+    "sameClientKeyPendingRequest": {
+      "outcome": "in_progress",
+      "operationStatus": "pending",
+      "retryable": true,
+      "newDomainMutationAllowed": false,
+      "completionAllowed": false
+    },
+    "sameClientKeyDifferentExpectedVersion": {
+      "failureCode": "client_request_key_reused_with_different_request",
+      "domainMutationAllowed": false
+    },
+    "existingFailedRequest": {
+      "sameStableFailureRequired": true,
+      "newDomainMutationAllowed": false,
+      "newCompletionAllowed": false
+    }
+  },
+  "versionMatrix": {
+    "createExpectedZero": {
+      "outcome": "created",
+      "storedVersion": 1
+    },
+    "secondIndependentCreateExpectedZero": {
+      "failureCode": "domain_storage_version_conflict",
+      "storedVersionUnchanged": true
+    },
+    "updateExactCurrentVersion": {
+      "outcome": "updated",
+      "incrementsVersionBy": 1
+    },
+    "staleUpdate": {
+      "failureCode": "domain_storage_version_conflict",
+      "storedVersionUnchanged": true
+    },
+    "deleteExactCurrentVersion": {
+      "outcome": "deleted",
+      "incrementsVersionBy": 1,
+      "tombstoneRequired": true
+    },
+    "staleDelete": {
+      "failureCode": "domain_storage_version_conflict",
+      "storedVersionUnchanged": true
+    },
+    "alreadyDeletedExactVersion": {
+      "outcome": "already_deleted",
+      "storedVersionUnchanged": true
+    }
+  },
+  "concurrencyMatrix": {
+    "twoIndependentWritesSameExpectedVersion": {
+      "exactlyOneMutationSucceeds": true,
+      "exactlyOneVersionConflict": true,
+      "finalVersionIncrementsBy": 1,
+      "silentLastWriteWinsAllowed": false
+    },
+    "twoIndependentCreatesSameIdentity": {
+      "exactlyOneCreateSucceeds": true,
+      "exactlyOneClosedConflict": true,
+      "finalRowCount": 1,
+      "uniqueConflictReevaluationRequired": true
+    }
+  },
+  "rollbackMatrix": {
+    "expectedDomainFailure": {
+      "innerMutationRolledBack": true,
+      "failedIdempotencyStatePersisted": true,
+      "stableFailureCodeRequired": true,
+      "retryReturnsSameFailure": true,
+      "rawDatabaseErrorAllowed": false
+    },
+    "unexpectedInjectedFailure": {
+      "wholeOuterCallRolledBack": true,
+      "issuanceRowPersisted": false,
+      "reservationRowPersisted": false,
+      "domainRowChangePersisted": false,
+      "failedTerminalStatePersisted": false,
+      "productionFaultHookAllowed": false,
+      "testOnlyFaultInjectionRequired": true
+    }
+  },
+  "observationBoundary": {
+    "internalTableInspectionAllowedOnlyInHarness": true,
+    "clientMayReceiveInternalRows": false,
+    "allowedClientColumns": [
+      "outcome",
+      "operation_status",
+      "result",
+      "failure_code",
+      "retryable"
+    ],
+    "internalUuidExposureAllowed": false,
+    "fingerprintExposureAllowed": false,
+    "rawDatabaseErrorExposureAllowed": false
+  },
+  "unresolvedRequirements": {
+    "disposableDatabaseHarness": true,
+    "syntheticFixtureCatalog": true,
+    "testOnlyFaultInjectionMechanism": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}

@@ -273,6 +273,28 @@ def check_exam_result_history_expected_storage_version_binding():
         )
 
 
+
+def check_exam_result_history_outer_domain_mutation_database_test_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-"
+        "outer-domain-mutation-database-test-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-äußerer Fachmutations-"
+            "Datenbank-Testvertrag fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -397,6 +419,8 @@ def main():
         "docs/contracts/exam-history-outer-domain-mutation-rpc-interface-contract.json",
         "tools/check-supabase-exam-history-outer-domain-mutation-e2e-audit.py",
         "docs/contracts/exam-history-outer-domain-mutation-e2e-audit-contract.json",
+        "tools/check-supabase-exam-history-outer-domain-mutation-database-test-contract.py",
+        "docs/contracts/exam-history-outer-domain-mutation-database-test-contract.json",
         "tools/check-supabase-exam-history-domain-payload-contract.py",
         "docs/contracts/exam-history-domain-payload-contract.json",
         "supabase/migrations/20260722_v2731m_exam_history_domain_payload_validate_rpc.sql",
@@ -426,6 +450,7 @@ def main():
     check_exam_result_history_operation_identity_idempotency_integration()
     check_exam_result_history_outer_domain_mutation_rpc_contract()
     check_exam_result_history_outer_domain_mutation_e2e_audit()
+    check_exam_result_history_outer_domain_mutation_database_test_contract()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()

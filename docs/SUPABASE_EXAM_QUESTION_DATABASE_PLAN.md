@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.31v
+Stand: v27.31w
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1615,6 +1615,27 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_E2E_AUDIT.md`
 
+## Äußerer Fachmutations-Datenbank-Testvertrag v27.31w
+
+Ein verbindlicher, noch nicht ausgeführter Datenbank-Testvertrag
+beschreibt:
+
+- direkte Ausführungssperre für public, anon und authenticated
+- kontrollierte synthetische Authentifizierung im Test-Harness
+- identische Retries und Pending-/Terminalwiederholungen
+- Create-, Update-, Delete- und stale Versionskonflikte
+- konkurrierende Writes und konkurrierende Creates
+- erwartete Domain-Fehler mit Teilrollback
+- unerwartete Fehler mit vollständigem Rollback
+- ausschließlich interne Beobachtung im Test-Harness
+
+v27.31w erzeugt keine SQL-Migration, führt keinen Datenbanktest
+aus und ändert keine App- oder UI-Freigabe.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_OUTER_DOMAIN_MUTATION_DATABASE_TEST_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1705,16 +1726,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.31v` kann `v27.31w`
-einen weiterhin nicht live ausgeführten Datenbank-Testvertrag
-für den äußeren Fachmutationsweg vorbereiten.
+Nach GitHub-Bestätigung von `v27.31w` kann `v27.31x`
+einen synthetischen Fixture- und Harness-Vertrag für die
+spätere disposable Datenbank-Testausführung vorbereiten.
 
-Der Testvertrag muss spätere Authentifizierungs-, Konkurrenz-,
-Retry-, Versionskonflikt- und Rollbacktests eindeutig
-beschreiben, ohne echte Teilnehmerdaten oder Live-Ausführung.
+Der Vertrag muss deterministische Testnutzer, Ressourcen,
+Client-Wiederholungsschlüssel, Payloads, erwartete
+Speicherversionen und Konkurrenzbarrieren festlegen, ohne eine
+Datenbank zu starten oder echte Teilnehmerdaten zu verwenden.
 
-Direkte App-Freigabe und UI-Anbindung bleiben weiterhin
-ausgeschlossen.
+Live-Ausführung, direkte App-Freigabe und UI-Anbindung bleiben
+weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1774,7 +1796,7 @@ Ausstellungsbindung v27.31q, gesperrte Idempotenz-
 Reservierungsbindung v27.31r, vollständig gesperrte
 Domain-Speichertabelle v27.31s, vollständig gesperrter
 Domain-Speicher-Mutationshelper v27.31t und vollständig
-gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet
-und statischer äußerer End-to-End-Audit v27.31v dauerhaft
-eingebunden;
+gesperrter äußerer Fachmutations-RPC v27.31u vorbereitet,
+statischer äußerer End-to-End-Audit v27.31v und äußerer
+Datenbank-Testvertrag v27.31w dauerhaft eingebunden;
 keine Live-Ausführung
