@@ -1,0 +1,55 @@
+{
+  "version": "v27.32d",
+  "contractVersion": 1,
+  "status": "implemented_metadata_only_not_live",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceDriverSelectionContractPath": "docs/contracts/exam-history-disposable-postgresql-driver-selection-contract.json",
+    "resolverPath": "tools/accaoui_disposable_postgresql_driver_readiness.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-postgresql-driver-readiness.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_DRIVER_READINESS.md",
+    "metadataResolverImplemented": true,
+    "driverImported": false,
+    "driverInstalledByProject": false,
+    "dependencyFileModified": false,
+    "connectionAdapterImplemented": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "metadataBoundary": {
+    "metadataApi": "importlib.metadata.version",
+    "distributionName": "psycopg",
+    "expectedVersion": "3.3.4",
+    "moduleImportAllowed": false,
+    "packageInstallationAllowed": false,
+    "networkAccessAllowed": false
+  },
+  "decisionMatrix": {
+    "distributionMissing": {
+      "status": "blocked",
+      "reason": "driver_not_installed"
+    },
+    "metadataUnavailable": {
+      "status": "blocked",
+      "reason": "driver_metadata_unavailable"
+    },
+    "versionMismatch": {
+      "status": "blocked",
+      "reason": "driver_version_mismatch"
+    },
+    "exactVersion": {
+      "status": "metadata_ready_import_locked",
+      "reason": "driver_import_not_authorized"
+    }
+  },
+  "unresolvedRequirements": {
+    "isolatedTestDependencyManifest": true,
+    "binaryImplementationReadinessProbe": true,
+    "connectionAdapterImplementation": true,
+    "credentialResolutionContract": true,
+    "databaseTestExecution": true,
+    "frontendIntegration": true
+  }
+}

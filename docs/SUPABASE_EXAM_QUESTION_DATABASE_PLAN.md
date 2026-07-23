@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32c
+Stand: v27.32d
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1758,6 +1758,17 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_DRIVER_SELECTION_CONTRACT.md`
 
+## Disposable PostgreSQL-Treiber-Readiness v27.32d
+
+Ein verbindungsfreier Resolver prüft ausschließlich Paketmetadaten
+für `psycopg` und Version `3.3.4`. Fehlendes Paket,
+Metadatenfehler und Versionsabweichung werden geschlossen
+blockiert. Auch bei exakter Version bleibt der Import gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_DRIVER_READINESS.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1848,13 +1859,9 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32c` kann `v27.32d`
-einen verbindungsfreien Treiber-Verfügbarkeits- und
-Versions-Readiness-Resolver vorbereiten.
-
-Der Resolver darf ausschließlich Paketmetadaten auswerten, ohne
-das Treibermodul zu importieren, eine Dependency zu installieren
-oder eine Datenbankverbindung zu öffnen.
+Nach GitHub-Bestätigung von `v27.32d` kann `v27.32e`
+einen isolierten Test-Dependency-Manifest-Vertrag für den
+disposable PostgreSQL-Treiber vorbereiten.
 
 Treiberinstallation, Treiberimport, Datenbankverbindung,
 Testausführung, direkte App-Freigabe und UI-Anbindung bleiben
@@ -1926,5 +1933,6 @@ Harness-Readiness v27.31y, disposable Datenbank-
 Umgebungs-Gate-Vertrag v27.31z sowie verbindungsfreier
 Gate-Evaluator und Adapter-Readiness-State v27.32a,
 gesperrte Harness-Gate-Integration v27.32b sowie disposable
-PostgreSQL-Treiberauswahlvertrag v27.32c dauerhaft eingebunden;
+PostgreSQL-Treiberauswahlvertrag v27.32c sowie metadatenbasierte
+Treiber-Readiness v27.32d dauerhaft eingebunden;
 keine Live-Ausführung
