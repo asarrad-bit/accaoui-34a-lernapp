@@ -9,6 +9,14 @@ import sys
 import uuid
 from pathlib import Path
 
+from accaoui_disposable_connection_adapter_readiness import (
+    build_connection_adapter_readiness,
+)
+from accaoui_disposable_environment_gate import (
+    REQUIRED_KEYS as DISPOSABLE_GATE_KEYS,
+    evaluate_environment,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 
 SOURCE_CONTRACT_PATH = (
@@ -272,7 +280,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Spätere disposable Datenbankausführung; "
-            "in v27.31y noch gesperrt."
+            "in v27.32b weiterhin vor jeder Verbindung gesperrt."
         ),
     )
 
@@ -302,17 +310,23 @@ def main() -> int:
         print(f"FEHLER: {exc}")
         return 1
 
-    requested_environment = os.environ.get(
-        "ACCAOUI_DB_TEST_MODE",
-        "",
-    ).strip()
+    requested_environment = {
+        key: os.environ.get(key, "")
+        for key in DISPOSABLE_GATE_KEYS
+        if key in os.environ
+    }
 
     if args.run_database or requested_environment:
-        print(
-            "STOPP: Disposable Datenbankausführung ist in "
-            "v27.31y noch nicht implementiert."
-        )
+        gate_result = evaluate_environment(requested_environment)
+        adapter_state = build_connection_adapter_readiness(gate_result)
+
+        print("Gate-Entscheidung: " + str(gate_result.get("decision")))
+        print("Gate-Grund: " + str(gate_result.get("reason")))
+        print("Adapterstatus: " + str(adapter_state.get("status")))
+        print("Adaptergrund: " + str(adapter_state.get("reason")))
+        print("Datenbanktreiber geladen: nein")
         print("Datenbankverbindung geöffnet: nein")
+        print("Netzwerkzugriff: nein")
         print("Datenbanktest ausgeführt: nein")
         return 2
 

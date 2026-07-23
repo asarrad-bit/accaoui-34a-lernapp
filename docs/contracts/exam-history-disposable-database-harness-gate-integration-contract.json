@@ -1,0 +1,61 @@
+{
+  "version": "v27.32b",
+  "contractVersion": 1,
+  "status": "implemented_connection_free_not_live",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "harnessPath": "tools/run-supabase-exam-history-outer-domain-mutation-harness.py",
+    "sourceReadinessContractPath": "docs/contracts/exam-history-disposable-database-gate-evaluator-adapter-readiness-contract.json",
+    "evaluatorPath": "tools/accaoui_disposable_environment_gate.py",
+    "adapterReadinessPath": "tools/accaoui_disposable_connection_adapter_readiness.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-database-harness-gate-integration.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_HARNESS_GATE_INTEGRATION.md",
+    "harnessGateIntegrationImplemented": true,
+    "databaseDriverPresent": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "expectedRuns": {
+    "validateOnly": {
+      "exitCode": 0
+    },
+    "databaseModeWithoutEnvironment": {
+      "exitCode": 2,
+      "gateDecision": "deny",
+      "gateReason": "environment_gate_not_configured",
+      "adapterStatus": "blocked"
+    },
+    "databaseModeWithValidLoopback": {
+      "exitCode": 2,
+      "gateDecision": "eligible_but_connection_locked",
+      "adapterStatus": "descriptor_valid_connection_locked"
+    },
+    "databaseModeWithRemoteHost": {
+      "exitCode": 2,
+      "gateDecision": "deny",
+      "gateReason": "remote_target_forbidden",
+      "adapterStatus": "blocked"
+    }
+  },
+  "safetyBoundary": {
+    "databaseDriverImportAllowed": false,
+    "dnsResolutionAllowed": false,
+    "networkExecutionAllowed": false,
+    "socketOpenAllowed": false,
+    "connectionOpenAllowed": false,
+    "migrationExecutionAllowed": false,
+    "databaseTestExecutionAllowed": false
+  },
+  "unresolvedRequirements": {
+    "databaseDriverSelection": true,
+    "connectionAdapterImplementation": true,
+    "testOnlyFaultInjectionImplementation": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}

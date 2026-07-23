@@ -273,6 +273,8 @@ allowed_imports = {
     "sys",
     "uuid",
     "pathlib",
+    "accaoui_disposable_connection_adapter_readiness",
+    "accaoui_disposable_environment_gate",
 }
 seen_imports = set()
 
@@ -310,7 +312,7 @@ for forbidden in (
         fail(f"Harness enthält verbotenen Inhalt: {forbidden}")
 
 required_harness_markers = (
-    "ACCAOUI_DB_TEST_MODE",
+    "DISPOSABLE_GATE_KEYS",
     "--validate-only",
     "--run-database",
     "validate_catalog(source, catalog, readiness)",
@@ -346,8 +348,21 @@ for marker in (
     if marker not in validate.stdout:
         fail(f"Validate-only-Ausgabe fehlt: {marker}")
 
-closed_env = dict(os.environ)
-closed_env["ACCAOUI_DB_TEST_MODE"] = "disposable"
+closed_env = {
+    key: value
+    for key, value in os.environ.items()
+    if not key.startswith("ACCAOUI_DB_TEST_")
+}
+closed_env.update({
+    "ACCAOUI_DB_TEST_MODE": "disposable",
+    "ACCAOUI_DB_TEST_TARGET_KIND": "local_postgres",
+    "ACCAOUI_DB_TEST_HOST": "localhost",
+    "ACCAOUI_DB_TEST_PORT": "5432",
+    "ACCAOUI_DB_TEST_DATABASE": (
+        "accaoui_exam_history_disposable_test"
+    ),
+    "ACCAOUI_DB_TEST_CONFIRM": "DESTROY_SYNTHETIC_TEST_DATA",
+})
 
 closed = subprocess.run(
     [sys.executable, str(HARNESS_PATH), "--run-database"],
@@ -365,8 +380,13 @@ if closed.returncode != 2:
         + closed.stderr
     )
 for marker in (
-    "noch nicht implementiert",
+    "Gate-Entscheidung: eligible_but_connection_locked",
+    "Gate-Grund: adapter_not_implemented",
+    "Adapterstatus: descriptor_valid_connection_locked",
+    "Adaptergrund: database_driver_not_selected",
+    "Datenbanktreiber geladen: nein",
     "Datenbankverbindung geöffnet: nein",
+    "Netzwerkzugriff: nein",
     "Datenbanktest ausgeführt: nein",
 ):
     if marker not in closed.stdout:

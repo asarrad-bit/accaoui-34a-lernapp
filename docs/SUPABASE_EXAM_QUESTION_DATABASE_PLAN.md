@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32a
+Stand: v27.32b
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1723,6 +1723,17 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_GATE_EVALUATOR_ADAPTER_READINESS.md`
 
+## Disposable Harness-Gate-Integration v27.32b
+
+Gate-Evaluator und Adapter-Readiness-State sind in den gesperrten
+Harness-Datenbankmodus integriert. Leere, lokale und entfernte
+Descriptoren werden klassifiziert; jeder Datenbankmodus stoppt
+weiterhin vor Treiber oder Verbindung mit Exitcode 2.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_DATABASE_HARNESS_GATE_INTEGRATION.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1813,16 +1824,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32a` kann `v27.32b`
-den Gate-Evaluator und den Adapter-Readiness-State in den
-gesperrten Harness-Datenbankmodus integrieren.
+Nach GitHub-Bestätigung von `v27.32b` kann `v27.32c`
+einen verbindlichen Vertrag für die Auswahl eines ausschließlich
+lokalen disposable PostgreSQL-Testtreibers vorbereiten.
 
-Der Harness muss vollständige Descriptoren über den Evaluator
-klassifizieren und das Adapter-Ergebnis ausgeben, aber weiterhin
-vor jeder Treiberladung oder Verbindung geschlossen stoppen.
+Der Vertrag muss Treiberversion, Importgrenze, Timeout und
+geschlossene Fehlerfälle festlegen, ohne einen Treiber zu
+installieren oder eine Verbindung zu öffnen.
 
-Datenbanktreiber, Verbindung, Testausführung, direkte
-App-Freigabe und UI-Anbindung bleiben weiterhin ausgeschlossen.
+Treiberinstallation, Datenbankverbindung, Testausführung, direkte
+App-Freigabe und UI-Anbindung bleiben ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1888,6 +1899,6 @@ Datenbank-Testvertrag v27.31w, synthetischer Fixture- und
 Harness-Vertrag v27.31x, verbindungsfreier Fixture-Katalog und
 Harness-Readiness v27.31y, disposable Datenbank-
 Umgebungs-Gate-Vertrag v27.31z sowie verbindungsfreier
-Gate-Evaluator und Adapter-Readiness-State v27.32a dauerhaft
-eingebunden;
+Gate-Evaluator und Adapter-Readiness-State v27.32a sowie
+gesperrte Harness-Gate-Integration v27.32b dauerhaft eingebunden;
 keine Live-Ausführung

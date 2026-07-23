@@ -311,6 +311,8 @@ allowed_imports = {
     "sys",
     "uuid",
     "pathlib",
+    "accaoui_disposable_connection_adapter_readiness",
+    "accaoui_disposable_environment_gate",
 }
 seen_imports = set()
 
