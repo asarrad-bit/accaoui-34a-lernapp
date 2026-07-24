@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32j
+Stand: v27.32k
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1899,6 +1899,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_PLAN.md`
 
+## Disposable Materialisierungsplan-Annahme-Guard v27.32k
+
+Ein reiner Guard prüft einen v27.32j-Materialisierungsplan
+vollständig auf:
+
+- exakten Quellstatus und Quellgrund
+- geschlossene Ausführungsflags
+- vollständige Planstruktur
+- argv-, Ziel- und Interpreterbindung
+- Manifest-, Isolations- und Nachweisgrenzen
+- exakt zielgebundenen gesperrten Rollback
+- noch nicht erfasste menschliche Freigabe
+
+Manipulierte Pläne werden geschlossen abgelehnt.
+
+Ein gültiger Plan wird nur als
+
+`accepted_execution_locked`
+
+angenommen und bleibt vollständig nicht ausführbar.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_PLAN_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1989,12 +2014,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32j` kann `v27.32k`
-einen reinen Materialisierungsplan-Annahme-Guard umsetzen.
+Nach GitHub-Bestätigung von `v27.32k` kann `v27.32l`
+einen vollständig gesperrten Vertrag für eine spätere
+Materialisierungs-Autorisierungsanfrage vorbereiten.
 
-Der Guard darf ausschließlich Struktur, Quellstatus, argv-,
-Ziel-, Nachweis-, Rollback- und Sperrfelder des Plans prüfen und
-muss jede Ausführungsfreigabe geschlossen ablehnen.
+Der Vertrag darf nur Identitäts-, Planbindungs-, Ablauf-, Einmal-
+und Ablaufzeitgrenzen beschreiben. Er darf weder eine Freigabe
+erteilen noch einen Prozess oder Dateisystemzugriff ermöglichen.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2071,6 +2097,7 @@ Treiber-Readiness v27.32d, isolierter Test-Dependency-
 Manifest-Vertrag v27.32e, isolierte Manifest-
 Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g,
 reiner Umgebungsdescriptor-Resolver v27.32h, vollständig
-gesperrter Umgebungs-Materialisierungsvertrag v27.32i sowie
-reiner Materialisierungsplan-State v27.32j dauerhaft eingebunden;
+gesperrter Umgebungs-Materialisierungsvertrag v27.32i, reiner
+Materialisierungsplan-State v27.32j sowie reiner Plan-Annahme-
+Guard v27.32k dauerhaft eingebunden;
 keine Live-Ausführung

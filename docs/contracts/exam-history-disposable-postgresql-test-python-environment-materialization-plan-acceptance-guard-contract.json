@@ -1,0 +1,160 @@
+{
+  "version": "v27.32k",
+  "contractVersion": 1,
+  "status": "implemented_pure_acceptance_execution_locked",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceMaterializationPlanContractPath": "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-plan-contract.json",
+    "sourceDescriptorResolverPath": "tools/accaoui_disposable_test_python_environment_descriptor.py",
+    "sourcePlanBuilderPath": "tools/accaoui_disposable_test_python_environment_materialization_plan.py",
+    "acceptanceGuardPath": "tools/accaoui_disposable_test_python_environment_materialization_plan_acceptance_guard.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-plan-acceptance-guard.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_PLAN_ACCEPTANCE_GUARD.md",
+    "materializationPlanAcceptanceGuardImplemented": true,
+    "executionAuthorizationImplemented": false,
+    "materializerImplemented": false,
+    "evidenceCollectorImplemented": false,
+    "rollbackImplemented": false,
+    "filesystemReadPerformed": false,
+    "filesystemMutationPerformed": false,
+    "processExecuted": false,
+    "virtualEnvironmentCreated": false,
+    "dependencyInstalled": false,
+    "driverImported": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "inputBoundary": {
+    "mappingOnly": true,
+    "exactTopLevelFields": [
+      "status",
+      "reason",
+      "plan",
+      "filesystemReadAllowed",
+      "filesystemMutationAllowed",
+      "processExecutionAllowed",
+      "dependencyInstallationAllowed"
+    ],
+    "requiredSourceStatus": "plan_ready_execution_locked",
+    "requiredSourceReason": "test_environment_materialization_plan_ready_execution_locked",
+    "allSourceExecutionFlagsMustBeFalse": true,
+    "inputMutationAllowed": false
+  },
+  "planStructureBoundary": {
+    "exactPlanFields": [
+      "platform",
+      "pythonVersion",
+      "basePythonExecutable",
+      "environmentRoot",
+      "repositoryRoot",
+      "targetState",
+      "creation",
+      "interpreter",
+      "manifest",
+      "evidence",
+      "rollback",
+      "authorization"
+    ],
+    "platforms": [
+      "windows",
+      "posix"
+    ],
+    "supportedPythonVersions": [
+      "3.10",
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ],
+    "acceptedTargetStates": [
+      "absent",
+      "empty"
+    ],
+    "environmentRootMustBeAbsolute": true,
+    "environmentInsideRepositoryAllowed": false,
+    "basePythonMustBeAbsolute": true,
+    "basePythonInsideTargetAllowed": false
+  },
+  "creationBoundary": {
+    "argvShape": [
+      "{basePythonExecutable}",
+      "-I",
+      "-m",
+      "venv",
+      "{environmentRoot}"
+    ],
+    "shell": false,
+    "workingDirectory": null,
+    "timeoutSeconds": 60,
+    "pythonNoUserSite": "1",
+    "environmentRemovals": [
+      "PYTHONPATH",
+      "VIRTUAL_ENV"
+    ],
+    "includeSystemSitePackages": false,
+    "upgradeExistingEnvironment": false,
+    "clearExistingEnvironment": false,
+    "withPipExpected": true
+  },
+  "acceptanceBoundary": {
+    "successStatus": "accepted_execution_locked",
+    "successReason": "test_environment_materialization_plan_accepted_execution_locked",
+    "accepted": true,
+    "environmentCreationAllowed": false,
+    "filesystemReadAllowed": false,
+    "filesystemMutationAllowed": false,
+    "processExecutionAllowed": false,
+    "dependencyInstallationAllowed": false,
+    "evidenceCollectionAllowed": false,
+    "rollbackExecutionAllowed": false,
+    "authorizationGrantAccepted": false
+  },
+  "tamperBoundary": {
+    "unknownOrMissingFieldsAccepted": false,
+    "statusOrReasonMutationAccepted": false,
+    "executionFlagMutationAccepted": false,
+    "argvMutationAccepted": false,
+    "targetMutationAccepted": false,
+    "interpreterExecutionAccepted": false,
+    "manifestInstallationAccepted": false,
+    "evidenceExecutionAccepted": false,
+    "rollbackExecutionAccepted": false,
+    "authorizationMutationAccepted": false
+  },
+  "securityBoundary": {
+    "processEnvironmentReadAllowed": false,
+    "filesystemReadAllowed": false,
+    "filesystemMutationAllowed": false,
+    "processExecutionAllowed": false,
+    "networkExecutionAllowed": false,
+    "installerInvocationAllowed": false,
+    "driverImportAllowed": false,
+    "databaseConnectionAllowed": false,
+    "passwordAllowed": false,
+    "databaseUrlAllowed": false,
+    "connectionStringAllowed": false,
+    "serviceRoleKeyAllowed": false,
+    "productionSecretAllowed": false,
+    "realParticipantDataAllowed": false,
+    "frontendReferenceAllowed": false
+  },
+  "unresolvedRequirements": {
+    "materializationAuthorizationRequestContract": true,
+    "materializationAuthorizationState": true,
+    "environmentMaterializer": true,
+    "environmentEvidenceCollector": true,
+    "environmentRollbackImplementation": true,
+    "isolatedEnvironmentCreation": true,
+    "isolatedDependencyInstallation": true,
+    "binaryImplementationReadinessProbe": true,
+    "connectionAdapterImplementation": true,
+    "credentialResolutionContract": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}
