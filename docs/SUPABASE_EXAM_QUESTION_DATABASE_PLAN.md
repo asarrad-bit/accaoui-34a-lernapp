@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32p
+Stand: v27.32q
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2055,6 +2055,32 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_CONSUMPTION_READINESS.md`
 
+## Disposable Verbrauchs-Readiness-Annahme-Guard v27.32q
+
+Ein reiner Guard prüft einen v27.32p-Readiness-State vollständig
+auf:
+
+- exakten Quellstatus und Quellgrund
+- geschlossene Ausführungs- und Registryflags
+- vollständige Readiness-Struktur
+- Request-, Nonce-, Akteur-, Zweck- und Planbindung
+- Ausgabe-, Genehmigungs-, Verbrauchs- und Ablaufzeit
+- exakt gebundenen Registry-Key
+- `unused -> consumed`-Compare-/Set-Zustände
+- Einmalverwendung und fehlenden Ausführungsgrant
+
+Manipulierte States werden geschlossen blockiert.
+
+Ein gültiger State wird kanonisch kopiert und endet nur als:
+
+`accepted_consumption_ready_execution_locked`
+
+Registryzugriff, Compare-and-set und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_CONSUMPTION_READINESS_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2145,16 +2171,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32p` kann `v27.32q`
-einen reinen Autorisierungsverbrauchs-Readiness-Annahme-Guard
-umsetzen.
+Nach GitHub-Bestätigung von `v27.32q` kann `v27.32r`
+einen vollständig gesperrten Vertrag für eine spätere atomare
+Autorisierungsverbrauchsoperation vorbereiten.
 
-Der Guard darf nur Struktur, Quellstatus, Bindung, Zeitfenster,
-Registry-Key, Compare-/Set-Zustände und sämtliche Sperrfelder
-prüfen. Auch ein angenommener Readiness-State muss vollständig
-nicht ausführbar bleiben.
+Der Vertrag darf ausschließlich Registry-Adapter-, atomare
+Compare-and-set-, Konflikt-, Verbrauchsnachweis-, Fehler- und
+Rollbackgrenzen beschreiben. Er darf weder Registryzugriff noch
+Verbrauch, Uhrabfrage oder Umgebungserstellung ausführen.
 
-Registryzugriff, atomarer Verbrauch, Verbrauchsnachweis,
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
 UI-Anbindung bleiben weiterhin ausgeschlossen.
@@ -2235,6 +2260,7 @@ Materialisierungsplan-State v27.32j, reiner Plan-Annahme-Guard
 v27.32k, gesperrter Autorisierungsanfrage-Vertrag v27.32l,
 reiner Autorisierungsanfrage-State v27.32m, reiner
 Autorisierungs-Transition-Guard v27.32n, gesperrter
-Autorisierungsverbrauchsvertrag v27.32o sowie reiner
-Verbrauchs-Readiness-State v27.32p dauerhaft eingebunden;
+Autorisierungsverbrauchsvertrag v27.32o, reiner
+Verbrauchs-Readiness-State v27.32p sowie reiner Readiness-
+Annahme-Guard v27.32q dauerhaft eingebunden;
 keine Live-Ausführung
