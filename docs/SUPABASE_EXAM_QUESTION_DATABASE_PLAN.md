@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32o
+Stand: v27.32p
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2027,6 +2027,34 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_CONSUMPTION_CONTRACT.md`
 
+## Disposable Autorisierungsverbrauchs-Readiness v27.32p
+
+Ein reiner State prüft ausschließlich übergebene genehmigte
+Übergangs-, Bindungs-, Zeit- und Registryfakten.
+
+Er verlangt:
+
+- `authorization_request_approved_locked`
+- Entscheidung `approve`
+- unveränderte Request-ID-, Nonce-, Akteur-, Zweck- und
+  Planfingerprint-Bindung
+- Verbrauchszeit nach Genehmigung und strikt vor Ablauf
+- Registryzustand `unused`
+
+`consumed`, `in_flight`, Bindungsabweichungen und zeitlich
+ungültige Fälle werden geschlossen blockiert.
+
+Ein gültiger State endet nur als:
+
+`consumption_ready_execution_locked`
+
+Es wird keine Registry gelesen oder geschrieben, kein
+Compare-and-set und kein Verbrauch ausgeführt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_CONSUMPTION_READINESS.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2117,18 +2145,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32o` kann `v27.32p`
-einen reinen Autorisierungsverbrauchs-Readiness-State umsetzen.
+Nach GitHub-Bestätigung von `v27.32p` kann `v27.32q`
+einen reinen Autorisierungsverbrauchs-Readiness-Annahme-Guard
+umsetzen.
 
-Der State darf ausschließlich übergebene genehmigte Übergangs-,
-Bindungs-, Ablauf- und Registryfakten deterministisch prüfen und
-nur `consumption_ready_execution_locked` oder einen geschlossenen
-Blockiergrund ableiten.
+Der Guard darf nur Struktur, Quellstatus, Bindung, Zeitfenster,
+Registry-Key, Compare-/Set-Zustände und sämtliche Sperrfelder
+prüfen. Auch ein angenommener Readiness-State muss vollständig
+nicht ausführbar bleiben.
 
-Er darf keine Registry lesen oder schreiben, keinen Verbrauch
-ausführen, keine Uhr lesen und keine Umgebungserstellung
-freigeben.
-
+Registryzugriff, atomarer Verbrauch, Verbrauchsnachweis,
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
 UI-Anbindung bleiben weiterhin ausgeschlossen.
@@ -2208,6 +2234,7 @@ gesperrter Umgebungs-Materialisierungsvertrag v27.32i, reiner
 Materialisierungsplan-State v27.32j, reiner Plan-Annahme-Guard
 v27.32k, gesperrter Autorisierungsanfrage-Vertrag v27.32l,
 reiner Autorisierungsanfrage-State v27.32m, reiner
-Autorisierungs-Transition-Guard v27.32n sowie gesperrter
-Autorisierungsverbrauchsvertrag v27.32o dauerhaft eingebunden;
+Autorisierungs-Transition-Guard v27.32n, gesperrter
+Autorisierungsverbrauchsvertrag v27.32o sowie reiner
+Verbrauchs-Readiness-State v27.32p dauerhaft eingebunden;
 keine Live-Ausführung

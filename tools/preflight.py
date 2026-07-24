@@ -690,6 +690,30 @@ def check_exam_result_history_disposable_postgresql_test_python_environment_mate
         )
 
 
+
+def check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_consumption_readiness():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-disposable-postgresql-"
+        "test-python-environment-materialization-"
+        "authorization-consumption-readiness.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable PostgreSQL-"
+            "Materialisierungs-Autorisierungsverbrauchs-"
+            "Readiness fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -846,6 +870,9 @@ def main():
         "tools/accaoui_disposable_test_python_environment_materialization_authorization_request_transition_guard.py",
         "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-request-transition-guard-contract.json",
         "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-consumption-contract.json",
+        "tools/accaoui_disposable_test_python_environment_materialization_authorization_consumption_readiness.py",
+        "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-consumption-readiness-contract.json",
+        "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-consumption-readiness.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-consumption-contract.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-request-transition-guard.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-request-state.py",
@@ -911,6 +938,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_request_state()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_request_transition_guard()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_consumption_contract()
+    check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_consumption_readiness()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()
