@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32y
+Stand: v27.32z
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2283,6 +2283,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_READINESS_ACCEPTANCE_GUARD.md`
 
+## Atomarer Registry-Adapter-Ausführungsvertrag v27.32z
+
+Ein vollständig gesperrter Vertrag bindet eine spätere
+Adapter-Ausführung ausschließlich an die angenommene
+v27.32y-Readiness.
+
+Festgelegt werden:
+
+- Adapterart und atomare Compare-and-set-Fähigkeit mit Record
+- `unused -> consumed` in genau einer atomaren Transaktion
+- genau ein Adapteraufruf und höchstens ein Parallelgewinner
+- vollständige Eingabefelder, feste Zeitlimits und Ergebnisarten
+- Rohfehlersperre
+- kein automatischer Retry bei unklarem Commit
+- spätere Reconciliation per Operations-ID
+- Nachweis nur aus bestätigtem Verbrauchsrecord
+- kein Reset von `consumed` auf `unused`
+
+Adapterimplementierung, Registryzugriff und Verbrauch bleiben
+gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_EXECUTION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2373,9 +2398,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32y` kann `v27.32z`
-einen vollständig gesperrten atomaren Registry-Adapter-
-Ausführungsvertrag vorbereiten.
+Nach GitHub-Bestätigung von `v27.32z` kann `v27.33a`
+einen reinen Registry-Adapter-Ausführungsdescriptor aus dem
+gesperrten Vertrag ableiten.
+
+Der Descriptor darf ausschließlich vollständig übergebene
+Vertragsfakten prüfen und eine kanonische, weiterhin
+ausführungsgesperrte Kopie erzeugen.
 
 Adapterimplementierung, Registryzugriff, atomarer Verbrauch,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2464,6 +2493,7 @@ v27.32r, reiner atomarer Verbrauchsoperationsplan v27.32s,
 reiner Operationsplan-Annahme-Guard v27.32t, gesperrter
 Registry-Adapter-Vertrag v27.32u, reiner Registry-Adapter-
 Descriptor v27.32v, reiner Descriptor-Annahme-Guard v27.32w,
-reiner Registry-Adapter-Readiness-State v27.32x sowie reiner
-Readiness-Annahme-Guard v27.32y dauerhaft eingebunden;
+reiner Registry-Adapter-Readiness-State v27.32x, reiner
+Readiness-Annahme-Guard v27.32y sowie vollständig gesperrter
+Registry-Adapter-Ausführungsvertrag v27.32z dauerhaft eingebunden;
 keine Live-Ausführung
