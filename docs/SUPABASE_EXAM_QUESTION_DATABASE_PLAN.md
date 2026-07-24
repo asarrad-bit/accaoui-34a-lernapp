@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32n
+Stand: v27.32o
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2002,6 +2002,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_REQUEST_TRANSITION_GUARD.md`
 
+## Disposable Autorisierungsverbrauchsvertrag v27.32o
+
+Ein vollständig gesperrter Vertrag beschreibt die spätere
+einmalige Verbrauchsprüfung einer genehmigten, aber weiterhin
+nicht ausführbaren Autorisierungsanfrage.
+
+Festgelegt sind:
+
+- Quelle `transition_applied_execution_locked`
+- Anfrage `authorization_request_approved_locked`
+- unveränderte Request-ID-, Nonce-, Akteur-, Zweck- und
+  Planfingerprint-Bindung
+- Verbrauch strikt vor `expiresAt`
+- keine Kulanzzeit
+- atomarer Registry-Übergang von `unused` zu `consumed`
+- Replay-, Parallel-, Zweitverbrauchs- und Reuse-Sperren
+- Verbrauchsnachweis weiterhin mit `executionGrant = false`
+
+Es wurde kein Verbrauchs-State, keine Registry, keine atomare
+Operation und kein Verbrauch umgesetzt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_CONSUMPTION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2092,15 +2117,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32n` kann `v27.32o`
-einen vollständig gesperrten Vertrag für die spätere einmalige
-Verbrauchsprüfung einer genehmigten Autorisierungsanfrage
-vorbereiten.
+Nach GitHub-Bestätigung von `v27.32o` kann `v27.32p`
+einen reinen Autorisierungsverbrauchs-Readiness-State umsetzen.
 
-Der Vertrag darf nur Planfingerprint-, Request-ID-, Nonce-,
-Genehmigungs-, Ablauf-, Replay- und atomare Einmalgrenzen
-beschreiben. Er darf weder Verbrauch ausführen noch eine
-Umgebungserstellung freigeben.
+Der State darf ausschließlich übergebene genehmigte Übergangs-,
+Bindungs-, Ablauf- und Registryfakten deterministisch prüfen und
+nur `consumption_ready_execution_locked` oder einen geschlossenen
+Blockiergrund ableiten.
+
+Er darf keine Registry lesen oder schreiben, keinen Verbrauch
+ausführen, keine Uhr lesen und keine Umgebungserstellung
+freigeben.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2180,6 +2207,7 @@ reiner Umgebungsdescriptor-Resolver v27.32h, vollständig
 gesperrter Umgebungs-Materialisierungsvertrag v27.32i, reiner
 Materialisierungsplan-State v27.32j, reiner Plan-Annahme-Guard
 v27.32k, gesperrter Autorisierungsanfrage-Vertrag v27.32l,
-reiner Autorisierungsanfrage-State v27.32m sowie reiner
-Autorisierungs-Transition-Guard v27.32n dauerhaft eingebunden;
+reiner Autorisierungsanfrage-State v27.32m, reiner
+Autorisierungs-Transition-Guard v27.32n sowie gesperrter
+Autorisierungsverbrauchsvertrag v27.32o dauerhaft eingebunden;
 keine Live-Ausführung
