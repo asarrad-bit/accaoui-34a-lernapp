@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32f
+Stand: v27.32g
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1809,6 +1809,29 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_DEPENDENCY_MANIFEST_MATERIALIZATION.md`
 
+## Disposable Test-Python-Umgebungsvertrag v27.32g
+
+Ein Readiness-Vertrag definiert ausschließlich die Grenzen einer
+späteren getrennten Python-Testumgebung.
+
+Die Umgebungswurzel darf nur über
+
+`ACCAOUI_DISPOSABLE_TEST_ENV_ROOT`
+
+ausdrücklich gesetzt werden. Es gibt keinen Standardpfad; die
+Umgebung muss absolut und außerhalb des Repositories liegen.
+
+Zusätzlich sind Python 3.10 bis 3.14, gleiche Major-/Minor-Version,
+direkte Interpreterpfade sowie vollständige Trennung von System-
+und User-Site-Packages festgelegt.
+
+Es wurde keine virtuelle Umgebung angelegt, kein Interpreter
+ausgeführt und keine Dependency installiert.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_READINESS_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1899,17 +1922,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32f` kann `v27.32g`
-einen verbindungsfreien Readiness-Vertrag für eine spätere
-getrennte disposable Test-Python-Umgebung vorbereiten.
+Nach GitHub-Bestätigung von `v27.32g` kann `v27.32h`
+einen reinen Test-Python-Umgebungsdescriptor-Resolver umsetzen.
 
-Der Vertrag darf nur Pfad-, Interpreter- und Isolationsgrenzen
-definieren, ohne eine virtuelle Umgebung anzulegen oder eine
-Dependency zu installieren.
+Der Resolver darf nur übergebene Pfad-, Plattform-, Interpreter-
+und Isolationsfakten deterministisch auswerten. Er darf weder das
+Dateisystem verändern noch einen Interpreter oder Installer
+ausführen.
 
-Treiberinstallation, Treiberimport, Datenbankverbindung,
-Testausführung, direkte App-Freigabe und UI-Anbindung bleiben
-weiterhin ausgeschlossen.
+Umgebungserstellung, Dependency-Installation, Treiberimport,
+Datenbankverbindung, Testausführung, direkte App-Freigabe und
+UI-Anbindung bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -1979,6 +2002,7 @@ Gate-Evaluator und Adapter-Readiness-State v27.32a,
 gesperrte Harness-Gate-Integration v27.32b sowie disposable
 PostgreSQL-Treiberauswahlvertrag v27.32c, metadatenbasierte
 Treiber-Readiness v27.32d, isolierter Test-Dependency-
-Manifest-Vertrag v27.32e sowie isolierte Manifest-
-Materialisierung v27.32f dauerhaft eingebunden;
+Manifest-Vertrag v27.32e, isolierte Manifest-
+Materialisierung v27.32f sowie Test-Python-Umgebungsvertrag
+v27.32g dauerhaft eingebunden;
 keine Live-Ausführung
