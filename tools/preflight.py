@@ -438,6 +438,28 @@ def check_exam_result_history_disposable_postgresql_driver_readiness():
         )
 
 
+
+def check_exam_result_history_disposable_postgresql_test_dependency_manifest_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-disposable-postgresql-"
+        "test-dependency-manifest-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable PostgreSQL-"
+            "Test-Dependency-Manifest-Vertrag fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -577,6 +599,8 @@ def main():
         "docs/contracts/exam-history-disposable-postgresql-driver-selection-contract.json",
         "tools/accaoui_disposable_postgresql_driver_readiness.py",
         "docs/contracts/exam-history-disposable-postgresql-driver-readiness-contract.json",
+        "docs/contracts/exam-history-disposable-postgresql-test-dependency-manifest-contract.json",
+        "tools/check-supabase-exam-history-disposable-postgresql-test-dependency-manifest-contract.py",
         "tools/check-supabase-exam-history-disposable-postgresql-driver-readiness.py",
         "tools/check-supabase-exam-history-disposable-postgresql-driver-selection-contract.py",
         "tools/check-supabase-exam-history-disposable-database-harness-gate-integration.py",
@@ -620,6 +644,7 @@ def main():
     check_exam_result_history_disposable_database_harness_gate_integration()
     check_exam_result_history_disposable_postgresql_driver_selection_contract()
     check_exam_result_history_disposable_postgresql_driver_readiness()
+    check_exam_result_history_disposable_postgresql_test_dependency_manifest_contract()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()

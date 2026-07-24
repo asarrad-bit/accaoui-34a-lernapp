@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32d
+Stand: v27.32e
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1769,6 +1769,25 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_DRIVER_READINESS.md`
 
+## Disposable Test-Dependency-Manifest-Vertrag v27.32e
+
+Ein isolierter Vertrag legt den späteren Test-Dependency-Pfad
+und dessen einzigen erlaubten Inhalt fest:
+
+`tools/test-dependencies/disposable-postgresql-requirements.txt`
+
+mit genau:
+
+`psycopg[binary]==3.3.4`
+
+Produktiv-, Standard-, Frontend- und Lock-Dependencies bleiben
+ausgeschlossen. Das Manifest selbst wird in v27.32e noch nicht
+erstellt und keine Installation ausgeführt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_DEPENDENCY_MANIFEST_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1859,9 +1878,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32d` kann `v27.32e`
-einen isolierten Test-Dependency-Manifest-Vertrag für den
-disposable PostgreSQL-Treiber vorbereiten.
+Nach GitHub-Bestätigung von `v27.32e` kann `v27.32f`
+das isolierte Test-Dependency-Manifest mit exakt einer gepinnten
+Dependency materialisieren.
+
+Das Manifest darf weiterhin weder automatisch installiert noch
+von Produktiv-, Frontend- oder Standard-Preflight-Code geladen
+werden.
 
 Treiberinstallation, Treiberimport, Datenbankverbindung,
 Testausführung, direkte App-Freigabe und UI-Anbindung bleiben
@@ -1933,6 +1956,7 @@ Harness-Readiness v27.31y, disposable Datenbank-
 Umgebungs-Gate-Vertrag v27.31z sowie verbindungsfreier
 Gate-Evaluator und Adapter-Readiness-State v27.32a,
 gesperrte Harness-Gate-Integration v27.32b sowie disposable
-PostgreSQL-Treiberauswahlvertrag v27.32c sowie metadatenbasierte
-Treiber-Readiness v27.32d dauerhaft eingebunden;
+PostgreSQL-Treiberauswahlvertrag v27.32c, metadatenbasierte
+Treiber-Readiness v27.32d sowie isolierter Test-Dependency-
+Manifest-Vertrag v27.32e dauerhaft eingebunden;
 keine Live-Ausführung
