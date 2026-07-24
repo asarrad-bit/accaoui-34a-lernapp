@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32h
+Stand: v27.32i
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1852,6 +1852,27 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_DESCRIPTOR_RESOLVER.md`
 
+## Disposable Test-Python-Materialisierungsvertrag v27.32i
+
+Ein vollständig gesperrter Vertrag beschreibt die spätere
+Erstellung der isolierten Test-Python-Umgebung.
+
+Festgelegt sind:
+
+- gültiger v27.32h-Descriptor als Pflicht
+- ausschließlich strukturierte argv-Argumente ohne Shell
+- exakter externer Zielpfad aus dem Descriptor
+- Python- und Isolationsnachweise
+- keine Dependency-Installation in der Erstellungsstufe
+- Rollback nur für den nachweislich neu angelegten exakten Zielpfad
+
+Es wurde kein Materialisierer umgesetzt, kein Prozess ausgeführt
+und keine virtuelle Umgebung angelegt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1942,13 +1963,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32h` kann `v27.32i`
-einen vollständig gesperrten Materialisierungsvertrag für die
-spätere isolierte Test-Python-Umgebung vorbereiten.
+Nach GitHub-Bestätigung von `v27.32i` kann `v27.32j`
+einen reinen Materialisierungsplan-State aus einem gültigen
+v27.32h-Descriptor ableiten.
 
-Der Vertrag darf Erstellungsbefehl, Zielpfad, Interpreterbindung,
-Isolationsnachweise und Rollbackregeln nur beschreiben, ohne eine
-virtuelle Umgebung anzulegen oder einen Prozess auszuführen.
+Der State darf nur strukturierte argv-, Ziel-, Nachweis- und
+Rollbackdaten erzeugen und muss vollständig ausführungsgesperrt
+bleiben.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2023,7 +2044,8 @@ gesperrte Harness-Gate-Integration v27.32b sowie disposable
 PostgreSQL-Treiberauswahlvertrag v27.32c, metadatenbasierte
 Treiber-Readiness v27.32d, isolierter Test-Dependency-
 Manifest-Vertrag v27.32e, isolierte Manifest-
-Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g
-sowie reiner Umgebungsdescriptor-Resolver v27.32h dauerhaft
+Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g,
+reiner Umgebungsdescriptor-Resolver v27.32h sowie vollständig
+gesperrter Umgebungs-Materialisierungsvertrag v27.32i dauerhaft
 eingebunden;
 keine Live-Ausführung
