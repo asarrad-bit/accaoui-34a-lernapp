@@ -222,8 +222,6 @@ if readiness["adapterFacts"] is source_input["adapterFacts"]:
 if readiness["descriptor"] is accepted["acceptedDescriptor"]:
     fail("Descriptor wurde nicht kopiert.")
 
-if FUTURE_GUARD.exists():
-    fail("v27.32x darf noch keinen Readiness-Annahme-Guard umsetzen.")
 if FUTURE_ADAPTER.exists():
     fail("v27.32x darf noch keinen Registry-Adapter umsetzen.")
 if list(MIGRATIONS.glob("*v2732x*.sql")):
