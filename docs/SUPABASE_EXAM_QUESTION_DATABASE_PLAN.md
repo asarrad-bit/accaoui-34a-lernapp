@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32i
+Stand: v27.32j
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1873,6 +1873,32 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_CONTRACT.md`
 
+## Disposable Test-Python-Materialisierungsplan v27.32j
+
+Ein reiner Plan-Builder leitet aus einem gültigen v27.32h-
+Descriptor und übergebenen Planfakten einen deterministischen
+State ab.
+
+Der State enthält ausschließlich:
+
+- strukturierte Erstellungs-argv ohne Shell
+- exakte Ziel- und Interpreterbindung
+- Isolations- und Umgebungsregeln
+- Nachweisprüfungen
+- sicheren Rollbackplan
+- spätere menschliche Freigabepflicht
+
+Ein gültiger Plan bleibt:
+
+`plan_ready_execution_locked`
+
+Es werden weder Dateisystem noch Prozessumgebung gelesen oder
+verändert und kein Prozess ausgeführt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_PLAN.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1963,13 +1989,12 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32i` kann `v27.32j`
-einen reinen Materialisierungsplan-State aus einem gültigen
-v27.32h-Descriptor ableiten.
+Nach GitHub-Bestätigung von `v27.32j` kann `v27.32k`
+einen reinen Materialisierungsplan-Annahme-Guard umsetzen.
 
-Der State darf nur strukturierte argv-, Ziel-, Nachweis- und
-Rollbackdaten erzeugen und muss vollständig ausführungsgesperrt
-bleiben.
+Der Guard darf ausschließlich Struktur, Quellstatus, argv-,
+Ziel-, Nachweis-, Rollback- und Sperrfelder des Plans prüfen und
+muss jede Ausführungsfreigabe geschlossen ablehnen.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2045,7 +2070,7 @@ PostgreSQL-Treiberauswahlvertrag v27.32c, metadatenbasierte
 Treiber-Readiness v27.32d, isolierter Test-Dependency-
 Manifest-Vertrag v27.32e, isolierte Manifest-
 Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g,
-reiner Umgebungsdescriptor-Resolver v27.32h sowie vollständig
-gesperrter Umgebungs-Materialisierungsvertrag v27.32i dauerhaft
-eingebunden;
+reiner Umgebungsdescriptor-Resolver v27.32h, vollständig
+gesperrter Umgebungs-Materialisierungsvertrag v27.32i sowie
+reiner Materialisierungsplan-State v27.32j dauerhaft eingebunden;
 keine Live-Ausführung

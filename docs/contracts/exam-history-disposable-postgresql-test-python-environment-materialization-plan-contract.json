@@ -1,0 +1,151 @@
+{
+  "version": "v27.32j",
+  "contractVersion": 1,
+  "status": "implemented_pure_plan_execution_locked",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceMaterializationContractPath": "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-contract.json",
+    "sourceDescriptorContractPath": "docs/contracts/exam-history-disposable-postgresql-test-python-environment-descriptor-resolver-contract.json",
+    "sourceDescriptorResolverPath": "tools/accaoui_disposable_test_python_environment_descriptor.py",
+    "planBuilderPath": "tools/accaoui_disposable_test_python_environment_materialization_plan.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-plan.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_PLAN.md",
+    "materializationPlanBuilderImplemented": true,
+    "materializerImplemented": false,
+    "evidenceCollectorImplemented": false,
+    "rollbackImplemented": false,
+    "filesystemReadPerformed": false,
+    "filesystemMutationPerformed": false,
+    "processExecuted": false,
+    "virtualEnvironmentCreated": false,
+    "dependencyInstalled": false,
+    "driverImported": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "inputBoundary": {
+    "mappingOnly": true,
+    "allowedFields": [
+      "descriptorResult",
+      "basePythonExecutable",
+      "targetState",
+      "humanAuthorizationRecorded"
+    ],
+    "unknownFieldsAllowed": false,
+    "missingFieldsAllowed": false,
+    "descriptorStatus": "descriptor_ready_creation_locked",
+    "descriptorReason": "test_environment_descriptor_ready_creation_locked",
+    "targetStates": [
+      "absent",
+      "empty",
+      "non_empty"
+    ],
+    "acceptedTargetStates": [
+      "absent",
+      "empty"
+    ],
+    "authorizationMustRemainUnrecordedInPlan": true,
+    "inputMutationAllowed": false
+  },
+  "planBoundary": {
+    "successStatus": "plan_ready_execution_locked",
+    "successReason": "test_environment_materialization_plan_ready_execution_locked",
+    "structuredArgvOnly": true,
+    "shellAllowed": false,
+    "timeoutSeconds": 60,
+    "pythonNoUserSite": true,
+    "removePythonPath": true,
+    "removeVirtualEnv": true,
+    "includeSystemSitePackages": false,
+    "upgradeExistingEnvironment": false,
+    "clearExistingEnvironment": false,
+    "dependencyInstallationAllowed": false,
+    "interpreterExecutionAllowed": false,
+    "evidenceCollectionAllowed": false,
+    "rollbackExecutionAllowed": false,
+    "humanAuthorizationRequiredLater": true,
+    "humanAuthorizationRecorded": false
+  },
+  "creationArgvBoundary": {
+    "windowsShape": [
+      "{basePythonExecutable}",
+      "-I",
+      "-m",
+      "venv",
+      "{environmentRoot}"
+    ],
+    "posixShape": [
+      "{basePythonExecutable}",
+      "-I",
+      "-m",
+      "venv",
+      "{environmentRoot}"
+    ],
+    "basePythonMustBeAbsolute": true,
+    "basePythonInsideTargetAllowed": false,
+    "targetFromDescriptorOnly": true
+  },
+  "evidenceBoundary": {
+    "requiredChecks": [
+      "interpreter_exists",
+      "pyvenv_config_exists",
+      "include_system_site_packages_false",
+      "sys_prefix_differs_from_base_prefix",
+      "python_major_minor_matches_descriptor",
+      "python_no_user_site_true",
+      "system_site_packages_excluded",
+      "user_site_packages_excluded",
+      "dependency_uninstalled"
+    ],
+    "collectionImplemented": false,
+    "processExecutionAllowed": false,
+    "driverImportAllowed": false,
+    "networkAllowed": false,
+    "databaseConnectionAllowed": false
+  },
+  "rollbackBoundary": {
+    "requiredOnCreationFailure": true,
+    "requiredOnEvidenceFailure": true,
+    "deleteOnlyExactTarget": true,
+    "deleteParentAllowed": false,
+    "deleteRepositoryAllowed": false,
+    "deletePreexistingTargetAllowed": false,
+    "creationOwnershipProofRequired": true,
+    "executionImplemented": false
+  },
+  "securityBoundary": {
+    "processEnvironmentReadAllowed": false,
+    "filesystemReadAllowed": false,
+    "filesystemMutationAllowed": false,
+    "processExecutionAllowed": false,
+    "networkExecutionAllowed": false,
+    "installerInvocationAllowed": false,
+    "driverImportAllowed": false,
+    "databaseConnectionAllowed": false,
+    "passwordAllowed": false,
+    "databaseUrlAllowed": false,
+    "connectionStringAllowed": false,
+    "serviceRoleKeyAllowed": false,
+    "productionSecretAllowed": false,
+    "realParticipantDataAllowed": false,
+    "frontendReferenceAllowed": false
+  },
+  "unresolvedRequirements": {
+    "materializationPlanAcceptanceGuard": true,
+    "environmentMaterializer": true,
+    "environmentEvidenceCollector": true,
+    "environmentRollbackImplementation": true,
+    "isolatedEnvironmentCreation": true,
+    "isolatedDependencyInstallation": true,
+    "binaryImplementationReadinessProbe": true,
+    "connectionAdapterImplementation": true,
+    "credentialResolutionContract": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}
