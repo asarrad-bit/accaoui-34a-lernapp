@@ -287,12 +287,93 @@ for key in (
     if security.get(key) is not False:
         fail(f"Sicherheitsgrenze ist offen: {key}")
 
-for path, label in (
-    (FUTURE_PLAN, "Operationsplan"),
-    (FUTURE_ADAPTER, "Registry-Adapter"),
-):
-    if path.exists():
-        fail(f"v27.32r darf noch keinen {label} umsetzen.")
+if FUTURE_ADAPTER.exists():
+    fail("v27.32r darf noch keinen Registry-Adapter umsetzen.")
+
+future_contract_path = (
+    ROOT
+    / "docs"
+    / "contracts"
+    / (
+        "exam-history-disposable-postgresql-"
+        "test-python-environment-materialization-"
+        "authorization-atomic-consumption-plan-contract.json"
+    )
+)
+
+if FUTURE_PLAN.exists():
+    future_contract = load_json(
+        future_contract_path,
+        "v27.32s-Atomarer-Verbrauchsplan-Vertrag",
+    )
+
+    if future_contract.get("version") != "v27.32s":
+        fail("Zukünftiger Operationsplan besitzt nicht v27.32s.")
+
+    if future_contract.get("status") != (
+        "implemented_pure_atomic_consumption_plan_"
+        "execution_locked"
+    ):
+        fail("Zukünftiger Operationsplanstatus ist ungültig.")
+
+    future_implementation = future_contract.get(
+        "implementation",
+        {},
+    )
+
+    if future_implementation.get(
+        "sourceAtomicConsumptionOperationContractPath"
+    ) != (
+        "docs/contracts/"
+        "exam-history-disposable-postgresql-"
+        "test-python-environment-materialization-"
+        "authorization-atomic-consumption-operation-contract.json"
+    ):
+        fail("Zukünftiger Operationsplan ist falsch gebunden.")
+
+    if future_implementation.get(
+        "atomicConsumptionPlanPath"
+    ) != (
+        "tools/"
+        "accaoui_disposable_test_python_environment_"
+        "materialization_authorization_atomic_consumption_plan.py"
+    ):
+        fail("Zukünftiger Operationsplanpfad ist ungültig.")
+
+    if future_implementation.get(
+        "atomicConsumptionPlanImplemented"
+    ) is not True:
+        fail("Zukünftiger Operationsplan ist nicht implementiert.")
+
+    for key in (
+        "registryAdapterImplemented",
+        "registryReadPerformed",
+        "registryWritePerformed",
+        "atomicCompareAndSetPerformed",
+        "consumptionRecordCommitted",
+        "consumptionReceiptCommitted",
+        "authorizationConsumed",
+        "authorizationGranted",
+        "authorizationTokenGenerated",
+        "trustedClockRead",
+        "filesystemReadPerformed",
+        "filesystemMutationPerformed",
+        "processExecuted",
+        "virtualEnvironmentCreated",
+        "dependencyInstalled",
+        "driverImported",
+        "databaseConnectionCreated",
+        "databaseTestExecuted",
+        "sqlMigrationCreated",
+        "frontendIntegration",
+    ):
+        if future_implementation.get(key) is not False:
+            fail(
+                "Zukünftige Operationsplan-Grenze ist offen: "
+                f"{key}"
+            )
+elif future_contract_path.exists():
+    fail("v27.32s-Vertrag existiert ohne Operationsplan.")
 
 if list(MIGRATIONS.glob("*v2732r*.sql")):
     fail("v27.32r darf keine SQL-Migration erzeugen.")
@@ -306,7 +387,11 @@ print("Verbrauchsrecord: gleiche atomare Einheit erforderlich")
 print("Parallelgewinner: höchstens einer")
 print("Unklarer Commit: kein automatischer Retry")
 print("Nachweisstatus: authorization_consumed_execution_locked")
-print("Operationsplan implementiert: nein")
+print(
+    "Operationsplan v27.32s: gültig eingebunden"
+    if FUTURE_PLAN.exists()
+    else "Operationsplan implementiert: nein"
+)
 print("Registry-Adapter implementiert: nein")
 print("Registry gelesen: nein")
 print("Registry geschrieben: nein")

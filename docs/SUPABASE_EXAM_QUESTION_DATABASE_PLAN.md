@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32r
+Stand: v27.32s
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2106,6 +2106,33 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_OPERATION_CONTRACT.md`
 
+## Atomarer Autorisierungsverbrauchsoperations-Plan v27.32s
+
+Ein reiner Plan-Builder erzeugt aus einer durch v27.32q
+angenommenen Readiness sowie übergebenen Adapter- und
+Operationsfakten ausschließlich strukturierte Daten.
+
+Der Plan enthält:
+
+- Registry-Key
+- atomaren `unused -> consumed`-Vergleich
+- Verbrauchsrecord
+- Nachweisvorlage
+- Konflikt- und Fehlergründe
+- Ambiguitäts- und Reconciliation-Regeln
+- sichere Rollbackgrenzen
+
+Ein gültiger Plan endet nur als:
+
+`atomic_consumption_plan_ready_execution_locked`
+
+Es wird kein Adapter aufgerufen, keine Registry gelesen oder
+geschrieben und kein Verbrauch ausgeführt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_PLAN.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2196,19 +2223,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32r` kann `v27.32s`
-einen reinen atomaren Autorisierungsverbrauchsoperations-Plan
+Nach GitHub-Bestätigung von `v27.32s` kann `v27.32t`
+einen reinen atomaren Verbrauchsoperationsplan-Annahme-Guard
 umsetzen.
 
-Der Plan darf ausschließlich eine durch v27.32q angenommene
-Readiness sowie übergebene Adapterfähigkeits- und
-Operationsfakten deterministisch prüfen und strukturierte
-Registry-Key-, Compare-and-set-, Record-, Nachweis- und
-Fehlerdaten erzeugen.
+Der Guard darf ausschließlich Struktur, Quellstatus,
+Operations-ID, Adapterfähigkeit, Registry-Key, Compare-and-set-,
+Record-, Nachweis-, Konflikt-, Fehler-, Rollback- und Sperrfelder
+prüfen. Auch ein angenommener Plan muss vollständig nicht
+ausführbar bleiben.
 
-Er darf keinen Adapter aufrufen, keine Registry lesen oder
-schreiben, keinen Verbrauch ausführen und keine Uhr lesen.
-
+Adapteraufruf, Registryzugriff, atomarer Verbrauch,
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
 UI-Anbindung bleiben weiterhin ausgeschlossen.
@@ -2291,6 +2316,7 @@ reiner Autorisierungsanfrage-State v27.32m, reiner
 Autorisierungs-Transition-Guard v27.32n, gesperrter
 Autorisierungsverbrauchsvertrag v27.32o, reiner
 Verbrauchs-Readiness-State v27.32p, reiner Readiness-Annahme-
-Guard v27.32q sowie gesperrter atomarer Verbrauchsoperations-
-vertrag v27.32r dauerhaft eingebunden;
+Guard v27.32q, gesperrter atomarer Verbrauchsoperationsvertrag
+v27.32r sowie reiner atomarer Verbrauchsoperationsplan v27.32s
+dauerhaft eingebunden;
 keine Live-Ausführung
