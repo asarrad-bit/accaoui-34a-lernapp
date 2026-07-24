@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32v
+Stand: v27.32w
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2211,6 +2211,33 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_DESCRIPTOR.md`
 
+## Registry-Adapter-Descriptor-Annahme-Guard v27.32w
+
+Ein reiner Guard prüft den v27.32v-Descriptor vollständig auf:
+
+- exakten Quellstatus und -grund
+- vollständig geschlossene Quell- und Sicherheitsflags
+- Descriptor-Version und Quellbindung
+- Adapterart, atomare Fähigkeit und `unused -> consumed`
+- einzelnen Adapteraufruf und höchstens einen Parallelgewinner
+- feste Zeitlimits und Ergebnisarten
+- Reconciliation-Pflicht ohne automatischen Retry
+- fehlenden Ausführungsgrant
+
+Manipulierte, fehlende oder unbekannte Felder werden geschlossen
+blockiert.
+
+Ein gültiger Descriptor wird kanonisch kopiert und endet nur als:
+
+`accepted_atomic_consumption_registry_adapter_descriptor_execution_locked`
+
+Adapterimplementierung, Registryzugriff und Verbrauch bleiben
+gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_DESCRIPTOR_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2301,14 +2328,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32v` kann `v27.32w`
-einen reinen Annahme-Guard für den atomaren
-Verbrauchs-Registry-Adapter-Descriptor umsetzen.
+Nach GitHub-Bestätigung von `v27.32w` kann `v27.32x`
+einen reinen Registry-Adapter-Readiness-State umsetzen.
 
-Der Guard darf ausschließlich den kanonischen gesperrten
-Descriptor prüfen, Manipulationen geschlossen ablehnen und eine
-weiterhin ausführungsgesperrte angenommene Descriptor-Kopie
-erzeugen.
+Der State darf ausschließlich den angenommenen gesperrten
+Descriptor sowie vollständig übergebene Adapterfähigkeits- und
+Verfügbarkeitsfakten prüfen und einen weiterhin gesperrten
+Readiness-State erzeugen.
 
 Adapterimplementierung, Registryzugriff, atomarer Verbrauch,
 Umgebungserstellung, Dependency-Installation, Treiberimport,
@@ -2396,6 +2422,7 @@ Verbrauchs-Readiness-State v27.32p, reiner Readiness-Annahme-
 Guard v27.32q, gesperrter atomarer Verbrauchsoperationsvertrag
 v27.32r, reiner atomarer Verbrauchsoperationsplan v27.32s,
 reiner Operationsplan-Annahme-Guard v27.32t, gesperrter
-Registry-Adapter-Vertrag v27.32u sowie reiner
-Registry-Adapter-Descriptor v27.32v dauerhaft eingebunden;
+Registry-Adapter-Vertrag v27.32u, reiner Registry-Adapter-
+Descriptor v27.32v sowie reiner Descriptor-Annahme-Guard
+v27.32w dauerhaft eingebunden;
 keine Live-Ausführung
