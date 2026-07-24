@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32s
+Stand: v27.32t
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2133,6 +2133,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_PLAN.md`
 
+## Atomarer Verbrauchsoperationsplan-Annahme-Guard v27.32t
+
+Ein reiner Guard prüft den v27.32s-Operationsplan vollständig
+auf:
+
+- exakten Quellstatus und geschlossene Sperrfelder
+- Operations-ID und ersten Versuch
+- Adapterart und atomare Fähigkeit
+- Registry-Key und `unused -> consumed`
+- Verbrauchsrecord und identische Nachweisvorlage
+- Konflikt-, Fehler-, Reconciliation- und Rollbackregeln
+- Einmalverwendung und fehlenden Ausführungsgrant
+
+Manipulierte Pläne werden geschlossen blockiert.
+
+Ein gültiger Plan wird kanonisch kopiert und endet nur als:
+
+`accepted_atomic_consumption_plan_execution_locked`
+
+Adapteraufruf, Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_PLAN_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2223,17 +2248,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32s` kann `v27.32t`
-einen reinen atomaren Verbrauchsoperationsplan-Annahme-Guard
-umsetzen.
+Nach GitHub-Bestätigung von `v27.32t` kann `v27.32u`
+einen vollständig gesperrten Vertrag für den späteren atomaren
+Autorisierungsverbrauchs-Registry-Adapter vorbereiten.
 
-Der Guard darf ausschließlich Struktur, Quellstatus,
-Operations-ID, Adapterfähigkeit, Registry-Key, Compare-and-set-,
-Record-, Nachweis-, Konflikt-, Fehler-, Rollback- und Sperrfelder
-prüfen. Auch ein angenommener Plan muss vollständig nicht
-ausführbar bleiben.
+Der Vertrag darf ausschließlich Adaptereingabe, atomare
+Compare-and-set-with-record-Fähigkeit, definitive Konflikte,
+unklare Commit-Ergebnisse, Reconciliation, Zeitlimits,
+Fehlerabbildung und Sicherheitsgrenzen beschreiben.
 
-Adapteraufruf, Registryzugriff, atomarer Verbrauch,
+Adapterimplementierung, Registryzugriff, atomarer Verbrauch,
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
 UI-Anbindung bleiben weiterhin ausgeschlossen.
@@ -2317,6 +2341,6 @@ Autorisierungs-Transition-Guard v27.32n, gesperrter
 Autorisierungsverbrauchsvertrag v27.32o, reiner
 Verbrauchs-Readiness-State v27.32p, reiner Readiness-Annahme-
 Guard v27.32q, gesperrter atomarer Verbrauchsoperationsvertrag
-v27.32r sowie reiner atomarer Verbrauchsoperationsplan v27.32s
-dauerhaft eingebunden;
+v27.32r, reiner atomarer Verbrauchsoperationsplan v27.32s sowie
+reiner Operationsplan-Annahme-Guard v27.32t dauerhaft eingebunden;
 keine Live-Ausführung
