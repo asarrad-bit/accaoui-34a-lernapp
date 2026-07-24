@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32g
+Stand: v27.32h
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1832,6 +1832,26 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_READINESS_CONTRACT.md`
 
+## Disposable Test-Python-Umgebungsdescriptor v27.32h
+
+Ein reiner Resolver wertet ausschließlich übergebene Pfad-,
+Plattform-, Python- und Isolationsfakten aus.
+
+Er validiert absolute externe Umgebungswurzeln, die Trennung vom
+Repository, Python 3.10 bis 3.14, Versionsgleichheit sowie die
+vollständige Site-Packages- und Vererbungsisolation.
+
+Ein gültiger Fall bleibt:
+
+`descriptor_ready_creation_locked`
+
+Der Resolver liest oder verändert weder das Dateisystem noch die
+Prozessumgebung und führt keinen Interpreter oder Installer aus.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_DESCRIPTOR_RESOLVER.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1922,13 +1942,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32g` kann `v27.32h`
-einen reinen Test-Python-Umgebungsdescriptor-Resolver umsetzen.
+Nach GitHub-Bestätigung von `v27.32h` kann `v27.32i`
+einen vollständig gesperrten Materialisierungsvertrag für die
+spätere isolierte Test-Python-Umgebung vorbereiten.
 
-Der Resolver darf nur übergebene Pfad-, Plattform-, Interpreter-
-und Isolationsfakten deterministisch auswerten. Er darf weder das
-Dateisystem verändern noch einen Interpreter oder Installer
-ausführen.
+Der Vertrag darf Erstellungsbefehl, Zielpfad, Interpreterbindung,
+Isolationsnachweise und Rollbackregeln nur beschreiben, ohne eine
+virtuelle Umgebung anzulegen oder einen Prozess auszuführen.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2003,6 +2023,7 @@ gesperrte Harness-Gate-Integration v27.32b sowie disposable
 PostgreSQL-Treiberauswahlvertrag v27.32c, metadatenbasierte
 Treiber-Readiness v27.32d, isolierter Test-Dependency-
 Manifest-Vertrag v27.32e, isolierte Manifest-
-Materialisierung v27.32f sowie Test-Python-Umgebungsvertrag
-v27.32g dauerhaft eingebunden;
+Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g
+sowie reiner Umgebungsdescriptor-Resolver v27.32h dauerhaft
+eingebunden;
 keine Live-Ausführung

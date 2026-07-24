@@ -504,6 +504,28 @@ def check_exam_result_history_disposable_postgresql_test_python_environment_read
         )
 
 
+
+def check_exam_result_history_disposable_postgresql_test_python_environment_descriptor_resolver():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-disposable-postgresql-"
+        "test-python-environment-descriptor-resolver.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable PostgreSQL-"
+            "Test-Python-Umgebungsdescriptor fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -647,6 +669,9 @@ def main():
         "tools/test-dependencies/disposable-postgresql-requirements.txt",
         "docs/contracts/exam-history-disposable-postgresql-test-dependency-manifest-materialization-contract.json",
         "docs/contracts/exam-history-disposable-postgresql-test-python-environment-readiness-contract.json",
+        "tools/accaoui_disposable_test_python_environment_descriptor.py",
+        "docs/contracts/exam-history-disposable-postgresql-test-python-environment-descriptor-resolver-contract.json",
+        "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-descriptor-resolver.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-readiness-contract.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-dependency-manifest-materialization.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-dependency-manifest-contract.py",
@@ -696,6 +721,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_dependency_manifest_contract()
     check_exam_result_history_disposable_postgresql_test_dependency_manifest_materialization()
     check_exam_result_history_disposable_postgresql_test_python_environment_readiness_contract()
+    check_exam_result_history_disposable_postgresql_test_python_environment_descriptor_resolver()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()

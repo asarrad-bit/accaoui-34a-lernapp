@@ -1,0 +1,116 @@
+{
+  "version": "v27.32h",
+  "contractVersion": 1,
+  "status": "implemented_pure_descriptor_creation_locked",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceEnvironmentReadinessContractPath": "docs/contracts/exam-history-disposable-postgresql-test-python-environment-readiness-contract.json",
+    "sourceManifestPath": "tools/test-dependencies/disposable-postgresql-requirements.txt",
+    "resolverPath": "tools/accaoui_disposable_test_python_environment_descriptor.py",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-descriptor-resolver.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_DESCRIPTOR_RESOLVER.md",
+    "environmentDescriptorResolverImplemented": true,
+    "environmentMaterializationImplemented": false,
+    "filesystemReadPerformed": false,
+    "filesystemMutationPerformed": false,
+    "virtualEnvironmentCreated": false,
+    "interpreterExecuted": false,
+    "dependencyInstalled": false,
+    "driverImported": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "inputBoundary": {
+    "mappingOnly": true,
+    "allowedFields": [
+      "platform",
+      "environmentRoot",
+      "repositoryRoot",
+      "environmentRootKind",
+      "invokingPythonVersion",
+      "requestedPythonVersion",
+      "includeSystemSitePackages",
+      "allowUserSitePackages",
+      "pythonNoUserSite",
+      "inheritPythonPath",
+      "inheritVirtualEnv"
+    ],
+    "unknownFieldsAllowed": false,
+    "missingFieldsAllowed": false,
+    "inputMutationAllowed": false,
+    "platforms": [
+      "windows",
+      "posix"
+    ],
+    "environmentRootKind": "dedicated_external"
+  },
+  "pathBoundary": {
+    "absoluteEnvironmentRootRequired": true,
+    "absoluteRepositoryRootRequired": true,
+    "environmentInsideRepositoryAllowed": false,
+    "environmentEqualRepositoryAllowed": false,
+    "parentTraversalAllowed": false,
+    "windowsUncAllowed": false,
+    "posixNetworkRootAllowed": false,
+    "filesystemResolutionAllowed": false,
+    "filesystemExistenceCheckAllowed": false
+  },
+  "interpreterBoundary": {
+    "supportedVersions": [
+      "3.10",
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ],
+    "requestedMustMatchInvoking": true,
+    "windowsRelativePath": "Scripts/python.exe",
+    "posixRelativePath": "bin/python",
+    "interpreterExecutionAllowed": false
+  },
+  "isolationBoundary": {
+    "includeSystemSitePackages": false,
+    "allowUserSitePackages": false,
+    "pythonNoUserSite": true,
+    "inheritPythonPath": false,
+    "inheritVirtualEnv": false
+  },
+  "successBoundary": {
+    "status": "descriptor_ready_creation_locked",
+    "reason": "test_environment_descriptor_ready_creation_locked",
+    "environmentCreationAllowed": false,
+    "processExecutionAllowed": false,
+    "dependencyInstallationAllowed": false
+  },
+  "securityBoundary": {
+    "filesystemReadAllowed": false,
+    "filesystemMutationAllowed": false,
+    "processExecutionAllowed": false,
+    "networkExecutionAllowed": false,
+    "installerInvocationAllowed": false,
+    "driverImportAllowed": false,
+    "databaseConnectionAllowed": false,
+    "passwordAllowed": false,
+    "databaseUrlAllowed": false,
+    "connectionStringAllowed": false,
+    "serviceRoleKeyAllowed": false,
+    "productionSecretAllowed": false,
+    "realParticipantDataAllowed": false,
+    "frontendReferenceAllowed": false
+  },
+  "unresolvedRequirements": {
+    "environmentMaterializationContract": true,
+    "isolatedEnvironmentCreation": true,
+    "isolatedDependencyInstallation": true,
+    "binaryImplementationReadinessProbe": true,
+    "connectionAdapterImplementation": true,
+    "credentialResolutionContract": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}
