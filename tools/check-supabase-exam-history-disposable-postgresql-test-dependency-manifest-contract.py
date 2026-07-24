@@ -30,6 +30,16 @@ FUTURE_MANIFEST = (
     / "disposable-postgresql-requirements.txt"
 )
 
+MATERIALIZATION_CONTRACT = (
+    ROOT
+    / "docs"
+    / "contracts"
+    / (
+        "exam-history-disposable-postgresql-"
+        "test-dependency-manifest-materialization-contract.json"
+    )
+)
+
 
 def fail(message: str) -> None:
     print(f"FEHLER: {message}")
@@ -102,10 +112,25 @@ if manifest.get("exactPinRequired") is not True:
     fail("Exakte Versionsbindung fehlt.")
 
 if FUTURE_MANIFEST.exists():
-    fail(
-        "v27.32e darf das zukünftige Manifest "
-        "noch nicht materialisieren."
+    materialization = load_json(
+        MATERIALIZATION_CONTRACT,
+        "v27.32f-Manifest-Materialisierungsvertrag",
     )
+
+    if materialization.get("version") != "v27.32f":
+        fail(
+            "Materialisiertes Manifest besitzt keinen "
+            "gültigen v27.32f-Vertrag."
+        )
+
+    raw_manifest = FUTURE_MANIFEST.read_bytes()
+    expected_manifest = b"psycopg[binary]==3.3.4\n"
+
+    if raw_manifest != expected_manifest:
+        fail(
+            "Materialisiertes Manifest verletzt die "
+            "v27.32e-Inhaltsgrenze."
+        )
 
 for relative in contract.get("forbiddenDeclarationPaths", []):
     path = ROOT / relative

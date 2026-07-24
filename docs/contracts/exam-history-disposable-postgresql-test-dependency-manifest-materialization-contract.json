@@ -1,0 +1,87 @@
+{
+  "version": "v27.32f",
+  "contractVersion": 1,
+  "status": "materialized_isolated_not_installed_not_live",
+  "productiveReleaseAllowed": false,
+  "implementation": {
+    "sourceManifestContractPath": "docs/contracts/exam-history-disposable-postgresql-test-dependency-manifest-contract.json",
+    "manifestPath": "tools/test-dependencies/disposable-postgresql-requirements.txt",
+    "checkerPath": "tools/check-supabase-exam-history-disposable-postgresql-test-dependency-manifest-materialization.py",
+    "documentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_DEPENDENCY_MANIFEST_MATERIALIZATION.md",
+    "manifestMaterialized": true,
+    "dependencyDeclaredInIsolatedManifest": true,
+    "dependencyInstalled": false,
+    "installerImplemented": false,
+    "driverImported": false,
+    "connectionAdapterImplemented": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlMigrationCreated": false,
+    "frontendIntegration": false
+  },
+  "manifestIntegrity": {
+    "encoding": "utf-8",
+    "bomAllowed": false,
+    "lineEnding": "lf",
+    "trailingNewlineRequired": true,
+    "nonEmptyLineCount": 1,
+    "exactContent": "psycopg[binary]==3.3.4\\n",
+    "sha256": "d375af9a0f805ccfd0fbf9a4943cfc6f44b4d7371e6a2376f6b8318d3c73e3d6"
+  },
+  "dependencyBoundary": {
+    "distribution": "psycopg",
+    "extra": "binary",
+    "version": "3.3.4",
+    "requirement": "psycopg[binary]==3.3.4",
+    "exactPin": true,
+    "additionalDependenciesAllowed": false,
+    "environmentMarkersAllowed": false,
+    "urlOrVcsAllowed": false,
+    "editableAllowed": false,
+    "localPathAllowed": false
+  },
+  "isolationBoundary": {
+    "manifestPurpose": "local_disposable_postgresql_database_tests_only",
+    "productionRuntimeAllowed": false,
+    "frontendRuntimeAllowed": false,
+    "applicationStartupAllowed": false,
+    "standardPreflightInstallAllowed": false,
+    "standardDependencyDeclarationAllowed": false,
+    "lockFileDeclarationAllowed": false,
+    "automaticLoadingAllowed": false,
+    "explicitLaterHumanInstallationRequired": true,
+    "separateTestEnvironmentRequired": true
+  },
+  "installationBoundary": {
+    "pipInvocationPresent": false,
+    "installerScriptPresent": false,
+    "automaticInstallAllowed": false,
+    "networkDownloadExecuted": false,
+    "virtualEnvironmentModified": false,
+    "globalEnvironmentModified": false,
+    "userSiteModified": false,
+    "systemSiteModified": false
+  },
+  "securityBoundary": {
+    "passwordAllowed": false,
+    "databaseUrlAllowed": false,
+    "connectionStringAllowed": false,
+    "serviceRoleKeyAllowed": false,
+    "productionSecretAllowed": false,
+    "realParticipantDataAllowed": false,
+    "driverImportAllowed": false,
+    "databaseConnectionAllowed": false,
+    "frontendReferenceAllowed": false
+  },
+  "unresolvedRequirements": {
+    "isolatedEnvironmentReadiness": true,
+    "binaryImplementationReadinessProbe": true,
+    "connectionAdapterImplementation": true,
+    "credentialResolutionContract": true,
+    "databaseTestExecution": true,
+    "concurrencyTestExecution": true,
+    "authorizationTestExecution": true,
+    "directAppExecutionGrant": true,
+    "frontendIntegration": true
+  }
+}

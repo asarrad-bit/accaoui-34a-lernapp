@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32e
+Stand: v27.32f
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1788,6 +1788,27 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_DEPENDENCY_MANIFEST_CONTRACT.md`
 
+## Disposable Test-Manifest-Materialisierung v27.32f
+
+Das isolierte Manifest wurde unter
+
+`tools/test-dependencies/disposable-postgresql-requirements.txt`
+
+mit exakt einer Dependency materialisiert:
+
+`psycopg[binary]==3.3.4`
+
+Der Inhalt ist als UTF-8 ohne BOM, mit LF-Zeilenende,
+abschließendem Zeilenumbruch und SHA-256 gebunden.
+
+Es wurde keine Installation ausgeführt. Standard-Dependencies,
+Runtime, Frontend und Preflight installieren oder laden das
+Manifest nicht.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_DEPENDENCY_MANIFEST_MATERIALIZATION.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -1878,13 +1899,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32e` kann `v27.32f`
-das isolierte Test-Dependency-Manifest mit exakt einer gepinnten
-Dependency materialisieren.
+Nach GitHub-Bestätigung von `v27.32f` kann `v27.32g`
+einen verbindungsfreien Readiness-Vertrag für eine spätere
+getrennte disposable Test-Python-Umgebung vorbereiten.
 
-Das Manifest darf weiterhin weder automatisch installiert noch
-von Produktiv-, Frontend- oder Standard-Preflight-Code geladen
-werden.
+Der Vertrag darf nur Pfad-, Interpreter- und Isolationsgrenzen
+definieren, ohne eine virtuelle Umgebung anzulegen oder eine
+Dependency zu installieren.
 
 Treiberinstallation, Treiberimport, Datenbankverbindung,
 Testausführung, direkte App-Freigabe und UI-Anbindung bleiben
@@ -1957,6 +1978,7 @@ Umgebungs-Gate-Vertrag v27.31z sowie verbindungsfreier
 Gate-Evaluator und Adapter-Readiness-State v27.32a,
 gesperrte Harness-Gate-Integration v27.32b sowie disposable
 PostgreSQL-Treiberauswahlvertrag v27.32c, metadatenbasierte
-Treiber-Readiness v27.32d sowie isolierter Test-Dependency-
-Manifest-Vertrag v27.32e dauerhaft eingebunden;
+Treiber-Readiness v27.32d, isolierter Test-Dependency-
+Manifest-Vertrag v27.32e sowie isolierte Manifest-
+Materialisierung v27.32f dauerhaft eingebunden;
 keine Live-Ausführung
