@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32t
+Stand: v27.32u
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2158,6 +2158,32 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_PLAN_ACCEPTANCE_GUARD.md`
 
+## Atomarer Verbrauchs-Registry-Adapter-Vertrag v27.32u
+
+Ein vollständig gesperrter Vertrag beschreibt den späteren
+Registry-Adapter für einen durch v27.32t angenommenen
+Operationsplan.
+
+Festgelegt sind:
+
+- Adapterart `single_use_consumption_registry`
+- atomare Fähigkeit mit Verbrauchsrecord
+- vollständige Registry-Key- und Planbindung
+- `unused -> consumed` in einer einzigen Adapteroperation
+- exakt definierte Erfolg-, Konflikt- und Fehlerergebnisse
+- 15 Sekunden Operationszeitlimit
+- kein automatischer Retry bei unklarem Commit
+- spätere Reconciliation-Pflicht
+- Nachweis ausschließlich aus bestätigtem Commit
+- `executionGrant = false`
+
+Es wurde kein Adapter implementiert oder aufgerufen und keine
+Registryoperation ausgeführt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2248,14 +2274,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32t` kann `v27.32u`
-einen vollständig gesperrten Vertrag für den späteren atomaren
-Autorisierungsverbrauchs-Registry-Adapter vorbereiten.
+Nach GitHub-Bestätigung von `v27.32u` kann `v27.32v`
+einen reinen atomaren Verbrauchs-Registry-Adapter-Descriptor
+umsetzen.
 
-Der Vertrag darf ausschließlich Adaptereingabe, atomare
-Compare-and-set-with-record-Fähigkeit, definitive Konflikte,
-unklare Commit-Ergebnisse, Reconciliation, Zeitlimits,
-Fehlerabbildung und Sicherheitsgrenzen beschreiben.
+Der Descriptor darf ausschließlich übergebene Adapterfähigkeits-,
+Zeitlimit-, Ergebnis-, Reconciliation- und Sicherheitsfakten
+deterministisch prüfen und einen weiterhin gesperrten
+Adapterdescriptor erzeugen.
 
 Adapterimplementierung, Registryzugriff, atomarer Verbrauch,
 Umgebungserstellung, Dependency-Installation, Treiberimport,
@@ -2341,6 +2367,7 @@ Autorisierungs-Transition-Guard v27.32n, gesperrter
 Autorisierungsverbrauchsvertrag v27.32o, reiner
 Verbrauchs-Readiness-State v27.32p, reiner Readiness-Annahme-
 Guard v27.32q, gesperrter atomarer Verbrauchsoperationsvertrag
-v27.32r, reiner atomarer Verbrauchsoperationsplan v27.32s sowie
-reiner Operationsplan-Annahme-Guard v27.32t dauerhaft eingebunden;
+v27.32r, reiner atomarer Verbrauchsoperationsplan v27.32s,
+reiner Operationsplan-Annahme-Guard v27.32t sowie gesperrter
+Registry-Adapter-Vertrag v27.32u dauerhaft eingebunden;
 keine Live-Ausführung

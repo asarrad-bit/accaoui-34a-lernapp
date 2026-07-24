@@ -811,6 +811,31 @@ def check_exam_result_history_disposable_postgresql_test_python_environment_mate
         )
 
 
+
+def check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/"
+        "check-supabase-exam-history-disposable-postgresql-"
+        "test-python-environment-materialization-"
+        "authorization-atomic-consumption-registry-"
+        "adapter-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable PostgreSQL-"
+            "Atomarer Verbrauchs-Registry-Adapter-Vertrag "
+            "fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -976,6 +1001,8 @@ def main():
         "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-plan-contract.json",
         "tools/accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_plan_acceptance_guard.py",
         "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-plan-acceptance-guard-contract.json",
+        "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-contract.json",
+        "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-contract.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-plan-acceptance-guard.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-plan.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-operation-contract.py",
@@ -1051,6 +1078,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_operation_contract()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_plan()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_plan_acceptance_guard()
+    check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_contract()
     check_exam_result_history_domain_payload_contract()
     check_exam_result_history_domain_storage_contract()
     check_exam_result_history_expected_storage_version_binding()
