@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32u
+Stand: v27.32v
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2184,6 +2184,33 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_CONTRACT.md`
 
+## Atomarer Verbrauchs-Registry-Adapter-Descriptor v27.32v
+
+Ein reiner und deterministischer Descriptor prüft die vollständig
+übergebenen Fakten des v27.32u-Registry-Adapter-Vertrags.
+
+Fest geprüft werden:
+
+- Quellversion und gesperrter Quellstatus
+- Adapterart `single_use_consumption_registry`
+- atomare Compare-and-set-Fähigkeit mit Verbrauchsrecord
+- erwarteter Zustand `unused`
+- gewünschter Zustand `consumed`
+- genau ein Adapteraufruf und höchstens ein Parallelgewinner
+- feste Operations-, Connect-, Statement- und Lock-Zeitlimits
+- ausschließlich festgelegte Ergebnisarten
+- Reconciliation-Pflicht bei unklarem Commit
+- vollständig geschlossene Sicherheits- und Ausführungsgrenzen
+- deterministische kanonische Ausgabe ohne Eingabemutation
+- `executionGrant = false`
+
+Der Descriptor liest keine Umgebung, Datei, Registry oder Datenbank
+und führt keinen Adapter, Verbrauch oder anderen Seiteneffekt aus.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_DESCRIPTOR.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2274,14 +2301,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32u` kann `v27.32v`
-einen reinen atomaren Verbrauchs-Registry-Adapter-Descriptor
-umsetzen.
+Nach GitHub-Bestätigung von `v27.32v` kann `v27.32w`
+einen reinen Annahme-Guard für den atomaren
+Verbrauchs-Registry-Adapter-Descriptor umsetzen.
 
-Der Descriptor darf ausschließlich übergebene Adapterfähigkeits-,
-Zeitlimit-, Ergebnis-, Reconciliation- und Sicherheitsfakten
-deterministisch prüfen und einen weiterhin gesperrten
-Adapterdescriptor erzeugen.
+Der Guard darf ausschließlich den kanonischen gesperrten
+Descriptor prüfen, Manipulationen geschlossen ablehnen und eine
+weiterhin ausführungsgesperrte angenommene Descriptor-Kopie
+erzeugen.
 
 Adapterimplementierung, Registryzugriff, atomarer Verbrauch,
 Umgebungserstellung, Dependency-Installation, Treiberimport,
@@ -2368,6 +2395,7 @@ Autorisierungsverbrauchsvertrag v27.32o, reiner
 Verbrauchs-Readiness-State v27.32p, reiner Readiness-Annahme-
 Guard v27.32q, gesperrter atomarer Verbrauchsoperationsvertrag
 v27.32r, reiner atomarer Verbrauchsoperationsplan v27.32s,
-reiner Operationsplan-Annahme-Guard v27.32t sowie gesperrter
-Registry-Adapter-Vertrag v27.32u dauerhaft eingebunden;
+reiner Operationsplan-Annahme-Guard v27.32t, gesperrter
+Registry-Adapter-Vertrag v27.32u sowie reiner
+Registry-Adapter-Descriptor v27.32v dauerhaft eingebunden;
 keine Live-Ausführung
