@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32l
+Stand: v27.32m
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1948,6 +1948,35 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_REQUEST_CONTRACT.md`
 
+## Disposable Autorisierungsanfrage-State v27.32m
+
+Ein reiner State validiert ausschließlich übergebene Fakten:
+
+- v27.32k-Annahmeergebnis
+- UUID-v4-Request-ID
+- 32-Byte-Base64url-Nonce
+- opake menschliche Akteur-ID
+- kanonischer SHA-256-Planfingerprint
+- UTC-Ausgabe- und Ablaufzeit
+
+Der Fingerprint wird deterministisch gegen den angenommenen Plan
+geprüft. Das Zeitfenster muss exakt 300 Sekunden betragen.
+
+Ein gültiger State endet als
+
+`authorization_request_ready_locked`
+
+mit einer Anfrage im Status
+
+`authorization_request_pending_locked`.
+
+Zufall und aktuelle Uhrzeit werden nicht gelesen. Es wird keine
+Freigabe oder kein Token erzeugt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_REQUEST_STATE.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2038,16 +2067,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32l` kann `v27.32m`
-einen reinen Materialisierungs-Autorisierungsanfrage-State
-umsetzen.
+Nach GitHub-Bestätigung von `v27.32m` kann `v27.32n`
+einen reinen Autorisierungsanfrage-Transition-Guard umsetzen.
 
-Der State darf ausschließlich übergebene Request-ID-, Nonce-,
-Akteur-, Planfingerprint- und Zeitfakten deterministisch
-validieren und eine weiterhin gesperrte Anfrage erzeugen.
+Der Guard darf nur übergebene Anfrage-, Entscheidungs- und
+Zeitfakten prüfen und geschlossene Übergänge zu abgelehnt,
+abgelaufen, widerrufen oder genehmigt-aber-gesperrt ableiten.
 
-Er darf keine echte Zufallsquelle oder Uhr lesen, keine Freigabe
-erteilen und weder Dateisystem noch Prozesse verwenden.
+Auch eine Genehmigung darf keine Ausführungsfreigabe erzeugen.
+Zufall, aktuelle Uhrzeit, Dateisystem und Prozesse bleiben
+unberührt.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2126,6 +2155,6 @@ Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g,
 reiner Umgebungsdescriptor-Resolver v27.32h, vollständig
 gesperrter Umgebungs-Materialisierungsvertrag v27.32i, reiner
 Materialisierungsplan-State v27.32j, reiner Plan-Annahme-Guard
-v27.32k sowie gesperrter Autorisierungsanfrage-Vertrag v27.32l
-dauerhaft eingebunden;
+v27.32k, gesperrter Autorisierungsanfrage-Vertrag v27.32l sowie
+reiner Autorisierungsanfrage-State v27.32m dauerhaft eingebunden;
 keine Live-Ausführung
