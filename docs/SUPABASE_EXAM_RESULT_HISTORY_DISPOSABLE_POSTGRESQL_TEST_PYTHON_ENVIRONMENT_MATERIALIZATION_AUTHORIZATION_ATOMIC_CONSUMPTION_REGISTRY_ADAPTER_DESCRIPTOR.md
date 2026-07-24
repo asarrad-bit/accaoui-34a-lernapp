@@ -1,6 +1,6 @@
 # Atomarer Verbrauchs-Registry-Adapter-Descriptor
 
-Stand: v27.32v  
+Stand: v27.32v
 Status: rein, deterministisch und vollständig ausführungsgesperrt
 
 ## Ziel
@@ -37,9 +37,9 @@ Erforderlich sind:
 
 Eine gültige Eingabe ergibt:
 
-- Status  
+- Status
   `atomic_consumption_registry_adapter_descriptor_ready_execution_locked`
-- Grund  
+- Grund
   `authorization_atomic_consumption_registry_adapter_descriptor_ready_execution_locked`
 - Descriptor-Version `1`
 - kanonische Kopie der geprüften Fakten
