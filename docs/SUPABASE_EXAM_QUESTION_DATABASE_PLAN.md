@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32k
+Stand: v27.32l
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1924,6 +1924,30 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_PLAN_ACCEPTANCE_GUARD.md`
 
+## Disposable Materialisierungs-Autorisierungsanfrage v27.32l
+
+Ein vollständig gesperrter Vertrag beschreibt eine spätere
+menschliche Autorisierungsanfrage für einen durch v27.32k
+angenommenen Materialisierungsplan.
+
+Festgelegt sind:
+
+- Bindung an `accepted_execution_locked`
+- kanonischer SHA-256-Planfingerprint
+- UUID-v4-Request-ID und 32-Byte-Nonce
+- opake menschliche Operatoridentität
+- Initialstatus `authorization_request_pending_locked`
+- exakt 300 Sekunden Gültigkeit
+- strikte Einmal-, Replay-, Erneuerungs- und Ablaufgrenzen
+- `executionGrant = false`
+
+Es wurde kein Builder oder State umgesetzt und keine Anfrage,
+Nonce, UUID, Uhrzeit, Genehmigung oder Freigabe erzeugt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_REQUEST_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2014,13 +2038,16 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32k` kann `v27.32l`
-einen vollständig gesperrten Vertrag für eine spätere
-Materialisierungs-Autorisierungsanfrage vorbereiten.
+Nach GitHub-Bestätigung von `v27.32l` kann `v27.32m`
+einen reinen Materialisierungs-Autorisierungsanfrage-State
+umsetzen.
 
-Der Vertrag darf nur Identitäts-, Planbindungs-, Ablauf-, Einmal-
-und Ablaufzeitgrenzen beschreiben. Er darf weder eine Freigabe
-erteilen noch einen Prozess oder Dateisystemzugriff ermöglichen.
+Der State darf ausschließlich übergebene Request-ID-, Nonce-,
+Akteur-, Planfingerprint- und Zeitfakten deterministisch
+validieren und eine weiterhin gesperrte Anfrage erzeugen.
+
+Er darf keine echte Zufallsquelle oder Uhr lesen, keine Freigabe
+erteilen und weder Dateisystem noch Prozesse verwenden.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2098,6 +2125,7 @@ Manifest-Vertrag v27.32e, isolierte Manifest-
 Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g,
 reiner Umgebungsdescriptor-Resolver v27.32h, vollständig
 gesperrter Umgebungs-Materialisierungsvertrag v27.32i, reiner
-Materialisierungsplan-State v27.32j sowie reiner Plan-Annahme-
-Guard v27.32k dauerhaft eingebunden;
+Materialisierungsplan-State v27.32j, reiner Plan-Annahme-Guard
+v27.32k sowie gesperrter Autorisierungsanfrage-Vertrag v27.32l
+dauerhaft eingebunden;
 keine Live-Ausführung
