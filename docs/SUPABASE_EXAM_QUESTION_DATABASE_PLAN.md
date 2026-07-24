@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32q
+Stand: v27.32r
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2081,6 +2081,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_CONSUMPTION_READINESS_ACCEPTANCE_GUARD.md`
 
+## Atomarer Autorisierungsverbrauchsoperationsvertrag v27.32r
+
+Ein vollständig gesperrter Vertrag beschreibt die spätere
+atomare Verbrauchsoperation für eine durch v27.32q angenommene
+Readiness.
+
+Festgelegt sind:
+
+- Quelle `accepted_consumption_ready_execution_locked`
+- Registry-Key aus Request-ID, Nonce und Planfingerprint
+- atomarer Übergang `unused -> consumed`
+- Verbrauchsrecord in derselben atomaren Einheit
+- höchstens ein paralleler Gewinner
+- geschlossene Konflikt- und Fehlergründe
+- kein automatischer Retry bei unklarem Commit
+- kein Zurücksetzen eines bestätigten Verbrauchs auf `unused`
+- Nachweis ohne Roh-Nonce und mit `executionGrant = false`
+
+Es wurde kein Operationsplan, Registry-Adapter, Registryzugriff,
+Compare-and-set, Verbrauch oder Nachweis umgesetzt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_OPERATION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2171,14 +2196,18 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32q` kann `v27.32r`
-einen vollständig gesperrten Vertrag für eine spätere atomare
-Autorisierungsverbrauchsoperation vorbereiten.
+Nach GitHub-Bestätigung von `v27.32r` kann `v27.32s`
+einen reinen atomaren Autorisierungsverbrauchsoperations-Plan
+umsetzen.
 
-Der Vertrag darf ausschließlich Registry-Adapter-, atomare
-Compare-and-set-, Konflikt-, Verbrauchsnachweis-, Fehler- und
-Rollbackgrenzen beschreiben. Er darf weder Registryzugriff noch
-Verbrauch, Uhrabfrage oder Umgebungserstellung ausführen.
+Der Plan darf ausschließlich eine durch v27.32q angenommene
+Readiness sowie übergebene Adapterfähigkeits- und
+Operationsfakten deterministisch prüfen und strukturierte
+Registry-Key-, Compare-and-set-, Record-, Nachweis- und
+Fehlerdaten erzeugen.
+
+Er darf keinen Adapter aufrufen, keine Registry lesen oder
+schreiben, keinen Verbrauch ausführen und keine Uhr lesen.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2261,6 +2290,7 @@ v27.32k, gesperrter Autorisierungsanfrage-Vertrag v27.32l,
 reiner Autorisierungsanfrage-State v27.32m, reiner
 Autorisierungs-Transition-Guard v27.32n, gesperrter
 Autorisierungsverbrauchsvertrag v27.32o, reiner
-Verbrauchs-Readiness-State v27.32p sowie reiner Readiness-
-Annahme-Guard v27.32q dauerhaft eingebunden;
+Verbrauchs-Readiness-State v27.32p, reiner Readiness-Annahme-
+Guard v27.32q sowie gesperrter atomarer Verbrauchsoperations-
+vertrag v27.32r dauerhaft eingebunden;
 keine Live-Ausführung
