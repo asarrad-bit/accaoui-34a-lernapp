@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32m
+Stand: v27.32n
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -1977,6 +1977,31 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_REQUEST_STATE.md`
 
+## Disposable Autorisierungs-Transition-Guard v27.32n
+
+Ein reiner Guard prüft ausschließlich übergebene Anfrage-,
+Entscheidungs- und UTC-Zeitfakten.
+
+Aus einer gültigen `authorization_request_pending_locked`-
+Anfrage werden nur folgende geschlossene Übergänge abgeleitet:
+
+- genehmigt als `authorization_request_approved_locked`
+- abgelehnt als terminaler Status
+- abgelaufen als terminaler Status mit Vorrang
+- widerrufen als terminaler Status
+
+Jeder gültige Übergang endet als
+
+`transition_applied_execution_locked`.
+
+Auch eine Genehmigung enthält weiterhin keine
+Ausführungsfreigabe. Zufall und aktuelle Uhrzeit werden nicht
+gelesen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_REQUEST_TRANSITION_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2067,16 +2092,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32m` kann `v27.32n`
-einen reinen Autorisierungsanfrage-Transition-Guard umsetzen.
+Nach GitHub-Bestätigung von `v27.32n` kann `v27.32o`
+einen vollständig gesperrten Vertrag für die spätere einmalige
+Verbrauchsprüfung einer genehmigten Autorisierungsanfrage
+vorbereiten.
 
-Der Guard darf nur übergebene Anfrage-, Entscheidungs- und
-Zeitfakten prüfen und geschlossene Übergänge zu abgelehnt,
-abgelaufen, widerrufen oder genehmigt-aber-gesperrt ableiten.
-
-Auch eine Genehmigung darf keine Ausführungsfreigabe erzeugen.
-Zufall, aktuelle Uhrzeit, Dateisystem und Prozesse bleiben
-unberührt.
+Der Vertrag darf nur Planfingerprint-, Request-ID-, Nonce-,
+Genehmigungs-, Ablauf-, Replay- und atomare Einmalgrenzen
+beschreiben. Er darf weder Verbrauch ausführen noch eine
+Umgebungserstellung freigeben.
 
 Umgebungserstellung, Dependency-Installation, Treiberimport,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2155,6 +2179,7 @@ Materialisierung v27.32f, Test-Python-Umgebungsvertrag v27.32g,
 reiner Umgebungsdescriptor-Resolver v27.32h, vollständig
 gesperrter Umgebungs-Materialisierungsvertrag v27.32i, reiner
 Materialisierungsplan-State v27.32j, reiner Plan-Annahme-Guard
-v27.32k, gesperrter Autorisierungsanfrage-Vertrag v27.32l sowie
-reiner Autorisierungsanfrage-State v27.32m dauerhaft eingebunden;
+v27.32k, gesperrter Autorisierungsanfrage-Vertrag v27.32l,
+reiner Autorisierungsanfrage-State v27.32m sowie reiner
+Autorisierungs-Transition-Guard v27.32n dauerhaft eingebunden;
 keine Live-Ausführung
