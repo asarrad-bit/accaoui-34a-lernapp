@@ -454,9 +454,6 @@ for nested in (
     if accepted_descriptor[nested] is source_descriptor[nested]:
         fail(f"Descriptorbereich wurde nicht kopiert: {nested}")
 
-if FUTURE_READINESS.exists():
-    fail("v27.32w darf noch keine Adapter-Readiness umsetzen.")
-
 if FUTURE_ADAPTER.exists():
     fail("v27.32w darf noch keinen Registry-Adapter umsetzen.")
 
