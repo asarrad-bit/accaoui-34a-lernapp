@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33s
+Stand: v27.33t
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2847,6 +2847,35 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_PLAN.md`
 
+
+## Registry-Adapter-Implementierungsausführungsplan-Annahme-Guard v27.33t
+
+Ein reiner Guard akzeptiert ausschließlich den kanonischen und
+vollständig gesperrten v27.33s-Ausführungsplan.
+
+Geprüft werden:
+
+- exakter Planstatus und Plangrund
+- `ready = true`
+- vollständig geschlossene Quell- und Ergebnisflags
+- Planversion 1
+- angenommene v27.33r-Ausführungs-Readiness
+- vollständige unveränderte Planfakten
+- zwölf feste Vorbereitungsschritte
+- geschlossene Atomaritäts-, Zeitlimit- und Reconciliation-Grenzen
+- `executionGrant = false`
+
+Ein gültiger Plan wird tief und kanonisch als
+`accepted_atomic_consumption_registry_adapter_implementation_execution_plan_execution_locked`
+kopiert.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_PLAN_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2937,13 +2966,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33s` kann `v27.33t`
-einen reinen Annahme-Guard für den Registry-Adapter-
-Implementierungsausführungsplan umsetzen.
+Nach GitHub-Bestätigung von `v27.33t` kann `v27.33u`
+einen vollständig gesperrten Registry-Adapter-
+Implementierungsausführungs-Autorisierungsvertrag vorbereiten.
 
-Der Guard darf ausschließlich den kanonischen gesperrten Plan prüfen,
-Manipulationen geschlossen ablehnen und eine weiterhin vollständig
-implementierungs- und ausführungsgesperrte angenommene Kopie erzeugen.
+Der Vertrag darf ausschließlich den angenommenen Plan, unveränderliche
+Identitäts-, Atomaritäts-, Zeitlimit-, Fehler-, Reconciliation- und
+Einmalverbrauchsgrenzen sowie eine weiterhin geschlossene
+Ausführungsfreigabe beschreiben.
 
 Adapterimplementierung, Import, Instanziierung, Registryzugriff,
 atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
@@ -3051,5 +3081,5 @@ ausführungsvertrag v27.33n, reiner Ausführungs-
 descriptor v27.33o, reiner Descriptor-Annahme-
 Guard v27.33p, reiner Ausführungs-Readiness-
 State v27.33q, reiner Readiness-Annahme-
-Guard v27.33r sowie reiner Ausführungsplan v27.33s dauerhaft eingebunden;
+Guard v27.33r, reiner Ausführungsplan v27.33s sowie reiner Plan-Annahme-Guard v27.33t dauerhaft eingebunden;
 keine Live-Ausführung

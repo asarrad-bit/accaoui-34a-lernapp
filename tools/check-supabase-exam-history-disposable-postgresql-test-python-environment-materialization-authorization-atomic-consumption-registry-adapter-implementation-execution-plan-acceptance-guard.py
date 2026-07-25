@@ -12,19 +12,19 @@ MIGRATIONS = ROOT / "supabase" / "migrations"
 CONTRACT = ROOT / "docs" / "contracts" / (
     "exam-history-disposable-postgresql-test-python-environment-"
     "materialization-authorization-atomic-consumption-registry-"
-    "adapter-implementation-execution-plan-contract.json"
+    "adapter-implementation-execution-plan-acceptance-guard-contract.json"
 )
 SOURCE_CONTRACT = ROOT / "docs" / "contracts" / (
     "exam-history-disposable-postgresql-test-python-environment-"
     "materialization-authorization-atomic-consumption-registry-"
-    "adapter-implementation-execution-readiness-acceptance-guard-"
-    "contract.json"
+    "adapter-implementation-execution-plan-contract.json"
 )
 EXECUTION_CONTRACT = ROOT / "docs" / "contracts" / (
     "exam-history-disposable-postgresql-test-python-environment-"
     "materialization-authorization-atomic-consumption-registry-"
     "adapter-implementation-execution-contract.json"
 )
+
 DESCRIPTOR_MODULE = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_adapter_"
@@ -49,6 +49,17 @@ PLAN_MODULE = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_adapter_"
     "implementation_execution_plan.py"
+)
+GUARD_MODULE = ROOT / "tools" / (
+    "accaoui_disposable_test_python_environment_materialization_"
+    "authorization_atomic_consumption_registry_adapter_"
+    "implementation_execution_plan_acceptance_guard.py"
+)
+
+FUTURE_AUTHORIZATION_CONTRACT = ROOT / "docs" / "contracts" / (
+    "exam-history-disposable-postgresql-test-python-environment-"
+    "materialization-authorization-atomic-consumption-registry-"
+    "adapter-implementation-execution-authorization-contract.json"
 )
 FUTURE_ADAPTER = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
@@ -85,17 +96,17 @@ LOCKED_FLAGS = (
     "executionGrant",
 )
 
-SUCCESS_STATUS = (
-    "atomic_consumption_registry_adapter_implementation_execution_"
-    "plan_ready_execution_locked"
+ACCEPTED_STATUS = (
+    "accepted_atomic_consumption_registry_adapter_implementation_"
+    "execution_plan_execution_locked"
 )
-SUCCESS_REASON = (
+ACCEPTED_REASON = (
     "authorization_atomic_consumption_registry_adapter_"
-    "implementation_execution_plan_ready_execution_locked"
+    "implementation_execution_plan_accepted_execution_locked"
 )
 BLOCKED_STATUS = (
     "atomic_consumption_registry_adapter_implementation_execution_"
-    "plan_blocked_execution_locked"
+    "plan_acceptance_blocked_execution_locked"
 )
 
 
@@ -156,76 +167,65 @@ def set_path(value, path):
 def assert_blocked(result, label):
     if result.get("status") != BLOCKED_STATUS:
         fail(f"Manipulation nicht blockiert: {label}")
-    if result.get("ready") is not False:
-        fail(f"Manipulation meldet Readiness: {label}")
-    if result.get("plan") is not None:
+    if result.get("accepted") is not False:
+        fail(f"Manipulation meldet Annahme: {label}")
+    if result.get("acceptedPlan") is not None:
         fail(f"Blockiertes Ergebnis enthält Plan: {label}")
     for key in LOCKED_FLAGS:
         if result.get(key) is not False:
             fail(f"Blockierte Grenze offen: {key} / {label}")
 
 
-contract = load_json(CONTRACT, "v27.33s-Vertrag")
+contract = load_json(CONTRACT, "v27.33t-Vertrag")
 source_contract = load_json(
     SOURCE_CONTRACT,
-    "v27.33r-Quellvertrag",
+    "v27.33s-Quellvertrag",
 )
 execution_contract = load_json(
     EXECUTION_CONTRACT,
     "v27.33n-Ausführungsvertrag",
 )
 
-if contract.get("version") != "v27.33s":
-    fail("Ausführungsplan-Vertrag besitzt nicht v27.33s.")
+if contract.get("version") != "v27.33t":
+    fail("Plan-Annahmevertrag besitzt nicht v27.33t.")
 if contract.get("contractVersion") != 1:
-    fail("Ausführungsplan-Vertrag besitzt nicht Schema 1.")
+    fail("Plan-Annahmevertrag besitzt nicht Schema 1.")
 if contract.get("status") != (
     "implemented_pure_atomic_consumption_registry_adapter_"
-    "implementation_execution_plan_execution_locked"
+    "implementation_execution_plan_acceptance_execution_locked"
 ):
-    fail("Ausführungsplan-Vertragsstatus ist ungültig.")
+    fail("Plan-Annahmevertragsstatus ist ungültig.")
 if contract.get("productiveReleaseAllowed") is not False:
     fail("Produktive Freigabe ist offen.")
 
-if source_contract.get("version") != "v27.33r":
-    fail("Quellvertrag besitzt nicht v27.33r.")
+if source_contract.get("version") != "v27.33s":
+    fail("Quellvertrag besitzt nicht v27.33s.")
 if source_contract.get("status") != (
     "implemented_pure_atomic_consumption_registry_adapter_"
-    "implementation_execution_readiness_acceptance_execution_locked"
+    "implementation_execution_plan_execution_locked"
 ):
     fail("Quellvertragsstatus ist ungültig.")
 
 implementation = contract.get("implementation", {})
 if implementation.get(
-    "implementationExecutionPlanImplemented"
+    "implementationExecutionPlanAcceptanceGuardImplemented"
 ) is not True:
-    fail("Implementierungsausführungsplan fehlt.")
+    fail("Implementierungsausführungsplan-Annahme-Guard fehlt.")
 for key, value in implementation.items():
     if key.endswith("Path") or key == (
-        "implementationExecutionPlanImplemented"
+        "implementationExecutionPlanAcceptanceGuardImplemented"
     ):
         continue
     if value is not False:
         fail(f"Implementierungsgrenze ist offen: {key}")
 
-boundary = contract.get("planBoundary", {})
+boundary = contract.get("acceptanceBoundary", {})
+if boundary.get("requiredPlanVersion") != 1:
+    fail("Planversion ist nicht gebunden.")
 if boundary.get("requiredStepCount") != 12:
-    fail("Ausführungsplan besitzt nicht zwölf Schritte.")
-if boundary.get("implementationSequence") != [
-    "validate_accepted_readiness_boundary",
-    "validate_dependency_injection_boundary",
-    "prepare_protocol_and_result_types",
-    "prepare_factory_without_default_credentials",
-    "prepare_single_transaction_boundary",
-    "prepare_atomic_compare_and_set_with_consumption_record",
-    "prepare_exact_result_mapping",
-    "prepare_timeout_configuration",
-    "prepare_commit_ambiguity_terminal_handling",
-    "prepare_operation_id_reconciliation",
-    "prepare_pure_adapter_unit_fixtures",
-    "keep_adapter_unimplemented_uninstantiated_and_uninvoked",
-]:
-    fail("Ausführungsreihenfolge ist ungültig.")
+    fail("Zwölf Ausführungsschritte sind nicht gebunden.")
+if boundary.get("executionGrant") is not False:
+    fail("Annahmegrenze öffnet den Grant.")
 
 for block in ("securityBoundary", "futureBoundary"):
     values = contract.get(block, {})
@@ -237,23 +237,27 @@ for block in ("securityBoundary", "futureBoundary"):
 
 descriptor_module = load_module(
     DESCRIPTOR_MODULE,
-    "v2733s_descriptor",
+    "v2733t_descriptor",
 )
 descriptor_acceptance_module = load_module(
     DESCRIPTOR_ACCEPTANCE_MODULE,
-    "v2733s_descriptor_acceptance",
+    "v2733t_descriptor_acceptance",
 )
 readiness_module = load_module(
     READINESS_MODULE,
-    "v2733s_readiness",
+    "v2733t_readiness",
 )
 readiness_acceptance_module = load_module(
     READINESS_ACCEPTANCE_MODULE,
-    "v2733s_readiness_acceptance",
+    "v2733t_readiness_acceptance",
 )
 plan_module = load_module(
     PLAN_MODULE,
-    "v2733s_execution_plan",
+    "v2733t_execution_plan",
+)
+guard_module = load_module(
+    GUARD_MODULE,
+    "v2733t_execution_plan_acceptance",
 )
 
 descriptor_result = (
@@ -283,126 +287,86 @@ accepted_readiness = (
         readiness_result
     )
 )
-
-plan_facts = clone(
-    plan_module.EXPECTED_EXECUTION_PLAN_FACTS
-)
-input_value = {
-    "acceptedExecutionReadinessResult": accepted_readiness,
-    "executionPlanFacts": plan_facts,
-}
-before = clone(input_value)
-resolver = (
+plan_result = (
     plan_module
-    .resolve_atomic_consumption_registry_adapter_implementation_execution_plan
+    .resolve_atomic_consumption_registry_adapter_implementation_execution_plan({
+        "acceptedExecutionReadinessResult": accepted_readiness,
+        "executionPlanFacts": clone(
+            plan_module.EXPECTED_EXECUTION_PLAN_FACTS
+        ),
+    })
 )
 
+accept = getattr(
+    guard_module,
+    "accept_atomic_consumption_registry_adapter_"
+    "implementation_execution_plan",
+    None,
+)
+if not callable(accept):
+    fail("Implementierungsausführungsplan-Annahme fehlt.")
+if plan_result.get("ready") is not True:
+    fail("Quell-Plan liefert keinen Erfolgsstatus.")
+
+before = clone(plan_result)
 original_open = builtins.open
 
 def forbidden_open(*args, **kwargs):
     raise AssertionError(
-        "Ausführungsplan darf keine Datei öffnen."
+        "Ausführungsplan-Annahme darf keine Datei öffnen."
     )
 
 builtins.open = forbidden_open
 try:
-    first = resolver(input_value)
-    second = resolver(input_value)
+    first = accept(plan_result)
+    second = accept(plan_result)
 finally:
     builtins.open = original_open
 
-if input_value != before:
-    fail("Ausführungsplan hat die Eingabe verändert.")
+if plan_result != before:
+    fail("Plan-Annahme hat die Eingabe verändert.")
 if first != second:
-    fail("Ausführungsplan ist nicht deterministisch.")
-if first.get("status") != SUCCESS_STATUS:
-    fail("Gültige Eingaben liefern keinen Erfolgsstatus.")
-if first.get("reason") != SUCCESS_REASON:
-    fail("Ausführungsplan-Grund ist ungültig.")
-if first.get("ready") is not True:
-    fail("Gültiger Ausführungsplan ist nicht bereit.")
-
-plan = first.get("plan")
-if not isinstance(plan, dict):
-    fail("Kanonischer Ausführungsplan fehlt.")
-if plan.get("planVersion") != 1:
-    fail("Planversion ist ungültig.")
-if plan.get("implementationSequence") != (
-    plan_module.IMPLEMENTATION_SEQUENCE
-):
-    fail("Planreihenfolge ist nicht kanonisch.")
-if plan.get("acceptedReadiness") != (
-    accepted_readiness["acceptedReadiness"]
-):
-    fail("Angenommene Readiness wurde nicht gebunden.")
-if plan.get("acceptedReadiness") is (
-    accepted_readiness["acceptedReadiness"]
-):
-    fail("Angenommene Readiness wurde nicht tief kopiert.")
-if plan.get("executionPlanFacts") != plan_facts:
-    fail("Ausführungsplanfakten wurden nicht gebunden.")
-if plan.get("executionPlanFacts") is plan_facts:
-    fail("Ausführungsplanfakten wurden nicht tief kopiert.")
-
-for key in (
-    "adapterImplementationAllowed",
-    "adapterImportAllowed",
-    "adapterInstantiationAllowed",
-    "adapterInvocationAllowed",
-    "registryReadAllowed",
-    "registryWriteAllowed",
-    "atomicCompareAndSetAllowed",
-    "authorizationConsumptionAllowed",
-    "reconciliationReadAllowed",
-    "executionGrant",
-):
-    if plan.get(key) is not False:
-        fail(f"Plan öffnet Grenze {key}")
+    fail("Plan-Annahme ist nicht deterministisch.")
+if first.get("status") != ACCEPTED_STATUS:
+    fail("Erfolgsstatus ist ungültig.")
+if first.get("reason") != ACCEPTED_REASON:
+    fail("Erfolgsgrund ist ungültig.")
+if first.get("accepted") is not True:
+    fail("Annahmeflag fehlt.")
+if first.get("acceptedPlan") != plan_result["plan"]:
+    fail("Angenommener Plan ist nicht kanonisch.")
+if first.get("acceptedPlan") is plan_result["plan"]:
+    fail("Angenommener Plan ist keine Tiefenkopie.")
 
 for key in LOCKED_FLAGS:
     if first.get(key) is not False:
-        fail(f"Plan-Ergebnisflag ist offen: {key}")
+        fail(f"Ergebnisgrenze ist offen: {key}")
 
-assert_blocked(resolver(None), "Nicht-Mapping")
+assert_blocked(accept(None), "Nicht-Mapping")
 
-missing = clone(input_value)
-missing.pop("executionPlanFacts")
-assert_blocked(resolver(missing), "fehlendes Feld")
+missing = clone(plan_result)
+missing.pop("plan")
+assert_blocked(accept(missing), "fehlendes Feld")
 
-unknown = clone(input_value)
+unknown = clone(plan_result)
 unknown["unknown"] = True
-assert_blocked(resolver(unknown), "unbekanntes Feld")
+assert_blocked(accept(unknown), "unbekanntes Feld")
 
-opened = clone(input_value)
-opened["acceptedExecutionReadinessResult"]["adapterImported"] = True
-assert_blocked(resolver(opened), "offene Quellgrenze")
+opened = clone(plan_result)
+opened["adapterImported"] = True
+assert_blocked(accept(opened), "offene Quellgrenze")
 
-source_leaf_count = 0
-for path in iter_scalar_paths(
-    input_value["acceptedExecutionReadinessResult"]
-):
-    manipulated = clone(input_value)
-    set_path(
-        manipulated["acceptedExecutionReadinessResult"],
-        path,
-    )
+leaf_count = 0
+for path in iter_scalar_paths(plan_result):
+    manipulated = clone(plan_result)
+    set_path(manipulated, path)
     assert_blocked(
-        resolver(manipulated),
-        "Quellmanipulation " + ".".join(map(str, path)),
+        accept(manipulated),
+        ".".join(map(str, path)),
     )
-    source_leaf_count += 1
+    leaf_count += 1
 
-fact_leaf_count = 0
-for path in iter_scalar_paths(input_value["executionPlanFacts"]):
-    manipulated = clone(input_value)
-    set_path(manipulated["executionPlanFacts"], path)
-    assert_blocked(
-        resolver(manipulated),
-        "Faktenmanipulation " + ".".join(map(str, path)),
-    )
-    fact_leaf_count += 1
-
-source_text = PLAN_MODULE.read_text(encoding="utf-8").lower()
+source_text = GUARD_MODULE.read_text(encoding="utf-8").lower()
 for forbidden in (
     "subprocess",
     "socket",
@@ -418,23 +382,26 @@ for forbidden in (
     "adapter.invoke",
 ):
     if forbidden in source_text:
-        fail(f"Ausführungsplan enthält verbotenen Zugriff: {forbidden}")
+        fail(f"Plan-Annahme enthält verbotenen Zugriff: {forbidden}")
 
+if FUTURE_AUTHORIZATION_CONTRACT.exists():
+    fail("v27.33t darf noch keinen Autorisierungsvertrag vorbereiten.")
 if FUTURE_ADAPTER.exists():
-    fail("v27.33s darf noch keinen Registry-Adapter implementieren.")
+    fail("v27.33t darf noch keinen Registry-Adapter implementieren.")
 if FUTURE_EXECUTION.exists():
-    fail("v27.33s darf noch keine Adapter-Ausführung umsetzen.")
-if list(MIGRATIONS.glob("*v2733s*.sql")):
-    fail("v27.33s darf keine SQL-Migration erzeugen.")
+    fail("v27.33t darf noch keine Adapter-Ausführung umsetzen.")
+if list(MIGRATIONS.glob("*v2733t*.sql")):
+    fail("v27.33t darf keine SQL-Migration erzeugen.")
 
-print("Registry-Adapter-Implementierungsausführungsplan: OK")
-print("Quell-Readiness-Annahme: v27.33r")
-print(f"Manipulierte Quellblätter blockiert: {source_leaf_count}")
-print(f"Manipulierte Faktenblätter blockiert: {fact_leaf_count}")
-print("Deterministische Reihenfolge: zwölf Schritte")
-print("Kanonische Tiefenkopien: geprüft")
+print(
+    "Registry-Adapter-Implementierungsausführungsplan-"
+    "Annahme-Guard: OK"
+)
+print("Quell-Ausführungsplan: v27.33s")
+print(f"Manipulierte Planblätter blockiert: {leaf_count}")
+print("Kanonische Tiefenkopie: geprüft")
 print("Eingabemutation: keine")
-print("Dateizugriff des Resolvers: keiner")
+print("Dateizugriff des Guards: keiner")
 print("Adaptermodul erstellt: nein")
 print("Adapter importiert: nein")
 print("Adapter instanziiert: nein")
@@ -442,5 +409,5 @@ print("Adapter aufgerufen: nein")
 print("Registryzugriff: keiner")
 print("Verbrauch ausgeführt: nein")
 print("Datenbankverbindung: keine")
-print("SQL-Migration v27.33s: keine")
+print("SQL-Migration v27.33t: keine")
 print("Produktive Freigabe: nein")
