@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33t
+Stand: v27.33u
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2876,6 +2876,34 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_PLAN_ACCEPTANCE_GUARD.md`
 
+
+## Registry-Adapter-Implementierungsausführungs-Autorisierungsvertrag v27.33u
+
+Ein vollständig gesperrter Vertrag beschreibt die unveränderlichen
+Grenzen einer späteren Autorisierung der Adapterimplementierung.
+
+Festgelegt werden:
+
+- Quelle ausschließlich der angenommene v27.33t-Ausführungsplan
+- kanonischer SHA-256-Fingerprint des angenommenen Plans
+- sechs unveränderliche Identitätsfelder
+- Einmalverbrauch und Replay-Sperre
+- höchstens ein Parallelgewinner
+- atomarer `unused -> consumed`-Übergang
+- Compare-and-set und Verbrauchsrecord in einer Transaktion
+- feste Operations-, Connect-, Statement- und Lock-Zeitlimits
+- terminale Fehlerbehandlung ohne automatischen Retry
+- Reconciliation ausschließlich über `operationId`
+- `executionGrant = false`
+
+Autorisierungsgrant, Token, Descriptor, Adaptermodul, Implementierung,
+Import, Instanziierung, Aufruf, Registryzugriff und Verbrauch bleiben
+gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_AUTHORIZATION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2966,18 +2994,20 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33t` kann `v27.33u`
-einen vollständig gesperrten Registry-Adapter-
-Implementierungsausführungs-Autorisierungsvertrag vorbereiten.
+Nach GitHub-Bestätigung von `v27.33u` kann `v27.33v`
+einen reinen Registry-Adapter-
+Implementierungsausführungs-Autorisierungsdescriptor aus dem
+gesperrten Vertrag ableiten.
 
-Der Vertrag darf ausschließlich den angenommenen Plan, unveränderliche
-Identitäts-, Atomaritäts-, Zeitlimit-, Fehler-, Reconciliation- und
-Einmalverbrauchsgrenzen sowie eine weiterhin geschlossene
-Ausführungsfreigabe beschreiben.
+Der Descriptor darf ausschließlich vollständig übergebene
+Vertragsfakten prüfen und eine kanonische, weiterhin vollständig
+autorisierungs-, implementierungs- und ausführungsgesperrte Kopie
+erzeugen.
 
-Adapterimplementierung, Import, Instanziierung, Registryzugriff,
-atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
-App-Freigabe und UI-Anbindung bleiben weiterhin ausgeschlossen.
+Autorisierungsgrant, Token, Adapterimplementierung, Import,
+Instanziierung, Registryzugriff, atomarer Verbrauch,
+Datenbankverbindung, Testausführung, direkte App-Freigabe und
+UI-Anbindung bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -3081,5 +3111,5 @@ ausführungsvertrag v27.33n, reiner Ausführungs-
 descriptor v27.33o, reiner Descriptor-Annahme-
 Guard v27.33p, reiner Ausführungs-Readiness-
 State v27.33q, reiner Readiness-Annahme-
-Guard v27.33r, reiner Ausführungsplan v27.33s sowie reiner Plan-Annahme-Guard v27.33t dauerhaft eingebunden;
+Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t sowie vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u dauerhaft eingebunden;
 keine Live-Ausführung
