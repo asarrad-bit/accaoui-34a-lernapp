@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33k
+Stand: v27.33l
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2629,6 +2629,26 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_READINESS_ACCEPTANCE_GUARD.md`
 
+
+## Registry-Adapter-Implementierungsplan v27.33l
+
+Ein reiner und vollständig gesperrter Plan prüft ausschließlich die
+angenommene v27.33k-Implementierungs-Readiness und vollständig
+übergebene Implementierungsplanfakten.
+
+Festgelegt werden Adapterart, Zielmodul, Protokoll, Factory,
+Operation, neun Ergebnisarten, atomarer `unused -> consumed`-
+Übergang mit Verbrauchsrecord, genau ein späterer Adapteraufruf,
+höchstens ein Parallelgewinner, Dependency Injection,
+Rohfehlersperre, Reconciliation und zehn feste Schritte.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_PLAN.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2719,13 +2739,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33k` kann `v27.33l`
-einen vollständig gesperrten Registry-Adapter-
-Implementierungsplan vorbereiten.
+Nach GitHub-Bestätigung von `v27.33l` kann `v27.33m`
+einen reinen Annahme-Guard für den Registry-Adapter-
+Implementierungsplan umsetzen.
 
-Der Plan darf ausschließlich die angenommene Readiness, die feste
-Schnittstelle, eine deterministische Implementierungsreihenfolge und
-unveränderliche Sicherheitsgrenzen beschreiben.
+Der Guard darf ausschließlich den kanonischen gesperrten Plan prüfen,
+Manipulationen geschlossen ablehnen und eine weiterhin vollständig
+implementierungs- und ausführungsgesperrte angenommene Kopie erzeugen.
 
 Adapterimplementierung, Import, Instanziierung, Registryzugriff,
 atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
@@ -2825,6 +2845,7 @@ vollständig gesperrter Registry-Adapter-Implementierungsvertrag
 v27.33g, reiner Registry-Adapter-Implementierungsdescriptor
 v27.33h, reiner Implementierungsdescriptor-Annahme-Guard
 v27.33i, reiner Registry-Adapter-Implementierungs-Readiness-
-State v27.33j sowie reiner Implementierungs-Readiness-Annahme-
-Guard v27.33k dauerhaft eingebunden;
+State v27.33j, reiner Implementierungs-Readiness-Annahme-
+Guard v27.33k sowie reiner Registry-Adapter-
+Implementierungsplan v27.33l dauerhaft eingebunden;
 keine Live-Ausführung
