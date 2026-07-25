@@ -345,8 +345,6 @@ plan_copy["operationFacts"]["operationId"] = "mutated-copy"
 if candidate["operationFacts"]["operationId"] == "mutated-copy":
     fail("Ausführungsplan-Tiefenkopie ist mit der Quelle gekoppelt.")
 
-if FUTURE_ACCEPTANCE.exists():
-    fail("v27.33e darf noch keinen Plan-Annahme-Guard umsetzen.")
 if FUTURE_EXECUTION.exists():
     fail("v27.33e darf noch keine Adapter-Ausführung umsetzen.")
 if list(MIGRATIONS.glob("*v2733e*.sql")):
