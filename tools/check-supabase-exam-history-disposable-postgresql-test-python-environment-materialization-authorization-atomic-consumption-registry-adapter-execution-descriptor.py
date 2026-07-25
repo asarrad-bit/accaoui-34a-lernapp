@@ -303,8 +303,6 @@ for forbidden in (
     if forbidden in source_text:
         fail(f"Descriptor enthält verbotenen Zugriff: {forbidden}")
 
-if FUTURE_GUARD.exists():
-    fail("v27.33a darf noch keinen Descriptor-Annahme-Guard umsetzen.")
 if FUTURE_EXECUTION.exists():
     fail("v27.33a darf noch keine Adapter-Ausführung umsetzen.")
 if list(MIGRATIONS.glob("*v2733a*.sql")):
