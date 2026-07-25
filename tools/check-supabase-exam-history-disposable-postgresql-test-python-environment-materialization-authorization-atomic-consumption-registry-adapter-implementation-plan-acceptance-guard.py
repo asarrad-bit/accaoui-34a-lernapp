@@ -55,11 +55,6 @@ GUARD = ROOT / "tools" / (
     "authorization_atomic_consumption_registry_adapter_"
     "implementation_plan_acceptance_guard.py"
 )
-FUTURE_CONTRACT = ROOT / "docs" / "contracts" / (
-    "exam-history-disposable-postgresql-test-python-environment-"
-    "materialization-authorization-atomic-consumption-registry-"
-    "adapter-implementation-execution-contract.json"
-)
 FUTURE_ADAPTER = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_adapter.py"
@@ -310,8 +305,6 @@ for forbidden in (
     if forbidden in source_text:
         fail(f"Plan-Annahme enthält verbotenen Zugriff: {forbidden}")
 
-if FUTURE_CONTRACT.exists():
-    fail("v27.33m darf noch keinen Ausführungsvertrag vorbereiten.")
 if FUTURE_ADAPTER.exists():
     fail("v27.33m darf noch keinen Registry-Adapter implementieren.")
 if list(MIGRATIONS.glob("*v2733m*.sql")):
