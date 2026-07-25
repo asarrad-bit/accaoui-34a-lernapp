@@ -7,6 +7,34 @@ Repository: `asarrad-bit/accaoui-34a-lernapp`
 
 ---
 
+## Leitidee der Accaoui §34a Lern-App
+
+Die Accaoui §34a Lern-App wird entwickelt, um Menschen die
+Vorbereitung auf die Sachkundeprüfung so verständlich,
+strukturiert und wirksam wie möglich zu machen.
+
+Im Mittelpunkt stehen nicht Selbstdarstellung oder möglichst viele
+Funktionen, sondern der tatsächliche Lernerfolg jedes einzelnen
+Teilnehmers.
+
+Jede Funktion muss mindestens eines dieser Ziele erfüllen:
+
+- Wissen verständlich vermitteln
+- typische Fehler erkennen und gezielt bearbeiten
+- Lerninhalte langfristig festigen
+- realistisch auf die schriftliche und mündliche Prüfung vorbereiten
+- den Teilnehmer nachvollziehbar bis zur Prüfungsreife führen
+
+Grundlage der App sind fachliche Richtigkeit, praktische Erfahrung,
+einfache Erklärungen, realistische Prüfungssimulationen und eine
+persönliche Lernführung.
+
+Der Qualitätsmaßstab lautet:
+
+> „Mit dieser App habe ich es endlich verstanden.“
+
+---
+
 ## 1. Arbeitsregel
 
 Keine Blind-Fixes.
