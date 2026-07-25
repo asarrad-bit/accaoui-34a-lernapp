@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.32z
+Stand: v27.33a
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2308,6 +2308,32 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_EXECUTION_CONTRACT.md`
 
+## Registry-Adapter-Ausführungsdescriptor v27.33a
+
+Ein reiner Resolver prüft vollständig übergebene Fakten des
+v27.32z-Ausführungsvertrags auf exakte Übereinstimmung.
+
+Geprüft werden:
+
+- vollständige Quell-, Ausführungs-, Atomaritäts- und Ambiguitätsgrenzen
+- feste Adapterart, Zustände, Eingabefelder und Ergebnisarten
+- genau ein Adapteraufruf und höchstens ein Parallelgewinner
+- feste Zeitlimits und Rohfehlersperre
+- Reconciliation ohne automatischen Retry
+- vollständig geschlossene Implementierungs- und Sicherheitsgrenzen
+- keine fehlenden, unbekannten oder manipulierten Vertragsfakten
+
+Gültige Fakten werden tief und kanonisch als
+`atomic_consumption_registry_adapter_execution_descriptor_ready_execution_locked`
+mit `executionGrant = false` kopiert.
+
+Adapterimplementierung, Registryzugriff und Verbrauch bleiben
+gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_EXECUTION_DESCRIPTOR.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2398,13 +2424,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.32z` kann `v27.33a`
-einen reinen Registry-Adapter-Ausführungsdescriptor aus dem
-gesperrten Vertrag ableiten.
+Nach GitHub-Bestätigung von `v27.33a` kann `v27.33b`
+einen reinen Annahme-Guard für den Registry-Adapter-
+Ausführungsdescriptor umsetzen.
 
-Der Descriptor darf ausschließlich vollständig übergebene
-Vertragsfakten prüfen und eine kanonische, weiterhin
-ausführungsgesperrte Kopie erzeugen.
+Der Guard darf ausschließlich den kanonischen gesperrten Descriptor
+prüfen, Manipulationen geschlossen ablehnen und eine weiterhin
+ausführungsgesperrte angenommene Kopie erzeugen.
 
 Adapterimplementierung, Registryzugriff, atomarer Verbrauch,
 Datenbankverbindung, Testausführung, direkte App-Freigabe und
@@ -2494,6 +2520,7 @@ reiner Operationsplan-Annahme-Guard v27.32t, gesperrter
 Registry-Adapter-Vertrag v27.32u, reiner Registry-Adapter-
 Descriptor v27.32v, reiner Descriptor-Annahme-Guard v27.32w,
 reiner Registry-Adapter-Readiness-State v27.32x, reiner
-Readiness-Annahme-Guard v27.32y sowie vollständig gesperrter
-Registry-Adapter-Ausführungsvertrag v27.32z dauerhaft eingebunden;
+Readiness-Annahme-Guard v27.32y, vollständig gesperrter Registry-
+Adapter-Ausführungsvertrag v27.32z sowie reiner Registry-Adapter-
+Ausführungsdescriptor v27.33a dauerhaft eingebunden;
 keine Live-Ausführung
