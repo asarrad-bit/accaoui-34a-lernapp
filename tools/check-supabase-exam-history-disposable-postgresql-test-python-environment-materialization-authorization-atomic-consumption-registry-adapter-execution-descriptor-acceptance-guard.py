@@ -344,8 +344,6 @@ descriptor_grant = clone(before)
 descriptor_grant["descriptor"]["executionGrant"] = True
 assert_blocked(accept(descriptor_grant), "offener Descriptorgrant")
 
-if FUTURE_READINESS.exists():
-    fail("v27.33b darf noch keine Ausführungs-Readiness umsetzen.")
 if FUTURE_EXECUTION.exists():
     fail("v27.33b darf noch keine Adapter-Ausführung umsetzen.")
 if list(MIGRATIONS.glob("*v2733b*.sql")):
