@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33f
+Stand: v27.33g
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2484,6 +2484,33 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_EXECUTION_PLAN_ACCEPTANCE_GUARD.md`
 
+## Registry-Adapter-Implementierungsvertrag v27.33g
+
+Ein vollständig gesperrter Vertrag beschreibt die verbindliche
+Schnittstelle für eine spätere Registry-Adapter-Implementierung.
+
+Festgelegt werden:
+
+- Quelle ausschließlich der angenommene v27.33f-Ausführungsplan
+- Adapterart, Protokoll, Factory- und Operationsname
+- zehn feste Eingabefelder und neun exakte Ergebnisarten
+- atomarer `unused -> consumed`-Übergang mit Verbrauchsrecord
+- genau ein späterer Adapteraufruf und höchstens ein Parallelgewinner
+- feste Operations-, Connect-, Statement- und Lock-Zeitlimits
+- Rohfehlersperre
+- kein automatischer Retry bei unklarem Commit
+- spätere Reconciliation per Operations-ID
+- Nachweis nur aus einem bestätigten Verbrauchsrecord
+- Dependency Injection ohne Schlüssel-, Treiber- oder Datenbankzugriff
+- `executionGrant = false`
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2574,18 +2601,17 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33f` kann `v27.33g`
-einen vollständig gesperrten Registry-Adapter-
-Implementierungsvertrag vorbereiten.
+Nach GitHub-Bestätigung von `v27.33g` kann `v27.33h`
+einen reinen Registry-Adapter-Implementierungsdescriptor aus dem
+gesperrten Vertrag ableiten.
 
-Der Vertrag darf ausschließlich die angenommene Ausführungsplanung,
-die erforderliche Adapter-Schnittstelle und unveränderliche
-Sicherheitsgrenzen beschreiben. Adapterimplementierung, Import,
-Instanziierung und Aufruf bleiben ausgeschlossen.
+Der Descriptor darf ausschließlich vollständig übergebene
+Vertragsfakten prüfen und eine kanonische, weiterhin vollständig
+implementierungs- und ausführungsgesperrte Kopie erzeugen.
 
-Registryzugriff, atomarer Verbrauch, Datenbankverbindung,
-Testausführung, direkte App-Freigabe und UI-Anbindung bleiben
-weiterhin ausgeschlossen.
+Adapterimplementierung, Import, Instanziierung, Registryzugriff,
+atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
+App-Freigabe und UI-Anbindung bleiben weiterhin ausgeschlossen.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -2676,6 +2702,7 @@ Adapter-Ausführungsvertrag v27.32z, reiner Registry-Adapter-
 Ausführungsdescriptor v27.33a, reiner Descriptor-Annahme-Guard
 v27.33b, reiner Registry-Adapter-Ausführungs-Readiness-State v27.33c,
 reiner Readiness-Annahme-Guard v27.33d reiner vollständig gesperrter Registry-Adapter-Ausführungsplan
-v27.33e sowie reiner Ausführungsplan-Annahme-Guard v27.33f
-dauerhaft eingebunden;
+v27.33e, reiner Ausführungsplan-Annahme-Guard v27.33f sowie
+vollständig gesperrter Registry-Adapter-Implementierungsvertrag
+v27.33g dauerhaft eingebunden;
 keine Live-Ausführung
