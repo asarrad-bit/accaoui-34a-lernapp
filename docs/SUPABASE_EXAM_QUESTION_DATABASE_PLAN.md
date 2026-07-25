@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33u
+Stand: v27.33v
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2904,6 +2904,39 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_AUTHORIZATION_CONTRACT.md`
 
+
+## Registry-Adapter-Implementierungsausführungs-Autorisierungsdescriptor v27.33v
+
+Ein reiner Descriptor prüft ausschließlich vollständig übergebene
+Fakten des v27.33u-Autorisierungsvertrags.
+
+Geprüft werden:
+
+- vollständige unveränderte Vertragsfakten
+- kanonischer SHA-256-Planfingerprint
+- sechs unveränderliche Identitätsfelder
+- Einmalverbrauch und Replay-Sperre
+- höchstens ein Parallelgewinner
+- atomarer `unused -> consumed`-Übergang
+- gemeinsame Transaktion für Compare-and-set und Verbrauchsrecord
+- feste Zeitlimits
+- terminale Fehlerbehandlung ohne automatischen Retry
+- Reconciliation über `operationId`
+- vollständig geschlossene Implementierungs- und Sicherheitsgrenzen
+- kein Autorisierungsgrant und kein Token
+- `executionGrant = false`
+
+Gültige Fakten werden tief und kanonisch als
+`atomic_consumption_registry_adapter_implementation_execution_authorization_descriptor_ready_execution_locked`
+kopiert.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_AUTHORIZATION_DESCRIPTOR.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2994,15 +3027,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33u` kann `v27.33v`
-einen reinen Registry-Adapter-
-Implementierungsausführungs-Autorisierungsdescriptor aus dem
-gesperrten Vertrag ableiten.
+Nach GitHub-Bestätigung von `v27.33v` kann `v27.33w`
+einen reinen Annahme-Guard für den Registry-Adapter-
+Implementierungsausführungs-Autorisierungsdescriptor umsetzen.
 
-Der Descriptor darf ausschließlich vollständig übergebene
-Vertragsfakten prüfen und eine kanonische, weiterhin vollständig
-autorisierungs-, implementierungs- und ausführungsgesperrte Kopie
-erzeugen.
+Der Guard darf ausschließlich den kanonischen gesperrten Descriptor
+prüfen, Manipulationen geschlossen ablehnen und eine weiterhin
+vollständig autorisierungs-, implementierungs- und
+ausführungsgesperrte angenommene Kopie erzeugen.
 
 Autorisierungsgrant, Token, Adapterimplementierung, Import,
 Instanziierung, Registryzugriff, atomarer Verbrauch,
@@ -3111,5 +3143,5 @@ ausführungsvertrag v27.33n, reiner Ausführungs-
 descriptor v27.33o, reiner Descriptor-Annahme-
 Guard v27.33p, reiner Ausführungs-Readiness-
 State v27.33q, reiner Readiness-Annahme-
-Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t sowie vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u dauerhaft eingebunden;
+Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t, vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u sowie reiner Autorisierungsdescriptor v27.33v dauerhaft eingebunden;
 keine Live-Ausführung

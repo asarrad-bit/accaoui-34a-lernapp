@@ -56,11 +56,6 @@ PLAN_ACCEPTANCE_MODULE = ROOT / "tools" / (
     "implementation_execution_plan_acceptance_guard.py"
 )
 
-FUTURE_DESCRIPTOR = ROOT / "tools" / (
-    "accaoui_disposable_test_python_environment_materialization_"
-    "authorization_atomic_consumption_registry_adapter_"
-    "implementation_execution_authorization_descriptor.py"
-)
 FUTURE_ADAPTER = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_adapter.py"
@@ -424,8 +419,6 @@ for block in ("securityBoundary", "futureBoundary"):
         if value is not False:
             fail(f"{block} ist offen: {key}")
 
-if FUTURE_DESCRIPTOR.exists():
-    fail("v27.33u darf noch keinen Autorisierungsdescriptor umsetzen.")
 if FUTURE_ADAPTER.exists():
     fail("v27.33u darf noch keinen Registry-Adapter implementieren.")
 if FUTURE_EXECUTION.exists():
