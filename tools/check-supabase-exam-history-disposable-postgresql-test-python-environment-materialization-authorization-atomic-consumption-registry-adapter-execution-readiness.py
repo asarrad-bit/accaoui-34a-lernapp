@@ -399,8 +399,6 @@ for path in iter_scalar_paths(EXPECTED_ADAPTER_FACTS):
     )
     adapter_leaf_count += 1
 
-if FUTURE_GUARD.exists():
-    fail("v27.33c darf noch keinen Readiness-Annahme-Guard umsetzen.")
 if FUTURE_PLAN.exists():
     fail("v27.33c darf noch keinen Ausführungsplan umsetzen.")
 if FUTURE_EXECUTION.exists():
