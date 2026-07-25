@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33h
+Stand: v27.33i
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2542,6 +2542,32 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_DESCRIPTOR.md`
 
+## Registry-Adapter-Implementierungsdescriptor-Annahme-Guard v27.33i
+
+Ein reiner Guard akzeptiert ausschließlich den kanonischen und
+vollständig gesperrten v27.33h-Implementierungsdescriptor.
+
+Geprüft werden:
+
+- exakter Descriptorstatus und Descriptorgrund
+- `ready = true`
+- vollständig geschlossene Quell- und Ergebnisflags
+- Descriptorversion 1
+- unveränderte Bindung an den v27.33g-Implementierungsvertrag
+- vollständige und kanonische Vertragsfakten
+- `executionGrant = false`
+
+Ein gültiger Descriptor wird tief und kanonisch als
+`accepted_atomic_consumption_registry_adapter_implementation_descriptor_execution_locked`
+kopiert.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_DESCRIPTOR_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2632,14 +2658,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33h` kann `v27.33i`
-einen reinen Annahme-Guard für den Registry-Adapter-
-Implementierungsdescriptor umsetzen.
+Nach GitHub-Bestätigung von `v27.33i` kann `v27.33j`
+einen reinen Registry-Adapter-Implementierungs-Readiness-State
+umsetzen.
 
-Der Guard darf ausschließlich den kanonischen gesperrten Descriptor
-prüfen, Manipulationen geschlossen ablehnen und eine weiterhin
-vollständig implementierungs- und ausführungsgesperrte angenommene
-Kopie erzeugen.
+Die Readiness darf ausschließlich den angenommenen Descriptor und
+vollständig übergebene Implementierungsfähigkeitsfakten prüfen und
+eine weiterhin vollständig implementierungs- und
+ausführungsgesperrte kanonische Kopie erzeugen.
 
 Adapterimplementierung, Import, Instanziierung, Registryzugriff,
 atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
@@ -2736,6 +2762,7 @@ v27.33b, reiner Registry-Adapter-Ausführungs-Readiness-State v27.33c,
 reiner Readiness-Annahme-Guard v27.33d reiner vollständig gesperrter Registry-Adapter-Ausführungsplan
 v27.33e, reiner Ausführungsplan-Annahme-Guard v27.33f sowie
 vollständig gesperrter Registry-Adapter-Implementierungsvertrag
-v27.33g sowie reiner Registry-Adapter-Implementierungsdescriptor
-v27.33h dauerhaft eingebunden;
+v27.33g, reiner Registry-Adapter-Implementierungsdescriptor
+v27.33h sowie reiner Implementierungsdescriptor-Annahme-Guard
+v27.33i dauerhaft eingebunden;
 keine Live-Ausführung
