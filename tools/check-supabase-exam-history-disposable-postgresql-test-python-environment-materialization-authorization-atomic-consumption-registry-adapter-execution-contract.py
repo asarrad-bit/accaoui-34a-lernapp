@@ -130,8 +130,6 @@ for key, value in security.items():
 
 if FUTURE_EXECUTION.exists():
     fail("v27.32z darf noch keine Adapter-Ausführung umsetzen.")
-if FUTURE_PLAN.exists():
-    fail("v27.32z darf noch keinen Ausführungsplan umsetzen.")
 if list(MIGRATIONS.glob("*v2732z*.sql")):
     fail("v27.32z darf keine SQL-Migration erzeugen.")
 

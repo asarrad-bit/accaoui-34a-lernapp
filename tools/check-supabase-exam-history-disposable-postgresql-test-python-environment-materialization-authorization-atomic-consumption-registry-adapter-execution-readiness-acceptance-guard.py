@@ -293,8 +293,6 @@ set_path(accepted_readiness, first_path)
 if accepted_readiness == readiness_result["readiness"]:
     fail("Tiefenkopie ist mit Quelle gekoppelt.")
 
-if FUTURE_PLAN.exists():
-    fail("v27.33d darf noch keinen Ausführungsplan umsetzen.")
 if FUTURE_EXECUTION.exists():
     fail("v27.33d darf noch keine Adapter-Ausführung umsetzen.")
 if list(MIGRATIONS.glob("*v2733d*.sql")):

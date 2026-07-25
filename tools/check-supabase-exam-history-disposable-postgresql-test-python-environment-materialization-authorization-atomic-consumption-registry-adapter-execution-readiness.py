@@ -399,8 +399,6 @@ for path in iter_scalar_paths(EXPECTED_ADAPTER_FACTS):
     )
     adapter_leaf_count += 1
 
-if FUTURE_PLAN.exists():
-    fail("v27.33c darf noch keinen Ausführungsplan umsetzen.")
 if FUTURE_EXECUTION.exists():
     fail("v27.33c darf noch keine Adapter-Ausführung umsetzen.")
 if list(MIGRATIONS.glob("*v2733c*.sql")):
