@@ -12,6 +12,11 @@ MIGRATIONS = ROOT / "supabase" / "migrations"
 CONTRACT = ROOT / "docs" / "contracts" / (
     "exam-history-disposable-postgresql-test-python-environment-"
     "materialization-authorization-atomic-consumption-registry-"
+    "adapter-implementation-plan-acceptance-guard-contract.json"
+)
+PLAN_CONTRACT = ROOT / "docs" / "contracts" / (
+    "exam-history-disposable-postgresql-test-python-environment-"
+    "materialization-authorization-atomic-consumption-registry-"
     "adapter-implementation-plan-contract.json"
 )
 IMPLEMENTATION_CONTRACT = ROOT / "docs" / "contracts" / (
@@ -44,6 +49,16 @@ PLAN = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_adapter_"
     "implementation_plan.py"
+)
+GUARD = ROOT / "tools" / (
+    "accaoui_disposable_test_python_environment_materialization_"
+    "authorization_atomic_consumption_registry_adapter_"
+    "implementation_plan_acceptance_guard.py"
+)
+FUTURE_CONTRACT = ROOT / "docs" / "contracts" / (
+    "exam-history-disposable-postgresql-test-python-environment-"
+    "materialization-authorization-atomic-consumption-registry-"
+    "adapter-implementation-execution-contract.json"
 )
 FUTURE_ADAPTER = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
@@ -125,9 +140,9 @@ def set_path(value, path):
 
 
 def assert_blocked(result, label):
-    if result.get("ready") is not False:
+    if result.get("accepted") is not False:
         fail(f"Manipulation nicht blockiert: {label}")
-    if result.get("plan") is not None:
+    if result.get("acceptedPlan") is not None:
         fail(f"Blockiertes Ergebnis enthält Plan: {label}")
     for key in LOCKED_FLAGS:
         if result.get(key) is not False:
@@ -135,32 +150,36 @@ def assert_blocked(result, label):
 
 
 contract = load_json(CONTRACT)
+plan_contract = load_json(PLAN_CONTRACT)
 implementation_contract = load_json(IMPLEMENTATION_CONTRACT)
 
-if contract.get("version") != "v27.33l":
-    fail("Implementierungsplanvertrag besitzt nicht v27.33l.")
+if contract.get("version") != "v27.33m":
+    fail("Plan-Annahmevertrag besitzt nicht v27.33m.")
 if contract.get("status") != (
     "implemented_pure_atomic_consumption_registry_adapter_"
-    "implementation_plan_execution_locked"
+    "implementation_plan_acceptance_execution_locked"
 ):
-    fail("Implementierungsplanvertragsstatus ist ungültig.")
+    fail("Plan-Annahmevertragsstatus ist ungültig.")
 if contract.get("productiveReleaseAllowed") is not False:
     fail("Produktive Freigabe ist offen.")
+if plan_contract.get("version") != "v27.33l":
+    fail("Quellvertrag besitzt nicht v27.33l.")
 
 for block in ("securityBoundary", "futureBoundary"):
     for key, value in contract.get(block, {}).items():
         if value is not False:
             fail(f"{block} ist offen: {key}")
 
-descriptor_module = load_module(DESCRIPTOR, "v2733l_descriptor")
+descriptor_module = load_module(DESCRIPTOR, "v2733m_descriptor")
 descriptor_acceptance_module = load_module(
-    DESCRIPTOR_ACCEPTANCE, "v2733l_descriptor_acceptance"
+    DESCRIPTOR_ACCEPTANCE, "v2733m_descriptor_acceptance"
 )
-readiness_module = load_module(READINESS, "v2733l_readiness")
+readiness_module = load_module(READINESS, "v2733m_readiness")
 readiness_acceptance_module = load_module(
-    READINESS_ACCEPTANCE, "v2733l_readiness_acceptance"
+    READINESS_ACCEPTANCE, "v2733m_readiness_acceptance"
 )
-plan_module = load_module(PLAN, "v2733l_plan")
+plan_module = load_module(PLAN, "v2733m_plan")
+guard_module = load_module(GUARD, "v2733m_guard")
 
 descriptor_result = (
     descriptor_module
@@ -174,14 +193,13 @@ accepted_descriptor = (
         descriptor_result
     )
 )
-readiness_facts = clone(
-    readiness_module._EXPECTED_IMPLEMENTATION_FACTS
-)
 readiness_result = (
     readiness_module
     .resolve_atomic_consumption_registry_adapter_implementation_readiness({
         "acceptedImplementationDescriptorResult": accepted_descriptor,
-        "implementationFacts": readiness_facts,
+        "implementationFacts": clone(
+            readiness_module._EXPECTED_IMPLEMENTATION_FACTS
+        ),
     })
 )
 accepted_readiness = (
@@ -190,97 +208,94 @@ accepted_readiness = (
         readiness_result
     )
 )
+plan_result = (
+    plan_module
+    .resolve_atomic_consumption_registry_adapter_implementation_plan({
+        "acceptedImplementationReadinessResult": accepted_readiness,
+        "implementationPlanFacts": clone(
+            plan_module.EXPECTED_PLAN_FACTS
+        ),
+    })
+)
 
-plan_facts = clone(plan_module.EXPECTED_PLAN_FACTS)
-input_value = {
-    "acceptedImplementationReadinessResult": accepted_readiness,
-    "implementationPlanFacts": plan_facts,
-}
-before = clone(input_value)
-
+original = clone(plan_result)
 original_open = builtins.open
 
 def forbidden_open(*args, **kwargs):
-    raise AssertionError("Plan darf keine Datei öffnen.")
+    raise AssertionError("Plan-Annahme darf keine Datei öffnen.")
 
 builtins.open = forbidden_open
 try:
     first = (
-        plan_module
-        .resolve_atomic_consumption_registry_adapter_implementation_plan(
-            input_value
+        guard_module
+        .accept_atomic_consumption_registry_adapter_implementation_plan(
+            plan_result
         )
     )
     second = (
-        plan_module
-        .resolve_atomic_consumption_registry_adapter_implementation_plan(
-            input_value
+        guard_module
+        .accept_atomic_consumption_registry_adapter_implementation_plan(
+            plan_result
         )
     )
 finally:
     builtins.open = original_open
 
-if input_value != before:
-    fail("Implementierungsplan hat die Eingabe verändert.")
+if plan_result != original:
+    fail("Plan-Annahme hat die Eingabe verändert.")
 if first != second:
-    fail("Implementierungsplan ist nicht deterministisch.")
-if first.get("status") != plan_module.SUCCESS_STATUS:
+    fail("Plan-Annahme ist nicht deterministisch.")
+if first.get("status") != guard_module.ACCEPTED_STATUS:
     fail("Erfolgsstatus ist ungültig.")
-if first.get("reason") != plan_module.SUCCESS_REASON:
+if first.get("reason") != guard_module.ACCEPTED_REASON:
     fail("Erfolgsgrund ist ungültig.")
-if first.get("ready") is not True:
-    fail("Gültiger Plan ist nicht bereit.")
-
-plan = first.get("plan")
-if not isinstance(plan, dict):
-    fail("Kanonischer Plan fehlt.")
-if plan.get("planVersion") != 1:
-    fail("Planversion ist ungültig.")
-if plan.get("implementationSequence") != (
-    plan_module.IMPLEMENTATION_SEQUENCE
-):
-    fail("Implementierungsreihenfolge ist ungültig.")
-if len(plan["implementationSequence"]) != 10:
-    fail("Implementierungsreihenfolge besitzt nicht zehn Schritte.")
-if plan.get("acceptedReadiness") is (
-    accepted_readiness["acceptedReadiness"]
-):
-    fail("Readiness wurde nicht tief kopiert.")
-if plan.get("implementationPlanFacts") is plan_facts:
-    fail("Planfakten wurden nicht tief kopiert.")
+if first.get("accepted") is not True:
+    fail("Annahmeflag fehlt.")
+if first.get("acceptedPlan") != plan_result["plan"]:
+    fail("Angenommener Plan ist nicht kanonisch.")
+if first.get("acceptedPlan") is plan_result["plan"]:
+    fail("Angenommener Plan ist keine Tiefenkopie.")
 
 for key in LOCKED_FLAGS:
     if first.get(key) is not False:
         fail(f"Ergebnisgrenze ist offen: {key}")
 
 assert_blocked(
-    plan_module
-    .resolve_atomic_consumption_registry_adapter_implementation_plan(None),
+    guard_module
+    .accept_atomic_consumption_registry_adapter_implementation_plan(None),
     "Nicht-Mapping",
 )
 
-wrong = clone(input_value)
-wrong["implementationPlanFacts"]["maximumParallelWinners"] = 2
+wrong = clone(plan_result)
+wrong["status"] = "wrong"
 assert_blocked(
-    plan_module
-    .resolve_atomic_consumption_registry_adapter_implementation_plan(wrong),
-    "falsche Planfakten",
+    guard_module
+    .accept_atomic_consumption_registry_adapter_implementation_plan(wrong),
+    "falscher Status",
+)
+
+opened = clone(plan_result)
+opened["adapterImported"] = True
+assert_blocked(
+    guard_module
+    .accept_atomic_consumption_registry_adapter_implementation_plan(opened),
+    "offene Quellgrenze",
 )
 
 leaf_count = 0
-for path in iter_scalar_paths(input_value["implementationPlanFacts"]):
-    manipulated = clone(input_value)
-    set_path(manipulated["implementationPlanFacts"], path)
+for path in iter_scalar_paths(plan_result["plan"]):
+    manipulated = clone(plan_result)
+    set_path(manipulated["plan"], path)
     assert_blocked(
-        plan_module
-        .resolve_atomic_consumption_registry_adapter_implementation_plan(
+        guard_module
+        .accept_atomic_consumption_registry_adapter_implementation_plan(
             manipulated
         ),
         ".".join(map(str, path)),
     )
     leaf_count += 1
 
-source_text = PLAN.read_text(encoding="utf-8").lower()
+source_text = GUARD.read_text(encoding="utf-8").lower()
 for forbidden in (
     "subprocess",
     "socket",
@@ -293,16 +308,19 @@ for forbidden in (
     ".connect(",
 ):
     if forbidden in source_text:
-        fail(f"Plan enthält verbotenen Zugriff: {forbidden}")
+        fail(f"Plan-Annahme enthält verbotenen Zugriff: {forbidden}")
 
+if FUTURE_CONTRACT.exists():
+    fail("v27.33m darf noch keinen Ausführungsvertrag vorbereiten.")
 if FUTURE_ADAPTER.exists():
-    fail("v27.33l darf noch keinen Registry-Adapter implementieren.")
-if list(MIGRATIONS.glob("*v2733l*.sql")):
-    fail("v27.33l darf keine SQL-Migration erzeugen.")
+    fail("v27.33m darf noch keinen Registry-Adapter implementieren.")
+if list(MIGRATIONS.glob("*v2733m*.sql")):
+    fail("v27.33m darf keine SQL-Migration erzeugen.")
 
-print("Registry-Adapter-Implementierungsplan: OK")
-print(f"Manipulierte Planfaktenblätter blockiert: {leaf_count}")
-print("Deterministische Reihenfolge: zehn Schritte")
+print("Registry-Adapter-Implementierungsplan-Annahme-Guard: OK")
+print(f"Manipulierte Planblätter blockiert: {leaf_count}")
+print("Kanonische Tiefenkopie: geprüft")
+print("Eingabemutation: keine")
 print("Adapter implementiert: nein")
 print("Adapter aufgerufen: nein")
 print("Registryzugriff: keiner")

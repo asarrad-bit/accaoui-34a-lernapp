@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33l
+Stand: v27.33m
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2649,6 +2649,29 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_PLAN.md`
 
+
+## Registry-Adapter-Implementierungsplan-Annahme-Guard v27.33m
+
+Ein reiner Guard akzeptiert ausschließlich den kanonischen und
+vollständig gesperrten v27.33l-Implementierungsplan.
+
+Geprüft werden exakter Status und Grund, `ready = true`,
+vollständig geschlossene Grenzen, Planversion 1, die angenommene
+v27.33k-Readiness, zehn feste Schritte, die feste Schnittstelle,
+genau ein späterer Aufruf, höchstens ein Parallelgewinner,
+Dependency Injection, Reconciliation und `executionGrant = false`.
+
+Ein gültiger Plan wird tief und kanonisch als
+`accepted_atomic_consumption_registry_adapter_implementation_plan_execution_locked`
+kopiert.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_PLAN_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2739,13 +2762,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33l` kann `v27.33m`
-einen reinen Annahme-Guard für den Registry-Adapter-
-Implementierungsplan umsetzen.
+Nach GitHub-Bestätigung von `v27.33m` kann `v27.33n`
+einen vollständig gesperrten Registry-Adapter-
+Implementierungsausführungsvertrag vorbereiten.
 
-Der Guard darf ausschließlich den kanonischen gesperrten Plan prüfen,
-Manipulationen geschlossen ablehnen und eine weiterhin vollständig
-implementierungs- und ausführungsgesperrte angenommene Kopie erzeugen.
+Der Vertrag darf ausschließlich den angenommenen Plan, die feste
+Adapter-Schnittstelle, Ergebnisarten, Zeitlimits, Atomaritäts- und
+Reconciliation-Grenzen sowie unveränderliche Sperren beschreiben.
 
 Adapterimplementierung, Import, Instanziierung, Registryzugriff,
 atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
@@ -2846,6 +2869,7 @@ v27.33g, reiner Registry-Adapter-Implementierungsdescriptor
 v27.33h, reiner Implementierungsdescriptor-Annahme-Guard
 v27.33i, reiner Registry-Adapter-Implementierungs-Readiness-
 State v27.33j, reiner Implementierungs-Readiness-Annahme-
-Guard v27.33k sowie reiner Registry-Adapter-
-Implementierungsplan v27.33l dauerhaft eingebunden;
+Guard v27.33k, reiner Registry-Adapter-
+Implementierungsplan v27.33l sowie reiner Plan-Annahme-
+Guard v27.33m dauerhaft eingebunden;
 keine Live-Ausführung
