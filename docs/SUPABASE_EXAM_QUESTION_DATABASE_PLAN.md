@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33n
+Stand: v27.33o
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2701,6 +2701,39 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_CONTRACT.md`
 
+
+## Registry-Adapter-Implementierungsausführungsdescriptor v27.33o
+
+Ein reiner Descriptor prüft ausschließlich vollständig übergebene
+Fakten des v27.33n-Implementierungsausführungsvertrags.
+
+Geprüft werden:
+
+- vollständige unveränderte Vertragsfakten
+- feste Adapter-Schnittstelle mit zehn Eingabefeldern
+- neun exakte Ergebnisarten
+- atomarer `unused -> consumed`-Übergang
+- Compare-and-set und Verbrauchsrecord in einer Transaktion
+- höchstens ein Parallelgewinner
+- feste Zeitlimits
+- Dependency Injection ohne hart codierte Zugangsdaten
+- Rohfehlersperre
+- kein automatischer Retry nach unklarem Commit
+- Reconciliation per Operations-ID
+- vollständig geschlossene Implementierungs- und Sicherheitsgrenzen
+- `executionGrant = false`
+
+Gültige Fakten werden tief und kanonisch als
+`atomic_consumption_registry_adapter_implementation_execution_descriptor_ready_execution_locked`
+kopiert.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_DESCRIPTOR.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2791,14 +2824,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33n` kann `v27.33o`
-einen reinen Registry-Adapter-
-Implementierungsausführungsdescriptor aus dem gesperrten Vertrag
-ableiten.
+Nach GitHub-Bestätigung von `v27.33o` kann `v27.33p`
+einen reinen Annahme-Guard für den Registry-Adapter-
+Implementierungsausführungsdescriptor umsetzen.
 
-Der Descriptor darf ausschließlich vollständig übergebene
-Vertragsfakten prüfen und eine kanonische, weiterhin vollständig
-implementierungs- und ausführungsgesperrte Kopie erzeugen.
+Der Guard darf ausschließlich den kanonischen gesperrten Descriptor
+prüfen, Manipulationen geschlossen ablehnen und eine weiterhin
+vollständig implementierungs- und ausführungsgesperrte angenommene
+Kopie erzeugen.
 
 Adapterimplementierung, Import, Instanziierung, Registryzugriff,
 atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
@@ -2901,6 +2934,7 @@ v27.33i, reiner Registry-Adapter-Implementierungs-Readiness-
 State v27.33j, reiner Implementierungs-Readiness-Annahme-
 Guard v27.33k, reiner Registry-Adapter-
 Implementierungsplan v27.33l, reiner Plan-Annahme-
-Guard v27.33m sowie vollständig gesperrter Implementierungs-
-ausführungsvertrag v27.33n dauerhaft eingebunden;
+Guard v27.33m, vollständig gesperrter Implementierungs-
+ausführungsvertrag v27.33n sowie reiner Ausführungs-
+descriptor v27.33o dauerhaft eingebunden;
 keine Live-Ausführung

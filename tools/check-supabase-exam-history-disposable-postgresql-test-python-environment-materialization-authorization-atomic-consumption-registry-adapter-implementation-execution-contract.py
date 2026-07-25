@@ -20,11 +20,6 @@ PLAN_CONTRACT = ROOT / "docs" / "contracts" / (
     "adapter-implementation-plan-contract.json"
 )
 
-FUTURE_DESCRIPTOR = ROOT / "tools" / (
-    "accaoui_disposable_test_python_environment_materialization_"
-    "authorization_atomic_consumption_registry_adapter_"
-    "implementation_execution_descriptor.py"
-)
 FUTURE_ADAPTER = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_adapter.py"
@@ -191,8 +186,6 @@ for block in ("securityBoundary", "futureBoundary"):
         if value is not False:
             fail(f"{block} ist offen: {key}")
 
-if FUTURE_DESCRIPTOR.exists():
-    fail("v27.33n darf noch keinen Ausführungsdescriptor umsetzen.")
 if FUTURE_ADAPTER.exists():
     fail("v27.33n darf noch keinen Registry-Adapter implementieren.")
 if FUTURE_EXECUTION.exists():
