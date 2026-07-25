@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33p
+Stand: v27.33q
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2761,6 +2761,41 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_DESCRIPTOR_ACCEPTANCE_GUARD.md`
 
+
+## Registry-Adapter-Implementierungsausführungs-Readiness v27.33q
+
+Ein reiner Readiness-State prüft ausschließlich den angenommenen
+v27.33p-Ausführungsdescriptor und vollständig übergebene
+Ausführungsfähigkeitsfakten.
+
+Geprüft werden:
+
+- exakter Annahmestatus und Annahmegrund
+- vollständig geschlossene Quell- und Ergebnisflags
+- unveränderte Bindung an den v27.33n-Ausführungsvertrag
+- feste Adapterart, Protokoll, Factory und Operation
+- zehn Eingabefelder und neun Ergebnisarten
+- atomarer `unused -> consumed`-Übergang
+- gemeinsame Transaktion für Compare-and-set und Verbrauchsrecord
+- höchstens ein Parallelgewinner
+- feste Zeitlimits
+- Dependency Injection ohne hart codierte Zugangsdaten
+- Rohfehlersperre
+- kein automatischer Retry nach unklarem Commit
+- Reconciliation per Operations-ID
+- `executionGrant = false`
+
+Gültige Eingaben werden tief und kanonisch als
+`atomic_consumption_registry_adapter_implementation_execution_readiness_ready_execution_locked`
+kopiert.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_READINESS.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2851,14 +2886,14 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33p` kann `v27.33q`
-einen reinen Registry-Adapter-
-Implementierungsausführungs-Readiness-State umsetzen.
+Nach GitHub-Bestätigung von `v27.33q` kann `v27.33r`
+einen reinen Annahme-Guard für die Registry-Adapter-
+Implementierungsausführungs-Readiness umsetzen.
 
-Die Readiness darf ausschließlich den angenommenen Descriptor und
-vollständig übergebene Ausführungsfähigkeitsfakten prüfen und eine
-weiterhin vollständig implementierungs- und ausführungsgesperrte
-kanonische Kopie erzeugen.
+Der Guard darf ausschließlich die kanonische gesperrte Readiness
+prüfen, Manipulationen geschlossen ablehnen und eine weiterhin
+vollständig implementierungs- und ausführungsgesperrte angenommene
+Kopie erzeugen.
 
 Adapterimplementierung, Import, Instanziierung, Registryzugriff,
 atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
@@ -2963,6 +2998,7 @@ Guard v27.33k, reiner Registry-Adapter-
 Implementierungsplan v27.33l, reiner Plan-Annahme-
 Guard v27.33m, vollständig gesperrter Implementierungs-
 ausführungsvertrag v27.33n, reiner Ausführungs-
-descriptor v27.33o sowie reiner Descriptor-Annahme-
-Guard v27.33p dauerhaft eingebunden;
+descriptor v27.33o, reiner Descriptor-Annahme-
+Guard v27.33p sowie reiner Ausführungs-Readiness-
+State v27.33q dauerhaft eingebunden;
 keine Live-Ausführung
