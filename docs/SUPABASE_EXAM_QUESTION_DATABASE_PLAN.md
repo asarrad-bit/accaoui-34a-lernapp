@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33j
+Stand: v27.33k
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2602,6 +2602,33 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_READINESS.md`
 
+## Registry-Adapter-Implementierungs-Readiness-Annahme-Guard v27.33k
+
+Ein reiner Guard akzeptiert ausschließlich die kanonische und
+vollständig gesperrte v27.33j-Implementierungs-Readiness.
+
+Geprüft werden:
+
+- exakter Readiness-Status und Readiness-Grund
+- `ready = true`
+- vollständig geschlossene Quell- und Ergebnisflags
+- Readiness-Version 1
+- unveränderte Bindung an den angenommenen v27.33i-Descriptor
+- vollständige kanonische Implementierungsfähigkeitsfakten
+- weiterhin geschlossene Adapter-, Registry- und Verbrauchsgrenzen
+- `executionGrant = false`
+
+Eine gültige Readiness wird tief und kanonisch als
+`accepted_atomic_consumption_registry_adapter_implementation_readiness_execution_locked`
+kopiert.
+
+Adaptermodul, Implementierung, Import, Instanziierung, Aufruf,
+Registryzugriff und Verbrauch bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_READINESS_ACCEPTANCE_GUARD.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -2692,14 +2719,13 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33j` kann `v27.33k`
-einen reinen Annahme-Guard für die Registry-Adapter-
-Implementierungs-Readiness umsetzen.
+Nach GitHub-Bestätigung von `v27.33k` kann `v27.33l`
+einen vollständig gesperrten Registry-Adapter-
+Implementierungsplan vorbereiten.
 
-Der Guard darf ausschließlich die kanonische gesperrte Readiness
-prüfen, Manipulationen geschlossen ablehnen und eine weiterhin
-vollständig implementierungs- und ausführungsgesperrte angenommene
-Kopie erzeugen.
+Der Plan darf ausschließlich die angenommene Readiness, die feste
+Schnittstelle, eine deterministische Implementierungsreihenfolge und
+unveränderliche Sicherheitsgrenzen beschreiben.
 
 Adapterimplementierung, Import, Instanziierung, Registryzugriff,
 atomarer Verbrauch, Datenbankverbindung, Testausführung, direkte
@@ -2798,6 +2824,7 @@ v27.33e, reiner Ausführungsplan-Annahme-Guard v27.33f sowie
 vollständig gesperrter Registry-Adapter-Implementierungsvertrag
 v27.33g, reiner Registry-Adapter-Implementierungsdescriptor
 v27.33h, reiner Implementierungsdescriptor-Annahme-Guard
-v27.33i sowie reiner Registry-Adapter-Implementierungs-Readiness-
-State v27.33j dauerhaft eingebunden;
+v27.33i, reiner Registry-Adapter-Implementierungs-Readiness-
+State v27.33j sowie reiner Implementierungs-Readiness-Annahme-
+Guard v27.33k dauerhaft eingebunden;
 keine Live-Ausführung
