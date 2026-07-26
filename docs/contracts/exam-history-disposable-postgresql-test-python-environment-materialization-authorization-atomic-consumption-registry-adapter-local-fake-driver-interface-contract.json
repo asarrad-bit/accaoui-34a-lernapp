@@ -1,0 +1,938 @@
+{
+  "version": "v27.34a",
+  "contractVersion": 1,
+  "status": "planned_local_fake_atomic_consumption_registry_driver_interface_fully_locked_not_implemented",
+  "productiveReleaseAllowed": false,
+  "sourceBoundary": {
+    "requiredSourceVersion": "v27.33y",
+    "requiredSourceContractStatus": "implemented_pure_atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_acceptance_execution_locked",
+    "requiredAcceptedStatus": "accepted_atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_execution_locked",
+    "requiredAcceptedReason": "authorization_atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_accepted_execution_locked",
+    "requiredAccepted": true,
+    "requiredSourceContractFingerprint": "6168a5e986f1dd656db4769cadc8d13d62551e0daaacf8e43546d3755d748096",
+    "canonicalFingerprintEncoding": "json_utf8_sorted_keys_compact",
+    "requiredAuthorizationGrantCreated": false,
+    "requiredAuthorizationTokenGenerated": false,
+    "requiredAuthorizationMayBeConsumed": false,
+    "requiredExecutionGrant": false,
+    "allSourceSecurityFlagsMustBeFalse": true
+  },
+  "auditClosureBoundary": {
+    "previousAuditResult": "no_go_fake_adapter_interface_ambiguous",
+    "contractOnlyResolution": true,
+    "closedAmbiguities": [
+      "python_signatures",
+      "input_types_and_value_rules",
+      "result_payloads",
+      "consumption_record_schema",
+      "evidence_schema",
+      "timeout_phase_mapping",
+      "local_fake_driver_semantics",
+      "reconciliation_interface"
+    ],
+    "interfaceFullySpecified": true,
+    "fakeDriverImplemented": false,
+    "adapterImplemented": false,
+    "implementationAuthorized": false,
+    "executionGrant": false
+  },
+  "pythonInterfaceBoundary": {
+    "pythonVersionMinimum": "3.10",
+    "pythonVersionMaximum": "3.14",
+    "synchronousOnly": true,
+    "dynamicSignaturesAllowed": false,
+    "variadicArgumentsAllowed": false,
+    "optionalParametersAllowed": false,
+    "implicitDependencyResolutionAllowed": false,
+    "exactTypeNames": [
+      "AtomicConsumptionRequest",
+      "ConsumptionRecordDraft",
+      "ConfirmedConsumptionRecord",
+      "EvidenceTemplate",
+      "ConsumptionEvidence",
+      "AtomicConsumptionResult",
+      "ReconciliationResult",
+      "FakeRegistryEntry",
+      "FakeSimulationDirective",
+      "InjectedUtcClock",
+      "AtomicConsumptionRegistryAdapter",
+      "LocalFakeAtomicConsumptionRegistryDriver"
+    ],
+    "adapterModulePath": "tools/accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter.py",
+    "fakeDriverModulePath": "tools/accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver.py",
+    "adapterProtocol": {
+      "name": "AtomicConsumptionRegistryAdapter",
+      "protocolKind": "typing.Protocol",
+      "runtimeCheckable": false,
+      "operationNames": [
+        "consume_materialization_authorization_atomically",
+        "reconcile_materialization_authorization_consumption"
+      ]
+    },
+    "fakeDriverProtocol": {
+      "name": "LocalFakeAtomicConsumptionRegistryDriver",
+      "protocolKind": "typing.Protocol",
+      "runtimeCheckable": false,
+      "operationNames": [
+        "compare_and_set_with_consumption_record",
+        "read_consumption_by_operation_id"
+      ]
+    },
+    "adapterFactory": {
+      "name": "build_atomic_consumption_registry_adapter",
+      "exactSignature": "def build_atomic_consumption_registry_adapter(*, driver: LocalFakeAtomicConsumptionRegistryDriver) -> AtomicConsumptionRegistryAdapter",
+      "parameterOrder": [
+        "driver"
+      ],
+      "parameterKinds": [
+        "keyword_only"
+      ],
+      "parameterTypes": [
+        "LocalFakeAtomicConsumptionRegistryDriver"
+      ],
+      "returnType": "AtomicConsumptionRegistryAdapter",
+      "defaultArgumentsAllowed": false
+    },
+    "fakeDriverFactory": {
+      "name": "build_local_fake_atomic_consumption_registry_driver",
+      "exactSignature": "def build_local_fake_atomic_consumption_registry_driver(*, initial_state: tuple[FakeRegistryEntry, ...], simulation_directives: tuple[FakeSimulationDirective, ...], clock: InjectedUtcClock) -> LocalFakeAtomicConsumptionRegistryDriver",
+      "parameterOrder": [
+        "initial_state",
+        "simulation_directives",
+        "clock"
+      ],
+      "parameterKinds": [
+        "keyword_only",
+        "keyword_only",
+        "keyword_only"
+      ],
+      "parameterTypes": [
+        "tuple[FakeRegistryEntry, ...]",
+        "tuple[FakeSimulationDirective, ...]",
+        "InjectedUtcClock"
+      ],
+      "returnType": "LocalFakeAtomicConsumptionRegistryDriver",
+      "defaultArgumentsAllowed": false
+    },
+    "adapterAtomicOperation": {
+      "name": "consume_materialization_authorization_atomically",
+      "exactSignature": "def consume_materialization_authorization_atomically(self, request: AtomicConsumptionRequest) -> AtomicConsumptionResult",
+      "parameterOrder": [
+        "request"
+      ],
+      "parameterKinds": [
+        "positional_or_keyword"
+      ],
+      "parameterTypes": [
+        "AtomicConsumptionRequest"
+      ],
+      "returnType": "AtomicConsumptionResult"
+    },
+    "adapterReconciliationOperation": {
+      "name": "reconcile_materialization_authorization_consumption",
+      "exactSignature": "def reconcile_materialization_authorization_consumption(self, operation_id: str) -> ReconciliationResult",
+      "parameterOrder": [
+        "operation_id"
+      ],
+      "parameterKinds": [
+        "positional_or_keyword"
+      ],
+      "parameterTypes": [
+        "str"
+      ],
+      "returnType": "ReconciliationResult"
+    },
+    "driverAtomicOperation": {
+      "name": "compare_and_set_with_consumption_record",
+      "exactSignature": "def compare_and_set_with_consumption_record(self, request: AtomicConsumptionRequest) -> AtomicConsumptionResult",
+      "parameterOrder": [
+        "request"
+      ],
+      "parameterKinds": [
+        "positional_or_keyword"
+      ],
+      "parameterTypes": [
+        "AtomicConsumptionRequest"
+      ],
+      "returnType": "AtomicConsumptionResult"
+    },
+    "driverReconciliationOperation": {
+      "name": "read_consumption_by_operation_id",
+      "exactSignature": "def read_consumption_by_operation_id(self, operation_id: str) -> ReconciliationResult",
+      "parameterOrder": [
+        "operation_id"
+      ],
+      "parameterKinds": [
+        "positional_or_keyword"
+      ],
+      "parameterTypes": [
+        "str"
+      ],
+      "returnType": "ReconciliationResult"
+    },
+    "injectedClockOperation": {
+      "protocolName": "InjectedUtcClock",
+      "name": "now_utc",
+      "exactSignature": "def now_utc(self) -> datetime",
+      "parameterOrder": [],
+      "parameterKinds": [],
+      "parameterTypes": [],
+      "returnType": "datetime",
+      "timezoneRequired": "UTC"
+    }
+  },
+  "inputBoundary": {
+    "typeName": "AtomicConsumptionRequest",
+    "pythonRepresentation": "TypedDict",
+    "exactFieldOrder": [
+      "operationId",
+      "requestId",
+      "authorizationNonce",
+      "planFingerprint",
+      "actorId",
+      "purpose",
+      "expectedState",
+      "desiredState",
+      "consumptionRecord",
+      "evidenceTemplate"
+    ],
+    "fieldSchemas": [
+      {
+        "name": "operationId",
+        "pythonType": "str",
+        "required": true,
+        "allowedValueRule": "uuid_v4_lowercase",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "requestId",
+        "pythonType": "str",
+        "required": true,
+        "allowedValueRule": "uuid_v4_lowercase",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "authorizationNonce",
+        "pythonType": "str",
+        "required": true,
+        "allowedValueRule": "base64url_without_padding_decoded_length_32_bytes",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "planFingerprint",
+        "pythonType": "str",
+        "required": true,
+        "allowedValueRule": "sha256_lowercase_hex_equal_accepted_plan_fingerprint",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "actorId",
+        "pythonType": "str",
+        "required": true,
+        "allowedValueRule": "trimmed_opaque_non_empty_string_without_control_characters_max_256",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "purpose",
+        "pythonType": "str",
+        "required": true,
+        "allowedValueRule": "literal_disposable_test_python_environment_materialization",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "expectedState",
+        "pythonType": "Literal['unused']",
+        "required": true,
+        "allowedValueRule": "literal_unused",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "desiredState",
+        "pythonType": "Literal['consumed']",
+        "required": true,
+        "allowedValueRule": "literal_consumed",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "consumptionRecord",
+        "pythonType": "ConsumptionRecordDraft",
+        "required": true,
+        "allowedValueRule": "exact_consumption_record_draft_schema",
+        "emptyAllowed": false,
+        "immutable": true
+      },
+      {
+        "name": "evidenceTemplate",
+        "pythonType": "EvidenceTemplate",
+        "required": true,
+        "allowedValueRule": "exact_evidence_template_schema",
+        "emptyAllowed": false,
+        "immutable": true
+      }
+    ],
+    "unknownFieldsAllowed": false,
+    "missingFieldsAllowed": false,
+    "inputMutationAllowed": false,
+    "extraNestedFieldsAllowed": false
+  },
+  "consumptionRecordBoundary": {
+    "draftTypeName": "ConsumptionRecordDraft",
+    "draftPythonRepresentation": "TypedDict",
+    "draftExactFields": [
+      "recordVersion",
+      "operationId",
+      "requestId",
+      "authorizationNonce",
+      "planFingerprint",
+      "actorId",
+      "purpose",
+      "expectedState",
+      "desiredState",
+      "confirmed"
+    ],
+    "draftFieldTypes": {
+      "recordVersion": "Literal[1]",
+      "operationId": "str",
+      "requestId": "str",
+      "authorizationNonce": "str",
+      "planFingerprint": "str",
+      "actorId": "str",
+      "purpose": "Literal['disposable_test_python_environment_materialization']",
+      "expectedState": "Literal['unused']",
+      "desiredState": "Literal['consumed']",
+      "confirmed": "Literal[False]"
+    },
+    "confirmedTypeName": "ConfirmedConsumptionRecord",
+    "confirmedPythonRepresentation": "TypedDict",
+    "confirmedExactFields": [
+      "recordVersion",
+      "operationId",
+      "requestId",
+      "authorizationNonce",
+      "planFingerprint",
+      "actorId",
+      "purpose",
+      "expectedState",
+      "desiredState",
+      "confirmed",
+      "consumedAtUtc"
+    ],
+    "confirmedFieldTypes": {
+      "recordVersion": "Literal[1]",
+      "operationId": "str",
+      "requestId": "str",
+      "authorizationNonce": "str",
+      "planFingerprint": "str",
+      "actorId": "str",
+      "purpose": "Literal['disposable_test_python_environment_materialization']",
+      "expectedState": "Literal['unused']",
+      "desiredState": "Literal['consumed']",
+      "confirmed": "Literal[True]",
+      "consumedAtUtc": "str"
+    },
+    "consumedAtUtcFormat": "utc_rfc3339_seconds_z",
+    "identityBindingFields": [
+      "operationId",
+      "requestId",
+      "authorizationNonce",
+      "planFingerprint",
+      "actorId",
+      "purpose"
+    ],
+    "allIdentityBindingsMustEqualRequest": true,
+    "expectedState": "unused",
+    "desiredState": "consumed",
+    "compareAndSetAndConfirmedRecordSingleAtomicSectionRequired": true,
+    "maximumParallelWinners": 1,
+    "singleUseRequired": true,
+    "replayAllowed": false,
+    "confirmedBeforeCommitAllowed": false,
+    "recordWithoutCommittedTransitionAllowed": false,
+    "committedTransitionWithoutRecordAllowed": false,
+    "resetConsumedToUnusedAllowed": false,
+    "unknownDraftFieldsAllowed": false,
+    "unknownConfirmedFieldsAllowed": false
+  },
+  "evidenceBoundary": {
+    "templateTypeName": "EvidenceTemplate",
+    "templatePythonRepresentation": "TypedDict",
+    "templateExactFields": [
+      "evidenceVersion",
+      "operationId",
+      "recordSource",
+      "confirmedRecordRequired",
+      "unconfirmedEvidenceAllowed"
+    ],
+    "templateFieldTypes": {
+      "evidenceVersion": "Literal[1]",
+      "operationId": "str",
+      "recordSource": "Literal['confirmed_consumption_record_only']",
+      "confirmedRecordRequired": "Literal[True]",
+      "unconfirmedEvidenceAllowed": "Literal[False]"
+    },
+    "evidenceTypeName": "ConsumptionEvidence",
+    "evidencePythonRepresentation": "TypedDict",
+    "evidenceExactFields": [
+      "evidenceVersion",
+      "operationId",
+      "requestId",
+      "authorizationNonceFingerprint",
+      "planFingerprint",
+      "actorId",
+      "purpose",
+      "consumedAtUtc",
+      "recordFingerprint",
+      "singleUse",
+      "status",
+      "executionGrant"
+    ],
+    "evidenceFieldTypes": {
+      "evidenceVersion": "Literal[1]",
+      "operationId": "str",
+      "requestId": "str",
+      "authorizationNonceFingerprint": "str",
+      "planFingerprint": "str",
+      "actorId": "str",
+      "purpose": "Literal['disposable_test_python_environment_materialization']",
+      "consumedAtUtc": "str",
+      "recordFingerprint": "str",
+      "singleUse": "Literal[True]",
+      "status": "Literal['authorization_consumed_execution_locked']",
+      "executionGrant": "Literal[False]"
+    },
+    "authorizationNonceFingerprintRule": "sha256_lowercase_hex_of_utf8_authorization_nonce",
+    "recordFingerprintRule": "sha256_of_confirmed_record_json_utf8_sorted_keys_compact",
+    "derivedOnlyFromConfirmedRecord": true,
+    "allIdentityBindingsMustEqualConfirmedRecord": true,
+    "evidenceWithoutConfirmedRecordAllowed": false,
+    "unconfirmedEvidenceAllowed": false,
+    "rawAuthorizationNonceAllowed": false,
+    "rawErrorAllowed": false,
+    "credentialFieldsAllowed": false,
+    "participantDataFieldsAllowed": false,
+    "unknownTemplateFieldsAllowed": false,
+    "unknownEvidenceFieldsAllowed": false
+  },
+  "resultBoundary": {
+    "resultTypeName": "AtomicConsumptionResult",
+    "pythonRepresentation": "TypedDict_discriminated_union",
+    "exactResultKinds": [
+      "committed",
+      "already_consumed",
+      "parallel_conflict",
+      "binding_conflict",
+      "expired",
+      "adapter_unavailable",
+      "atomicity_unavailable",
+      "commit_ambiguous",
+      "operation_failed"
+    ],
+    "commonRequiredFields": [
+      "status",
+      "reason",
+      "resultKind",
+      "operationId",
+      "consumptionStatus",
+      "reconciliationRequired",
+      "retryAllowed",
+      "executionGrant"
+    ],
+    "commonFieldTypes": {
+      "status": "str",
+      "reason": "str",
+      "resultKind": "Literal['committed', 'already_consumed', 'parallel_conflict', 'binding_conflict', 'expired', 'adapter_unavailable', 'atomicity_unavailable', 'commit_ambiguous', 'operation_failed']",
+      "operationId": "str",
+      "consumptionStatus": "Literal['confirmed_consumed', 'confirmed_already_consumed', 'not_consumed_by_operation', 'unknown']",
+      "reconciliationRequired": "bool",
+      "retryAllowed": "Literal[False]",
+      "executionGrant": "Literal[False]"
+    },
+    "onlyConditionalPayloadFields": [
+      "consumptionRecord",
+      "evidence"
+    ],
+    "conditionalPayloadFieldTypes": {
+      "consumptionRecord": "ConfirmedConsumptionRecord",
+      "evidence": "ConsumptionEvidence"
+    },
+    "resultSchemas": [
+      {
+        "resultKind": "committed",
+        "status": "authorization_consumed_execution_locked",
+        "reason": "authorization_consumption_committed",
+        "requiredPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "forbiddenPayloadFields": [],
+        "consumptionStatus": "confirmed_consumed",
+        "evidenceRule": "required_from_confirmed_consumption_record",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "already_consumed",
+        "status": "authorization_consumption_blocked_execution_locked",
+        "reason": "authorization_consumption_already_consumed",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "confirmed_already_consumed",
+        "evidenceRule": "forbidden_for_current_operation",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "parallel_conflict",
+        "status": "authorization_consumption_blocked_execution_locked",
+        "reason": "authorization_consumption_parallel_conflict",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "not_consumed_by_operation",
+        "evidenceRule": "forbidden",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "binding_conflict",
+        "status": "authorization_consumption_blocked_execution_locked",
+        "reason": "authorization_consumption_binding_conflict",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "not_consumed_by_operation",
+        "evidenceRule": "forbidden",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "expired",
+        "status": "authorization_consumption_blocked_execution_locked",
+        "reason": "authorization_consumption_expired",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "not_consumed_by_operation",
+        "evidenceRule": "forbidden",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "adapter_unavailable",
+        "status": "authorization_consumption_blocked_execution_locked",
+        "reason": "authorization_consumption_adapter_unavailable",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "not_consumed_by_operation",
+        "evidenceRule": "forbidden",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "atomicity_unavailable",
+        "status": "authorization_consumption_blocked_execution_locked",
+        "reason": "authorization_consumption_atomicity_unavailable",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "not_consumed_by_operation",
+        "evidenceRule": "forbidden",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "commit_ambiguous",
+        "status": "authorization_consumption_reconciliation_required_execution_locked",
+        "reason": "authorization_consumption_commit_ambiguous",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "unknown",
+        "evidenceRule": "forbidden_until_reconciliation_confirms_record",
+        "terminal": true,
+        "reconciliationRequired": true,
+        "retryAllowed": false,
+        "executionGrant": false
+      },
+      {
+        "resultKind": "operation_failed",
+        "status": "authorization_consumption_blocked_execution_locked",
+        "reason": "authorization_consumption_operation_failed",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "not_consumed_by_operation",
+        "evidenceRule": "forbidden",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "retryAllowed": false,
+        "executionGrant": false
+      }
+    ],
+    "unknownResultKindsAllowed": false,
+    "unknownResultFieldsAllowed": false,
+    "rawErrorFieldsAllowed": false,
+    "rawRegistryValueFieldsAllowed": false,
+    "automaticRetryAllowed": false,
+    "executionGrant": false
+  },
+  "timeoutBoundary": {
+    "operationTimeoutMilliseconds": 15000,
+    "connectTimeoutMilliseconds": 3000,
+    "statementTimeoutMilliseconds": 5000,
+    "lockTimeoutMilliseconds": 2000,
+    "newTimeoutValuesAllowed": false,
+    "timeoutExpansionAllowed": false,
+    "phaseMappings": [
+      {
+        "phase": "operation",
+        "timeoutField": "operationTimeoutMilliseconds",
+        "timeoutMilliseconds": 15000,
+        "scope": "entire_adapter_operation",
+        "knownNoCommitResultKind": "operation_failed",
+        "unknownCommitResultKind": "commit_ambiguous"
+      },
+      {
+        "phase": "connect",
+        "timeoutField": "connectTimeoutMilliseconds",
+        "timeoutMilliseconds": 3000,
+        "scope": "injected_driver_acquisition_and_readiness",
+        "knownNoCommitResultKind": "adapter_unavailable",
+        "unknownCommitResultKind": "commit_ambiguous"
+      },
+      {
+        "phase": "statement",
+        "timeoutField": "statementTimeoutMilliseconds",
+        "timeoutMilliseconds": 5000,
+        "scope": "atomic_compare_and_set_and_record_section",
+        "knownNoCommitResultKind": "operation_failed",
+        "unknownCommitResultKind": "commit_ambiguous"
+      },
+      {
+        "phase": "lock",
+        "timeoutField": "lockTimeoutMilliseconds",
+        "timeoutMilliseconds": 2000,
+        "scope": "single_in_memory_atomic_section_lock_acquisition",
+        "knownNoCommitResultKind": "parallel_conflict",
+        "unknownCommitResultKind": "commit_ambiguous"
+      }
+    ],
+    "fakeDriverMaySleep": false,
+    "fakeDriverMayReadWallClockForTimeouts": false,
+    "timeoutSimulationMustUseInjectedDirectives": true,
+    "timeoutAutomaticRetryAllowed": false
+  },
+  "fakeDriverBoundary": {
+    "adapterKind": "single_use_consumption_registry",
+    "requiredCapability": "atomic_compare_and_set_with_consumption_record",
+    "fullyLocalRequired": true,
+    "deterministicRequired": true,
+    "inMemoryOnlyRequired": true,
+    "inMemoryStateOwnedPerDriverInstance": true,
+    "globalMutableStateAllowed": false,
+    "maximumParallelWinners": 1,
+    "singleAtomicSectionRequired": true,
+    "readThenWriteSplitAllowed": false,
+    "replayAllowed": false,
+    "confirmedConsumptionMayBeOverwritten": false,
+    "resetConsumedToUnusedAllowed": false,
+    "ambiguousResultSimulationRequired": true,
+    "simulationDirectivesInjectedAtConstruction": true,
+    "simulationDirectivesConsumedAtMostOncePerOperationId": true,
+    "simulationMayGrantAuthorization": false,
+    "simulationMayCreateToken": false,
+    "simulationMaySetExecutionGrant": false,
+    "reconciliationIndexField": "operationId",
+    "registryIdentityFields": [
+      "requestId",
+      "authorizationNonce",
+      "planFingerprint",
+      "actorId",
+      "purpose"
+    ],
+    "fakeRegistryEntrySchema": {
+      "typeName": "FakeRegistryEntry",
+      "exactFields": [
+        "requestId",
+        "authorizationNonce",
+        "planFingerprint",
+        "actorId",
+        "purpose",
+        "state",
+        "expiresAtUtc",
+        "consumptionRecord"
+      ],
+      "fieldTypes": {
+        "requestId": "str",
+        "authorizationNonce": "str",
+        "planFingerprint": "str",
+        "actorId": "str",
+        "purpose": "Literal['disposable_test_python_environment_materialization']",
+        "state": "Literal['unused', 'consumed']",
+        "expiresAtUtc": "str",
+        "consumptionRecord": "ConfirmedConsumptionRecord | None"
+      },
+      "unusedRequiresNullRecord": true,
+      "consumedRequiresConfirmedRecord": true,
+      "unknownFieldsAllowed": false
+    },
+    "fakeSimulationDirectiveSchema": {
+      "typeName": "FakeSimulationDirective",
+      "exactFields": [
+        "operationId",
+        "phase",
+        "resultKind",
+        "commitVisibleToReconciliation"
+      ],
+      "fieldTypes": {
+        "operationId": "str",
+        "phase": "Literal['operation', 'connect', 'statement', 'lock', 'commit']",
+        "resultKind": "Literal['adapter_unavailable', 'atomicity_unavailable', 'commit_ambiguous', 'operation_failed']",
+        "commitVisibleToReconciliation": "bool"
+      },
+      "commitVisibilityTrueAllowedOnlyForCommitAmbiguous": true,
+      "unknownFieldsAllowed": false
+    },
+    "realDatabaseAllowed": false,
+    "postgresqlConnectionAllowed": false,
+    "supabaseAllowed": false,
+    "networkAllowed": false,
+    "filesystemAllowed": false,
+    "processAllowed": false,
+    "environmentVariableReadAllowed": false,
+    "realKeysAllowed": false,
+    "realParticipantDataAllowed": false,
+    "nonInjectedClockReadAllowed": false
+  },
+  "reconciliationBoundary": {
+    "resultTypeName": "ReconciliationResult",
+    "pythonRepresentation": "TypedDict_discriminated_union",
+    "lookupField": "operationId",
+    "lookupFieldPythonType": "str",
+    "additionalLookupFieldsAllowed": false,
+    "readOnlyRequired": true,
+    "writeAllowed": false,
+    "consumptionOperationAllowed": false,
+    "automaticRetryAllowed": false,
+    "exactReconciliationKinds": [
+      "confirmed",
+      "not_found",
+      "ambiguous"
+    ],
+    "commonRequiredFields": [
+      "status",
+      "reason",
+      "reconciliationKind",
+      "operationId",
+      "consumptionStatus",
+      "writePerformed",
+      "retryPerformed",
+      "executionGrant"
+    ],
+    "commonFieldTypes": {
+      "status": "str",
+      "reason": "str",
+      "reconciliationKind": "Literal['confirmed', 'not_found', 'ambiguous']",
+      "operationId": "str",
+      "consumptionStatus": "Literal['confirmed_consumed', 'unknown']",
+      "writePerformed": "Literal[False]",
+      "retryPerformed": "Literal[False]",
+      "executionGrant": "Literal[False]"
+    },
+    "onlyConditionalPayloadFields": [
+      "consumptionRecord",
+      "evidence"
+    ],
+    "conditionalPayloadFieldTypes": {
+      "consumptionRecord": "ConfirmedConsumptionRecord",
+      "evidence": "ConsumptionEvidence"
+    },
+    "resultSchemas": [
+      {
+        "reconciliationKind": "confirmed",
+        "status": "authorization_consumption_reconciliation_confirmed_execution_locked",
+        "reason": "authorization_consumption_reconciliation_confirmed",
+        "requiredPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "forbiddenPayloadFields": [],
+        "consumptionStatus": "confirmed_consumed",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "writePerformed": false,
+        "retryPerformed": false,
+        "executionGrant": false
+      },
+      {
+        "reconciliationKind": "not_found",
+        "status": "authorization_consumption_reconciliation_not_found_execution_locked",
+        "reason": "authorization_consumption_reconciliation_not_found",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "unknown",
+        "terminal": true,
+        "reconciliationRequired": false,
+        "writePerformed": false,
+        "retryPerformed": false,
+        "executionGrant": false
+      },
+      {
+        "reconciliationKind": "ambiguous",
+        "status": "authorization_consumption_reconciliation_ambiguous_execution_locked",
+        "reason": "authorization_consumption_reconciliation_ambiguous",
+        "requiredPayloadFields": [],
+        "forbiddenPayloadFields": [
+          "consumptionRecord",
+          "evidence"
+        ],
+        "consumptionStatus": "unknown",
+        "terminal": true,
+        "reconciliationRequired": true,
+        "writePerformed": false,
+        "retryPerformed": false,
+        "executionGrant": false
+      }
+    ],
+    "confirmedRequiresConfirmedRecord": true,
+    "confirmedEvidenceDerivedOnlyFromRecord": true,
+    "notFoundMayAssumeUnused": false,
+    "ambiguousMayAssumeCommitted": false,
+    "unknownKindsAllowed": false,
+    "unknownFieldsAllowed": false
+  },
+  "implementationBoundary": {
+    "localFakeDriverInterfaceContractPrepared": true,
+    "localFakeDriverModuleCreated": false,
+    "localFakeDriverImplemented": false,
+    "adapterModuleCreated": false,
+    "adapterInterfaceImplemented": false,
+    "adapterFactoryImplemented": false,
+    "adapterImported": false,
+    "adapterInstantiated": false,
+    "adapterInvoked": false,
+    "registryReadPerformed": false,
+    "registryWritePerformed": false,
+    "atomicCompareAndSetPerformed": false,
+    "reconciliationReadPerformed": false,
+    "authorizationConsumed": false,
+    "authorizationGranted": false,
+    "authorizationTokenGenerated": false,
+    "trustedClockRead": false,
+    "filesystemReadPerformed": false,
+    "filesystemMutationPerformed": false,
+    "processExecuted": false,
+    "environmentVariableRead": false,
+    "networkExecuted": false,
+    "driverImported": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlCreated": false,
+    "sqlMigrationCreated": false,
+    "liveSupabaseConnected": false,
+    "frontendIntegration": false,
+    "uiIntegration": false,
+    "executionGrant": false
+  },
+  "securityBoundary": {
+    "authorizationGrant": false,
+    "authorizationToken": false,
+    "authorizationMayBeConsumed": false,
+    "executionGrant": false,
+    "fakeDriverImplementationAllowed": false,
+    "adapterImplementationAllowed": false,
+    "adapterImportAllowed": false,
+    "adapterInstantiationAllowed": false,
+    "adapterInvocationAllowed": false,
+    "registryReadAllowed": false,
+    "registryWriteAllowed": false,
+    "atomicCompareAndSetAllowed": false,
+    "reconciliationReadAllowed": false,
+    "reconciliationWriteAllowed": false,
+    "trustedClockReadAllowed": false,
+    "nonInjectedClockReadAllowed": false,
+    "processEnvironmentReadAllowed": false,
+    "filesystemReadAllowed": false,
+    "filesystemMutationAllowed": false,
+    "processExecutionAllowed": false,
+    "networkExecutionAllowed": false,
+    "driverImportAllowed": false,
+    "databaseConnectionAllowed": false,
+    "postgresqlConnectionAllowed": false,
+    "sqlAllowed": false,
+    "sqlMigrationAllowed": false,
+    "supabaseAllowed": false,
+    "liveSupabaseConnectionAllowed": false,
+    "passwordAllowed": false,
+    "databaseUrlAllowed": false,
+    "connectionStringAllowed": false,
+    "serviceRoleKeyAllowed": false,
+    "productionSecretAllowed": false,
+    "realKeyAllowed": false,
+    "realParticipantDataAllowed": false,
+    "frontendReferenceAllowed": false,
+    "uiIntegrationAllowed": false,
+    "directAppExecutionGrantAllowed": false
+  },
+  "futureBoundary": {
+    "nextVersion": "v27.34b",
+    "nextStep": "first_local_fake_registry_driver_module_exactly_against_v27_34a_contract",
+    "nextStepAuthorized": false,
+    "localFakeDriverModuleCreated": false,
+    "localFakeDriverImplemented": false,
+    "adapterModuleCreated": false,
+    "adapterImplemented": false,
+    "adapterImported": false,
+    "adapterInstantiated": false,
+    "adapterInvoked": false,
+    "registryAccessPerformed": false,
+    "atomicConsumptionExecuted": false,
+    "reconciliationExecuted": false,
+    "databaseTestExecuted": false,
+    "directAppExecutionGrant": false,
+    "frontendIntegration": false
+  }
+}

@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33y
+Stand: v27.34a
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -3041,6 +3041,49 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_AUTHORIZATION_READINESS_ACCEPTANCE_GUARD.md`
 
+## Local-Fake-Registry-Treiber-Schnittstellenvertrag v27.34a
+
+Das NO-GO-Abschlussaudit der Kette v27.33g bis v27.33y hat die
+vorhandenen Sicherheitsgrenzen bestätigt, aber konkrete
+Implementierungsmehrdeutigkeiten festgestellt.
+
+Ein neuer maschinenlesbarer und vollständig gesperrter Vertrag legt
+jetzt exakt fest:
+
+- synchrone Python-Protokolle und nicht dynamische Signaturen
+- Adapter- und Local-Fake-Treiber-Factory per Dependency Injection
+- atomare Verbrauchs- und nur lesende Reconciliation-Operation
+- zehn unveränderte Eingabefelder mit Python-Typ, Pflicht,
+  erlaubten Werten, Leerwertregel und Unveränderlichkeit
+- Draft- und bestätigtes Consumption-Record-Schema
+- Evidence ausschließlich aus bestätigtem Consumption-Record
+- neun Ergebnisarten mit Status, Grund, Pflicht- und Verbotsfeldern,
+  Verbrauchsstatus, Terminalität, Reconciliation- und Retry-Regel
+- eindeutige Zuordnung der vorhandenen vier Zeitlimits
+- deterministische instanzgebundene In-Memory-, Parallelgewinner-,
+  Replay-, Ambiguitäts- und Reconciliation-Semantik
+- Reconciliation ausschließlich lesend über `operationId` mit
+  `confirmed`, `not_found` oder `ambiguous`
+
+Der Checker bindet den v27.33y-Quellvertrag kanonisch per SHA-256,
+prüft die vollständige exakte JSON-Struktur und blockiert über eine
+Manipulationsmatrix fehlende, zusätzliche und veränderte Felder.
+
+Schnittstelle und Rückgabetypen sind vollständig festgelegt.
+Fake-Treiber und Adapter sind nicht implementiert, importiert,
+instanziiert oder aufgerufen.
+
+Autorisierungsgrant, Token, `authorizationMayBeConsumed`,
+Registryzugriff und `executionGrant` bleiben false. Echte Datenbank,
+PostgreSQL, SQL, Supabase, Live-Supabase, Netzwerk, Dateisystem,
+Prozesse, Umgebungsvariablen, echte Schlüssel, echte
+Teilnehmerdaten, nicht injizierter Uhrzugriff und UI bleiben
+vollständig gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_INTERFACE_CONTRACT.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -3131,13 +3174,18 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33y` bleibt die Auswahl und
-ausdrückliche Autorisierung des nächsten Versionsschritts beim
-Projekteigentümer und seinem verbindlichen Projektchat.
+Nächster Schritt ist ausschließlich `v27.34b`:
 
-v27.33y erteilt insbesondere keine Freigabe für einen
-Autorisierungsplan, einen Grant, ein Token, einen Verbrauch, eine
-Adapterimplementierung oder eine Ausführung.
+erstes lokales Fake-Registry-Treibermodul nach exakt dem
+v27.34a-Schnittstellenvertrag.
+
+Die Ausführung von v27.34b benötigt weiterhin die ausdrückliche
+Autorisierung des Projekteigentümers und seines verbindlichen
+Projektchats.
+
+v27.34a erteilt insbesondere keine Freigabe für einen Fake-Treiber,
+einen Adapter, einen Autorisierungsgrant, ein Token, einen Verbrauch,
+Registryzugriff oder eine Ausführung.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -3241,5 +3289,5 @@ ausführungsvertrag v27.33n, reiner Ausführungs-
 descriptor v27.33o, reiner Descriptor-Annahme-
 Guard v27.33p, reiner Ausführungs-Readiness-
 State v27.33q, reiner Readiness-Annahme-
-Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t, vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u, reiner Autorisierungsdescriptor v27.33v, reiner Descriptor-Annahme-Guard v27.33w, reiner Autorisierungs-Readiness-State v27.33x sowie reiner Autorisierungs-Readiness-Annahme-Guard v27.33y dauerhaft eingebunden;
+Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t, vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u, reiner Autorisierungsdescriptor v27.33v, reiner Descriptor-Annahme-Guard v27.33w, reiner Autorisierungs-Readiness-State v27.33x, reiner Autorisierungs-Readiness-Annahme-Guard v27.33y sowie vollständig gesperrter Local-Fake-Registry-Treiber-Schnittstellenvertrag v27.34a dauerhaft eingebunden;
 keine Live-Ausführung

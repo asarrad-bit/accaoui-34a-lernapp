@@ -1455,6 +1455,25 @@ def check_exam_result_history_disposable_postgresql_test_python_environment_mate
         )
 
 
+def check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_interface_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-interface-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable PostgreSQL-Local-Fake-Registry-"
+            "Treiber-Schnittstellenvertrag fehlgeschlagen"
+        )
+
+
 def check_git_diff_check():
     code, stdout, stderr = run_command("git diff --check")
 
@@ -1730,6 +1749,9 @@ def main():
         "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-authorization-readiness-acceptance-guard-contract.json",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-authorization-readiness-acceptance-guard.py",
         "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_AUTHORIZATION_READINESS_ACCEPTANCE_GUARD.md",
+        "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-interface-contract.json",
+        "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-interface-contract.py",
+        "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_INTERFACE_CONTRACT.md",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-readiness-acceptance-guard.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-readiness.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-descriptor-acceptance-guard.py",
@@ -1843,6 +1865,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_implementation_execution_authorization_descriptor_acceptance_guard()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_implementation_execution_authorization_readiness()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_acceptance_guard()
+    check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_interface_contract()
     check_git_diff_check()
     check_protected_core_files_v2356()
 
