@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.33w
+Stand: v27.33x
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -2966,6 +2966,43 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_AUTHORIZATION_DESCRIPTOR_ACCEPTANCE_GUARD.md`
 
+## Registry-Adapter-Implementierungsausführungs-Autorisierungs-Readiness-State v27.33x
+
+Eine reine deterministische Zustandsauflösung akzeptiert ausschließlich
+das exakt angenommene v27.33w-Autorisierungsdescriptor-Ergebnis und die
+vollständig gelieferten Autorisierungsfähigkeitsfakten.
+
+Geprüft werden:
+
+- exakter v27.33w-Status und -Grund
+- `accepted = true`
+- vollständig geschlossene Quell- und Ergebnisflags
+- kanonischer v27.33u-Descriptor mit festem SHA-256-Fingerprint
+- vollständige unveränderte Identitäts-, Autorisierungs-,
+  Atomaritäts-, Zeitlimit-, Fehler-, Reconciliation-,
+  Implementierungs- und Sicherheitsfakten
+- kein Autorisierungsgrant und kein Token
+- keine Verbrauchsfreigabe
+- `executionGrant = false`
+
+Gültige Eingaben werden tief und kanonisch als
+`atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_ready_execution_locked`
+aufgelöst. Der Erfolgsgrund lautet
+`authorization_atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_ready_execution_locked`.
+
+Fehlende, unbekannte oder manipulierte Felder werden als
+`atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_blocked_execution_locked`
+geschlossen blockiert.
+
+Der State erteilt keine Autorisierung, erzeugt keinen Grant und keinen
+Token und verbraucht keine Autorisierung. Adaptermodul, Implementierung,
+Import, Instanziierung, Aufruf, Registryzugriff, Datenbank, SQL,
+Netzwerk, UI und Live-Supabase bleiben gesperrt.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_IMPLEMENTATION_EXECUTION_AUTHORIZATION_READINESS.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -3056,14 +3093,15 @@ Details:
 
 ## Nächster Schritt
 
-Nach GitHub-Bestätigung von `v27.33w` kann `v27.33x`
+Nach GitHub-Bestätigung von `v27.33x` kann `v27.33y`
 einen reinen Registry-Adapter-
-Implementierungsausführungs-Autorisierungs-Readiness-State umsetzen.
+Implementierungsausführungs-Autorisierungs-Readiness-Annahme-Guard
+umsetzen.
 
-Die Readiness darf ausschließlich den angenommenen Descriptor und
-vollständig übergebene Autorisierungsfähigkeitsfakten prüfen und eine
-weiterhin vollständig autorisierungs-, implementierungs- und
-ausführungsgesperrte kanonische Kopie erzeugen.
+Der Guard darf ausschließlich den exakten v27.33x-Readiness-Status
+und -Grund, `ready = true`, den vollständig unveränderten kanonischen
+Readiness-State sowie vollständig geschlossene Quell- und Ergebnisflags
+akzeptieren.
 
 Autorisierungsgrant, Token, Adapterimplementierung, Import,
 Instanziierung, Registryzugriff, atomarer Verbrauch,
@@ -3172,5 +3210,5 @@ ausführungsvertrag v27.33n, reiner Ausführungs-
 descriptor v27.33o, reiner Descriptor-Annahme-
 Guard v27.33p, reiner Ausführungs-Readiness-
 State v27.33q, reiner Readiness-Annahme-
-Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t, vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u, reiner Autorisierungsdescriptor v27.33v sowie reiner Descriptor-Annahme-Guard v27.33w dauerhaft eingebunden;
+Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t, vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u, reiner Autorisierungsdescriptor v27.33v, reiner Descriptor-Annahme-Guard v27.33w sowie reiner Autorisierungs-Readiness-State v27.33x dauerhaft eingebunden;
 keine Live-Ausführung

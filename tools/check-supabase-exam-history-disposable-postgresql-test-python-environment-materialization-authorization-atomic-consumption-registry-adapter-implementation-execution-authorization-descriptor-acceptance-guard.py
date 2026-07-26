@@ -38,11 +38,6 @@ GUARD_MODULE = ROOT / "tools" / (
     "acceptance_guard.py"
 )
 
-FUTURE_READINESS = ROOT / "tools" / (
-    "accaoui_disposable_test_python_environment_materialization_"
-    "authorization_atomic_consumption_registry_adapter_"
-    "implementation_execution_authorization_readiness.py"
-)
 FUTURE_ADAPTER = ROOT / "tools" / (
     "accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_adapter.py"
@@ -387,8 +382,6 @@ for forbidden in (
     if forbidden in source_text:
         fail(f"Descriptor-Annahme enthält verbotenen Zugriff: {forbidden}")
 
-if FUTURE_READINESS.exists():
-    fail("v27.33w darf noch keine Autorisierungs-Readiness umsetzen.")
 if FUTURE_ADAPTER.exists():
     fail("v27.33w darf noch keinen Registry-Adapter implementieren.")
 if FUTURE_EXECUTION.exists():
