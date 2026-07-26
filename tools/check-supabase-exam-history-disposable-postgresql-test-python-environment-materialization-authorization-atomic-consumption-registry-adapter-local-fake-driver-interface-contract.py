@@ -35,6 +35,16 @@ FAKE_DRIVER_MODULE_PATH = ROOT / (
     "tools/accaoui_disposable_test_python_environment_materialization_"
     "authorization_atomic_consumption_registry_local_fake_driver.py"
 )
+FAKE_DRIVER_DOCUMENT_PATH = ROOT / (
+    "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_"
+    "PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_"
+    "CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER.md"
+)
+FAKE_DRIVER_CHECKER_PATH = ROOT / (
+    "tools/check-supabase-exam-history-disposable-postgresql-test-"
+    "python-environment-materialization-authorization-atomic-"
+    "consumption-registry-adapter-local-fake-driver.py"
+)
 
 EXPECTED_CONTRACT_FINGERPRINT = (
     "e41efc9592cefffb2c9ffc8bc4a7611a6933cbc57f765f55812d703d08fd2b70"
@@ -761,7 +771,36 @@ for key, value in future.items():
         require(value is False, f"futureBoundary.{key} muss false sein")
 
 require(not ADAPTER_MODULE_PATH.exists(), "Adaptermodul wurde vorzeitig erstellt")
-require(not FAKE_DRIVER_MODULE_PATH.exists(), "Fake-Treibermodul wurde vorzeitig erstellt")
+if FAKE_DRIVER_MODULE_PATH.exists():
+    require(
+        FAKE_DRIVER_DOCUMENT_PATH.is_file(),
+        "v27.34b-Fake-Treiber existiert ohne Dokumentation",
+    )
+    require(
+        FAKE_DRIVER_CHECKER_PATH.is_file(),
+        "v27.34b-Fake-Treiber existiert ohne Checker",
+    )
+    future_document_text = FAKE_DRIVER_DOCUMENT_PATH.read_text(
+        encoding="utf-8"
+    )
+    for token in (
+        "Stand: v27.34b",
+        "v27.34a-Schnittstellenvertrag bleibt unverändert",
+        "kein echter Registry-Adapter",
+    ):
+        require(
+            token in future_document_text,
+            f"v27.34b-Folgeschritt ist nicht sicher dokumentiert: {token}",
+        )
+else:
+    require(
+        not FAKE_DRIVER_DOCUMENT_PATH.exists(),
+        "v27.34b-Dokument existiert ohne Fake-Treibermodul",
+    )
+    require(
+        not FAKE_DRIVER_CHECKER_PATH.exists(),
+        "v27.34b-Checker existiert ohne Fake-Treibermodul",
+    )
 
 document_text = DOCUMENT_PATH.read_text(encoding="utf-8")
 master_text = MASTERLIST_PATH.read_text(encoding="utf-8")
@@ -782,10 +821,21 @@ require(
     in database_plan_text,
     "Datenbankplan enthält v27.34a nicht",
 )
-require(
-    "Nächster Schritt ist ausschließlich `v27.34b`" in database_plan_text,
-    "Datenbankplan bindet den nächsten Schritt nicht an v27.34b",
-)
+if FAKE_DRIVER_MODULE_PATH.exists():
+    require(
+        (
+            "v27.34b ist als erstes lokales Fake-Registry-Treibermodul "
+            "umgesetzt."
+        )
+        in database_plan_text,
+        "Datenbankplan dokumentiert v27.34b nicht als umgesetzt",
+    )
+else:
+    require(
+        "Nächster Schritt ist ausschließlich `v27.34b`"
+        in database_plan_text,
+        "Datenbankplan bindet den nächsten Schritt nicht an v27.34b",
+    )
 
 actual_checker_relative = Path(__file__).resolve().relative_to(ROOT).as_posix()
 require(
@@ -819,7 +869,11 @@ print(
     f"{additional_count} zusätzliche, "
     f"{changed_count} veränderte Strukturen blockiert"
 )
-print("Fake-Treiber implementiert: nein")
+print(
+    "Fake-Treiber implementiert: ja, ausschließlich lokal in v27.34b"
+    if FAKE_DRIVER_MODULE_PATH.exists()
+    else "Fake-Treiber implementiert: nein"
+)
 print("Adapter implementiert: nein")
 print("Datenbank-, Netzwerk-, SQL-, Supabase- und UI-Zugriff: keiner")
 print("Produktive Freigabe: nein")

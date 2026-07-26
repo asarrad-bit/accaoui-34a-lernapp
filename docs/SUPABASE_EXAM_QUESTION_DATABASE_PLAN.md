@@ -1,6 +1,6 @@
 # Supabase Datenbankplan für Prüfungsfragen
 
-Stand: v27.34a
+Stand: v27.34b
 Status: Datenbankplan, nicht live ausgeführt
 
 ## Ziel
@@ -3084,6 +3084,44 @@ Details:
 
 `docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_INTERFACE_CONTRACT.md`
 
+## Erstes lokales Fake-Registry-Treibermodul v27.34b
+
+Der unveränderte v27.34a-Schnittstellenvertrag wurde ausschließlich
+für den lokalen Fake-Treiber umgesetzt.
+
+Das Modul:
+
+- akzeptiert exakt die zehn festgelegten Eingabefelder
+- kopiert Request, Initialzustand und Simulationsdirektiven
+- verwendet ausschließlich instanzgebundenen In-Memory-Zustand
+- bezieht UTC ausschließlich über die injizierte Uhr
+- verbindet `unused -> consumed` und bestätigten Consumption-Record
+  in einem atomaren lokalen Sperrabschnitt
+- lässt höchstens einen Parallelgewinner zu
+- blockiert Zweitverbrauch, Replay und abweichende Bindungen
+- liefert exakt die neun v27.34a-Ergebnisarten
+- leitet Evidence ausschließlich aus bestätigtem Record ab
+- simuliert mehrdeutige Ergebnisse nur über injizierte Direktiven
+- führt keinen automatischen Retry aus
+- reconciliert ausschließlich lesend über `operationId`
+- liefert bei Reconciliation nur `confirmed`, `not_found` oder
+  `ambiguous`
+
+Der ausführende Checker prüft alle Ergebnis-Payloads, Record- und
+Evidence-Konsistenz, einen echten Zwei-Thread-Parallelversuch,
+Reconciliation-Unveränderlichkeit, getrennte Instanzzustände sowie
+Manipulationsmatrizen für Request, Initialzustand und Direktiven.
+
+Ein echter Registry-Adapter wurde nicht erstellt. PostgreSQL,
+Datenbank, SQL, Supabase, Live-Supabase, Netzwerk, Dateisystem,
+Prozesse, Umgebungsvariablen, echte Schlüssel, echte
+Teilnehmerdaten, UI, Autorisierungsgrant, Token und
+`executionGrant` bleiben ausgeschlossen.
+
+Details:
+
+`docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER.md`
+
 ## Direkte Prüfungs-Schreibsperre v27.28d
 
 Die zusätzliche Lockdown-Migration:
@@ -3172,20 +3210,15 @@ Details:
 7. Ergebnis-RPC
 8. getrennte Testumgebung
 
-## Nächster Schritt
+## Folgeschrittgrenze
 
-Nächster Schritt ist ausschließlich `v27.34b`:
+v27.34b ist als erstes lokales Fake-Registry-Treibermodul umgesetzt.
 
-erstes lokales Fake-Registry-Treibermodul nach exakt dem
-v27.34a-Schnittstellenvertrag.
-
-Die Ausführung von v27.34b benötigt weiterhin die ausdrückliche
-Autorisierung des Projekteigentümers und seines verbindlichen
-Projektchats.
-
-v27.34a erteilt insbesondere keine Freigabe für einen Fake-Treiber,
-einen Adapter, einen Autorisierungsgrant, ein Token, einen Verbrauch,
-Registryzugriff oder eine Ausführung.
+Ein weiterer Versionsschritt wird hier nicht eigenständig ausgewählt
+oder autorisiert. Insbesondere erteilt v27.34b keine Freigabe für
+einen echten Registry-Adapter, dessen Factory, Import,
+Instanziierung oder Aufruf, für PostgreSQL, Datenbank, SQL, Supabase,
+Netzwerk, Autorisierungsgrant, Token oder `executionGrant`.
 
 Status: Sicherer Prüfungs-RPC-Weg, Prüfungsversuch-Integrität,
 Vollsimulations-Zustandsintegrität, direkte Prüfungs-Schreibsperre,
@@ -3289,5 +3322,5 @@ ausführungsvertrag v27.33n, reiner Ausführungs-
 descriptor v27.33o, reiner Descriptor-Annahme-
 Guard v27.33p, reiner Ausführungs-Readiness-
 State v27.33q, reiner Readiness-Annahme-
-Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t, vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u, reiner Autorisierungsdescriptor v27.33v, reiner Descriptor-Annahme-Guard v27.33w, reiner Autorisierungs-Readiness-State v27.33x, reiner Autorisierungs-Readiness-Annahme-Guard v27.33y sowie vollständig gesperrter Local-Fake-Registry-Treiber-Schnittstellenvertrag v27.34a dauerhaft eingebunden;
+Guard v27.33r, reiner Ausführungsplan v27.33s, reiner Plan-Annahme-Guard v27.33t, vollständig gesperrter Ausführungs-Autorisierungsvertrag v27.33u, reiner Autorisierungsdescriptor v27.33v, reiner Descriptor-Annahme-Guard v27.33w, reiner Autorisierungs-Readiness-State v27.33x, reiner Autorisierungs-Readiness-Annahme-Guard v27.33y, vollständig gesperrter Local-Fake-Registry-Treiber-Schnittstellenvertrag v27.34a sowie erstes vollständig lokales und instanzgebundenes In-Memory-Fake-Registry-Treibermodul v27.34b dauerhaft eingebunden;
 keine Live-Ausführung
