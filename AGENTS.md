@@ -1,0 +1,24 @@
+# Verbindliche Projektregeln
+
+- `docs/PROJECT_MASTERLIST.md` ist die verbindliche Projektquelle.
+- Vor jeder Änderung müssen zusätzlich gelesen werden:
+  - `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+  - `docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md`
+- Nur den ausdrücklich vorgegebenen Versionsschritt bearbeiten.
+- Keine eigenständige Auswahl des nächsten Tasks.
+- Keine Live-Supabase-Verbindung.
+- Keine echten Schlüssel oder Zugangsdaten.
+- Keine echten Teilnehmerdaten.
+- Schriftliche Fragen, mündliche Fragen und Lernkarten getrennt halten.
+- Kein `git reset`.
+- Kein `git restore`.
+- Keine unerwarteten Änderungen entfernen.
+- Vor jedem Commit:
+  - `git diff --check`
+  - `tools/preflight.py` muss mit einem verfügbaren Python-3-Interpreter ausgeführt werden.
+  - Erlaubte Reihenfolge: `py -3`, `python`, `python3` oder ein vorhandener absoluter Python-Pfad.
+  - Der Preflight darf niemals übersprungen werden.
+- Bei jedem Fehler sofort STOPP.
+- Bei STOPP nicht committen und nicht pushen.
+- Commit und Push nur nach ausdrücklichem Auftrag.
+- Niemals direkt behaupten, ein Push sei erfolgreich, bevor GitHub geprüft wurde.
