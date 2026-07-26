@@ -1,14 +1,5 @@
 # Verbindliche Projektregeln
 
-- Vor jeder Arbeit müssen vollständig gelesen werden:
-  - `docs/PROJECT_STATE_CURRENT.md`
-  - `docs/PROJECT_MASTERLIST.md`
-  - `docs/tasks/CURRENT_TASK.md`
-- Kein Task darf aus Versionsfolgen, früheren Chats oder Erinnerung abgeleitet werden.
-- Eine Umsetzung ist nur zulässig, wenn `docs/tasks/CURRENT_TASK.md` den Task ausdrücklich autorisiert.
-- Bei einem Widerspruch zwischen den verbindlichen Projektdateien sofort STOPP.
-- Bei einem Chatwechsel muss der neue Chat den GitHub-HEAD direkt prüfen.
-- Lokaler Arbeitsbaum und GitHub-Stand müssen vor Änderungen bestätigt werden.
 - `docs/PROJECT_MASTERLIST.md` ist die verbindliche Projektquelle.
 - Vor jeder Arbeit müssen vollständig gelesen werden:
   - `docs/PROJECT_STATE_CURRENT.md`

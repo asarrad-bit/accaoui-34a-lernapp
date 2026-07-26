@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.34c
+Stand: v27.34d
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -782,6 +782,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.34b | Erstes lokales Fake-Registry-Treibermodul exakt nach dem unveränderten v27.34a-Schnittstellenvertrag umgesetzt: akzeptiert ausschließlich die zehn festgelegten Eingabefelder, verwendet vollständig lokalen instanzgebundenen In-Memory-Zustand und eine injizierte UTC-Uhr, führt `unused -> consumed` und bestätigten Consumption-Record in einem atomaren Sperrabschnitt aus, lässt höchstens einen Parallelgewinner zu und blockiert Zweitverbrauch, Replay und abweichende Operations-ID-Bindungen; liefert exakt neun Ergebnisarten, Evidence nur aus bestätigtem Record und kontrollierte mehrdeutige Ergebnisse ohne automatischen Retry; nur lesende Reconciliation über `operationId` liefert ausschließlich `confirmed`, `not_found` oder `ambiguous`; ausführender Checker prüft alle Ergebnis-Payloads, Parallelität, Einmalverbrauch, Reconciliation-Unveränderlichkeit, getrennte Instanzzustände und Manipulationsmatrizen; kein echter Registry-Adapter, PostgreSQL, Datenbank-, SQL-, Supabase-, Netzwerk-, Datei-, Prozess-, Umgebungsvariablen- oder UI-Zugriff und kein Grant, Token oder `executionGrant` – **erledigt** |
 
 | v27.34c | Dauerhafte, chatunabhängige Projektkontrolle mit verbindlichem aktuellem Projektzustand und sicher blockierter Task-Steuerung eingeführt: `docs/PROJECT_STATE_CURRENT.md` bindet Repository, Branch, den letzten funktionalen Stand v27.34b, den direkt bestätigten Vorgänger-Commit und die dynamische lokale sowie GitHub-HEAD-Prüfung; `docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`, erlaubt keine Dateien, keinen Commit und keinen Push; `AGENTS.md` erzwingt die Kontrolldokumente, Widerspruchs-STOPP und das Chatwechsel-Protokoll; der ausführende Kontinuitäts-Checker mit Manipulationsmatrix ist dauerhaft in den Preflight eingebunden; kein funktionaler Folgeschritt ausgewählt oder autorisiert – **erledigt** |
+| v27.34d | Nicht funktionalen Korrektur- und Härtungsschritt für die v27.34c-Kontinuitätskontrolle umgesetzt: exakt eine der zwei identischen Kopien des verbindlichen AGENTS-Kontinuitäts-Regelblocks entfernt; Produktionsvalidierung des Kontinuitäts-Checkers verlangt jetzt den vollständigen Regelblock und jede vollständige Pflichtzeile jeweils exakt einmal und blockiert fehlende, vollständige sowie teilweise Duplikate geschlossen; Manipulationsmatrix prüft Entfernung und Duplikation des vollständigen Blocks sowie jeder einzelnen Pflichtregel; Projektzustand und sicher geschlossener `CURRENT_TASK` aktualisiert; funktionaler Stand bleibt v27.34b und kein weiterer Versionsschritt ist ausgewählt oder autorisiert – **erledigt** |
 
 ### Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -791,6 +792,15 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 - Es ist kein funktionaler Folgeschritt ausgewählt oder autorisiert.
 - Beim Chatwechsel müssen lokaler Arbeitsbaum, lokaler HEAD und GitHub-HEAD direkt geprüft und bestätigt werden.
 - Nach jedem Versionsabschluss müssen Projektzustand, Masterliste und Task-Steuerung verbindlich aktualisiert werden.
+
+### Nicht funktionaler Korrektur- und Härtungsschritt v27.34d
+
+- Der doppelte AGENTS-Kontinuitäts-Regelblock wurde auf exakt eine vollständige Kopie reduziert.
+- Der Kontinuitäts-Checker blockiert fehlende, vollständig duplizierte und teilweise duplizierte Regelblöcke geschlossen.
+- Die Manipulationsmatrix prüft Entfernung und Duplikation des vollständigen Blocks sowie einzelner Pflichtregeln.
+- Der letzte abgeschlossene funktionale Stand bleibt v27.34b.
+- `CURRENT_TASK` bleibt mit `Task-ID: NONE`, `Status: BLOCKED` und `Autorisiert: NEIN` sicher geschlossen.
+- Es ist kein weiterer Versionsschritt ausgewählt oder autorisiert.
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (vorbereitete SQL-Migrationen vorhanden, aber nicht live ausgeführt; keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 

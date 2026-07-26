@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Projektkontinuität und Task-Steuerung v27.34c."""
+"""Prüft die verbindliche Projektkontinuität und Task-Steuerung v27.34d."""
 
 from __future__ import annotations
 
@@ -15,11 +15,11 @@ STATE_PATH = ROOT / "docs" / "PROJECT_STATE_CURRENT.md"
 TASK_PATH = ROOT / "docs" / "tasks" / "CURRENT_TASK.md"
 PREFLIGHT_PATH = ROOT / "tools" / "preflight.py"
 
-PREDECESSOR_SHA = "1bc29a7d522c4c2d67134a946ac5d3f9b1199f11"
+PREDECESSOR_SHA = "b3002f75d635ae7e37260647b843d5a3b4e6a8a1"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 
 EXPECTED_STATE_FIELDS = {
-    "Stand": "v27.34c",
+    "Stand": "v27.34d",
     "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
     "Branch": "`main`",
     "Letzter abgeschlossener funktionaler Stand": "v27.34b",
@@ -37,12 +37,16 @@ EXPECTED_TASK_FIELDS = {
     "Status": "BLOCKED",
     "Autorisiert": "NEIN",
     "Funktionaler Ausgangsstand": "v27.34b",
+    "Letzter abgeschlossener Kontrollschritt": "v27.34d",
     "Erlaubte Dateien": "KEINE",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
 
 STATE_REQUIRED_MARKERS = (
+    "## Kontinuitätshärtung v27.34d",
+    "Die v27.34c-Kontinuitätskontrolle wurde in v27.34d durch die Entfernung des doppelten AGENTS-Regelblocks",
+    "Der letzte funktionale Stand bleibt v27.34b.",
     "## Dynamische Prüfung bei jedem Arbeitsbeginn",
     "Der aktuelle HEAD muss bei jedem Arbeitsbeginn mit Git neu ermittelt werden.",
     "Der GitHub-Stand von `refs/heads/main` muss direkt geprüft werden.",
@@ -72,7 +76,7 @@ TASK_REQUIRED_MARKERS = (
     "## Verbindliche Sperre",
     "Es ist kein weiterer funktionaler Schritt autorisiert.",
     "Der nächste Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt werden.",
-    "`v27.34d` wird nicht automatisch gewählt oder autorisiert.",
+    "`v27.34e` wird nicht automatisch gewählt oder autorisiert.",
     "Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein Task abgeleitet werden.",
     "## Pflichtfelder eines später autorisierten Tasks",
 )
@@ -89,21 +93,26 @@ LATER_TASK_TEMPLATE_FIELDS = (
     "Push-Freigabe",
 )
 
-AGENTS_REQUIRED_MARKERS = (
-    "Vor jeder Arbeit müssen vollständig gelesen werden:",
+AGENTS_REQUIRED_CONTROL_LINES = (
+    "- Vor jeder Arbeit müssen vollständig gelesen werden:",
     "  - `docs/PROJECT_STATE_CURRENT.md`",
     "  - `docs/PROJECT_MASTERLIST.md`",
     "  - `docs/tasks/CURRENT_TASK.md`",
-    "Kein Task darf aus Versionsfolgen, früheren Chats oder Erinnerung abgeleitet werden.",
-    "Eine Umsetzung ist nur zulässig, wenn `docs/tasks/CURRENT_TASK.md` den Task ausdrücklich autorisiert.",
-    "Bei einem Widerspruch zwischen den verbindlichen Projektdateien sofort STOPP.",
-    "Bei einem Chatwechsel muss der neue Chat den GitHub-HEAD direkt prüfen.",
-    "Lokaler Arbeitsbaum und GitHub-Stand müssen vor Änderungen bestätigt werden.",
+    "- Kein Task darf aus Versionsfolgen, früheren Chats oder Erinnerung abgeleitet werden.",
+    "- Eine Umsetzung ist nur zulässig, wenn `docs/tasks/CURRENT_TASK.md` den Task ausdrücklich autorisiert.",
+    "- Bei einem Widerspruch zwischen den verbindlichen Projektdateien sofort STOPP.",
+    "- Bei einem Chatwechsel muss der neue Chat den GitHub-HEAD direkt prüfen.",
+    "- Lokaler Arbeitsbaum und GitHub-Stand müssen vor Änderungen bestätigt werden.",
 )
+AGENTS_REQUIRED_CONTROL_BLOCK = "\n".join(AGENTS_REQUIRED_CONTROL_LINES)
 
 MASTERLIST_REQUIRED_MARKERS = (
     "| v27.34c |",
     "Projektkontinuität und verbindliche Task-Steuerung v27.34c",
+    "| v27.34d |",
+    "### Nicht funktionaler Korrektur- und Härtungsschritt v27.34d",
+    "- Der doppelte AGENTS-Kontinuitäts-Regelblock wurde auf exakt eine vollständige Kopie reduziert.",
+    "- Der letzte abgeschlossene funktionale Stand bleibt v27.34b.",
     "- Verbindlicher Projektzustand: `docs/PROJECT_STATE_CURRENT.md`",
     "- Verbindliche Task-Steuerung: `docs/tasks/CURRENT_TASK.md`",
     "`CURRENT_TASK` ist aktuell `BLOCKED`",
@@ -197,8 +206,8 @@ def validate_task_text(text: str) -> None:
         )
 
     require(
-        text.count("v27.34d") == 1,
-        "CURRENT_TASK darf v27.34d ausschließlich in der Nichtauswahl-Regel nennen",
+        text.count("v27.34e") == 1,
+        "CURRENT_TASK darf v27.34e ausschließlich in der Nichtauswahl-Regel nennen",
     )
     contradictory_grants = (
         "Autorisiert: JA",
@@ -213,13 +222,26 @@ def validate_task_text(text: str) -> None:
 
 
 def validate_agents_text(text: str) -> None:
-    validate_required_markers(text, AGENTS_REQUIRED_MARKERS, "AGENTS.md")
+    normalized_text = text.replace("\r\n", "\n").replace("\r", "\n")
+    normalized_lines = normalized_text.splitlines()
+    require(
+        normalized_text.count(AGENTS_REQUIRED_CONTROL_BLOCK) == 1,
+        "AGENTS.md: vollständiger verbindlicher Kontrollblock muss exakt einmal vorkommen",
+    )
+    for required_line in AGENTS_REQUIRED_CONTROL_LINES:
+        require(
+            normalized_lines.count(required_line) == 1,
+            (
+                "AGENTS.md: vollständige Pflichtzeile muss exakt einmal vorkommen: "
+                f"{required_line}"
+            ),
+        )
 
 
 def validate_masterlist_text(text: str) -> None:
     require(
-        exact_field(text, "Stand") == "v27.34c",
-        "Masterliste muss exakt auf Stand v27.34c stehen",
+        exact_field(text, "Stand") == "v27.34d",
+        "Masterliste muss exakt auf Stand v27.34d stehen",
     )
     validate_required_markers(
         text,
@@ -227,8 +249,8 @@ def validate_masterlist_text(text: str) -> None:
         "PROJECT_MASTERLIST",
     )
     require(
-        "v27.34d" not in text,
-        "Masterliste darf keinen funktionalen Schritt v27.34d auswählen",
+        "v27.34e" not in text,
+        "Masterliste darf keinen funktionalen Schritt v27.34e auswählen",
     )
 
 
@@ -298,7 +320,7 @@ def run_manipulation_matrix(
         checks += 1
 
     state_value_manipulations = {
-        "Stand": "v27.34d",
+        "Stand": "v27.34e",
         "Repository": "`anderes/repository`",
         "Branch": "`anderer-branch`",
         "Letzter abgeschlossener funktionaler Stand": "v27.34c",
@@ -337,10 +359,11 @@ def run_manipulation_matrix(
         checks += 1
 
     task_value_manipulations = {
-        "Task-ID": "v27.34d",
+        "Task-ID": "v27.34e",
         "Status": "AUTHORIZED",
         "Autorisiert": "JA",
         "Funktionaler Ausgangsstand": "v27.34c",
+        "Letzter abgeschlossener Kontrollschritt": "v27.34c",
         "Erlaubte Dateien": "AGENTS.md",
         "Commit erlaubt": "JA",
         "Push erlaubt": "JA",
@@ -389,38 +412,20 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            "`v27.34d` wird nicht automatisch gewählt oder autorisiert.",
-            "`v27.34d` wird automatisch gewählt und autorisiert.",
-            "automatische Auswahl v27.34d",
+            "`v27.34e` wird nicht automatisch gewählt oder autorisiert.",
+            "`v27.34e` wird automatisch gewählt und autorisiert.",
+            "automatische Auswahl v27.34e",
         ),
-        "automatische Auswahl v27.34d",
+        "automatische Auswahl v27.34e",
     )
     checks += 1
 
     agents_newline = "\r\n" if "\r\n" in agents_text else "\n"
     agents_required_control_block = agents_newline.join(
-        (
-            "- Vor jeder Arbeit müssen vollständig gelesen werden:",
-            "  - `docs/PROJECT_STATE_CURRENT.md`",
-            "  - `docs/PROJECT_MASTERLIST.md`",
-            "  - `docs/tasks/CURRENT_TASK.md`",
-            "- Kein Task darf aus Versionsfolgen, früheren Chats oder Erinnerung abgeleitet werden.",
-            "- Eine Umsetzung ist nur zulässig, wenn `docs/tasks/CURRENT_TASK.md` den Task ausdrücklich autorisiert.",
-            "- Bei einem Widerspruch zwischen den verbindlichen Projektdateien sofort STOPP.",
-            "- Bei einem Chatwechsel muss der neue Chat den GitHub-HEAD direkt prüfen.",
-            "- Lokaler Arbeitsbaum und GitHub-Stand müssen vor Änderungen bestätigt werden.",
-            "- `docs/PROJECT_MASTERLIST.md` ist die verbindliche Projektquelle.",
-            "- Vor jeder Arbeit müssen vollständig gelesen werden:",
-            "  - `docs/PROJECT_STATE_CURRENT.md`",
-            "  - `docs/PROJECT_MASTERLIST.md`",
-            "  - `docs/tasks/CURRENT_TASK.md`",
-            "- Kein Task darf aus Versionsfolgen, früheren Chats oder Erinnerung abgeleitet werden.",
-            "- Eine Umsetzung ist nur zulässig, wenn `docs/tasks/CURRENT_TASK.md` den Task ausdrücklich autorisiert.",
-            "- Bei einem Widerspruch zwischen den verbindlichen Projektdateien sofort STOPP.",
-            "- Bei einem Chatwechsel muss der neue Chat den GitHub-HEAD direkt prüfen.",
-            "- Lokaler Arbeitsbaum und GitHub-Stand müssen vor Änderungen bestätigt werden.",
-        )
+        AGENTS_REQUIRED_CONTROL_LINES
     )
+
+    validate_agents_text(agents_text)
     require(
         agents_text.count(agents_required_control_block) == 1,
         "AGENTS.md: vollständiger verbindlicher Kontrollblock muss exakt einmal vorkommen",
@@ -440,6 +445,84 @@ def run_manipulation_matrix(
         "AGENTS.md vollständiger verbindlicher Kontrollblock fehlt",
     )
     checks += 1
+
+    validate_agents_text(agents_text)
+    require(
+        agents_text.count(agents_required_control_block) == 1,
+        "AGENTS.md: vollständiger verbindlicher Kontrollblock muss vor Duplikation exakt einmal vorkommen",
+    )
+    duplicated_agents_block_text = agents_text.replace(
+        agents_required_control_block,
+        (
+            agents_required_control_block
+            + agents_newline
+            + agents_required_control_block
+        ),
+        1,
+    )
+    require(
+        duplicated_agents_block_text != agents_text,
+        "AGENTS.md: Duplikation des verbindlichen Kontrollblocks blieb wirkungslos",
+    )
+    must_reject(
+        validate_agents_text,
+        duplicated_agents_block_text,
+        "AGENTS.md vollständiger verbindlicher Kontrollblock dupliziert",
+    )
+    checks += 1
+
+    for required_line in AGENTS_REQUIRED_CONTROL_LINES:
+        target_line = required_line + agents_newline
+
+        validate_agents_text(agents_text)
+        require(
+            agents_text.count(target_line) == 1,
+            (
+                "AGENTS.md: vollständige Pflichtzeile muss vor Entfernung "
+                f"exakt einmal vorkommen: {required_line}"
+            ),
+        )
+        removed_agents_line_text = agents_text.replace(target_line, "", 1)
+        require(
+            removed_agents_line_text != agents_text,
+            (
+                "AGENTS.md: Entfernung der vollständigen Pflichtzeile blieb "
+                f"wirkungslos: {required_line}"
+            ),
+        )
+        must_reject(
+            validate_agents_text,
+            removed_agents_line_text,
+            f"AGENTS.md vollständige Pflichtzeile fehlt: {required_line}",
+        )
+        checks += 1
+
+        validate_agents_text(agents_text)
+        require(
+            agents_text.count(target_line) == 1,
+            (
+                "AGENTS.md: vollständige Pflichtzeile muss vor Duplikation "
+                f"exakt einmal vorkommen: {required_line}"
+            ),
+        )
+        duplicated_agents_line_text = agents_text.replace(
+            target_line,
+            target_line + target_line,
+            1,
+        )
+        require(
+            duplicated_agents_line_text != agents_text,
+            (
+                "AGENTS.md: Duplikation der vollständigen Pflichtzeile blieb "
+                f"wirkungslos: {required_line}"
+            ),
+        )
+        must_reject(
+            validate_agents_text,
+            duplicated_agents_line_text,
+            f"AGENTS.md vollständige Pflichtzeile dupliziert: {required_line}",
+        )
+        checks += 1
 
     for marker in MASTERLIST_REQUIRED_MARKERS:
         if marker == "`CURRENT_TASK` ist aktuell `BLOCKED`":
@@ -501,8 +584,8 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuitäts- und Task-Steuerungsprüfung v27.34c: OK")
-    print("PROJECT_STATE_CURRENT: v27.34c / funktionaler Stand v27.34b")
+    print("Projektkontinuitäts- und Task-Steuerungsprüfung v27.34d: OK")
+    print("PROJECT_STATE_CURRENT: v27.34d / funktionaler Stand v27.34b")
     print("CURRENT_TASK: NONE / BLOCKED / nicht autorisiert")
     print("AGENTS-Regeln und Chatwechsel-Protokoll: OK")
     print("Preflight-Einbindung: OK")

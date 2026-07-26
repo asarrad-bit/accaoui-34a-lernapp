@@ -1,14 +1,18 @@
 # Aktueller Projektzustand
 
-Stand: v27.34c
+Stand: v27.34d
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.34b
-Letzter direkt bestätigter Vorgänger-Commit: `1bc29a7d522c4c2d67134a946ac5d3f9b1199f11`
+Letzter direkt bestätigter Vorgänger-Commit: `b3002f75d635ae7e37260647b843d5a3b4e6a8a1`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.34b abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
 Aktueller Blocker: Auswahl durch Projekteigentümer und verbindlichen Projektchat
+
+## Kontinuitätshärtung v27.34d
+
+Die v27.34c-Kontinuitätskontrolle wurde in v27.34d durch die Entfernung des doppelten AGENTS-Regelblocks und eine geschlossene Duplikatprüfung im Kontinuitäts-Checker gehärtet. Der letzte funktionale Stand bleibt v27.34b. Es ist kein funktionaler Folgeschritt autorisiert.
 
 ## Dynamische Prüfung bei jedem Arbeitsbeginn
 
