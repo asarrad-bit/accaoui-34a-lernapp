@@ -1493,6 +1493,25 @@ def check_exam_result_history_disposable_postgresql_test_python_environment_mate
         )
 
 
+def check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_adapter_contract():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-adapter-contract.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-disposable PostgreSQL-Local-Fake-Registry-"
+            "Adapter-Verhaltensvertrag v27.34e fehlgeschlagen"
+        )
+
+
 def check_project_continuity_control():
     code, stdout, stderr = run_command(
         f'"{sys.executable}" tools/check-project-continuity-control.py'
@@ -1506,7 +1525,7 @@ def check_project_continuity_control():
 
     if code != 0:
         errors.append(
-            "Projektkontinuitäts- und Task-Steuerungsprüfung v27.34c "
+            "Projektkontinuitäts- und Task-Steuerungsprüfung v27.34e "
             "fehlgeschlagen"
         )
 
@@ -1792,6 +1811,9 @@ def main():
         "tools/accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver.py",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver.py",
         "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER.md",
+        "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-adapter-contract.json",
+        "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-adapter-contract.py",
+        "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_ADAPTER_CONTRACT.md",
         "docs/PROJECT_STATE_CURRENT.md",
         "docs/tasks/CURRENT_TASK.md",
         "tools/check-project-continuity-control.py",
@@ -1910,6 +1932,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_implementation_execution_authorization_readiness_acceptance_guard()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_interface_contract()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver()
+    check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_adapter_contract()
     check_project_continuity_control()
     check_git_diff_check()
     check_protected_core_files_v2356()

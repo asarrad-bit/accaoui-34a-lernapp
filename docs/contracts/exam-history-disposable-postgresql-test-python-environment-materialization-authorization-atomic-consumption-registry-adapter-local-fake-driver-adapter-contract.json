@@ -1,0 +1,517 @@
+{
+  "version": "v27.34e",
+  "contractVersion": 1,
+  "status": "planned_local_fake_atomic_consumption_registry_adapter_behavior_fully_locked_not_implemented",
+  "productiveReleaseAllowed": false,
+  "sourceBoundary": {
+    "repository": "asarrad-bit/accaoui-34a-lernapp",
+    "branch": "main",
+    "requiredPredecessorVersion": "v27.34d",
+    "requiredPredecessorCommit": "84729c58c5fcb61b7f7ad72d1d695ee2d7095b86",
+    "canonicalFileFingerprintAlgorithm": "sha256_raw_file_bytes_lowercase_hex",
+    "canonicalJsonFingerprintAlgorithm": "sha256_utf8_sorted_keys_compact_json_ensure_ascii_false",
+    "boundFiles": [
+      {
+        "path": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_INTERFACE_CONTRACT.md",
+        "sha256": "67f6f24da7aab04e00a90da129e3b4884eebe5c4963ee4184f8b9fd2b4ffa547",
+        "role": "v27_34a_interface_contract_document"
+      },
+      {
+        "path": "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-interface-contract.json",
+        "sha256": "77d2528a4e46d69fecec9f40499f19aaedcca167e27a4b949915cff253adee6c",
+        "role": "v27_34a_machine_readable_interface_contract"
+      },
+      {
+        "path": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER.md",
+        "sha256": "2d225021a0cf270cc6338055ff678495dc50f674bcb1be5a3215d16519d43e4a",
+        "role": "v27_34b_fake_driver_document"
+      },
+      {
+        "path": "tools/accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver.py",
+        "sha256": "49a229332edc4c60a69f3356b35e18a79ba926e7512b9b1d82f849c2daf3793c",
+        "role": "v27_34b_fake_driver_module"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-interface-contract.py",
+        "sha256": "55c87ecaa044219c3f09256cff0026ecee2f0ad1bd125293e427a731eb440506",
+        "role": "v27_34a_interface_contract_checker"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver.py",
+        "sha256": "e7b6b9c9b8e62f6a7eafdaa7d1dc1c0a263788afab58d1a6637569fc92b09965",
+        "role": "v27_34b_fake_driver_checker"
+      }
+    ],
+    "boundInterfaceSections": {
+      "pythonInterfaceBoundarySha256": "0df1618f11f9d96fe12d82a3f200aee66f0d74fbf0c99bf8c403ada47a5eeed9",
+      "inputBoundarySha256": "0b3675d7e154e7325fe3da9ccf72ba4d4eecfc5536f142f035b9852cc38ab6cf",
+      "resultBoundarySha256": "1242675e3864291ef4c6ef61f446dc47d95d5173f2591a486977ef6ffea64819",
+      "reconciliationBoundarySha256": "7537275e8241b6b883626fe86cbcb97d1f599f10b7bfd33baa21214cf72db08e",
+      "timeoutBoundarySha256": "dafb9e7fd54399c9c7609c50c53b25a5b3afa2f35deae39a2f48218a62f0d917",
+      "fakeDriverBoundarySha256": "492b4c1659462076941aafae3321d5bb559a32c2c3398c93a1bb3c5a7d18236e",
+      "sourceTypesProtocolsAndFactorySha256": "bcbfb90b18cc4b835c82b9d32a0c693defcf0606a0694b634b04328c114b4e8e"
+    },
+    "payloadTypesMustBeImportedFromFakeDriverModule": true,
+    "payloadTypeCopiesAllowed": false,
+    "parallelPayloadTypeDefinitionsAllowed": false
+  },
+  "adapterDefinitionBoundary": {
+    "modulePath": "tools/accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter.py",
+    "publicProtocolName": "AtomicConsumptionRegistryAdapter",
+    "publicProtocolDefinitionModule": "accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter",
+    "protocolKind": "typing.Protocol",
+    "protocolRuntimeCheckable": false,
+    "protocolMayBeDefinedElsewhere": false,
+    "privateConcreteClassName": "_LocalFakeAtomicConsumptionRegistryAdapter",
+    "privateConcreteClassFinal": true,
+    "exactSlots": [
+      "_driver"
+    ],
+    "additionalInstanceAttributesAllowed": false,
+    "globalMutableStateAllowed": false,
+    "singletonAllowed": false,
+    "implicitDependencyResolutionAllowed": false,
+    "exactImportedTypeNames": [
+      "AtomicConsumptionRequest",
+      "AtomicConsumptionResult",
+      "ReconciliationResult",
+      "LocalFakeAtomicConsumptionRegistryDriver",
+      "_LocalFakeAtomicConsumptionRegistryDriver"
+    ],
+    "importedTypeSourceModule": "accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver",
+    "importedTypesMayBeRedefined": false
+  },
+  "factoryBoundary": {
+    "name": "build_atomic_consumption_registry_adapter",
+    "exactSignature": "def build_atomic_consumption_registry_adapter(*, driver: LocalFakeAtomicConsumptionRegistryDriver) -> AtomicConsumptionRegistryAdapter",
+    "parameterName": "driver",
+    "parameterKind": "keyword_only",
+    "defaultAllowed": false,
+    "optionalDriverAllowed": false,
+    "acceptedConcreteDriverClass": "_LocalFakeAtomicConsumptionRegistryDriver",
+    "exactTypeIdentityExpression": "type(driver) is _LocalFakeAtomicConsumptionRegistryDriver",
+    "subclassesAllowed": false,
+    "wrappersAllowed": false,
+    "proxiesAllowed": false,
+    "mocksAllowed": false,
+    "alternativeDriversAllowed": false,
+    "duckTypingAllowed": false,
+    "invalidDriverExceptionType": "ValueError",
+    "invalidDriverExceptionMessage": "driver must be the exact v27.34b _LocalFakeAtomicConsumptionRegistryDriver instance",
+    "driverCallAllowedDuringFactory": false,
+    "probeOperationAllowed": false,
+    "clockReadAllowed": false,
+    "stateMutationAllowed": false
+  },
+  "atomicOperationBoundary": {
+    "name": "consume_materialization_authorization_atomically",
+    "exactSignature": "def consume_materialization_authorization_atomically(self, request: AtomicConsumptionRequest) -> AtomicConsumptionResult",
+    "requestMutationAllowed": false,
+    "defensiveDeepcopyBeforeDriverCallRequired": true,
+    "driverMethodName": "compare_and_set_with_consumption_record",
+    "exactDriverCallCount": 1,
+    "additionalDriverReadAllowed": false,
+    "additionalDriverWriteAllowed": false,
+    "automaticRetryAllowed": false,
+    "originalRequestMustRemainEqual": true,
+    "resultValidationAgainstV27_34aRequired": true,
+    "resultKindValidationRequired": true,
+    "statusValidationRequired": true,
+    "reasonValidationRequired": true,
+    "payloadFieldValidationRequired": true,
+    "operationIdMustEqualRequest": true,
+    "unknownFieldsAllowed": false,
+    "additionalFieldsAllowed": false,
+    "validDomainResultReclassificationAllowed": false,
+    "defensiveResultDeepcopyRequired": true,
+    "sameMutableResultInstanceAllowed": false
+  },
+  "atomicExceptionBoundary": {
+    "caughtExceptionBase": "Exception",
+    "caughtPhases": [
+      "request_deepcopy",
+      "driver_call",
+      "result_validation",
+      "result_projection_deepcopy"
+    ],
+    "baseExceptionCaught": false,
+    "keyboardInterruptCaught": false,
+    "systemExitCaught": false,
+    "rawExceptionTypeExposed": false,
+    "rawExceptionMessageExposed": false,
+    "operationIdExtractionRule": "use_original_request_operationId_only_if_type_request_is_exact_dict_and_type_field_is_exact_str_else_empty_string",
+    "exactMappedResultFieldOrder": [
+      "status",
+      "reason",
+      "resultKind",
+      "operationId",
+      "consumptionStatus",
+      "reconciliationRequired",
+      "retryAllowed",
+      "executionGrant"
+    ],
+    "exactMappedResult": {
+      "status": "authorization_consumption_blocked_execution_locked",
+      "reason": "authorization_consumption_operation_failed",
+      "resultKind": "operation_failed",
+      "operationId": "derived_by_operationIdExtractionRule",
+      "consumptionStatus": "not_consumed_by_operation",
+      "reconciliationRequired": false,
+      "retryAllowed": false,
+      "executionGrant": false
+    },
+    "consumptionRecordAllowed": false,
+    "evidenceAllowed": false
+  },
+  "reconciliationBoundary": {
+    "name": "reconcile_materialization_authorization_consumption",
+    "exactSignature": "def reconcile_materialization_authorization_consumption(self, operation_id: str) -> ReconciliationResult",
+    "operationIdExactPythonType": "str",
+    "operationIdFormat": "canonical_lowercase_uuid_v4",
+    "validationImplementation": "re_fullmatch_without_compiled_global_state",
+    "invalidOperationIdExceptionType": "ValueError",
+    "invalidOperationIdExceptionMessage": "operation_id must be a canonical lowercase UUID v4",
+    "driverCalledForInvalidOperationId": false,
+    "driverMethodName": "read_consumption_by_operation_id",
+    "exactDriverCallCount": 1,
+    "automaticRetryAllowed": false,
+    "consumptionOperationAllowed": false,
+    "stateMutationAllowed": false,
+    "resultValidationAgainstV27_34aRequired": true,
+    "operationIdMustEqualInput": true,
+    "unknownFieldsAllowed": false,
+    "additionalFieldsAllowed": false,
+    "defensiveResultDeepcopyRequired": true,
+    "sameMutableResultInstanceAllowed": false,
+    "caughtExceptionBase": "Exception",
+    "caughtPhases": [
+      "driver_call",
+      "result_validation",
+      "result_projection_deepcopy"
+    ],
+    "baseExceptionCaught": false,
+    "rawExceptionTypeExposed": false,
+    "rawExceptionMessageExposed": false,
+    "exactMappedAmbiguousFieldOrder": [
+      "status",
+      "reason",
+      "reconciliationKind",
+      "operationId",
+      "consumptionStatus",
+      "writePerformed",
+      "retryPerformed",
+      "executionGrant"
+    ],
+    "exactMappedAmbiguousResult": {
+      "status": "authorization_consumption_reconciliation_ambiguous_execution_locked",
+      "reason": "authorization_consumption_reconciliation_ambiguous",
+      "reconciliationKind": "ambiguous",
+      "operationId": "validated_operation_id",
+      "consumptionStatus": "unknown",
+      "writePerformed": false,
+      "retryPerformed": false,
+      "executionGrant": false
+    },
+    "consumptionRecordAllowedOnMappedAmbiguous": false,
+    "evidenceAllowedOnMappedAmbiguous": false
+  },
+  "resultValidationBoundary": {
+    "schemaSourcePath": "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-interface-contract.json",
+    "atomicSchemaJsonPointer": "/resultBoundary",
+    "atomicSchemaSha256": "1242675e3864291ef4c6ef61f446dc47d95d5173f2591a486977ef6ffea64819",
+    "reconciliationSchemaJsonPointer": "/reconciliationBoundary",
+    "reconciliationSchemaSha256": "7537275e8241b6b883626fe86cbcb97d1f599f10b7bfd33baa21214cf72db08e",
+    "exactAtomicResultKinds": [
+      "committed",
+      "already_consumed",
+      "parallel_conflict",
+      "binding_conflict",
+      "expired",
+      "adapter_unavailable",
+      "atomicity_unavailable",
+      "commit_ambiguous",
+      "operation_failed"
+    ],
+    "exactAtomicResultKindCount": 9,
+    "exactReconciliationKinds": [
+      "confirmed",
+      "not_found",
+      "ambiguous"
+    ],
+    "exactReconciliationKindCount": 3,
+    "atomicCommonFieldOrder": [
+      "status",
+      "reason",
+      "resultKind",
+      "operationId",
+      "consumptionStatus",
+      "reconciliationRequired",
+      "retryAllowed",
+      "executionGrant"
+    ],
+    "reconciliationCommonFieldOrder": [
+      "status",
+      "reason",
+      "reconciliationKind",
+      "operationId",
+      "consumptionStatus",
+      "writePerformed",
+      "retryPerformed",
+      "executionGrant"
+    ],
+    "confirmedPayloadFieldOrder": [
+      "consumptionRecord",
+      "evidence"
+    ],
+    "exactPythonTypesFromSchemaRequired": true,
+    "exactLiteralValuesFromSchemaRequired": true,
+    "requiredAndForbiddenFieldsFromSchemaRequired": true,
+    "recordEvidenceConsistencyFromSchemaRequired": true,
+    "operationIdBindingRequired": true,
+    "unknownFieldsAllowed": false,
+    "executionGrantMustBeFalse": true,
+    "retryAllowedMustBeFalse": true,
+    "retryPerformedMustBeFalse": true,
+    "validDomainResultReclassificationAllowed": false,
+    "parallelPayloadSchemasAllowed": false
+  },
+  "timeoutBoundary": {
+    "operationTimeoutMilliseconds": 15000,
+    "connectTimeoutMilliseconds": 3000,
+    "statementTimeoutMilliseconds": 5000,
+    "lockTimeoutMilliseconds": 2000,
+    "localAdapterResponsibility": "contract_metadata_only",
+    "adapterTimerLogicAllowed": false,
+    "sleepAllowed": false,
+    "wallClockAllowed": false,
+    "threadsAllowed": false,
+    "signalsAllowed": false,
+    "timeoutRetryAllowed": false,
+    "newTimeoutResultKindAllowed": false,
+    "timeoutResultsSource": "injected_v27_34b_fake_driver_simulation_directives_only"
+  },
+  "importBoundary": {
+    "exactAllowedImports": [
+      "copy.deepcopy",
+      "re.fullmatch",
+      "typing.Protocol",
+      "typing.final",
+      "accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver.AtomicConsumptionRequest",
+      "accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver.AtomicConsumptionResult",
+      "accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver.ReconciliationResult",
+      "accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver.LocalFakeAtomicConsumptionRegistryDriver",
+      "accaoui_disposable_test_python_environment_materialization_authorization_atomic_consumption_registry_local_fake_driver._LocalFakeAtomicConsumptionRegistryDriver"
+    ],
+    "allowedImportsAreExhaustive": true,
+    "forbiddenImports": [
+      "psycopg",
+      "postgresql",
+      "supabase",
+      "database_libraries",
+      "network_libraries",
+      "os",
+      "pathlib",
+      "subprocess",
+      "socket",
+      "asyncio",
+      "threading",
+      "time",
+      "datetime"
+    ],
+    "environmentVariableReadAllowed": false,
+    "filesystemAccessAllowed": false,
+    "dynamicImportAllowed": false,
+    "importlibAllowed": false,
+    "evalAllowed": false,
+    "execAllowed": false
+  },
+  "historicalCheckerInventoryBoundary": {
+    "expectedCheckerCount": 28,
+    "historicalLockKind": "unconditional_current_filesystem_adapter_module_absence_guard",
+    "laterConditionalSwitchRule": "if_adapter_module_absent_preserve_current_absence_guard_else_require_v27_34e_contract_future_authorized_adapter_checker_and_adapter_document_without_weakening_any_historical_validation",
+    "eachCheckerInheritsHistoricalLockKindAndLaterConditionalSwitchRule": true,
+    "futureAdapterImplementationCheckerPath": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-adapter.py",
+    "futureAdapterImplementationDocumentPath": "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_ADAPTER.md",
+    "checkers": [
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-operation-contract.py",
+        "sha256": "05b84b72ca36c08cf08e2396804206eadccb6bdc73375ddecad2b8f04184107e"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-contract.py",
+        "sha256": "0c07b87e6268060af97dd0c0da3b56032fa45d8572e6b64c176ec64fadbeecdb"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-descriptor.py",
+        "sha256": "ba39cd9c95b9a938353a20cb70bf5ba7aff4f99ceb2a83938f83132bac067b53"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-descriptor-acceptance-guard.py",
+        "sha256": "39b92bb060ca5eff19fdaaa1092f38deb8faf5341af1736e6ce27dfb687754fd"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-execution-plan-acceptance-guard.py",
+        "sha256": "23c99f68439facbc8a7b03866ff1e16a9793561609ebe3a21e2b5fc431ac41d8"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-contract.py",
+        "sha256": "7b7e431398d6be0f1712123ae747fd2857b6d1a10079633cd2f58e5eb1ad99bb"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-descriptor.py",
+        "sha256": "5e265167f1bddac5274b5f64d004ae51a59acad78457d3ab074a3a698f85bf44"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-descriptor-acceptance-guard.py",
+        "sha256": "8977efc0d680d4adde00e1aeff241ba029cfe6237ff6f20ea0ea476392fc1fc6"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-authorization-contract.py",
+        "sha256": "63beafe77e83086bcca69b1869599cd6b66ee3af364a71cb047044eca1fd9601"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-authorization-descriptor.py",
+        "sha256": "6865a8db332a936c18d93caaafb7a4d66312ec3f49d2130e685c669c0ca9aa87"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-authorization-descriptor-acceptance-guard.py",
+        "sha256": "c2fedeb03c196d8d76dbbb7bf5f7d28bdf9d2eaa33d0291604d6e28c8ee15ed4"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-authorization-readiness.py",
+        "sha256": "b91f521e55e76cbdebf9b0132c229f6d84b6fbcb508ae7de099fe07e299194ea"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-authorization-readiness-acceptance-guard.py",
+        "sha256": "4cb6b18658c2566d621b47dd116aed351240c062ae5326ecf1841fd0ac535fdd"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-contract.py",
+        "sha256": "8db240d43c307a6df61b025b0b354c4279ef78f0d8306f149bea48e204b5500d"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-descriptor.py",
+        "sha256": "1d94be5d04fcf82258f9781a13da4efb251b495b3b767b74ae48a3fde50320da"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-descriptor-acceptance-guard.py",
+        "sha256": "599f9fbbff4631de7bff37427d4bc0eed37b3b747529e532af4b8302010cad67"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-plan.py",
+        "sha256": "b04d8863bf8e87f4b02bbab8f22cf273e389eb151d47ea86d2cbd754f8389df2"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-plan-acceptance-guard.py",
+        "sha256": "fcdf51eeb90ba7cdc667a8e790aedee6017482421f1fb1166a048b5fb4205037"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-readiness.py",
+        "sha256": "a5ad4b5fce4ed33d76981fa09f3a415e2d2a7a72e777819b760d2fb73bd30709"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-execution-readiness-acceptance-guard.py",
+        "sha256": "866a5e323f5f6560c1a15db4674e2d5513fa0326104152630513911d578ce03b"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-plan.py",
+        "sha256": "e650afedeb5fbf2103610d8ede358613b4480343067aa941d8f2c2a50809dc27"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-plan-acceptance-guard.py",
+        "sha256": "b027750ce3e7b6999b6527827f5689e106341c6f5b1d6d4f35c5b50e7b33bef7"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-readiness.py",
+        "sha256": "5ea9defd6b24d4432a33dfe16043882aa35af605a4d964177cf65185df18e826"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-implementation-readiness-acceptance-guard.py",
+        "sha256": "6c54941e8882e36cda88680e5a2a9eeb64fedd979ca9c7b2ab58e8b3cd49a6ca"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver.py",
+        "sha256": "e7b6b9c9b8e62f6a7eafdaa7d1dc1c0a263788afab58d1a6637569fc92b09965"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-interface-contract.py",
+        "sha256": "55c87ecaa044219c3f09256cff0026ecee2f0ad1bd125293e427a731eb440506"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-readiness.py",
+        "sha256": "3dd15d35e706f5a9013dc5f550b04f589b720681e6c14df36d2e4ddc488fd5e0"
+      },
+      {
+        "path": "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-readiness-acceptance-guard.py",
+        "sha256": "e2c8ddee2dd4967790e8654113cbf4a7e5bb5c590f20130fa421fa9cb3786209"
+      }
+    ]
+  },
+  "implementationBoundary": {
+    "adapterBehaviorContractPrepared": true,
+    "historicalCheckerInventoryPrepared": true,
+    "adapterModuleCreated": false,
+    "adapterProtocolImplemented": false,
+    "adapterConcreteClassImplemented": false,
+    "adapterFactoryImplemented": false,
+    "adapterImported": false,
+    "adapterInstantiated": false,
+    "adapterInvoked": false,
+    "registryReadPerformed": false,
+    "registryWritePerformed": false,
+    "atomicCompareAndSetPerformed": false,
+    "reconciliationReadPerformed": false,
+    "authorizationConsumed": false,
+    "authorizationGranted": false,
+    "authorizationTokenGenerated": false,
+    "trustedClockRead": false,
+    "filesystemReadPerformed": false,
+    "filesystemMutationPerformed": false,
+    "processExecuted": false,
+    "environmentVariableRead": false,
+    "networkExecuted": false,
+    "driverImported": false,
+    "databaseConnectionCreated": false,
+    "databaseTestExecuted": false,
+    "sqlCreated": false,
+    "sqlMigrationCreated": false,
+    "liveSupabaseConnected": false,
+    "frontendIntegration": false,
+    "uiIntegration": false,
+    "executionGrant": false
+  },
+  "securityBoundary": {
+    "realRegistryAccessAllowed": false,
+    "postgresqlAllowed": false,
+    "databaseAllowed": false,
+    "sqlAllowed": false,
+    "supabaseAllowed": false,
+    "liveSupabaseAllowed": false,
+    "networkAllowed": false,
+    "filesystemAllowed": false,
+    "processAllowed": false,
+    "environmentVariablesAllowed": false,
+    "realKeysAllowed": false,
+    "realParticipantDataAllowed": false,
+    "clockAccessAllowed": false,
+    "authorizationGrant": false,
+    "authorizationToken": false,
+    "authorizationMayBeConsumed": false,
+    "executionGrant": false,
+    "productiveReleaseAllowed": false,
+    "adapterImplementationAllowed": false,
+    "adapterImportAllowed": false,
+    "adapterInstantiationAllowed": false,
+    "adapterInvocationAllowed": false
+  },
+  "futureBoundary": {
+    "nextVersionAutomaticallySelected": false,
+    "automaticallyForbiddenVersion": "v27.34f",
+    "nextTaskAuthorized": false,
+    "adapterImplementationAuthorized": false,
+    "adapterModuleCreated": false,
+    "futureAdapterImplementationRequiresOwnerAndProjectChatAuthorization": true,
+    "futureAdapterImplementationRequiresExactV27_34eContract": true,
+    "historicalCheckerChangesAllowedInV27_34e": false
+  }
+}

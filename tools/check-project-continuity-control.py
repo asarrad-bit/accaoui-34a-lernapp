@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Projektkontinuität und Task-Steuerung v27.34d."""
+"""Prüft die verbindliche Projektkontinuität und Task-Steuerung v27.34e."""
 
 from __future__ import annotations
 
@@ -15,11 +15,11 @@ STATE_PATH = ROOT / "docs" / "PROJECT_STATE_CURRENT.md"
 TASK_PATH = ROOT / "docs" / "tasks" / "CURRENT_TASK.md"
 PREFLIGHT_PATH = ROOT / "tools" / "preflight.py"
 
-PREDECESSOR_SHA = "b3002f75d635ae7e37260647b843d5a3b4e6a8a1"
+PREDECESSOR_SHA = "84729c58c5fcb61b7f7ad72d1d695ee2d7095b86"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 
 EXPECTED_STATE_FIELDS = {
-    "Stand": "v27.34d",
+    "Stand": "v27.34e",
     "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
     "Branch": "`main`",
     "Letzter abgeschlossener funktionaler Stand": "v27.34b",
@@ -37,16 +37,18 @@ EXPECTED_TASK_FIELDS = {
     "Status": "BLOCKED",
     "Autorisiert": "NEIN",
     "Funktionaler Ausgangsstand": "v27.34b",
-    "Letzter abgeschlossener Kontrollschritt": "v27.34d",
+    "Letzter abgeschlossener Kontrollschritt": "v27.34e",
     "Erlaubte Dateien": "KEINE",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
 
 STATE_REQUIRED_MARKERS = (
-    "## Kontinuitätshärtung v27.34d",
-    "Die v27.34c-Kontinuitätskontrolle wurde in v27.34d durch die Entfernung des doppelten AGENTS-Regelblocks",
+    "## Vertragsklärung v27.34e",
+    "Der vollständig gesperrte Verhaltensvertrag für einen späteren ausschließlich lokalen Atomic-Consumption-Registry-Adapter",
+    "Factory-Typidentität, Adapterform, defensive Request- und Ergebnis-Kopien, exakte Ergebnisvalidierung, Exception-Mapping, Reconciliation, Timeout-Zuständigkeit, Importgrenze und die Inventur der 28 historischen Sperrchecker",
     "Der letzte funktionale Stand bleibt v27.34b.",
+    "Es wurde kein Adapter erstellt, importiert, instanziiert oder aufgerufen.",
     "## Dynamische Prüfung bei jedem Arbeitsbeginn",
     "Der aktuelle HEAD muss bei jedem Arbeitsbeginn mit Git neu ermittelt werden.",
     "Der GitHub-Stand von `refs/heads/main` muss direkt geprüft werden.",
@@ -76,7 +78,9 @@ TASK_REQUIRED_MARKERS = (
     "## Verbindliche Sperre",
     "Es ist kein weiterer funktionaler Schritt autorisiert.",
     "Der nächste Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt werden.",
-    "`v27.34e` wird nicht automatisch gewählt oder autorisiert.",
+    "`v27.34f` wird nicht automatisch gewählt oder autorisiert.",
+    "## Abgeschlossener Vertragsklärungsschritt v27.34e",
+    "Es wurde kein Adapter implementiert, importiert, instanziiert oder aufgerufen.",
     "Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein Task abgeleitet werden.",
     "## Pflichtfelder eines später autorisierten Tasks",
 )
@@ -113,6 +117,12 @@ MASTERLIST_REQUIRED_MARKERS = (
     "### Nicht funktionaler Korrektur- und Härtungsschritt v27.34d",
     "- Der doppelte AGENTS-Kontinuitäts-Regelblock wurde auf exakt eine vollständige Kopie reduziert.",
     "- Der letzte abgeschlossene funktionale Stand bleibt v27.34b.",
+    "| v27.34e |",
+    "### Vollständig gesperrter lokaler Adapter-Verhaltensvertrag v27.34e",
+    "Das NO-GO-Audit wurde durch einen kanonisch gebundenen, maschinenlesbaren Verhaltensvertrag",
+    "Exakt 28 historische Adapter-Sperrchecker sind mit SHA-256-Dateifingerprints inventarisiert",
+    "Kein Adapter wurde implementiert, importiert, instanziiert oder aufgerufen.",
+    "`v27.34f` wird nicht automatisch ausgewählt oder autorisiert.",
     "- Verbindlicher Projektzustand: `docs/PROJECT_STATE_CURRENT.md`",
     "- Verbindliche Task-Steuerung: `docs/tasks/CURRENT_TASK.md`",
     "`CURRENT_TASK` ist aktuell `BLOCKED`",
@@ -206,8 +216,8 @@ def validate_task_text(text: str) -> None:
         )
 
     require(
-        text.count("v27.34e") == 1,
-        "CURRENT_TASK darf v27.34e ausschließlich in der Nichtauswahl-Regel nennen",
+        text.count("v27.34f") == 1,
+        "CURRENT_TASK darf v27.34f ausschließlich in der Nichtauswahl-Regel nennen",
     )
     contradictory_grants = (
         "Autorisiert: JA",
@@ -240,8 +250,8 @@ def validate_agents_text(text: str) -> None:
 
 def validate_masterlist_text(text: str) -> None:
     require(
-        exact_field(text, "Stand") == "v27.34d",
-        "Masterliste muss exakt auf Stand v27.34d stehen",
+        exact_field(text, "Stand") == "v27.34e",
+        "Masterliste muss exakt auf Stand v27.34e stehen",
     )
     validate_required_markers(
         text,
@@ -249,8 +259,8 @@ def validate_masterlist_text(text: str) -> None:
         "PROJECT_MASTERLIST",
     )
     require(
-        "v27.34e" not in text,
-        "Masterliste darf keinen funktionalen Schritt v27.34e auswählen",
+        "v27.34f" in text,
+        "Masterliste muss die Nichtauswahl von v27.34f dokumentieren",
     )
 
 
@@ -320,7 +330,7 @@ def run_manipulation_matrix(
         checks += 1
 
     state_value_manipulations = {
-        "Stand": "v27.34e",
+        "Stand": "v27.34f",
         "Repository": "`anderes/repository`",
         "Branch": "`anderer-branch`",
         "Letzter abgeschlossener funktionaler Stand": "v27.34c",
@@ -359,7 +369,7 @@ def run_manipulation_matrix(
         checks += 1
 
     task_value_manipulations = {
-        "Task-ID": "v27.34e",
+        "Task-ID": "v27.34f",
         "Status": "AUTHORIZED",
         "Autorisiert": "JA",
         "Funktionaler Ausgangsstand": "v27.34c",
@@ -412,11 +422,11 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            "`v27.34e` wird nicht automatisch gewählt oder autorisiert.",
-            "`v27.34e` wird automatisch gewählt und autorisiert.",
-            "automatische Auswahl v27.34e",
+            "`v27.34f` wird nicht automatisch gewählt oder autorisiert.",
+            "`v27.34f` wird automatisch gewählt und autorisiert.",
+            "automatische Auswahl v27.34f",
         ),
-        "automatische Auswahl v27.34e",
+        "automatische Auswahl v27.34f",
     )
     checks += 1
 
@@ -584,8 +594,8 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuitäts- und Task-Steuerungsprüfung v27.34d: OK")
-    print("PROJECT_STATE_CURRENT: v27.34d / funktionaler Stand v27.34b")
+    print("Projektkontinuität und Task-Steuerung v27.34e: OK")
+    print("PROJECT_STATE_CURRENT: v27.34e / funktionaler Stand v27.34b")
     print("CURRENT_TASK: NONE / BLOCKED / nicht autorisiert")
     print("AGENTS-Regeln und Chatwechsel-Protokoll: OK")
     print("Preflight-Einbindung: OK")
