@@ -51,6 +51,22 @@ CHECKER_RELATIVE_PATH = (
     "adapter-local-fake-driver-adapter-contract.py"
 )
 
+HISTORICAL_MASTERLIST_TABLE_ENTRY_MARKER = "| v27.34e |"
+HISTORICAL_MASTERLIST_SECTION_MARKER = (
+    "### Vollständig gesperrter lokaler Adapter-Verhaltensvertrag v27.34e"
+)
+
+FORBIDDEN_CURRENT_TASK_ACCESS_PHRASES = (
+    "Registryzugriff: ja",
+    "Datenbankzugriff: ja",
+    "SQL-Zugriff: ja",
+    "Supabase-Zugriff: ja",
+    "Netzwerkzugriff: ja",
+    "authorizationGrant",
+    "authorizationToken",
+    "executionGrant",
+)
+
 EXPECTED_CONTRACT_FILE_SHA256 = (
     "5faca9b213ef4018d0ef00a42aa75c3f6ea1fb91a0609b46fb031f7a596fa2f8"
 )
@@ -688,7 +704,101 @@ def validate_historical_inventory(contract: dict[str, Any]) -> None:
         )
 
 
-def validate_project_documents() -> None:
+def validate_historical_masterlist_markers(masterlist: str) -> None:
+    require(
+        masterlist.count(HISTORICAL_MASTERLIST_TABLE_ENTRY_MARKER) == 1,
+        "Masterliste: historischer v27.34e-Tabelleneintrag fehlt oder ist dupliziert",
+    )
+    require(
+        masterlist.count(HISTORICAL_MASTERLIST_SECTION_MARKER) == 1,
+        "Masterliste: historischer v27.34e-Abschnitt fehlt oder ist dupliziert",
+    )
+
+
+def must_reject_historical_masterlist_markers(candidate: str, label: str) -> None:
+    try:
+        validate_historical_masterlist_markers(candidate)
+    except ValidationError:
+        return
+    raise ValidationError(f"Manipulation wurde nicht blockiert: {label}")
+
+
+def run_historical_masterlist_manipulation_checks(masterlist: str) -> int:
+    checks = 0
+    must_reject_historical_masterlist_markers(
+        masterlist.replace(HISTORICAL_MASTERLIST_TABLE_ENTRY_MARKER, "", 1),
+        "historischer v27.34e-Tabelleneintrag entfernt",
+    )
+    checks += 1
+    must_reject_historical_masterlist_markers(
+        masterlist + "\n" + HISTORICAL_MASTERLIST_TABLE_ENTRY_MARKER + "\n",
+        "historischer v27.34e-Tabelleneintrag dupliziert",
+    )
+    checks += 1
+    must_reject_historical_masterlist_markers(
+        masterlist.replace(HISTORICAL_MASTERLIST_SECTION_MARKER, "", 1),
+        "historischer v27.34e-Abschnitt entfernt",
+    )
+    checks += 1
+    must_reject_historical_masterlist_markers(
+        masterlist + "\n" + HISTORICAL_MASTERLIST_SECTION_MARKER + "\n",
+        "historischer v27.34e-Abschnitt dupliziert",
+    )
+    checks += 1
+    return checks
+
+
+def validate_current_task_safety_boundaries(task: str) -> None:
+    require("Commit erlaubt: NEIN" in task, "CURRENT_TASK: Commit-Sperre fehlt")
+    require("Push erlaubt: NEIN" in task, "CURRENT_TASK: Push-Sperre fehlt")
+    adapter_relative_path = ADAPTER_MODULE_PATH.relative_to(ROOT).as_posix()
+    require(
+        adapter_relative_path not in task,
+        "CURRENT_TASK: Adapterdatei ist als erlaubte Datei eingetragen",
+    )
+    for phrase in FORBIDDEN_CURRENT_TASK_ACCESS_PHRASES:
+        require(
+            phrase not in task,
+            f"CURRENT_TASK: verbotene Freigabe eingetragen: {phrase}",
+        )
+
+
+def must_reject_current_task_safety_boundaries(candidate: str, label: str) -> None:
+    try:
+        validate_current_task_safety_boundaries(candidate)
+    except ValidationError:
+        return
+    raise ValidationError(f"Manipulation wurde nicht blockiert: {label}")
+
+
+def run_current_task_manipulation_checks(task: str) -> int:
+    checks = 0
+    must_reject_current_task_safety_boundaries(
+        task.replace("Commit erlaubt: NEIN", "Commit erlaubt: JA", 1),
+        "Commit erlaubt: JA",
+    )
+    checks += 1
+    must_reject_current_task_safety_boundaries(
+        task.replace("Push erlaubt: NEIN", "Push erlaubt: JA", 1),
+        "Push erlaubt: JA",
+    )
+    checks += 1
+    adapter_relative_path = ADAPTER_MODULE_PATH.relative_to(ROOT).as_posix()
+    must_reject_current_task_safety_boundaries(
+        task + "\n- `" + adapter_relative_path + "`\n",
+        "Adapterdatei als erlaubte Datei eingetragen",
+    )
+    checks += 1
+    for phrase in FORBIDDEN_CURRENT_TASK_ACCESS_PHRASES:
+        must_reject_current_task_safety_boundaries(
+            task + "\n" + phrase + "\n",
+            f"verbotene Freigabe eingetragen: {phrase}",
+        )
+        checks += 1
+    return checks
+
+
+def validate_project_documents() -> int:
     document = read_text(DOCUMENT_PATH, "v27.34e-Vertragsdokumentation")
     document_markers = (
         "Stand: v27.34e",
@@ -707,39 +817,27 @@ def validate_project_documents() -> None:
 
     masterlist = read_text(MASTERLIST_PATH, "PROJECT_MASTERLIST")
     for marker in (
-        "Stand: v27.34e",
-        "| v27.34e |",
-        "### Vollständig gesperrter lokaler Adapter-Verhaltensvertrag v27.34e",
         "Der letzte abgeschlossene funktionale Stand bleibt v27.34b.",
         "Kein Adapter wurde implementiert",
         "`v27.34f` wird nicht automatisch ausgewählt oder autorisiert.",
     ):
         require(marker in masterlist, f"Masterliste: Marker fehlt: {marker}")
+    validate_historical_masterlist_markers(masterlist)
+    masterlist_manipulation_checks = run_historical_masterlist_manipulation_checks(
+        masterlist
+    )
 
     state = read_text(STATE_PATH, "PROJECT_STATE_CURRENT")
     for marker in (
-        "Stand: v27.34e",
-        f"Letzter direkt bestätigter Vorgänger-Commit: `{EXPECTED_PREDECESSOR_SHA}`",
         "Letzter abgeschlossener funktionaler Stand: v27.34b",
         "Aktueller HEAD: DYNAMISCH ZU PRÜFEN",
-        "## Vertragsklärung v27.34e",
         "Weiterer funktionaler Schritt autorisiert: NEIN",
     ):
         require(marker in state, f"Projektzustand: Marker fehlt: {marker}")
 
     task = read_text(TASK_PATH, "CURRENT_TASK")
-    for marker in (
-        "Task-ID: NONE",
-        "Status: BLOCKED",
-        "Autorisiert: NEIN",
-        "Letzter abgeschlossener Kontrollschritt: v27.34e",
-        "Erlaubte Dateien: KEINE",
-        "Commit erlaubt: NEIN",
-        "Push erlaubt: NEIN",
-        "## Abgeschlossener Vertragsklärungsschritt v27.34e",
-        "`v27.34f` wird nicht automatisch gewählt oder autorisiert.",
-    ):
-        require(marker in task, f"CURRENT_TASK: Marker fehlt: {marker}")
+    validate_current_task_safety_boundaries(task)
+    task_manipulation_checks = run_current_task_manipulation_checks(task)
 
     database_plan = read_text(DATABASE_PLAN_PATH, "Datenbankplan")
     for marker in (
@@ -750,11 +848,18 @@ def validate_project_documents() -> None:
     ):
         require(marker in database_plan, f"Datenbankplan: Marker fehlt: {marker}")
 
-    continuity = read_text(CONTINUITY_CHECKER_PATH, "Kontinuitäts-Checker")
-    require(
-        "Projektkontinuität und Task-Steuerung v27.34e" in continuity,
-        "Kontinuitäts-Checker ist nicht auf v27.34e aktualisiert",
-    )
+        continuity = read_text(CONTINUITY_CHECKER_PATH, "Kontinuitäts-Checker")
+    for marker in (
+        "| v27.34e |",
+        "### Vollständig gesperrter lokaler Adapter-Verhaltensvertrag v27.34e",
+    ):
+        require(
+            continuity.count(marker) == 1,
+            (
+                "Kontinuitäts-Checker: Historischer v27.34e-Marker "
+                f"nicht exakt einmal vorhanden: {marker}"
+            ),
+        )
 
     preflight = read_text(PREFLIGHT_PATH, "Preflight")
     require(
@@ -770,6 +875,8 @@ def validate_project_documents() -> None:
         in preflight,
         "Preflight-Funktion für v27.34e fehlt",
     )
+
+    return masterlist_manipulation_checks + task_manipulation_checks
 
 
 def validate_security_boundaries(contract: dict[str, Any]) -> None:
@@ -902,8 +1009,8 @@ def validate_contract(contract: dict[str, Any]) -> int:
     validate_result_bindings(contract, source_contract)
     validate_historical_inventory(contract)
     validate_security_boundaries(contract)
-    validate_project_documents()
-    return run_manipulation_matrix(contract)
+    document_manipulation_checks = validate_project_documents()
+    return run_manipulation_matrix(contract) + document_manipulation_checks
 
 
 def main() -> int:

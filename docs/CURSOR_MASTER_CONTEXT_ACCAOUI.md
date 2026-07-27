@@ -1,10 +1,11 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v24.6h
+Stand: v27.34f
 Projekt: Accaoui §34a Lern-App
 Lokaler Pfad: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+Letzter abgeschlossener funktionaler Stand: v27.34b
 
 ## 1. Sofort-Regel
 
@@ -13,10 +14,15 @@ Keine Blind-Fixes. Cursor darf nicht eigenständig optimieren.
 Immer zuerst prüfen:
 
 ```bash
-git status
-git log -1 --oneline
-python tools/preflight.py
+git status --short
+git branch --show-current
+git rev-parse HEAD
+git ls-remote origin refs/heads/main
 ```
+
+Lokalen und GitHub-HEAD direkt vergleichen. Bei einer Abweichung
+sofort STOPP. Eine Synchronisation ist nur nach gesonderter Freigabe
+zulässig.
 
 Vor jedem Commit:
 
@@ -37,9 +43,12 @@ Nur committen, wenn Preflight grün ist, `git diff --check` keine Ausgabe zeigt 
 Danach immer in dieser Reihenfolge:
 
 1. **Richtiger Laptop / richtiger Arbeitsstand** klären (Arbeit vs. Zuhause)
-2. `git status` prüfen
-3. `git pull --ff-only` ausführen
-4. Nach der Arbeit: **Commit + Push nicht vergessen**
+2. lokalen Arbeitsbaum mit `git status --short` prüfen
+3. Branch und lokalen HEAD direkt prüfen
+4. GitHub-HEAD für `refs/heads/main` direkt prüfen
+5. lokalen und GitHub-HEAD vergleichen; bei Abweichung sofort STOPP
+6. Synchronisation nur nach gesonderter Freigabe
+7. Commit und Push nur nach ausdrücklicher Freigabe
 
 ## 2. Ziel der App
 
@@ -161,7 +170,7 @@ Aktueller funktionaler Stand:
 | v24.6f | Prüfungsanalyse responsive stabil | **erledigt** |
 | v24.6x | Prüfungsanalyse optisch/funktional; Buttontexte verbessert | **erledigt** |
 | v24.6g | Fehlerübersicht nach Themen: Premium, responsive | **erledigt** |
-| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **offen** |
+| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |
 | v24.6 | Browser-Endtest Vollsimulation mit Teilbewertung | **offen** |
 
 Ziel:
@@ -400,12 +409,11 @@ Cursor darf nicht:
 
 ### v24.6 – Prüfungssimulation und UX (Auszug)
 
-**Erledigt:** v24.6b (Wiederholung/offene Fragen), v24.6d/e (Mix), v24.6f/x (Prüfungsanalyse UI), v24.6g (Fehlerübersicht UI)
+**Erledigt:** v24.6b (Wiederholung/offene Fragen), v24.6c (Pausieren/Fortsetzen), v24.6d/e (Mix), v24.6f/x (Prüfungsanalyse UI), v24.6g (Fehlerübersicht UI)
 
 **Offen:**
 
-1. **v24.6c** – Pausieren/Fortsetzen (Session-Reihenfolge speichern wegen v24.6d/e)
-2. **v24.6** – Browser-Endtest 82/120 mit Teilbewertung
+1. **v24.6** – Browser-Endtest 82/120 mit Teilbewertung
 
 ### v25 – Schriftliche Fragenbank ausbauen
 
@@ -435,40 +443,45 @@ Cursor darf nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-**v24.6c – Prüfung/Lernen pausieren und später fortsetzen**
+Kein funktionaler Folgeschritt ist autorisiert.
 
-Wichtig wegen v24.6d/e (gemischte Reihenfolge): Beim Fortsetzen muss die **konkrete Session** gespeichert werden:
-
-- Fragenreihenfolge
-- Antwortreihenfolge
-- aktuelle Frage
-- ausgewählte Antworten
-- Prüfungstimer
-- Modus/Sessiontyp
-- Punkte-/Auswertungszustand soweit nötig
-
-Danach: **v24.6** – Browser-Endtest Vollsimulation 82/120 mit Teilbewertung.
+Die Auswahl eines späteren Tasks erfolgt ausschließlich durch den
+Projekteigentümer, den verbindlichen Projektchat und
+`docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder
+Erinnerung darf kein Task abgeleitet werden.
 
 ## 15. Wenn ein neuer Chat beginnt
 
-Zuerst nennen:
+Zuerst vollständig lesen:
 
 ```txt
+AGENTS.md
+docs/PROJECT_STATE_CURRENT.md
 docs/PROJECT_MASTERLIST.md
-docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
-docs/EXAM_SIMULATION_AUDIT.md
-docs/EXAM_POINTS_PLAN.md
-docs/EXAM_CORE_SELECTION_PLAN.md
+docs/tasks/CURRENT_TASK.md
 ```
 
-Dann **NUR IN GIT BASH AUSFÜHREN**:
+Vor jeder Änderung zusätzlich vollständig lesen:
+
+```txt
+docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
+docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md
+```
+
+Danach Branch und Commitstände direkt prüfen:
 
 ```bash
-git status
-git pull --ff-only
-git log -1 --oneline
-python tools/preflight.py
+git status --short
+git branch --show-current
+git rev-parse HEAD
+git ls-remote origin refs/heads/main
 ```
+
+Lokalen und GitHub-HEAD direkt vergleichen. Bei einer Abweichung
+sofort STOPP. Synchronisation nur nach gesonderter Freigabe.
+Kein Task darf aus Versionsfolgen, früheren Chats oder
+Erinnerung abgeleitet werden. Commit und Push erfolgen niemals
+automatisch.
 
 **Hinweis:** Neue Chats starten mit **GitHub-Dokumenten** (Liste oben). Große ZIPs mit Quellen-PDFs **nur bei Bedarf** hochladen – nicht standardmäßig in jeden Chat.
 

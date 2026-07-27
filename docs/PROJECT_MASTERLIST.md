@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.34e
+Stand: v27.34f
 Branch: `main`
 Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
@@ -45,8 +45,8 @@ Immer in dieser Reihenfolge arbeiten:
 2. Klein ändern
 3. Browser testen
 4. Preflight ausführen
-5. Committen
-6. Pushen
+5. Commit nur nach ausdrücklicher Freigabe
+6. Push nur nach ausdrücklicher Freigabe
 
 Vor jedem Commit ausführen:
 
@@ -79,9 +79,12 @@ Bevor an der Accaoui §34a Lern-App gearbeitet wird, zuerst fragen:
 Danach immer klären:
 
 1. richtiger Laptop / richtiger Arbeitsstand
-2. `git status` prüfen
-3. `git pull --ff-only` ausführen
-4. nach der Arbeit **Commit + Push** nicht vergessen
+2. lokalen Arbeitsbaum mit `git status --short` prüfen
+3. Branch und lokalen HEAD direkt prüfen
+4. GitHub-HEAD für `refs/heads/main` direkt prüfen
+5. lokalen und GitHub-HEAD vergleichen; bei Abweichung sofort STOPP
+6. Synchronisation nur nach gesonderter Freigabe
+7. Commit und Push nur nach ausdrücklicher Freigabe
 
 Details: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` → Arbeitsworkflow / Git-Synchronisation.
 
@@ -784,6 +787,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.34c | Dauerhafte, chatunabhängige Projektkontrolle mit verbindlichem aktuellem Projektzustand und sicher blockierter Task-Steuerung eingeführt: `docs/PROJECT_STATE_CURRENT.md` bindet Repository, Branch, den letzten funktionalen Stand v27.34b, den direkt bestätigten Vorgänger-Commit und die dynamische lokale sowie GitHub-HEAD-Prüfung; `docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`, erlaubt keine Dateien, keinen Commit und keinen Push; `AGENTS.md` erzwingt die Kontrolldokumente, Widerspruchs-STOPP und das Chatwechsel-Protokoll; der ausführende Kontinuitäts-Checker mit Manipulationsmatrix ist dauerhaft in den Preflight eingebunden; kein funktionaler Folgeschritt ausgewählt oder autorisiert – **erledigt** |
 | v27.34d | Nicht funktionalen Korrektur- und Härtungsschritt für die v27.34c-Kontinuitätskontrolle umgesetzt: exakt eine der zwei identischen Kopien des verbindlichen AGENTS-Kontinuitäts-Regelblocks entfernt; Produktionsvalidierung des Kontinuitäts-Checkers verlangt jetzt den vollständigen Regelblock und jede vollständige Pflichtzeile jeweils exakt einmal und blockiert fehlende, vollständige sowie teilweise Duplikate geschlossen; Manipulationsmatrix prüft Entfernung und Duplikation des vollständigen Blocks sowie jeder einzelnen Pflichtregel; Projektzustand und sicher geschlossener `CURRENT_TASK` aktualisiert; funktionaler Stand bleibt v27.34b und kein weiterer Versionsschritt ist ausgewählt oder autorisiert – **erledigt** |
 | v27.34e | Vollständig gesperrten Verhaltensvertrag für einen späteren ausschließlich lokalen Atomic-Consumption-Registry-Adapter gegen den unveränderten v27.34b-Fake-Treiber ergänzt: bindet v27.34a-Vertrag, v27.34b-Modul, Typen, Protokolle, Factory und v27.34d-Ausgangscommit kanonisch per SHA-256; legt das ausschließlich im späteren Adaptermodul definierte Protocol, die private finale Adapterklasse mit einzigem Slot `_driver`, exakte Factory-Typidentität, defensive Request- und Ergebnis-Deepcopies, Einmalaufruf, vollständige Validierung der neun Atomic- und drei Reconciliation-Resultate, deterministisches Exception-Mapping, UUID-v4-Prüfung, reine Timeout-Metadaten sowie eine erschöpfende Importgrenze fest; inventarisiert exakt 28 unveränderte historische Adapter-Sperrchecker mit Dateifingerprints und späterer minimaler zustandsabhängiger Umschaltregel; kein Adapter implementiert, importiert, instanziiert oder aufgerufen, kein Registry-, Datenbank-, SQL-, Supabase-, Netzwerk-, Datei-, Prozess-, Umgebungs-, Uhr-, Grant-, Token-, Verbrauchs- oder `executionGrant`-Zugriff – **erledigt** |
+| v27.34f | Nichtfunktionale Bereinigung und maschinelle Absicherung der vier verbliebenen Projektkontinuitäts-Widerspruchsgruppen umgesetzt: Cursor-Master-Kontext auf v27.34f und den unveränderten funktionalen Stand v27.34b aktualisiert; v24.6c als erledigt dokumentiert und jede aktive oder automatische Task-Auswahl entfernt; verbindliche Pflichtlektüre für neue Chats in Cursor-Kontext und Masterliste an `AGENTS.md`, Projektzustand, Masterliste und `CURRENT_TASK` gebunden; aktive automatische `git pull --ff-only`-Vorgaben durch direkte Arbeitsbaum-, Branch-, lokale HEAD- und GitHub-HEAD-Prüfung mit Abweichungs-STOPP und gesonderter Synchronisationsfreigabe ersetzt; Kontinuitäts-Checker prüft die neuen Pflichtaussagen exakt, blockiert Entfernung, Duplikation, alte aktive Task-Auswahl, automatische Pull-Vorgaben und unvollständige Pflichtlektüre; keine App-, Funktions-, Vertrags-, Adapter-, Datenbank-, Supabase-, Fragen-, UI- oder Migrationsänderung, kein funktionaler Folgeschritt ausgewählt oder autorisiert – **erledigt** |
 
 ### Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -810,6 +814,17 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 - Kein Adapter wurde implementiert, importiert, instanziiert oder aufgerufen.
 - Der letzte abgeschlossene funktionale Stand bleibt v27.34b.
 - `CURRENT_TASK` ist weiterhin `BLOCKED`; `v27.34f` wird nicht automatisch ausgewählt oder autorisiert.
+
+### Nichtfunktionale Projektkontinuitätsbereinigung v27.34f
+
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` steht auf v27.34f und nennt den unveränderten funktionalen Stand v27.34b.
+- v24.6c ist ausschließlich als erledigter historischer Schritt dokumentiert und nicht mehr als offener oder nächster Task ausgewählt.
+- Kein funktionaler Folgeschritt ist autorisiert; eine Task-Auswahl erfolgt ausschließlich durch Projekteigentümer, verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`.
+- Neue Chats lesen vollständig `AGENTS.md`, Projektzustand, Masterliste und `CURRENT_TASK` und prüfen Arbeitsbaum, Branch, lokalen HEAD und GitHub-HEAD direkt.
+- Bei einer Abweichung wird sofort gestoppt; Synchronisation, Commit und Push erfolgen nur nach gesonderter beziehungsweise ausdrücklicher Freigabe.
+- Die vier aktiven automatischen `git pull --ff-only`-Vorgaben wurden entfernt.
+- Der Kontinuitäts-Checker blockiert Entfernung, Duplikation, alte aktive Task-Auswahl, automatische Pull-Vorgaben und unvollständige Pflichtlektüre geschlossen.
+- Der funktionale Stand bleibt v27.34b; kein Folgetask ist ausgewählt oder autorisiert.
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (vorbereitete SQL-Migrationen vorhanden, aber nicht live ausgeführt; keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
@@ -1220,24 +1235,36 @@ Optional parallel: Projektstruktur gegen alte Kopien prüfen; mündliche Prüfun
 
 ## 15. Start in neuem Chat
 
-Zuerst nennen:
+Zuerst vollständig lesen:
 
 ```txt
+AGENTS.md
+docs/PROJECT_STATE_CURRENT.md
 docs/PROJECT_MASTERLIST.md
-docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
-docs/EXAM_SIMULATION_AUDIT.md
-docs/EXAM_POINTS_PLAN.md
-docs/EXAM_CORE_SELECTION_PLAN.md
+docs/tasks/CURRENT_TASK.md
 ```
 
-Dann **NUR IN GIT BASH AUSFÜHREN**:
+Vor jeder Änderung zusätzlich vollständig lesen:
+
+```txt
+docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
+docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md
+```
+
+Danach Branch und Commitstände direkt prüfen:
 
 ```bash
-git status
-git pull --ff-only
-git log -1 --oneline
-python tools/preflight.py
+git status --short
+git branch --show-current
+git rev-parse HEAD
+git ls-remote origin refs/heads/main
 ```
+
+Lokalen und GitHub-HEAD direkt vergleichen. Bei einer Abweichung
+sofort STOPP. Synchronisation nur nach gesonderter Freigabe.
+Kein Task darf aus Versionsfolgen, früheren Chats oder
+Erinnerung abgeleitet werden. Commit und Push erfolgen niemals
+automatisch.
 
 **Hinweis:** Alte Chat-Uploads und Prüfungsmuster sind **nicht automatisch** Arbeitsgrundlage im neuen Chat. Bei Bedarf Prüfungsmuster erneut hochladen oder im Repo dokumentieren.
 

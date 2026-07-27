@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Projektkontinuität und Task-Steuerung v27.34e."""
+"""Prüft die verbindliche Projektkontinuität und Task-Steuerung v27.34f."""
 
 from __future__ import annotations
 
@@ -10,16 +10,17 @@ from typing import Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 AGENTS_PATH = ROOT / "AGENTS.md"
+CURSOR_CONTEXT_PATH = ROOT / "docs" / "CURSOR_MASTER_CONTEXT_ACCAOUI.md"
 MASTERLIST_PATH = ROOT / "docs" / "PROJECT_MASTERLIST.md"
 STATE_PATH = ROOT / "docs" / "PROJECT_STATE_CURRENT.md"
 TASK_PATH = ROOT / "docs" / "tasks" / "CURRENT_TASK.md"
 PREFLIGHT_PATH = ROOT / "tools" / "preflight.py"
 
-PREDECESSOR_SHA = "84729c58c5fcb61b7f7ad72d1d695ee2d7095b86"
+PREDECESSOR_SHA = "a0342fa0d8b2614ad35295c125d6bfdab9eca72c"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 
 EXPECTED_STATE_FIELDS = {
-    "Stand": "v27.34e",
+    "Stand": "v27.34f",
     "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
     "Branch": "`main`",
     "Letzter abgeschlossener funktionaler Stand": "v27.34b",
@@ -37,16 +38,18 @@ EXPECTED_TASK_FIELDS = {
     "Status": "BLOCKED",
     "Autorisiert": "NEIN",
     "Funktionaler Ausgangsstand": "v27.34b",
-    "Letzter abgeschlossener Kontrollschritt": "v27.34e",
+    "Letzter abgeschlossener Kontrollschritt": "v27.34f",
     "Erlaubte Dateien": "KEINE",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
 
 STATE_REQUIRED_MARKERS = (
-    "## Vertragsklärung v27.34e",
-    "Der vollständig gesperrte Verhaltensvertrag für einen späteren ausschließlich lokalen Atomic-Consumption-Registry-Adapter",
-    "Factory-Typidentität, Adapterform, defensive Request- und Ergebnis-Kopien, exakte Ergebnisvalidierung, Exception-Mapping, Reconciliation, Timeout-Zuständigkeit, Importgrenze und die Inventur der 28 historischen Sperrchecker",
+    "## Nichtfunktionale Kontinuitätsbereinigung v27.34f",
+    "Die vier verbliebenen Projektkontinuitäts-Widerspruchsgruppen wurden",
+    "Der Kontinuitäts-Checker erzwingt die neuen v27.34f-Pflichtaussagen,",
+    "automatische Pull-Vorgaben in den betroffenen aktiven Abschnitten und",
+    "unvollständige Pflichtlektüre.",
     "Der letzte funktionale Stand bleibt v27.34b.",
     "Es wurde kein Adapter erstellt, importiert, instanziiert oder aufgerufen.",
     "## Dynamische Prüfung bei jedem Arbeitsbeginn",
@@ -68,8 +71,10 @@ STATE_REQUIRED_MARKERS = (
     "`docs/PROJECT_STATE_CURRENT.md`",
     "`docs/PROJECT_MASTERLIST.md`",
     "`docs/tasks/CURRENT_TASK.md`",
+    "`AGENTS.md`",
     "GitHub-HEAD für `refs/heads/main` direkt prüfen.",
     "Bei Abweichung oder Widerspruch sofort STOPP.",
+    "Synchronisation nur nach gesonderter Freigabe ausführen.",
     "## Aktualisierungspflicht nach jedem Versionsabschluss",
     "Nach jedem Versionsabschluss müssen Projektzustand, Masterliste und Task-Steuerung",
 )
@@ -78,9 +83,10 @@ TASK_REQUIRED_MARKERS = (
     "## Verbindliche Sperre",
     "Es ist kein weiterer funktionaler Schritt autorisiert.",
     "Der nächste Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt werden.",
-    "`v27.34f` wird nicht automatisch gewählt oder autorisiert.",
-    "## Abgeschlossener Vertragsklärungsschritt v27.34e",
-    "Es wurde kein Adapter implementiert, importiert, instanziiert oder aufgerufen.",
+    "Kein Folgeschritt wird automatisch gewählt oder autorisiert.",
+    "## Abgeschlossener nichtfunktionaler Kontrollschritt v27.34f",
+    "Die vier Projektkontinuitäts-Widerspruchsgruppen wurden korrigiert",
+    "Der funktionale Ausgangsstand bleibt v27.34b.",
     "Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein Task abgeleitet werden.",
     "## Pflichtfelder eines später autorisierten Tasks",
 )
@@ -110,6 +116,60 @@ AGENTS_REQUIRED_CONTROL_LINES = (
 )
 AGENTS_REQUIRED_CONTROL_BLOCK = "\n".join(AGENTS_REQUIRED_CONTROL_LINES)
 
+REQUIRED_CHAT_READING_BLOCK = "\n".join(
+    (
+        "AGENTS.md",
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/PROJECT_MASTERLIST.md",
+        "docs/tasks/CURRENT_TASK.md",
+    )
+)
+
+CURSOR_REQUIRED_MARKERS = (
+    "Stand: v27.34f",
+    "Letzter abgeschlossener funktionaler Stand: v27.34b",
+    "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
+    "**Erledigt:** v24.6b (Wiederholung/offene Fragen), v24.6c (Pausieren/Fortsetzen),",
+    "## 14. Nächster sinnvoller Schritt",
+    "Kein funktionaler Folgeschritt ist autorisiert.",
+    "Die Auswahl eines späteren Tasks erfolgt ausschließlich durch den",
+    "Projekteigentümer, den verbindlichen Projektchat und",
+    "`docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder",
+    "Erinnerung darf kein Task abgeleitet werden.",
+    "## 15. Wenn ein neuer Chat beginnt",
+    "Zuerst vollständig lesen:",
+    REQUIRED_CHAT_READING_BLOCK,
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md",
+)
+
+CURSOR_V2734F_EXACT_MARKERS = (
+    "Stand: v27.34f",
+    "Letzter abgeschlossener funktionaler Stand: v27.34b",
+    "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
+    "## 14. Nächster sinnvoller Schritt",
+    "Kein funktionaler Folgeschritt ist autorisiert.",
+    REQUIRED_CHAT_READING_BLOCK,
+)
+
+CURSOR_NEW_CHAT_LOCAL_HEAD_MARKERS = (
+    "git rev-parse HEAD",
+    "Lokalen und GitHub-HEAD direkt vergleichen",
+)
+
+STATE_V2734F_EXACT_MARKERS = (
+    "Stand: v27.34f",
+    f"Letzter direkt bestätigter Vorgänger-Commit: `{PREDECESSOR_SHA}`",
+    "## Nichtfunktionale Kontinuitätsbereinigung v27.34f",
+    "Der Kontinuitäts-Checker erzwingt die neuen v27.34f-Pflichtaussagen,",
+)
+
+TASK_V2734F_EXACT_MARKERS = (
+    "Letzter abgeschlossener Kontrollschritt: v27.34f",
+    "Kein Folgeschritt wird automatisch gewählt oder autorisiert.",
+    "## Abgeschlossener nichtfunktionaler Kontrollschritt v27.34f",
+)
+
 MASTERLIST_REQUIRED_MARKERS = (
     "| v27.34c |",
     "Projektkontinuität und verbindliche Task-Steuerung v27.34c",
@@ -123,6 +183,14 @@ MASTERLIST_REQUIRED_MARKERS = (
     "Exakt 28 historische Adapter-Sperrchecker sind mit SHA-256-Dateifingerprints inventarisiert",
     "Kein Adapter wurde implementiert, importiert, instanziiert oder aufgerufen.",
     "`v27.34f` wird nicht automatisch ausgewählt oder autorisiert.",
+    "| v27.34f |",
+    "### Nichtfunktionale Projektkontinuitätsbereinigung v27.34f",
+    "`docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` steht auf v27.34f",
+    "v24.6c ist ausschließlich als erledigter historischer Schritt dokumentiert",
+    "Kein funktionaler Folgeschritt ist autorisiert; eine Task-Auswahl erfolgt ausschließlich",
+    "Die vier aktiven automatischen `git pull --ff-only`-Vorgaben wurden entfernt.",
+    "Der Kontinuitäts-Checker blockiert Entfernung, Duplikation, alte aktive Task-Auswahl",
+    "Der funktionale Stand bleibt v27.34b; kein Folgetask ist ausgewählt oder autorisiert.",
     "- Verbindlicher Projektzustand: `docs/PROJECT_STATE_CURRENT.md`",
     "- Verbindliche Task-Steuerung: `docs/tasks/CURRENT_TASK.md`",
     "`CURRENT_TASK` ist aktuell `BLOCKED`",
@@ -130,6 +198,16 @@ MASTERLIST_REQUIRED_MARKERS = (
     "`Autorisiert` ist `NEIN`",
     "Es ist kein funktionaler Folgeschritt ausgewählt oder autorisiert.",
     "Diese Bestands- und Backlogliste ist keine Task-Autorisierung.",
+    REQUIRED_CHAT_READING_BLOCK,
+)
+
+MASTERLIST_V2734F_EXACT_MARKERS = (
+    "Stand: v27.34f",
+    "| v27.34f |",
+    "### Nichtfunktionale Projektkontinuitätsbereinigung v27.34f",
+    "- Die vier aktiven automatischen `git pull --ff-only`-Vorgaben wurden entfernt.",
+    "- Der funktionale Stand bleibt v27.34b; kein Folgetask ist ausgewählt oder autorisiert.",
+    REQUIRED_CHAT_READING_BLOCK,
 )
 
 
@@ -190,9 +268,54 @@ def validate_required_markers(
         )
 
 
+def validate_exact_markers(
+    text: str,
+    markers: tuple[str, ...],
+    document_name: str,
+) -> None:
+    for marker in markers:
+        require(
+            text.count(marker) == 1,
+            (
+                f"{document_name}: Pflichtaussage muss exakt einmal vorkommen: "
+                f"{marker}"
+            ),
+        )
+
+
+def section_between(
+    text: str,
+    start_heading: str,
+    end_heading: str | None,
+    document_name: str,
+) -> str:
+    require(
+        text.count(start_heading) == 1,
+        f"{document_name}: Abschnitt muss exakt einmal vorkommen: {start_heading}",
+    )
+    start_index = text.index(start_heading)
+    if end_heading is None:
+        return text[start_index:]
+    require(
+        text.count(end_heading) == 1,
+        f"{document_name}: Folgeabschnitt muss exakt einmal vorkommen: {end_heading}",
+    )
+    end_index = text.index(end_heading, start_index + len(start_heading))
+    require(
+        end_index > start_index,
+        f"{document_name}: Abschnittsreihenfolge ist ungültig: {start_heading}",
+    )
+    return text[start_index:end_index]
+
+
 def validate_state_text(text: str) -> None:
     validate_exact_fields(text, EXPECTED_STATE_FIELDS)
     validate_required_markers(text, STATE_REQUIRED_MARKERS, "PROJECT_STATE_CURRENT")
+    validate_exact_markers(
+        text,
+        STATE_V2734F_EXACT_MARKERS,
+        "PROJECT_STATE_CURRENT",
+    )
 
     commit_shas = set(re.findall(r"\b[0-9a-f]{40}\b", text))
     require(
@@ -208,6 +331,7 @@ def validate_state_text(text: str) -> None:
 def validate_task_text(text: str) -> None:
     validate_exact_fields(text, EXPECTED_TASK_FIELDS)
     validate_required_markers(text, TASK_REQUIRED_MARKERS, "CURRENT_TASK")
+    validate_exact_markers(text, TASK_V2734F_EXACT_MARKERS, "CURRENT_TASK")
 
     for field_name in LATER_TASK_TEMPLATE_FIELDS:
         require(
@@ -216,8 +340,8 @@ def validate_task_text(text: str) -> None:
         )
 
     require(
-        text.count("v27.34f") == 1,
-        "CURRENT_TASK darf v27.34f ausschließlich in der Nichtauswahl-Regel nennen",
+        "v27.34g" not in text,
+        "CURRENT_TASK darf keinen Folgeschritt auswählen oder nennen",
     )
     contradictory_grants = (
         "Autorisiert: JA",
@@ -248,19 +372,154 @@ def validate_agents_text(text: str) -> None:
         )
 
 
+def validate_sync_section(
+    section_text: str,
+    document_name: str,
+    section_name: str,
+) -> None:
+    for marker in (
+        "git status --short",
+        "Branch",
+        "GitHub-HEAD",
+        "sofort STOPP",
+        "Synchronisation nur nach gesonderter Freigabe",
+        "Commit und Push",
+    ):
+        require(
+            marker.casefold() in section_text.casefold(),
+            f"{document_name} / {section_name}: Pflichtaussage fehlt: {marker}",
+        )
+    require(
+        re.search(
+            r"(?im)\blokal(?:e|en|er|es)?\b[^\r\n]{0,80}\bHEAD\b",
+            section_text,
+        )
+        is not None,
+        f"{document_name} / {section_name}: lokale HEAD-Prüfung fehlt",
+    )
+    require(
+        "git pull --ff-only" not in section_text,
+        (
+            f"{document_name} / {section_name}: automatisches "
+            "git pull --ff-only ist unzulässig"
+        ),
+    )
+
+
+def validate_cursor_context_text(text: str) -> None:
+    validate_required_markers(
+        text,
+        CURSOR_REQUIRED_MARKERS,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    validate_exact_markers(
+        text,
+        CURSOR_V2734F_EXACT_MARKERS,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    require(
+        "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **offen** |"
+        not in text,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI: v24.6c darf nicht offen sein",
+    )
+
+    workflow_section = section_between(
+        text,
+        "### Arbeitsworkflow / Git-Synchronisation",
+        "## 2. Ziel der App",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    validate_sync_section(
+        workflow_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        "Arbeitsworkflow / Git-Synchronisation",
+    )
+
+    next_task_section = section_between(
+        text,
+        "## 14. Nächster sinnvoller Schritt",
+        "## 15. Wenn ein neuer Chat beginnt",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    require(
+        "v24.6c" not in next_task_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI: alte aktive Task-Auswahl v24.6c",
+    )
+
+    new_chat_section = section_between(
+        text,
+        "## 15. Wenn ein neuer Chat beginnt",
+        None,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    validate_sync_section(
+        new_chat_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        "Wenn ein neuer Chat beginnt",
+    )
+    validate_exact_markers(
+        new_chat_section,
+        CURSOR_NEW_CHAT_LOCAL_HEAD_MARKERS,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI / Wenn ein neuer Chat beginnt",
+    )
+    require(
+        REQUIRED_CHAT_READING_BLOCK in new_chat_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI: Pflichtlektüre ist unvollständig",
+    )
+    require(
+        "Kein Task darf aus Versionsfolgen, früheren Chats oder"
+        in new_chat_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI: Ableitungssperre fehlt",
+    )
+
+
 def validate_masterlist_text(text: str) -> None:
     require(
-        exact_field(text, "Stand") == "v27.34e",
-        "Masterliste muss exakt auf Stand v27.34e stehen",
+        exact_field(text, "Stand") == "v27.34f",
+        "Masterliste muss exakt auf Stand v27.34f stehen",
     )
     validate_required_markers(
         text,
         MASTERLIST_REQUIRED_MARKERS,
         "PROJECT_MASTERLIST",
     )
+    validate_exact_markers(
+        text,
+        MASTERLIST_V2734F_EXACT_MARKERS,
+        "PROJECT_MASTERLIST",
+    )
+
+    workflow_section = section_between(
+        text,
+        "### Projektarbeitsregel: Arbeit / Zuhause",
+        "## 2. Cursor-Regel",
+        "PROJECT_MASTERLIST",
+    )
+    validate_sync_section(
+        workflow_section,
+        "PROJECT_MASTERLIST",
+        "Projektarbeitsregel: Arbeit / Zuhause",
+    )
+
+    new_chat_section = section_between(
+        text,
+        "## 15. Start in neuem Chat",
+        None,
+        "PROJECT_MASTERLIST",
+    )
+    validate_sync_section(
+        new_chat_section,
+        "PROJECT_MASTERLIST",
+        "Start in neuem Chat",
+    )
     require(
-        "v27.34f" in text,
-        "Masterliste muss die Nichtauswahl von v27.34f dokumentieren",
+        REQUIRED_CHAT_READING_BLOCK in new_chat_section,
+        "PROJECT_MASTERLIST: Pflichtlektüre ist unvollständig",
+    )
+    require(
+        "Kein Task darf aus Versionsfolgen, früheren Chats oder"
+        in new_chat_section,
+        "PROJECT_MASTERLIST: Ableitungssperre fehlt",
     )
 
 
@@ -307,10 +566,54 @@ def must_reject(
     raise ValidationError(f"Manipulation wurde nicht blockiert: {label}")
 
 
+def exercise_exact_marker_manipulations(
+    validator: Callable[[str], None],
+    text: str,
+    markers: tuple[str, ...],
+    document_name: str,
+) -> int:
+    checks = 0
+    for marker in markers:
+        require(
+            text.count(marker) == 1,
+            (
+                f"{document_name}: Ausgangs-Pflichtaussage muss für die "
+                f"Manipulation exakt einmal vorkommen: {marker}"
+            ),
+        )
+
+        removed_text = text.replace(marker, "", 1)
+        require(
+            removed_text != text,
+            f"{document_name}: Entfernung blieb wirkungslos: {marker}",
+        )
+        must_reject(
+            validator,
+            removed_text,
+            f"{document_name}: Pflichtaussage entfernt: {marker}",
+        )
+        checks += 1
+
+        duplicated_text = text.replace(marker, marker + "\n" + marker, 1)
+        require(
+            duplicated_text != text,
+            f"{document_name}: Duplikation blieb wirkungslos: {marker}",
+        )
+        must_reject(
+            validator,
+            duplicated_text,
+            f"{document_name}: Pflichtaussage dupliziert: {marker}",
+        )
+        checks += 1
+
+    return checks
+
+
 def run_manipulation_matrix(
     state_text: str,
     task_text: str,
     agents_text: str,
+    cursor_context_text: str,
     masterlist_text: str,
 ) -> int:
     checks = 0
@@ -330,7 +633,7 @@ def run_manipulation_matrix(
         checks += 1
 
     state_value_manipulations = {
-        "Stand": "v27.34f",
+        "Stand": "v27.34e",
         "Repository": "`anderes/repository`",
         "Branch": "`anderer-branch`",
         "Letzter abgeschlossener funktionaler Stand": "v27.34c",
@@ -373,7 +676,7 @@ def run_manipulation_matrix(
         "Status": "AUTHORIZED",
         "Autorisiert": "JA",
         "Funktionaler Ausgangsstand": "v27.34c",
-        "Letzter abgeschlossener Kontrollschritt": "v27.34c",
+        "Letzter abgeschlossener Kontrollschritt": "v27.34e",
         "Erlaubte Dateien": "AGENTS.md",
         "Commit erlaubt": "JA",
         "Push erlaubt": "JA",
@@ -422,13 +725,26 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            "`v27.34f` wird nicht automatisch gewählt oder autorisiert.",
-            "`v27.34f` wird automatisch gewählt und autorisiert.",
-            "automatische Auswahl v27.34f",
+            "Kein Folgeschritt wird automatisch gewählt oder autorisiert.",
+            "`v27.34g` wird automatisch gewählt und autorisiert.",
+            "automatische Auswahl eines Folgeschritts",
         ),
-        "automatische Auswahl v27.34f",
+        "automatische Auswahl eines Folgeschritts",
     )
     checks += 1
+
+    checks += exercise_exact_marker_manipulations(
+        validate_state_text,
+        state_text,
+        STATE_V2734F_EXACT_MARKERS,
+        "PROJECT_STATE_CURRENT",
+    )
+    checks += exercise_exact_marker_manipulations(
+        validate_task_text,
+        task_text,
+        TASK_V2734F_EXACT_MARKERS,
+        "CURRENT_TASK",
+    )
 
     agents_newline = "\r\n" if "\r\n" in agents_text else "\n"
     agents_required_control_block = agents_newline.join(
@@ -534,6 +850,122 @@ def run_manipulation_matrix(
         )
         checks += 1
 
+    validate_cursor_context_text(cursor_context_text)
+    checks += exercise_exact_marker_manipulations(
+        validate_cursor_context_text,
+        cursor_context_text,
+        CURSOR_V2734F_EXACT_MARKERS,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+
+    cursor_new_chat_section = section_between(
+        cursor_context_text,
+        "## 15. Wenn ein neuer Chat beginnt",
+        None,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    for marker in CURSOR_NEW_CHAT_LOCAL_HEAD_MARKERS:
+        require(
+            cursor_new_chat_section.count(marker) == 1,
+            (
+                "Cursor-Chatwechsel: lokale HEAD-Pflicht muss vor der "
+                f"Manipulation exakt einmal vorkommen: {marker}"
+            ),
+        )
+
+        removed_section = cursor_new_chat_section.replace(marker, "", 1)
+        removed_cursor_text = cursor_context_text.replace(
+            cursor_new_chat_section,
+            removed_section,
+            1,
+        )
+        require(
+            removed_cursor_text != cursor_context_text,
+            f"Cursor-Chatwechsel: Entfernung blieb wirkungslos: {marker}",
+        )
+        must_reject(
+            validate_cursor_context_text,
+            removed_cursor_text,
+            f"Cursor-Chatwechsel: lokale HEAD-Pflicht entfernt: {marker}",
+        )
+        checks += 1
+
+        duplicated_section = cursor_new_chat_section.replace(
+            marker,
+            marker + "\n" + marker,
+            1,
+        )
+        duplicated_cursor_text = cursor_context_text.replace(
+            cursor_new_chat_section,
+            duplicated_section,
+            1,
+        )
+        require(
+            duplicated_cursor_text != cursor_context_text,
+            f"Cursor-Chatwechsel: Duplikation blieb wirkungslos: {marker}",
+        )
+        must_reject(
+            validate_cursor_context_text,
+            duplicated_cursor_text,
+            f"Cursor-Chatwechsel: lokale HEAD-Pflicht dupliziert: {marker}",
+        )
+        checks += 1
+
+    for missing_path in (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+    ):
+        manipulated_reading_block = "\n".join(
+            line
+            for line in REQUIRED_CHAT_READING_BLOCK.splitlines()
+            if line != missing_path
+        )
+        manipulated_cursor_text = changed_once(
+            cursor_context_text,
+            REQUIRED_CHAT_READING_BLOCK,
+            manipulated_reading_block,
+            f"Cursor-Pflichtlektüre fehlt: {missing_path}",
+        )
+        must_reject(
+            validate_cursor_context_text,
+            manipulated_cursor_text,
+            f"Cursor-Pflichtlektüre fehlt: {missing_path}",
+        )
+        checks += 1
+
+    for heading in (
+        "### Arbeitsworkflow / Git-Synchronisation",
+        "## 15. Wenn ein neuer Chat beginnt",
+    ):
+        manipulated_cursor_text = changed_once(
+            cursor_context_text,
+            heading,
+            heading + "\n\n`git pull --ff-only`",
+            f"Cursor automatisches git pull in {heading}",
+        )
+        must_reject(
+            validate_cursor_context_text,
+            manipulated_cursor_text,
+            f"Cursor automatisches git pull in {heading}",
+        )
+        checks += 1
+
+    manipulated_cursor_task_text = changed_once(
+        cursor_context_text,
+        "Kein funktionaler Folgeschritt ist autorisiert.",
+        (
+            "Kein funktionaler Folgeschritt ist autorisiert.\n"
+            "**v24.6c – Prüfung/Lernen pausieren und später fortsetzen**"
+        ),
+        "Cursor alte aktive Task-Auswahl v24.6c",
+    )
+    must_reject(
+        validate_cursor_context_text,
+        manipulated_cursor_task_text,
+        "Cursor alte aktive Task-Auswahl v24.6c",
+    )
+    checks += 1
+
     for marker in MASTERLIST_REQUIRED_MARKERS:
         if marker == "`CURRENT_TASK` ist aktuell `BLOCKED`":
             masterlist_current_task_line = (
@@ -567,6 +999,52 @@ def run_manipulation_matrix(
         )
         checks += 1
 
+    checks += exercise_exact_marker_manipulations(
+        validate_masterlist_text,
+        masterlist_text,
+        MASTERLIST_V2734F_EXACT_MARKERS,
+        "PROJECT_MASTERLIST",
+    )
+
+    for missing_path in (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+    ):
+        manipulated_reading_block = "\n".join(
+            line
+            for line in REQUIRED_CHAT_READING_BLOCK.splitlines()
+            if line != missing_path
+        )
+        manipulated_masterlist_text = changed_once(
+            masterlist_text,
+            REQUIRED_CHAT_READING_BLOCK,
+            manipulated_reading_block,
+            f"Masterlisten-Pflichtlektüre fehlt: {missing_path}",
+        )
+        must_reject(
+            validate_masterlist_text,
+            manipulated_masterlist_text,
+            f"Masterlisten-Pflichtlektüre fehlt: {missing_path}",
+        )
+        checks += 1
+
+    for heading in (
+        "### Projektarbeitsregel: Arbeit / Zuhause",
+        "## 15. Start in neuem Chat",
+    ):
+        manipulated_masterlist_text = changed_once(
+            masterlist_text,
+            heading,
+            heading + "\n\n`git pull --ff-only`",
+            f"Masterliste automatisches git pull in {heading}",
+        )
+        must_reject(
+            validate_masterlist_text,
+            manipulated_masterlist_text,
+            f"Masterliste automatisches git pull in {heading}",
+        )
+        checks += 1
+
     return checks
 
 
@@ -575,18 +1053,21 @@ def main() -> int:
         state_text = read_required_text(STATE_PATH)
         task_text = read_required_text(TASK_PATH)
         agents_text = read_required_text(AGENTS_PATH)
+        cursor_context_text = read_required_text(CURSOR_CONTEXT_PATH)
         masterlist_text = read_required_text(MASTERLIST_PATH)
         preflight_text = read_required_text(PREFLIGHT_PATH)
 
         validate_state_text(state_text)
         validate_task_text(task_text)
         validate_agents_text(agents_text)
+        validate_cursor_context_text(cursor_context_text)
         validate_masterlist_text(masterlist_text)
         validate_preflight_text(preflight_text)
         manipulation_checks = run_manipulation_matrix(
             state_text,
             task_text,
             agents_text,
+            cursor_context_text,
             masterlist_text,
         )
     except ValidationError as exc:
@@ -594,10 +1075,10 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität und Task-Steuerung v27.34e: OK")
-    print("PROJECT_STATE_CURRENT: v27.34e / funktionaler Stand v27.34b")
+    print("Projektkontinuität und Task-Steuerung v27.34f: OK")
+    print("PROJECT_STATE_CURRENT: v27.34f / funktionaler Stand v27.34b")
     print("CURRENT_TASK: NONE / BLOCKED / nicht autorisiert")
-    print("AGENTS-Regeln und Chatwechsel-Protokoll: OK")
+    print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Preflight-Einbindung: OK")
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0
