@@ -831,7 +831,6 @@ def validate_project_documents() -> int:
     for marker in (
         "Letzter abgeschlossener funktionaler Stand: v27.34b",
         "Aktueller HEAD: DYNAMISCH ZU PRÜFEN",
-        "Weiterer funktionaler Schritt autorisiert: NEIN",
     ):
         require(marker in state, f"Projektzustand: Marker fehlt: {marker}")
 

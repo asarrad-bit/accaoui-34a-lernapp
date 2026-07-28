@@ -1,34 +1,46 @@
 # Aktueller Projektzustand
 
-Stand: v27.34f
+Stand: v27.35a
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.34b
-Letzter direkt bestätigter Vorgänger-Commit: `a0342fa0d8b2614ad35295c125d6bfdab9eca72c`
+Letzter direkt bestätigter Vorgänger-Commit: `62947209611c17b5a700fb78cfcfa785f055b2f3`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.34b abgeschlossen
-Weiterer funktionaler Schritt autorisiert: NEIN
-Aktueller Blocker: Auswahl durch Projekteigentümer und verbindlichen Projektchat
+Weiterer funktionaler Schritt autorisiert: JA
+Aktuell autorisierter Task: v27.35b
+Aktueller Blocker: KEINER für v27.35b; jeder weitere Schritt bleibt gesperrt
 
-## Nichtfunktionale Kontinuitätsbereinigung v27.34f
+## Nichtfunktionale Task-Steuerung v27.35a
 
-Die vier verbliebenen Projektkontinuitäts-Widerspruchsgruppen wurden
-in v27.34f nichtfunktional korrigiert: Der Cursor-Master-Kontext steht
-auf v27.34f und dokumentiert v24.6c als erledigt, eine aktive
-Folgetask-Auswahl ist entfernt, die Pflichtlektüre bei einem Chatwechsel
-ist vollständig gebunden und die vier aktiven automatischen
-`git pull --ff-only`-Vorgaben sind durch direkte Arbeitsbaum-, Branch-,
-lokale HEAD- und GitHub-HEAD-Prüfungen mit Abweichungs-STOPP ersetzt.
-Synchronisation, Commit und Push benötigen weiterhin eine gesonderte
-beziehungsweise ausdrückliche Freigabe.
+Die Projektsteuerung wurde von Task-ID NONE, Status BLOCKED und
+Autorisiert NEIN (Stand v27.34f) verbindlich auf den einzigen
+autorisierten Folgetask v27.35b umgestellt. Der letzte abgeschlossene
+funktionale Stand bleibt unverändert v27.34b.
 
-Der Kontinuitäts-Checker erzwingt die neuen v27.34f-Pflichtaussagen,
-blockiert Entfernung und Duplikation, alte aktive Task-Auswahl,
-automatische Pull-Vorgaben in den betroffenen aktiven Abschnitten und
-unvollständige Pflichtlektüre. Die bestehende AGENTS-, dynamische-HEAD-
-und Preflight-Prüfung bleibt erhalten.
+`docs/tasks/CURRENT_TASK.md` steht jetzt auf `Task-ID: v27.35b`,
+`Status: AUTHORIZED`, `Autorisiert: JA`,
+`Erwarteter Ausgangscommit: 62947209611c17b5a700fb78cfcfa785f055b2f3`,
+`Erlaubte Dateien: app.js`, `Commit erlaubt: NEIN` und
+`Push erlaubt: NEIN`.
 
-Der letzte funktionale Stand bleibt v27.34b. Es wurde kein Adapter erstellt, importiert, instanziiert oder aufgerufen. Es ist kein funktionaler Folgeschritt autorisiert.
+Der Kontinuitäts-Checker erzwingt diese v27.35a-Pflichtaussagen und
+blockiert in seiner Manipulationsmatrix mindestens: eine falsche
+Task-ID, einen falschen Status, Autorisiert NEIN, einen anderen
+funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche
+oder andere erlaubte Dateien, Commit erlaubt JA, Push erlaubt JA und
+die automatische Auswahl eines weiteren Tasks. Zusätzlich prüft der
+Checker direkt über Git, dass app.js während v27.35a unverändert
+bleibt.
+
+In v27.35a wurde ausschließlich Projektsteuerungsdokumentation
+geändert: `docs/PROJECT_STATE_CURRENT.md`, `docs/PROJECT_MASTERLIST.md`,
+`docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/tasks/CURRENT_TASK.md`
+und `tools/check-project-continuity-control.py`. app.js wurde in
+v27.35a nicht verändert. Es wurde keine App-, Funktions-, Vertrags-,
+Adapter-, Datenbank-, Supabase-, Fragen-, UI- oder Migrationsdatei
+verändert. Der funktionale Folgeschritt v27.35b selbst ist noch nicht
+umgesetzt.
 
 ## Dynamische Prüfung bei jedem Arbeitsbeginn
 
