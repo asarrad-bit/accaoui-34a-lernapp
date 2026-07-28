@@ -228,6 +228,7 @@ def read_required_text(path: Path) -> str:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise ValidationError(f"Datei ist nicht gültig UTF-8: {path}: {exc}") from exc
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
     require(text.endswith("\n"), f"Abschließender Zeilenumbruch fehlt: {path}")
     return text
 

@@ -9,9 +9,7 @@ Erlaubte Dateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
 
-## Autorisierte Korrekturerweiterung v27.34f
-
-- ## Verbindliche Sperre
+## Verbindliche Sperre
 
 - Es ist kein weiterer funktionaler Schritt autorisiert.
 - Der nächste Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt werden.
