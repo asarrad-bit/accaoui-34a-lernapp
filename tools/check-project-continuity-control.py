@@ -19,6 +19,7 @@ PREFLIGHT_PATH = ROOT / "tools" / "preflight.py"
 APP_JS_PATH = ROOT / "app.js"
 
 PREDECESSOR_SHA = "62947209611c17b5a700fb78cfcfa785f055b2f3"
+CONTROL_COMMIT_SHA = "e3355887a9b6c45fafaa593d5f7c9e5a72e81bf7"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 
 # v27.35b ist der einzige autorisierte Folgetask. Jede Erwähnung eines
@@ -597,21 +598,32 @@ def run_git(args: list[str]) -> str:
     return completed.stdout
 
 
-def validate_app_js_unchanged_since_predecessor() -> None:
+def validate_app_js_unchanged_in_v2735a_control_commit() -> None:
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden; app.js-Prüfung nicht möglich",
     )
     require(APP_JS_PATH.is_file(), "app.js fehlt; erwartete Kern-Datei nicht gefunden")
+
+    run_git(
+        ["merge-base", "--is-ancestor", CONTROL_COMMIT_SHA, "HEAD"]
+    )
+
     diff_output = run_git(
-        ["diff", "--name-only", PREDECESSOR_SHA, "--", "app.js"]
+        [
+            "diff",
+            "--name-only",
+            PREDECESSOR_SHA,
+            CONTROL_COMMIT_SHA,
+            "--",
+            "app.js",
+        ]
     )
     require(
         diff_output.strip() == "",
         (
-            f"app.js wurde seit dem Ausgangscommit {PREDECESSOR_SHA} "
-            "verändert; in v27.35a ist ausschließlich "
-            "Projektsteuerungsdokumentation erlaubt"
+            f"app.js wurde im v27.35a-Kontrollcommit {CONTROL_COMMIT_SHA} "
+            f"gegenüber {PREDECESSOR_SHA} verändert"
         ),
     )
 
@@ -1157,7 +1169,7 @@ def main() -> int:
         validate_cursor_context_text(cursor_context_text)
         validate_masterlist_text(masterlist_text)
         validate_preflight_text(preflight_text)
-        validate_app_js_unchanged_since_predecessor()
+        validate_app_js_unchanged_in_v2735a_control_commit()
         manipulation_checks = run_manipulation_matrix(
             state_text,
             task_text,
@@ -1175,7 +1187,7 @@ def main() -> int:
     print("CURRENT_TASK: v27.35b / AUTHORIZED / app.js, kein Commit, kein Push")
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Preflight-Einbindung: OK")
-    print("app.js seit Ausgangscommit unverändert: OK")
+    print("app.js im v27.35a-Kontrollcommit unverändert: OK")
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0
 
