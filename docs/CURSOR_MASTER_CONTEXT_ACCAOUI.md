@@ -1,11 +1,13 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.35a
+Stand: v27.35b
 Projekt: Accaoui §34a Lern-App
-Lokaler Pfad: `C:\xampp\htdocs\accaoui\v4-dashboard`
+Arbeit: `C:\a34a`
+Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
-Letzter abgeschlossener funktionaler Stand: v27.34b
+Letzter abgeschlossener funktionaler Stand: v27.35b
+Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`
 
 ## 1. Sofort-Regel
 
@@ -443,12 +445,11 @@ Cursor darf nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-Einzig autorisierter nächster Schritt: v27.35b – Dashboard „Nächster
-Lernschritt“ (siehe `docs/tasks/CURRENT_TASK.md`, ausschließlich
-`app.js`, kein Commit, kein Push).
+`CURRENT_TASK` ist `NONE` / `BLOCKED` / nicht autorisiert.
+Kein nächster funktionaler Task ist ausgewählt.
+Keine automatische Task-Auswahl.
 
-Kein Folgeschritt nach v27.35b ist autorisiert. Die Auswahl jedes
-darüber hinausgehenden Tasks erfolgt ausschließlich durch den
+Die Auswahl jedes neuen Tasks erfolgt ausschließlich durch den
 Projekteigentümer, den verbindlichen Projektchat und
 `docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder
 Erinnerung darf kein weiterer Task abgeleitet werden.

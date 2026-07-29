@@ -1,8 +1,11 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.35a
+Stand: v27.35b
 Branch: `main`
-Projektordner: `C:\xampp\htdocs\accaoui\v4-dashboard`
+Arbeits-Laptop: `C:\a34a`
+Git Bash Arbeits-Laptop: `/c/a34a`
+Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
+Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 
 ---
@@ -789,26 +792,28 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.34e | Vollständig gesperrten Verhaltensvertrag für einen späteren ausschließlich lokalen Atomic-Consumption-Registry-Adapter gegen den unveränderten v27.34b-Fake-Treiber ergänzt: bindet v27.34a-Vertrag, v27.34b-Modul, Typen, Protokolle, Factory und v27.34d-Ausgangscommit kanonisch per SHA-256; legt das ausschließlich im späteren Adaptermodul definierte Protocol, die private finale Adapterklasse mit einzigem Slot `_driver`, exakte Factory-Typidentität, defensive Request- und Ergebnis-Deepcopies, Einmalaufruf, vollständige Validierung der neun Atomic- und drei Reconciliation-Resultate, deterministisches Exception-Mapping, UUID-v4-Prüfung, reine Timeout-Metadaten sowie eine erschöpfende Importgrenze fest; inventarisiert exakt 28 unveränderte historische Adapter-Sperrchecker mit Dateifingerprints und späterer minimaler zustandsabhängiger Umschaltregel; kein Adapter implementiert, importiert, instanziiert oder aufgerufen, kein Registry-, Datenbank-, SQL-, Supabase-, Netzwerk-, Datei-, Prozess-, Umgebungs-, Uhr-, Grant-, Token-, Verbrauchs- oder `executionGrant`-Zugriff – **erledigt** |
 | v27.34f | Nichtfunktionale Bereinigung und maschinelle Absicherung der vier verbliebenen Projektkontinuitäts-Widerspruchsgruppen umgesetzt: Cursor-Master-Kontext auf v27.34f und den unveränderten funktionalen Stand v27.34b aktualisiert; v24.6c als erledigt dokumentiert und jede aktive oder automatische Task-Auswahl entfernt; verbindliche Pflichtlektüre für neue Chats in Cursor-Kontext und Masterliste an `AGENTS.md`, Projektzustand, Masterliste und `CURRENT_TASK` gebunden; aktive automatische `git pull --ff-only`-Vorgaben durch direkte Arbeitsbaum-, Branch-, lokale HEAD- und GitHub-HEAD-Prüfung mit Abweichungs-STOPP und gesonderter Synchronisationsfreigabe ersetzt; Kontinuitäts-Checker prüft die neuen Pflichtaussagen exakt, blockiert Entfernung, Duplikation, alte aktive Task-Auswahl, automatische Pull-Vorgaben und unvollständige Pflichtlektüre; keine App-, Funktions-, Vertrags-, Adapter-, Datenbank-, Supabase-, Fragen-, UI- oder Migrationsänderung, kein funktionaler Folgeschritt ausgewählt oder autorisiert – **erledigt** |
 | v27.35a | Nichtfunktionale Task-Steuerung von `Task-ID: NONE` / `Status: BLOCKED` / `Autorisiert: NEIN` (v27.34f) verbindlich auf den einzigen autorisierten Folgetask v27.35b umgestellt: `docs/PROJECT_STATE_CURRENT.md` steht auf v27.35a und dokumentiert v27.34b als unveränderten letzten funktionalen Stand sowie v27.35b als einzigen autorisierten Task; `docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35b`, `Status: AUTHORIZED`, `Autorisiert: JA`, erwarteter Ausgangscommit `62947209611c17b5a700fb78cfcfa785f055b2f3`, ausschließlich erlaubte Datei `app.js`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; Cursor-Master-Kontext auf v27.35a aktualisiert und nennt v27.35b als einzigen autorisierten nächsten Schritt; Kontinuitäts-Checker prüft die neuen Pflichtaussagen exakt und blockiert in der Manipulationsmatrix eine falsche Task-ID, einen falschen Status, `Autorisiert: NEIN`, einen anderen funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche oder andere erlaubte Dateien, `Commit erlaubt: JA`, `Push erlaubt: JA` und die automatische Auswahl eines weiteren Tasks, und prüft zusätzlich direkt über Git, dass `app.js` unverändert bleibt; keine App-, Funktions-, Vertrags-, Adapter-, Datenbank-, Supabase-, Fragen-, UI- oder Migrationsänderung, funktionaler Stand bleibt v27.34b, `app.js` in v27.35a nicht verändert – **erledigt** |
+| v27.35b | Dashboard „Ihr nächster Lernschritt“: genau eine Empfehlungskarte mit fünfstufiger Prioritätslogik (neueste gültige Sitzung nach `updatedAt` beziehungsweise `createdAt`, bei Gleichstand Prüfung vor Lernen vor Lernkarten; Fehlertraining; schwächstes Thema ab 50 Prozent eindeutiger Abdeckung; unbekannte Lernkarten; Standard neue Prüfung); defensive localStorage- und Datenvalidierung; keine neue Speicherung; keine HTML-, CSS-, Fragen-, Supabase- oder Netzwerkänderung; Browserprüfung 6/6 bestanden; Abschlusscommit `f168b96ff26c88e5baca212902081932b8986e85` – **erledigt** |
 
-### Projektkontinuität und verbindliche Task-Steuerung v27.34c
+### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
-- Verbindlicher Projektzustand: `docs/PROJECT_STATE_CURRENT.md`
-- Verbindliche Task-Steuerung: `docs/tasks/CURRENT_TASK.md`
-- `CURRENT_TASK` ist aktuell `BLOCKED`, `Task-ID` ist `NONE` und `Autorisiert` ist `NEIN`.
-- Es ist kein funktionaler Folgeschritt ausgewählt oder autorisiert.
+- Historisch (v27.34c): Verbindlicher Projektzustand über `docs/PROJECT_STATE_CURRENT.md` eingeführt.
+- Historisch (v27.34c): Verbindliche Task-Steuerung über `docs/tasks/CURRENT_TASK.md` eingeführt.
+- Historisch (v27.34c): `CURRENT_TASK` stand auf `BLOCKED`, `Task-ID` auf `NONE` und `Autorisiert` auf `NEIN`.
+- Historisch (v27.34c): Es war kein funktionaler Folgeschritt ausgewählt oder autorisiert.
 - Beim Chatwechsel müssen lokaler Arbeitsbaum, lokaler HEAD und GitHub-HEAD direkt geprüft und bestätigt werden.
 - Nach jedem Versionsabschluss müssen Projektzustand, Masterliste und Task-Steuerung verbindlich aktualisiert werden.
 
-### Nicht funktionaler Korrektur- und Härtungsschritt v27.34d
+### Historisch: Nicht funktionaler Korrektur- und Härtungsschritt v27.34d
 
 - Der doppelte AGENTS-Kontinuitäts-Regelblock wurde auf exakt eine vollständige Kopie reduziert.
 - Der Kontinuitäts-Checker blockiert fehlende, vollständig duplizierte und teilweise duplizierte Regelblöcke geschlossen.
 - Die Manipulationsmatrix prüft Entfernung und Duplikation des vollständigen Blocks sowie einzelner Pflichtregeln.
-- `CURRENT_TASK` bleibt mit `Task-ID: NONE`, `Status: BLOCKED` und `Autorisiert: NEIN` sicher geschlossen.
-- Es ist kein weiterer Versionsschritt ausgewählt oder autorisiert.
+- Historisch (v27.34d): `CURRENT_TASK` blieb mit `Task-ID: NONE`, `Status: BLOCKED` und `Autorisiert: NEIN` sicher geschlossen.
+- Historisch (v27.34d): Es war kein weiterer Versionsschritt ausgewählt oder autorisiert.
 
 ### Vollständig gesperrter lokaler Adapter-Verhaltensvertrag v27.34e
 
+- Historischer Abschnitt zum Abschluss von v27.34e; kein aktiver aktueller Stand.
 - Das NO-GO-Audit wurde durch einen kanonisch gebundenen, maschinenlesbaren Verhaltensvertrag ohne offene Implementierungsentscheidung geschlossen.
 - Factory-Typidentität, konkrete Adapterform, defensive Request- und Ergebnis-Kopien, vollständige Ergebnisvalidierung, Exception-Mapping, Reconciliation, Timeout-Zuständigkeit und Importgrenze sind exakt festgelegt.
 - Exakt 28 historische Adapter-Sperrchecker sind mit SHA-256-Dateifingerprints inventarisiert und bleiben in v27.34e unverändert.
@@ -816,25 +821,39 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 - Der letzte abgeschlossene funktionale Stand bleibt v27.34b.
 - `CURRENT_TASK` ist weiterhin `BLOCKED`; `v27.34f` wird nicht automatisch ausgewählt oder autorisiert.
 
-### Nichtfunktionale Projektkontinuitätsbereinigung v27.34f
+### Historisch: Nichtfunktionale Projektkontinuitätsbereinigung v27.34f
 
-- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` steht auf v27.34f und nennt den unveränderten funktionalen Stand v27.34b.
+- Historisch (v27.34f): `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` stand auf v27.34f und nannte den unveränderten funktionalen Stand v27.34b.
 - v24.6c ist ausschließlich als erledigter historischer Schritt dokumentiert und nicht mehr als offener oder nächster Task ausgewählt.
-- Kein funktionaler Folgeschritt ist autorisiert; eine Task-Auswahl erfolgt ausschließlich durch Projekteigentümer, verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`.
+- Historisch (v27.34f): Kein funktionaler Folgeschritt war autorisiert; eine Task-Auswahl erfolgt ausschließlich durch Projekteigentümer, verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`.
 - Neue Chats lesen vollständig `AGENTS.md`, Projektzustand, Masterliste und `CURRENT_TASK` und prüfen Arbeitsbaum, Branch, lokalen HEAD und GitHub-HEAD direkt.
 - Bei einer Abweichung wird sofort gestoppt; Synchronisation, Commit und Push erfolgen nur nach gesonderter beziehungsweise ausdrücklicher Freigabe.
 - Die vier aktiven automatischen `git pull --ff-only`-Vorgaben wurden entfernt.
 - Der Kontinuitäts-Checker blockiert Entfernung, Duplikation, alte aktive Task-Auswahl, automatische Pull-Vorgaben und unvollständige Pflichtlektüre geschlossen.
-- Der funktionale Stand bleibt v27.34b; kein Folgetask ist ausgewählt oder autorisiert.
+- Historisch (v27.34f): Der funktionale Stand blieb damals v27.34b; kein Folgetask war ausgewählt oder autorisiert.
 
-### Nichtfunktionale Task-Steuerung v27.35a
+### Historisch: Nichtfunktionale Task-Steuerung v27.35a
 
-- `docs/PROJECT_STATE_CURRENT.md` steht auf v27.35a und dokumentiert v27.34b als unveränderten letzten funktionalen Stand sowie v27.35b als einzigen autorisierten Task.
-- `docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35b`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Funktionaler Ausgangsstand: v27.34b`, erwarteter Ausgangscommit `62947209611c17b5a700fb78cfcfa785f055b2f3`, ausschließlich erlaubte Datei `app.js`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
-- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` steht auf v27.35a und nennt v27.35b als einzigen autorisierten nächsten Schritt.
-- Der Kontinuitäts-Checker blockiert in der Manipulationsmatrix eine falsche Task-ID, einen falschen Status, `Autorisiert: NEIN`, einen anderen funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche oder andere erlaubte Dateien, `Commit erlaubt: JA`, `Push erlaubt: JA` und die automatische Auswahl eines weiteren Tasks.
-- Der Kontinuitäts-Checker prüft zusätzlich direkt über Git, dass `app.js` seit dem Ausgangscommit unverändert bleibt.
-- Der funktionale Stand bleibt v27.34b; `app.js` wurde in v27.35a nicht verändert; kein Folgeschritt nach v27.35b ist ausgewählt oder autorisiert.
+- Historisch (v27.35a): `docs/PROJECT_STATE_CURRENT.md` stand auf v27.35a und dokumentierte v27.34b als unveränderten letzten funktionalen Stand sowie v27.35b als einzigen autorisierten Task.
+- Historisch (v27.35a): `docs/tasks/CURRENT_TASK.md` stand auf `Task-ID: v27.35b`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Funktionaler Ausgangsstand: v27.34b`, erwarteter Ausgangscommit `62947209611c17b5a700fb78cfcfa785f055b2f3`, ausschließlich erlaubte Datei `app.js`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
+- Historisch (v27.35a): `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` stand auf v27.35a und nannte v27.35b als einzigen autorisierten nächsten Schritt.
+- Der Kontinuitäts-Checker blockierte in der Manipulationsmatrix eine falsche Task-ID, einen falschen Status, `Autorisiert: NEIN`, einen anderen funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche oder andere erlaubte Dateien, `Commit erlaubt: JA`, `Push erlaubt: JA` und die automatische Auswahl eines weiteren Tasks.
+- Der Kontinuitäts-Checker prüfte zusätzlich direkt über Git, dass `app.js` seit dem Ausgangscommit unverändert bleibt.
+- Historisch (v27.35a): Der funktionale Stand blieb damals v27.34b; `app.js` wurde in v27.35a nicht verändert; kein Folgeschritt nach v27.35b war ausgewählt oder autorisiert.
+
+### Abgeschlossener funktionaler Stand v27.35b
+
+- Dashboard „Ihr nächster Lernschritt“ zeigt genau eine Empfehlungskarte.
+- Fünfstufige Prioritätslogik: neueste gültige Sitzung, Fehlerfragen, schwächstes ausreichend belegtes Sachgebiet, unbekannte Lernkarten, neue Prüfung.
+- Neueste gültige Sitzung nach `updatedAt` beziehungsweise `createdAt`; bei Gleichstand Prüfung vor Lernen vor Lernkarten.
+- Defensive localStorage- und Datenvalidierung; keine neue Speicherung.
+- Keine HTML-, CSS-, Fragen-, Supabase- oder Netzwerkänderung.
+- Browserprüfung 6/6 bestanden.
+- Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`.
+- Verbindlicher Projektzustand: `docs/PROJECT_STATE_CURRENT.md`
+- Verbindliche Task-Steuerung: `docs/tasks/CURRENT_TASK.md`
+- `CURRENT_TASK` ist aktuell `BLOCKED`, `Task-ID` ist `NONE` und `Autorisiert` ist `NEIN`.
+- Es ist kein funktionaler Folgeschritt ausgewählt oder autorisiert.
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (vorbereitete SQL-Migrationen vorhanden, aber nicht live ausgeführt; keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
@@ -1225,7 +1244,7 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-Diese Bestands- und Backlogliste ist keine Task-Autorisierung. Ein funktionaler Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt und in `docs/tasks/CURRENT_TASK.md` ausdrücklich autorisiert werden. `CURRENT_TASK` ist aktuell `AUTHORIZED` für `v27.35b`; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert.
+Diese Bestands- und Backlogliste ist keine Task-Autorisierung. Ein funktionaler Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt und in `docs/tasks/CURRENT_TASK.md` ausdrücklich autorisiert werden. `CURRENT_TASK` ist aktuell `BLOCKED`; `Task-ID` ist `NONE` und `Autorisiert` ist `NEIN`; aus dieser Liste ist kein Folgeschritt ausgewählt oder autorisiert.
 
 1. **Schriftliche Prüfung Regressionstest bei Änderungen** – Vollsimulation 82/120, Teilpunkte, Pause/Fortsetzen, Mix und Auswertung nach späteren Code-Änderungen erneut prüfen.
 2. **Lernkarten nach größeren UI-Änderungen kurz regressionsprüfen** – Stand v26.1c ist browsergetestet.

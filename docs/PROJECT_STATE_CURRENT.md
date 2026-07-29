@@ -1,46 +1,43 @@
 # Aktueller Projektzustand
 
-Stand: v27.35a
+Stand: v27.35b
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
-Letzter abgeschlossener funktionaler Stand: v27.34b
-Letzter direkt bestätigter Vorgänger-Commit: `62947209611c17b5a700fb78cfcfa785f055b2f3`
+Letzter abgeschlossener funktionaler Stand: v27.35b
+Direkt bestätigter Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
-Funktionsstatus: v27.34b abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.35b
-Aktueller Blocker: KEINER für v27.35b; jeder weitere Schritt bleibt gesperrt
+Funktionsstatus: v27.35b abgeschlossen
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktueller Blocker: Kein weiterer Task durch CURRENT_TASK autorisiert
 
-## Nichtfunktionale Task-Steuerung v27.35a
+## Abgeschlossener funktionaler Stand v27.35b
 
-Die Projektsteuerung wurde von Task-ID NONE, Status BLOCKED und
-Autorisiert NEIN (Stand v27.34f) verbindlich auf den einzigen
-autorisierten Folgetask v27.35b umgestellt. Der letzte abgeschlossene
-funktionale Stand bleibt unverändert v27.34b.
+Dashboard „Ihr nächster Lernschritt“ ist abgeschlossen. Das Dashboard
+zeigt genau einen nächsten Lernschritt.
 
-`docs/tasks/CURRENT_TASK.md` steht jetzt auf `Task-ID: v27.35b`,
-`Status: AUTHORIZED`, `Autorisiert: JA`,
-`Erwarteter Ausgangscommit: 62947209611c17b5a700fb78cfcfa785f055b2f3`,
-`Erlaubte Dateien: app.js`, `Commit erlaubt: NEIN` und
-`Push erlaubt: NEIN`.
+Priorität:
 
-Der Kontinuitäts-Checker erzwingt diese v27.35a-Pflichtaussagen und
-blockiert in seiner Manipulationsmatrix mindestens: eine falsche
-Task-ID, einen falschen Status, Autorisiert NEIN, einen anderen
-funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche
-oder andere erlaubte Dateien, Commit erlaubt JA, Push erlaubt JA und
-die automatische Auswahl eines weiteren Tasks. Zusätzlich prüft der
-Checker direkt über Git, dass app.js während v27.35a unverändert
-bleibt.
+1. neueste gültige aktive Sitzung
+2. Fehlerfragen
+3. schwächstes ausreichend belegtes Sachgebiet
+4. unbekannte Lernkarten
+5. neue Prüfung
 
-In v27.35a wurde ausschließlich Projektsteuerungsdokumentation
-geändert: `docs/PROJECT_STATE_CURRENT.md`, `docs/PROJECT_MASTERLIST.md`,
-`docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/tasks/CURRENT_TASK.md`
-und `tools/check-project-continuity-control.py`. app.js wurde in
-v27.35a nicht verändert. Es wurde keine App-, Funktions-, Vertrags-,
-Adapter-, Datenbank-, Supabase-, Fragen-, UI- oder Migrationsdatei
-verändert. Der funktionale Folgeschritt v27.35b selbst ist noch nicht
-umgesetzt.
+Ausschließlich vorhandene localStorage-Daten werden defensiv gelesen.
+Es gibt keine neue Speicherung und keine neuen Storage-Keys.
+Ungültige Sitzungen und Statistikwerte werden ignoriert.
+
+Prüfung, Lerneinheit und Lernkarten wurden im Browser bestätigt.
+Automatisierte Browserprüfung: 6/6 bestanden.
+`node --check`, `git diff --check` und Preflight bestanden.
+Ausschließlich `app.js` wurde im funktionalen Commit verändert.
+
+Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`.
+Kein Folgetask ist ausgewählt oder autorisiert.
+
+Historischer Zwischenstand vor diesem Abschluss enthielt noch die Aussage
+„Letzter abgeschlossener funktionaler Stand: v27.34b“.
 
 ## Dynamische Prüfung bei jedem Arbeitsbeginn
 
