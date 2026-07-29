@@ -344,8 +344,7 @@ function startLocalApp() {
   registerActiveSessionAutoSaveListeners();
   loadAllLocalData();
   activateDashboardButtons();
-  renderDashboardResumeExamCard();
-  renderDashboardResumeLearningCard();
+  renderDashboardNextLearningStepCardV2735B();
   loadQuestions();
 }
 
@@ -416,8 +415,7 @@ async function loadQuestions() {
 
     buildCategoryCards();
     updateDashboardNumbers();
-    renderDashboardResumeExamCard();
-    renderDashboardResumeLearningCard();
+    renderDashboardNextLearningStepCardV2735B();
 
   } catch (error) {
     console.error("Fehler beim Laden der Fragen:", error);
@@ -5341,3 +5339,476 @@ if (!window.ACCAOUI_V223_ORAL_SCENE_FLIP_PATCH) {
 
   window.syncOralRoomFlipCardV223 = syncOralRoomFlipCardV223;
 }
+
+/* =====================================================
+   v27.35b DASHBOARD – NÄCHSTER LERNSCHRITT
+   Ziel:
+   - genau eine Empfehlungskarte statt bisher bis zu drei
+     getrennten Fortsetzen-Karten
+   - ausschließlich vorhandene lokale Lernstände lesen
+   - keine neue Speicherung, keine neuen Storage-Keys,
+     keine Netzwerkzugriffe
+===================================================== */
+
+function readDashboardStorageV2735B() {
+  const storage = {
+    examSession: null,
+    learningSession: null,
+    flashcardSession: null
+  };
+
+  try {
+    storage.examSession = getActiveSession();
+  } catch (error) {
+    storage.examSession = null;
+  }
+
+  try {
+    storage.learningSession = getActiveLearningSession();
+  } catch (error) {
+    storage.learningSession = null;
+  }
+
+  try {
+    storage.flashcardSession = getActiveFlashcardSession();
+  } catch (error) {
+    storage.flashcardSession = null;
+  }
+
+  return storage;
+}
+
+function isValidDashboardSessionIndexV2735B(value, questionsLength) {
+  if (value === undefined || value === null) {
+    return true;
+  }
+
+  const numericValue = Number(value);
+
+  return (
+    Number.isInteger(numericValue) &&
+    numericValue >= 0 &&
+    Number.isFinite(questionsLength) &&
+    numericValue < questionsLength
+  );
+}
+
+function isValidDashboardSessionV2735B(session, expectedSessionType) {
+  if (!session || typeof session !== "object" || Array.isArray(session)) {
+    return false;
+  }
+
+  if (session.sessionType !== expectedSessionType) {
+    return false;
+  }
+
+  if (!Array.isArray(session.questions) || session.questions.length === 0) {
+    return false;
+  }
+
+  return isValidDashboardSessionIndexV2735B(
+    session.currentIndex,
+    session.questions.length
+  );
+}
+
+function getDashboardSessionTimeValueV2735B(session) {
+  if (!session) {
+    return 0;
+  }
+
+  const updatedAt = Date.parse(session.updatedAt);
+
+  if (Number.isFinite(updatedAt)) {
+    return updatedAt;
+  }
+
+  const createdAt = Date.parse(session.createdAt);
+
+  if (Number.isFinite(createdAt)) {
+    return createdAt;
+  }
+
+  return 0;
+}
+
+function getDashboardSessionCandidatesV2735B() {
+  const storage = readDashboardStorageV2735B();
+  const candidates = [];
+
+  if (isValidDashboardSessionV2735B(storage.examSession, "exam")) {
+    candidates.push({
+      type: "exam",
+      session: storage.examSession,
+      timeValue: getDashboardSessionTimeValueV2735B(storage.examSession),
+      priorityRank: 0
+    });
+  }
+
+  if (isValidDashboardSessionV2735B(storage.learningSession, "learning")) {
+    candidates.push({
+      type: "learning",
+      session: storage.learningSession,
+      timeValue: getDashboardSessionTimeValueV2735B(storage.learningSession),
+      priorityRank: 1
+    });
+  }
+
+  if (isValidDashboardSessionV2735B(storage.flashcardSession, "flashcards")) {
+    candidates.push({
+      type: "flashcards",
+      session: storage.flashcardSession,
+      timeValue: getDashboardSessionTimeValueV2735B(storage.flashcardSession),
+      priorityRank: 2
+    });
+  }
+
+  candidates.sort((a, b) => {
+    if (b.timeValue !== a.timeValue) {
+      return b.timeValue - a.timeValue;
+    }
+
+    return a.priorityRank - b.priorityRank;
+  });
+
+  return candidates;
+}
+
+function getDashboardSessionProgressLabelV2735B(session, unitLabel) {
+  const index = Number(session.currentIndex);
+  const total = Array.isArray(session.questions) ? session.questions.length : 0;
+
+  if (Number.isInteger(index) && index >= 0 && index < total) {
+    return unitLabel + " " + (index + 1) + "/" + total;
+  }
+
+  return "";
+}
+
+function buildDashboardResumeStepV2735B(candidate) {
+  const session = candidate.session;
+
+  if (candidate.type === "exam") {
+    const progressLabel = getDashboardSessionProgressLabelV2735B(session, "Frage");
+
+    return {
+      title: session.title || "Ihre Prüfung",
+      description: progressLabel
+        ? progressLabel + " · gespeichert am " + formatSessionDate(session.updatedAt)
+        : "Fortsetzen jederzeit möglich.",
+      actionLabel: "Prüfung fortsetzen",
+      actionHandler: "resumeActiveExamSession()"
+    };
+  }
+
+  if (candidate.type === "learning") {
+    const progressLabel = getDashboardSessionProgressLabelV2735B(session, "Frage");
+
+    return {
+      title: session.title || "Ihre Lerneinheit",
+      description: progressLabel
+        ? progressLabel + " · gespeichert am " + formatSessionDate(session.updatedAt)
+        : "Fortsetzen jederzeit möglich.",
+      actionLabel: "Lerneinheit fortsetzen",
+      actionHandler: "resumeActiveLearningSession()"
+    };
+  }
+
+  const progressLabel = getDashboardSessionProgressLabelV2735B(session, "Karte");
+
+  return {
+    title: session.title || "Ihre Lernkarten",
+    description: progressLabel
+      ? progressLabel + " · gespeichert am " + formatSessionDate(session.updatedAt)
+      : "Fortsetzen jederzeit möglich.",
+    actionLabel: "Lernkarten fortsetzen",
+    actionHandler: "resumeActiveFlashcardSession()"
+  };
+}
+
+function getWeakestCoveredTopicV2735B() {
+  if (!Array.isArray(categories)) {
+    return null;
+  }
+
+  if (
+    !answeredQuestions ||
+    typeof answeredQuestions !== "object" ||
+    Array.isArray(answeredQuestions)
+  ) {
+    return null;
+  }
+
+  let best = null;
+
+  categories.forEach(categoryName => {
+    let questions = [];
+
+    try {
+      questions = getCategoryQuestions(categoryName);
+    } catch (error) {
+      questions = [];
+    }
+
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return;
+    }
+
+    const coveredKeys = new Set();
+
+    questions.forEach(question => {
+      try {
+        const key = getQuestionKey(question);
+
+        if (key && answeredQuestions[key]) {
+          coveredKeys.add(key);
+        }
+      } catch (error) {
+        // ungültige Frage defensiv ignorieren
+      }
+    });
+
+    const coverage = coveredKeys.size / questions.length;
+
+    if (!Number.isFinite(coverage) || coverage < 0.5) {
+      return;
+    }
+
+    const stats = topicStats ? topicStats[categoryName] : null;
+
+    if (!stats || typeof stats !== "object" || Array.isArray(stats)) {
+      return;
+    }
+
+    const answeredCount = Number(stats.answered);
+    const correctCount = Number(stats.correct);
+
+    if (!Number.isFinite(answeredCount) || answeredCount <= 0) {
+      return;
+    }
+
+    if (
+      !Number.isFinite(correctCount) ||
+      correctCount < 0 ||
+      correctCount > answeredCount
+    ) {
+      return;
+    }
+
+    const quote = correctCount / answeredCount;
+
+    if (!Number.isFinite(quote)) {
+      return;
+    }
+
+    if (!best || quote < best.quote) {
+      best = {
+        categoryName,
+        quote
+      };
+    }
+  });
+
+  return best;
+}
+
+function getUnknownFlashcardQuestionsV2735B() {
+  let progressStore = {};
+
+  try {
+    loadFlashcardProgressStore();
+    progressStore =
+      flashcardProgressStore &&
+      typeof flashcardProgressStore === "object" &&
+      !Array.isArray(flashcardProgressStore)
+        ? flashcardProgressStore
+        : {};
+  } catch (error) {
+    progressStore = {};
+  }
+
+  const unknownKeys = new Set();
+
+  Object.keys(progressStore).forEach(key => {
+    const entry = progressStore[key];
+
+    if (entry && typeof entry === "object" && entry.lastStatus === "unknown") {
+      unknownKeys.add(key);
+    }
+  });
+
+  if (unknownKeys.size === 0 || !Array.isArray(allQuestions)) {
+    return [];
+  }
+
+  const seenKeys = new Set();
+  const unknownQuestions = [];
+
+  allQuestions.forEach(question => {
+    let key = "";
+
+    try {
+      key = getQuestionKey(question);
+    } catch (error) {
+      key = "";
+    }
+
+    if (key && unknownKeys.has(key) && !seenKeys.has(key)) {
+      seenKeys.add(key);
+      unknownQuestions.push(question);
+    }
+  });
+
+  return unknownQuestions;
+}
+
+function openWeakestCategoryFromDashboardV2735B() {
+  const weakestTopic = getWeakestCoveredTopicV2735B();
+
+  if (!weakestTopic) {
+    showSmallNotice("Kein passendes Sachgebiet gefunden.");
+    return;
+  }
+
+  openCategory(weakestTopic.categoryName);
+}
+
+function startFlashcardSessionFromUnknownV2735B() {
+  const unknownQuestions = getUnknownFlashcardQuestionsV2735B();
+
+  if (!Array.isArray(unknownQuestions) || unknownQuestions.length === 0) {
+    showSmallNotice("Keine unbekannten Lernkarten gefunden.");
+    return;
+  }
+
+  startFlashcardSession(unknownQuestions, "Unbekannte Lernkarten wiederholen");
+}
+
+function getNextLearningStepV2735B() {
+  const sessionCandidates = getDashboardSessionCandidatesV2735B();
+
+  if (sessionCandidates.length > 0) {
+    return buildDashboardResumeStepV2735B(sessionCandidates[0]);
+  }
+
+  let mistakeCount = 0;
+
+  try {
+    mistakeCount = getTotalTopicMistakeCount();
+  } catch (error) {
+    mistakeCount = 0;
+  }
+
+  if (Number.isFinite(mistakeCount) && mistakeCount > 0) {
+    return {
+      title: "Fehlerfragen trainieren",
+      description:
+        mistakeCount === 1
+          ? "Sie haben 1 gespeicherte Fehlerfrage zum Wiederholen."
+          : "Sie haben " + mistakeCount + " gespeicherte Fehlerfragen zum Wiederholen.",
+      actionLabel: "Fehlertraining starten",
+      actionHandler: "startAllTopicMistakeTraining()"
+    };
+  }
+
+  const weakestTopic = getWeakestCoveredTopicV2735B();
+
+  if (weakestTopic) {
+    const percent = Math.round(weakestTopic.quote * 100);
+
+    return {
+      title: weakestTopic.categoryName,
+      description: "Ihre bisherige Erfolgsquote in diesem Sachgebiet liegt bei " + percent + " %.",
+      actionLabel: "Sachgebiet üben",
+      actionHandler: "openWeakestCategoryFromDashboardV2735B()"
+    };
+  }
+
+  const unknownQuestions = getUnknownFlashcardQuestionsV2735B();
+
+  if (Array.isArray(unknownQuestions) && unknownQuestions.length > 0) {
+    return {
+      title: "Unbekannte Lernkarten wiederholen",
+      description:
+        unknownQuestions.length === 1
+          ? "Sie haben 1 Lernkarte als unbekannt markiert."
+          : "Sie haben " + unknownQuestions.length + " Lernkarten als unbekannt markiert.",
+      actionLabel: "Lernkarten wiederholen",
+      actionHandler: "startFlashcardSessionFromUnknownV2735B()"
+    };
+  }
+
+  return {
+    title: "Neue Prüfung starten",
+    description: "Starten Sie jetzt eine neue Prüfung.",
+    actionLabel: "Neue Prüfung starten",
+    actionHandler: "showExamStartPage()"
+  };
+}
+
+function renderDashboardNextLearningStepCardV2735B() {
+  try {
+    [
+      "nextLearningStepCardV2735B",
+      "examResumeCard",
+      "learningResumeCard",
+      "flashcardResumeCardV261C"
+    ].forEach(cardId => {
+      const existingCard = document.getElementById(cardId);
+
+      if (existingCard) {
+        existingCard.remove();
+      }
+    });
+
+    const questionsLoaded = Array.isArray(allQuestions) && allQuestions.length > 0;
+    const sessionCandidates = getDashboardSessionCandidatesV2735B();
+
+    if (!questionsLoaded && sessionCandidates.length === 0) {
+      return;
+    }
+
+    const nextStep = questionsLoaded
+      ? getNextLearningStepV2735B()
+      : buildDashboardResumeStepV2735B(sessionCandidates[0]);
+
+    if (!nextStep) {
+      return;
+    }
+
+    const mainContent = document.querySelector(".main-content");
+    const heroGrid = document.querySelector(".hero-grid");
+
+    if (!mainContent || !heroGrid) {
+      return;
+    }
+
+    const card = document.createElement("section");
+    card.id = "nextLearningStepCardV2735B";
+    card.className = "last-exam-box";
+    card.innerHTML = `
+    <span>Ihr nächster Lernschritt</span>
+    <strong>${escapeHtml(nextStep.title)}</strong>
+    <p>${escapeHtml(nextStep.description)}</p>
+
+    <div class="result-actions">
+      <button class="next-btn" onclick="${nextStep.actionHandler}">
+        ${escapeHtml(nextStep.actionLabel)}
+      </button>
+    </div>
+  `;
+
+    heroGrid.parentNode.insertBefore(card, heroGrid);
+  } catch (error) {
+    console.error("Fehler beim Ermitteln des nächsten Lernschritts:", error);
+  }
+}
+
+window.readDashboardStorageV2735B = readDashboardStorageV2735B;
+window.getDashboardSessionCandidatesV2735B = getDashboardSessionCandidatesV2735B;
+window.getWeakestCoveredTopicV2735B = getWeakestCoveredTopicV2735B;
+window.getUnknownFlashcardQuestionsV2735B = getUnknownFlashcardQuestionsV2735B;
+window.getNextLearningStepV2735B = getNextLearningStepV2735B;
+window.renderDashboardNextLearningStepCardV2735B = renderDashboardNextLearningStepCardV2735B;
+window.openWeakestCategoryFromDashboardV2735B = openWeakestCategoryFromDashboardV2735B;
+window.startFlashcardSessionFromUnknownV2735B = startFlashcardSessionFromUnknownV2735B;
