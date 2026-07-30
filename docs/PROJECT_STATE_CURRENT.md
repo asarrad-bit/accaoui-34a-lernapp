@@ -1,15 +1,44 @@
 # Aktueller Projektzustand
 
-Stand: v27.35b
+Stand: v27.35c
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35b
-Direkt bestätigter Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`
+Letzter direkt bestätigter Vorgänger-Commit: `e4b6929af552e4245290d3eb5db97815365162e6`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35b abgeschlossen
-Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: NONE
-Aktueller Blocker: Kein weiterer Task durch CURRENT_TASK autorisiert
+Weiterer funktionaler Schritt autorisiert: JA
+Aktuell autorisierter Task: v27.35d
+Aktueller Blocker: KEINER für v27.35d; jeder weitere Schritt bleibt gesperrt
+
+## Nichtfunktionale Task-Steuerung v27.35c
+
+Die Projektsteuerung wurde von Task-ID NONE, Status BLOCKED und
+Autorisiert NEIN verbindlich auf den einzigen autorisierten Folgetask
+v27.35d umgestellt. Der letzte abgeschlossene funktionale Stand bleibt
+unverändert v27.35b.
+
+`docs/tasks/CURRENT_TASK.md` steht jetzt auf `Task-ID: v27.35d`,
+`Status: AUTHORIZED`, `Autorisiert: JA`,
+`Funktionaler Ausgangsstand: v27.35b`,
+`Erwarteter Ausgangscommit: e4b6929af552e4245290d3eb5db97815365162e6`,
+`Erlaubte Dateien: app.js, index.html, style.css`,
+`Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
+
+Der Kontinuitäts-Checker erzwingt diese v27.35c-Pflichtaussagen und
+blockiert in seiner Manipulationsmatrix mindestens: eine falsche
+Task-ID, einen falschen Status, Autorisiert NEIN, einen anderen
+funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche
+oder andere erlaubte Dateien, Commit erlaubt JA, Push erlaubt JA und
+die automatische Auswahl eines weiteren Tasks. Zusätzlich prüft der
+Checker direkt über Git, dass `app.js`, `index.html` und `style.css`
+während v27.35c gegenüber dem Ausgangscommit unverändert bleiben.
+
+In v27.35c wurde ausschließlich Projektsteuerungsdokumentation
+geändert. Es wurde keine App-, Funktions-, Vertrags-, Adapter-,
+Datenbank-, Supabase-, Fragen-, UI- oder Migrationsdatei verändert.
+Der funktionale Folgeschritt v27.35d selbst ist noch nicht umgesetzt.
+Kein weiterer Task darf automatisch ausgewählt werden.
 
 ## Abgeschlossener funktionaler Stand v27.35b
 
@@ -30,11 +59,7 @@ Ungültige Sitzungen und Statistikwerte werden ignoriert.
 
 Prüfung, Lerneinheit und Lernkarten wurden im Browser bestätigt.
 Automatisierte Browserprüfung: 6/6 bestanden.
-`node --check`, `git diff --check` und Preflight bestanden.
-Ausschließlich `app.js` wurde im funktionalen Commit verändert.
-
 Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`.
-Kein Folgetask ist ausgewählt oder autorisiert.
 
 Historischer Zwischenstand vor diesem Abschluss enthielt noch die Aussage
 „Letzter abgeschlossener funktionaler Stand: v27.34b“.
