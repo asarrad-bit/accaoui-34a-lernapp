@@ -1513,7 +1513,7 @@ function showLearningView(title, options) {
 
     <div class="learning-header">
       <div>
-        <p class="eyebrow">Lernmodus</p>
+        <p class="eyebrow">Lernmodus – Wissen prüfen</p>
         <h1>${escapeHtml(title)}</h1>
       </div>
 
@@ -1521,6 +1521,10 @@ function showLearningView(title, options) {
         <span>Frage</span>
         <strong id="questionCounter">${currentQuestionIndex + 1}/${currentQuestions.length}</strong>
       </div>
+    </div>
+
+    <div class="mode-guidance-v2735d">
+      Beantworten Sie die Frage zuerst selbst. Wählen Sie danach Ihre Antwort aus und prüfen Sie anschließend die Lösung.
     </div>
 
     <div class="progress-wrapper">
@@ -1965,7 +1969,7 @@ function showFlashcardView(title) {
 
     <div class="learning-header">
       <div>
-        <p class="eyebrow">Lernkarten-Modus</p>
+        <p class="eyebrow">Lernkarten – Wissen selbst einschätzen</p>
         <h1>${escapeHtml(title)}</h1>
       </div>
 
@@ -1973,6 +1977,10 @@ function showFlashcardView(title) {
         <span>Karte</span>
         <strong id="flashcardCounter">1/${flashcardQuestions.length}</strong>
       </div>
+    </div>
+
+    <div class="mode-guidance-v2735d">
+      Denken Sie zuerst selbst an die Antwort. Zeigen Sie danach die Lösung und schätzen Sie ehrlich ein: Gewusst oder Nicht gewusst.
     </div>
 
     <div class="progress-wrapper">

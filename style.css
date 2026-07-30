@@ -430,6 +430,19 @@ section {
   gap: 20px;
 }
 
+.mode-guidance-v2735d {
+  max-width: 1180px;
+  margin: 0 auto 18px auto;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  border: 1px solid rgba(35, 68, 198, 0.12);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .score-box {
   min-width: 138px;
   padding: 16px 20px;
