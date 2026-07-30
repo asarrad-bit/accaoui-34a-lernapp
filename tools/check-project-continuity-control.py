@@ -22,8 +22,16 @@ STYLE_CSS_PATH = ROOT / "style.css"
 
 GATE_SHA = "e4b6929af552e4245290d3eb5db97815365162e6"
 COMPLETION_SHA = "f168b96ff26c88e5baca212902081932b8986e85"
+CONTROL_COMMIT_SHA = "7b0e110d20e97f0bc8487fe6537e0683d9e25940"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 PROTECTED_RUNTIME_FILES = ("app.js", "index.html", "style.css")
+EXPECTED_V2735C_CONTROL_FILES = (
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "tools/check-project-continuity-control.py",
+)
 
 # Keine zukünftige Task-ID als aktiven Task einführen.
 FORBIDDEN_FUTURE_TASK_MARKERS = ("v27.35e", "v27.36")
@@ -640,7 +648,17 @@ def run_git(args: list[str]) -> str:
     return completed.stdout
 
 
-def validate_protected_files_unchanged_in_v2735c() -> None:
+def validate_v2735c_control_commit_history() -> None:
+    """Prüft den v27.35c-Steuerungscommit ausschließlich historisch.
+
+    Geprüft wird nur der abgeschlossene Bereich zwischen dem
+    Ausgangscommit (GATE_SHA) und dem abgeschlossenen
+    Steuerungscommit (CONTROL_COMMIT_SHA). Diese Prüfung vergleicht
+    weder gegen den aktuellen HEAD nach dem Steuerungscommit noch
+    gegen den aktuellen Arbeitsbaum, damit für v27.35d ausdrücklich
+    autorisierte Arbeitsbaumänderungen an app.js, index.html und
+    style.css dadurch nicht blockiert werden.
+    """
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
@@ -655,27 +673,42 @@ def validate_protected_files_unchanged_in_v2735c() -> None:
             f"{relative_path} fehlt; erwartete Kern-Datei nicht gefunden",
         )
 
-    run_git(["merge-base", "--is-ancestor", GATE_SHA, "HEAD"])
+    run_git(["merge-base", "--is-ancestor", GATE_SHA, CONTROL_COMMIT_SHA])
+    run_git(["merge-base", "--is-ancestor", CONTROL_COMMIT_SHA, "HEAD"])
+
+    control_changed_files = {
+        line.strip()
+        for line in run_git(
+            ["diff", "--name-only", GATE_SHA, CONTROL_COMMIT_SHA]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        control_changed_files == set(EXPECTED_V2735C_CONTROL_FILES),
+        (
+            "v27.35c-Steuerungscommit veränderte zwischen Ausgangscommit "
+            f"{GATE_SHA} und Steuerungscommit {CONTROL_COMMIT_SHA} nicht "
+            f"exakt die erwarteten Steuerungsdateien: {sorted(control_changed_files)}"
+        ),
+    )
 
     for relative_path in PROTECTED_RUNTIME_FILES:
-        head_diff = run_git(
-            ["diff", "--name-only", GATE_SHA, "HEAD", "--", relative_path]
+        historical_diff = run_git(
+            [
+                "diff",
+                "--name-only",
+                GATE_SHA,
+                CONTROL_COMMIT_SHA,
+                "--",
+                relative_path,
+            ]
         ).strip()
         require(
-            head_diff == "",
+            historical_diff == "",
             (
-                f"{relative_path} wurde seit Ausgangscommit {GATE_SHA} "
-                "gegenüber HEAD verändert"
-            ),
-        )
-        working_diff = run_git(
-            ["diff", "--name-only", GATE_SHA, "--", relative_path]
-        ).strip()
-        require(
-            working_diff == "",
-            (
-                f"{relative_path} wurde seit Ausgangscommit {GATE_SHA} "
-                "im Arbeitsbaum verändert"
+                f"{relative_path} wurde im historisch abgeschlossenen "
+                f"v27.35c-Steuerungsbereich zwischen {GATE_SHA} und "
+                f"{CONTROL_COMMIT_SHA} verändert"
             ),
         )
 
@@ -1195,7 +1228,7 @@ def main() -> int:
         validate_cursor_context_text(cursor_context_text)
         validate_masterlist_text(masterlist_text)
         validate_preflight_text(preflight_text)
-        validate_protected_files_unchanged_in_v2735c()
+        validate_v2735c_control_commit_history()
         manipulation_checks = run_manipulation_matrix(
             state_text,
             task_text,
@@ -1217,7 +1250,11 @@ def main() -> int:
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Projektpfade Arbeit und Zuhause: OK")
     print("Preflight-Einbindung: OK")
-    print("app.js, index.html und style.css seit Ausgangscommit unverändert: OK")
+    print(
+        "v27.35c-Steuerungscommit historisch sauber: app.js, index.html und "
+        f"style.css zwischen {GATE_SHA} und {CONTROL_COMMIT_SHA} unverändert"
+    )
+    print("Autorisierte v27.35d-Arbeitsbaumänderungen an app.js/style.css sind zulässig")
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0
 
