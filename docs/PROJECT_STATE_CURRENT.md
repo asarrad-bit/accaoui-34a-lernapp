@@ -1,44 +1,63 @@
 # Aktueller Projektzustand
 
-Stand: v27.35c
+Stand: v27.35d
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
-Letzter abgeschlossener funktionaler Stand: v27.35b
-Letzter direkt bestätigter Vorgänger-Commit: `e4b6929af552e4245290d3eb5db97815365162e6`
+Letzter abgeschlossener funktionaler Stand: v27.35d
+Abschlusscommit: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
-Funktionsstatus: v27.35b abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.35d
-Aktueller Blocker: KEINER für v27.35d; jeder weitere Schritt bleibt gesperrt
+Funktionsstatus: v27.35d abgeschlossen
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktueller Blocker: Kein weiterer Task durch CURRENT_TASK autorisiert
 
-## Nichtfunktionale Task-Steuerung v27.35c
+## Abgeschlossener funktionaler Stand v27.35d
+
+Lernmodus und Lernkarten sind für Teilnehmer sprachlich und visuell eindeutig unterschieden.
+
+- Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ gekennzeichnet.
+- Führungshinweis im Lernmodus: erst selbst beantworten, danach Antwort auswählen und Lösung prüfen.
+- Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet.
+- Führungshinweis bei Lernkarten: erst selbst erinnern, danach Lösung anzeigen und mit „Gewusst“ beziehungsweise „Nicht gewusst“ einschätzen.
+- Gemeinsame kompakte CSS-Klasse `mode-guidance-v2735d` für beide Führungshinweise.
+- Keine neue Speicherung, keine neuen Storage-Keys, keine Fragenänderung.
+- Keine Supabase-, SQL-, Datenbank- oder Netzwerkänderung.
+- Bestehende Navigation, Pause/Fortsetzen und localStorage-Logik unverändert.
+
+Bestätigte Browser- und Prüf-Tests: Dashboard, Lernmodus, Lernkarten, Mobilansicht ca. 390 × 844 ohne horizontalen Überlauf, keine Konsolenfehler, localStorage vollständig restauriert, `node --check app.js`, `git diff --check`, Preflight.
+
+Funktionaler Abschlusscommit von v27.35d: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`.
+
+Historisch: Der v27.35c-Steuerungscommit `7b0e110d20e97f0bc8487fe6537e0683d9e25940` autorisierte v27.35d ausschließlich für `app.js`, `index.html` und `style.css`. Der nichtfunktionale Checker-Fix `d83869308a277e077b3da6d7e2c1a23001374a48` korrigierte danach den historischen v27.35c-Gate-Check, damit die autorisierte v27.35d-Umsetzung an `app.js` und `style.css` dadurch nicht blockiert wird.
+
+## Historisch: Nichtfunktionale Task-Steuerung v27.35c
 
 Die Projektsteuerung wurde von Task-ID NONE, Status BLOCKED und
 Autorisiert NEIN verbindlich auf den einzigen autorisierten Folgetask
-v27.35d umgestellt. Der letzte abgeschlossene funktionale Stand bleibt
-unverändert v27.35b.
+v27.35d umgestellt. Der letzte abgeschlossene funktionale Stand blieb
+zu diesem Zeitpunkt unverändert v27.35b.
 
-`docs/tasks/CURRENT_TASK.md` steht jetzt auf `Task-ID: v27.35d`,
+`docs/tasks/CURRENT_TASK.md` stand während v27.35c auf `Task-ID: v27.35d`,
 `Status: AUTHORIZED`, `Autorisiert: JA`,
 `Funktionaler Ausgangsstand: v27.35b`,
 `Erwarteter Ausgangscommit: e4b6929af552e4245290d3eb5db97815365162e6`,
 `Erlaubte Dateien: app.js, index.html, style.css`,
 `Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
 
-Der Kontinuitäts-Checker erzwingt diese v27.35c-Pflichtaussagen und
-blockiert in seiner Manipulationsmatrix mindestens: eine falsche
+Der Kontinuitäts-Checker erzwang diese v27.35c-Pflichtaussagen und
+blockierte in seiner Manipulationsmatrix mindestens: eine falsche
 Task-ID, einen falschen Status, Autorisiert NEIN, einen anderen
 funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche
 oder andere erlaubte Dateien, Commit erlaubt JA, Push erlaubt JA und
-die automatische Auswahl eines weiteren Tasks. Zusätzlich prüft der
+die automatische Auswahl eines weiteren Tasks. Zusätzlich prüfte der
 Checker direkt über Git, dass `app.js`, `index.html` und `style.css`
-während v27.35c gegenüber dem Ausgangscommit unverändert bleiben.
+während v27.35c gegenüber dem Ausgangscommit unverändert blieben.
 
 In v27.35c wurde ausschließlich Projektsteuerungsdokumentation
 geändert. Es wurde keine App-, Funktions-, Vertrags-, Adapter-,
 Datenbank-, Supabase-, Fragen-, UI- oder Migrationsdatei verändert.
-Der funktionale Folgeschritt v27.35d selbst ist noch nicht umgesetzt.
-Kein weiterer Task darf automatisch ausgewählt werden.
+Der funktionale Folgeschritt v27.35d wurde erst danach umgesetzt und
+ist oben als eigener abgeschlossener Abschnitt dokumentiert.
 
 ## Abgeschlossener funktionaler Stand v27.35b
 
@@ -59,7 +78,7 @@ Ungültige Sitzungen und Statistikwerte werden ignoriert.
 
 Prüfung, Lerneinheit und Lernkarten wurden im Browser bestätigt.
 Automatisierte Browserprüfung: 6/6 bestanden.
-Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`.
+Der v27.35b-Abschlusscommit lautet `f168b96ff26c88e5baca212902081932b8986e85`.
 
 Historischer Zwischenstand vor diesem Abschluss enthielt noch die Aussage
 „Letzter abgeschlossener funktionaler Stand: v27.34b“.

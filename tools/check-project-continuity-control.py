@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Projektkontinuität für Steuerung v27.35c / Task v27.35d."""
+"""Prüft die verbindliche Projektkontinuität für den abgeschlossenen Stand v27.35d."""
 
 from __future__ import annotations
 
@@ -23,6 +23,8 @@ STYLE_CSS_PATH = ROOT / "style.css"
 GATE_SHA = "e4b6929af552e4245290d3eb5db97815365162e6"
 COMPLETION_SHA = "f168b96ff26c88e5baca212902081932b8986e85"
 CONTROL_COMMIT_SHA = "7b0e110d20e97f0bc8487fe6537e0683d9e25940"
+CHECKER_FIX_SHA = "d83869308a277e077b3da6d7e2c1a23001374a48"
+V2735D_COMPLETION_SHA = "b4d2de5002918766bb45fe001cbbfdb333a6d7c5"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 PROTECTED_RUNTIME_FILES = ("app.js", "index.html", "style.css")
 EXPECTED_V2735C_CONTROL_FILES = (
@@ -32,6 +34,7 @@ EXPECTED_V2735C_CONTROL_FILES = (
     "docs/tasks/CURRENT_TASK.md",
     "tools/check-project-continuity-control.py",
 )
+EXPECTED_V2735D_CHANGED_FILES = ("app.js", "style.css")
 
 # Keine zukünftige Task-ID als aktiven Task einführen.
 FORBIDDEN_FUTURE_TASK_MARKERS = ("v27.35e", "v27.36")
@@ -42,47 +45,55 @@ WORK_PATH_GIT_BASH = "/c/a34a"
 HOME_PATH_GIT_BASH = "/c/xampp/htdocs/accaoui/v4-dashboard"
 
 EXPECTED_STATE_FIELDS = {
-    "Stand": "v27.35c",
+    "Stand": "v27.35d",
     "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
     "Branch": "`main`",
-    "Letzter abgeschlossener funktionaler Stand": "v27.35b",
-    "Letzter direkt bestätigter Vorgänger-Commit": f"`{GATE_SHA}`",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35d",
+    "Abschlusscommit": f"`{V2735D_COMPLETION_SHA}`",
     "Aktueller HEAD": "DYNAMISCH ZU PRÜFEN",
-    "Funktionsstatus": "v27.35b abgeschlossen",
-    "Weiterer funktionaler Schritt autorisiert": "JA",
-    "Aktuell autorisierter Task": "v27.35d",
-    "Aktueller Blocker": (
-        "KEINER für v27.35d; jeder weitere Schritt bleibt gesperrt"
-    ),
+    "Funktionsstatus": "v27.35d abgeschlossen",
+    "Weiterer funktionaler Schritt autorisiert": "NEIN",
+    "Aktuell autorisierter Task": "NONE",
+    "Aktueller Blocker": "Kein weiterer Task durch CURRENT_TASK autorisiert",
 }
 
 EXPECTED_TASK_FIELDS = {
-    "Task-ID": "v27.35d",
-    "Status": "AUTHORIZED",
-    "Autorisiert": "JA",
-    "Funktionaler Ausgangsstand": "v27.35b",
-    "Letzter abgeschlossener Kontrollschritt": "v27.35c",
-    "Erwarteter Ausgangscommit": f"`{GATE_SHA}`",
-    "Erlaubte Dateien": "`app.js`, `index.html`, `style.css`",
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35d",
+    "Letzter abgeschlossener Task": "v27.35d",
+    "Abschlusscommit": f"`{V2735D_COMPLETION_SHA}`",
+    "Erwarteter Ausgangscommit": f"`{V2735D_COMPLETION_SHA}`",
+    "Erlaubte Dateien": "keine",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
 
 STATE_REQUIRED_MARKERS = (
-    "## Nichtfunktionale Task-Steuerung v27.35c",
+    "## Abgeschlossener funktionaler Stand v27.35d",
+    "Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ gekennzeichnet.",
+    "Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet.",
+    "Gemeinsame kompakte CSS-Klasse `mode-guidance-v2735d` für beide Führungshinweise.",
+    "Keine neue Speicherung, keine neuen Storage-Keys, keine Fragenänderung.",
+    "Keine Supabase-, SQL-, Datenbank- oder Netzwerkänderung.",
+    "Bestehende Navigation, Pause/Fortsetzen und localStorage-Logik unverändert.",
+    f"Funktionaler Abschlusscommit von v27.35d: `{V2735D_COMPLETION_SHA}`.",
+    f"Historisch: Der v27.35c-Steuerungscommit `{CONTROL_COMMIT_SHA}`",
+    f"Der nichtfunktionale Checker-Fix `{CHECKER_FIX_SHA}`",
+    "## Historisch: Nichtfunktionale Task-Steuerung v27.35c",
     "Die Projektsteuerung wurde von Task-ID NONE, Status BLOCKED und",
     "Autorisiert NEIN verbindlich auf den einzigen autorisierten Folgetask",
     "v27.35d umgestellt.",
-    "Der letzte abgeschlossene funktionale Stand bleibt",
-    "unverändert v27.35b.",
-    "Der Kontinuitäts-Checker erzwingt diese v27.35c-Pflichtaussagen und",
+    "Der letzte abgeschlossene funktionale Stand blieb",
+    "zu diesem Zeitpunkt unverändert v27.35b.",
+    "Der Kontinuitäts-Checker erzwang diese v27.35c-Pflichtaussagen und",
     "die automatische Auswahl eines weiteren Tasks.",
-    "während v27.35c gegenüber dem Ausgangscommit unverändert bleiben.",
-    "Der funktionale Folgeschritt v27.35d selbst ist noch nicht umgesetzt.",
-    "Kein weiterer Task darf automatisch ausgewählt werden.",
+    "während v27.35c gegenüber dem Ausgangscommit unverändert blieben.",
+    "Der funktionale Folgeschritt v27.35d wurde erst danach umgesetzt und",
     "## Abgeschlossener funktionaler Stand v27.35b",
     "Dashboard „Ihr nächster Lernschritt“ ist abgeschlossen.",
-    f"Abschlusscommit: `{COMPLETION_SHA}`.",
+    f"Der v27.35b-Abschlusscommit lautet `{COMPLETION_SHA}`.",
     "„Letzter abgeschlossener funktionaler Stand: v27.34b“.",
     "## Dynamische Prüfung bei jedem Arbeitsbeginn",
     "Der aktuelle HEAD muss bei jedem Arbeitsbeginn mit Git neu ermittelt werden.",
@@ -112,16 +123,12 @@ STATE_REQUIRED_MARKERS = (
 )
 
 TASK_REQUIRED_MARKERS = (
-    "## Ziel von v27.35d",
-    "Lernmodus und Lernkarten für Teilnehmer klarer unterscheiden.",
-    "## Akzeptanzkriterien",
-    "Lernmodus und Lernkarten werden sprachlich eindeutig getrennt.",
-    "## Tests",
-    "## Verbotene Dateien",
-    "## Verbindliche Sperre",
-    "Kein Folgeschritt nach v27.35d wird automatisch gewählt oder autorisiert.",
-    "## Abgeschlossener nichtfunktionaler Kontrollschritt v27.35c",
-    "Der funktionale Ausgangsstand bleibt v27.35b.",
+    "## Abschluss von v27.35d",
+    "Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ gekennzeichnet.",
+    "Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet.",
+    "## Verbindlich festhalten",
+    "v27.35d ist abgeschlossen.",
+    "Kein Folgetask ist ausgewählt.",
     "## Pflichtfelder eines später autorisierten Tasks",
 )
 
@@ -160,18 +167,16 @@ REQUIRED_CHAT_READING_BLOCK = "\n".join(
 )
 
 CURSOR_REQUIRED_MARKERS = (
-    "Stand: v27.35c",
+    "Stand: v27.35d",
     "Arbeit: `C:\\a34a`",
     "Zuhause: `C:\\xampp\\htdocs\\accaoui\\v4-dashboard`",
-    "Letzter abgeschlossener funktionaler Stand: v27.35b",
-    f"Abschlusscommit: `{COMPLETION_SHA}`",
+    "Letzter abgeschlossener funktionaler Stand: v27.35d",
+    f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
     "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
     "**Erledigt:** v24.6b (Wiederholung/offene Fragen), v24.6c (Pausieren/Fortsetzen),",
     "## 14. Nächster sinnvoller Schritt",
-    "Einzig autorisierter nächster Schritt: v27.35d",
-    "`docs/tasks/CURRENT_TASK.md`, ausschließlich `app.js`, `index.html`,",
-    "`style.css`, kein Commit, kein Push).",
-    "Kein Folgeschritt nach v27.35d ist autorisiert.",
+    "`CURRENT_TASK` ist `NONE` / `BLOCKED` / nicht autorisiert.",
+    "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.",
     "## 15. Wenn ein neuer Chat beginnt",
     "Zuerst vollständig lesen:",
     REQUIRED_CHAT_READING_BLOCK,
@@ -179,16 +184,16 @@ CURSOR_REQUIRED_MARKERS = (
     "docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md",
 )
 
-CURSOR_V2735C_EXACT_MARKERS = (
-    "Stand: v27.35c\nProjekt:",
+CURSOR_V2735D_EXACT_MARKERS = (
+    "Stand: v27.35d\nProjekt:",
     "Arbeit: `C:\\a34a`",
     "Zuhause: `C:\\xampp\\htdocs\\accaoui\\v4-dashboard`",
-    "Letzter abgeschlossener funktionaler Stand: v27.35b",
-    f"Abschlusscommit: `{COMPLETION_SHA}`",
+    "Letzter abgeschlossener funktionaler Stand: v27.35d",
+    f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
     "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
     "## 14. Nächster sinnvoller Schritt",
-    "Einzig autorisierter nächster Schritt: v27.35d",
-    "Kein Folgeschritt nach v27.35d ist autorisiert.",
+    "`CURRENT_TASK` ist `NONE` / `BLOCKED` / nicht autorisiert.",
+    "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.",
     REQUIRED_CHAT_READING_BLOCK,
 )
 
@@ -197,21 +202,21 @@ CURSOR_NEW_CHAT_LOCAL_HEAD_MARKERS = (
     "Lokalen und GitHub-HEAD direkt vergleichen",
 )
 
-STATE_V2735C_EXACT_MARKERS = (
-    "Stand: v27.35c\nRepository:",
-    f"Letzter direkt bestätigter Vorgänger-Commit: `{GATE_SHA}`",
-    "## Nichtfunktionale Task-Steuerung v27.35c",
-    "Aktuell autorisierter Task: v27.35d",
-    "Weiterer funktionaler Schritt autorisiert: JA",
+STATE_V2735D_EXACT_MARKERS = (
+    "Stand: v27.35d\nRepository:",
+    f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
+    "## Abgeschlossener funktionaler Stand v27.35d",
+    "Aktuell autorisierter Task: NONE",
+    "Weiterer funktionaler Schritt autorisiert: NEIN",
 )
 
-TASK_V2735C_EXACT_MARKERS = (
-    "Task-ID: v27.35d",
-    "Status: AUTHORIZED",
-    "Autorisiert: JA",
-    "Erlaubte Dateien: `app.js`, `index.html`, `style.css`",
-    "Kein Folgeschritt nach v27.35d wird automatisch gewählt oder autorisiert.",
-    "## Abgeschlossener nichtfunktionaler Kontrollschritt v27.35c",
+TASK_V2735D_EXACT_MARKERS = (
+    "Task-ID: NONE",
+    "Status: BLOCKED",
+    "Autorisiert: NEIN",
+    "Erlaubte Dateien: keine",
+    "## Abschluss von v27.35d",
+    "v27.35d ist abgeschlossen.",
 )
 
 MASTERLIST_REQUIRED_MARKERS = (
@@ -244,19 +249,25 @@ MASTERLIST_REQUIRED_MARKERS = (
     "### Nichtfunktionale Task-Steuerung v27.35c",
     "- `docs/PROJECT_STATE_CURRENT.md` steht auf v27.35c und dokumentiert v27.35b als unveränderten letzten funktionalen Stand sowie v27.35d als einzigen autorisierten Task.",
     "Backlog-Kandidaten B (Regressionstest) und C (Quellen/mündliche Musterfragen) sind ausdrücklich nicht autorisiert.",
+    "`CURRENT_TASK` stand während v27.35c auf `AUTHORIZED` für `v27.35d`; v27.35d ist inzwischen abgeschlossen (siehe unten).",
+    "`CURRENT_TASK` steht jetzt auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`; kein weiterer Folgeschritt nach v27.35d ist ausgewählt oder autorisiert.",
+    "| v27.35d |",
+    "### Abgeschlossener funktionaler Stand v27.35d",
+    f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`.",
+    f"Historisch: Der nichtfunktionale Checker-Fix `{CHECKER_FIX_SHA}`",
     "Diese Bestands- und Backlogliste ist keine Task-Autorisierung.",
-    "`CURRENT_TASK` ist aktuell `AUTHORIZED` für `v27.35d`; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert.",
+    "`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED`; v27.35d ist abgeschlossen; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert.",
     "Backlog-Kandidaten B (schriftliche Prüfungs-Regression) und C (Quellen/mündliche Musterfragen) sind nicht autorisiert.",
     REQUIRED_CHAT_READING_BLOCK,
 )
 
-MASTERLIST_V2735C_EXACT_MARKERS = (
-    "Stand: v27.35c\nBranch:",
+MASTERLIST_V2735D_EXACT_MARKERS = (
+    "Stand: v27.35d\nBranch:",
     f"Arbeits-Laptop: `{WORK_PATH}`",
     f"Zuhause-Laptop: `{HOME_PATH}`",
-    "| v27.35c |",
-    "### Nichtfunktionale Task-Steuerung v27.35c",
-    "`CURRENT_TASK` ist aktuell `AUTHORIZED` für `v27.35d`; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert.",
+    "| v27.35d |",
+    "### Abgeschlossener funktionaler Stand v27.35d",
+    "`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED`; v27.35d ist abgeschlossen; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert.",
     "Backlog-Kandidaten B (schriftliche Prüfungs-Regression) und C (Quellen/mündliche Musterfragen) sind nicht autorisiert.",
     REQUIRED_CHAT_READING_BLOCK,
 )
@@ -365,16 +376,24 @@ def validate_state_text(text: str) -> None:
     validate_required_markers(text, STATE_REQUIRED_MARKERS, "PROJECT_STATE_CURRENT")
     validate_exact_markers(
         text,
-        STATE_V2735C_EXACT_MARKERS,
+        STATE_V2735D_EXACT_MARKERS,
         "PROJECT_STATE_CURRENT",
     )
 
     commit_shas = set(re.findall(r"\b[0-9a-f]{40}\b", text))
     require(
-        commit_shas == {GATE_SHA, COMPLETION_SHA},
+        commit_shas
+        == {
+            GATE_SHA,
+            COMPLETION_SHA,
+            CONTROL_COMMIT_SHA,
+            CHECKER_FIX_SHA,
+            V2735D_COMPLETION_SHA,
+        },
         (
-            "PROJECT_STATE_CURRENT darf nur Vorgänger-Commit und "
-            "v27.35b-Abschlusscommit enthalten"
+            "PROJECT_STATE_CURRENT darf nur die historisch bekannten Commits "
+            "(Gate, v27.35b-Abschluss, v27.35c-Steuerung, Checker-Fix, "
+            "v27.35d-Abschluss) enthalten"
         ),
     )
     for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
@@ -384,10 +403,21 @@ def validate_state_text(text: str) -> None:
         )
 
 
+TASK_CONTRADICTORY_GRANTS = (
+    "Status: AUTHORIZED",
+    "Autorisiert: JA",
+    "Commit erlaubt: JA",
+    "Push erlaubt: JA",
+    "Task-ID: v27.35d",
+    "Task-ID: v27.35e",
+    "Task-ID: v27.36",
+)
+
+
 def validate_task_text(text: str) -> None:
     validate_exact_fields(text, EXPECTED_TASK_FIELDS)
     validate_required_markers(text, TASK_REQUIRED_MARKERS, "CURRENT_TASK")
-    validate_exact_markers(text, TASK_V2735C_EXACT_MARKERS, "CURRENT_TASK")
+    validate_exact_markers(text, TASK_V2735D_EXACT_MARKERS, "CURRENT_TASK")
 
     for field_name in LATER_TASK_TEMPLATE_FIELDS:
         require(
@@ -400,17 +430,7 @@ def validate_task_text(text: str) -> None:
             forbidden_marker not in text,
             "CURRENT_TASK darf keinen weiteren Folgeschritt auswählen oder nennen",
         )
-    contradictory_grants = (
-        "Status: BLOCKED",
-        "Autorisiert: NEIN",
-        "Commit erlaubt: JA",
-        "Push erlaubt: JA",
-        "Erlaubte Dateien: keine",
-        "Task-ID: NONE",
-        "Task-ID: v27.35c",
-        "Task-ID: v27.35e",
-    )
-    for contradictory_grant in contradictory_grants:
+    for contradictory_grant in TASK_CONTRADICTORY_GRANTS:
         require(
             contradictory_grant not in text,
             f"CURRENT_TASK enthält widersprüchliche Freigabe: {contradictory_grant}",
@@ -487,7 +507,7 @@ def validate_cursor_context_text(text: str) -> None:
     )
     validate_exact_markers(
         text,
-        CURSOR_V2735C_EXACT_MARKERS,
+        CURSOR_V2735D_EXACT_MARKERS,
         "CURSOR_MASTER_CONTEXT_ACCAOUI",
     )
     validate_project_paths(text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
@@ -554,8 +574,8 @@ def validate_cursor_context_text(text: str) -> None:
 
 def validate_masterlist_text(text: str) -> None:
     require(
-        exact_field(text, "Stand") == "v27.35c",
-        "Masterliste muss exakt auf Stand v27.35c stehen",
+        exact_field(text, "Stand") == "v27.35d",
+        "Masterliste muss exakt auf Stand v27.35d stehen",
     )
     validate_required_markers(
         text,
@@ -564,7 +584,7 @@ def validate_masterlist_text(text: str) -> None:
     )
     validate_exact_markers(
         text,
-        MASTERLIST_V2735C_EXACT_MARKERS,
+        MASTERLIST_V2735D_EXACT_MARKERS,
         "PROJECT_MASTERLIST",
     )
     validate_project_paths(text, "PROJECT_MASTERLIST")
@@ -713,6 +733,38 @@ def validate_v2735c_control_commit_history() -> None:
         )
 
 
+def validate_v2735d_completion_commit_history() -> None:
+    """Prüft den funktionalen v27.35d-Abschluss ausschließlich historisch.
+
+    Geprüft wird der abgeschlossene Bereich zwischen dem
+    nichtfunktionalen Checker-Fix (CHECKER_FIX_SHA) und dem
+    funktionalen Abschlusscommit von v27.35d (V2735D_COMPLETION_SHA).
+    """
+    require(
+        (ROOT / ".git").exists(),
+        "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
+    )
+
+    run_git(["merge-base", "--is-ancestor", CHECKER_FIX_SHA, V2735D_COMPLETION_SHA])
+    run_git(["merge-base", "--is-ancestor", V2735D_COMPLETION_SHA, "HEAD"])
+
+    completion_changed_files = {
+        line.strip()
+        for line in run_git(
+            ["diff", "--name-only", CHECKER_FIX_SHA, V2735D_COMPLETION_SHA]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        completion_changed_files == set(EXPECTED_V2735D_CHANGED_FILES),
+        (
+            "v27.35d-Abschlusscommit veränderte zwischen Checker-Fix "
+            f"{CHECKER_FIX_SHA} und Abschlusscommit {V2735D_COMPLETION_SHA} "
+            f"nicht exakt die erwarteten Dateien: {sorted(completion_changed_files)}"
+        ),
+    )
+
+
 def changed_once(text: str, old: str, new: str, label: str) -> str:
     require(old in text, f"Manipulationsmatrix kann Ausgangswert nicht finden: {label}")
     changed = text.replace(old, new, 1)
@@ -799,15 +851,15 @@ def run_manipulation_matrix(
         checks += 1
 
     state_value_manipulations = {
-        "Stand": "v27.35b",
+        "Stand": "v27.35c",
         "Repository": "`anderes/repository`",
         "Branch": "`anderer-branch`",
-        "Letzter abgeschlossener funktionaler Stand": "v27.34b",
-        "Letzter direkt bestätigter Vorgänger-Commit": f"`{'0' * 40}`",
+        "Letzter abgeschlossener funktionaler Stand": "v27.35b",
+        "Abschlusscommit": f"`{'0' * 40}`",
         "Aktueller HEAD": GATE_SHA,
-        "Funktionsstatus": "v27.35b offen",
-        "Weiterer funktionaler Schritt autorisiert": "NEIN",
-        "Aktuell autorisierter Task": "v27.35c",
+        "Funktionsstatus": "v27.35d offen",
+        "Weiterer funktionaler Schritt autorisiert": "JA",
+        "Aktuell autorisierter Task": "v27.35e",
         "Aktueller Blocker": "KEINER",
     }
     for field_name, manipulated_value in state_value_manipulations.items():
@@ -846,11 +898,12 @@ def run_manipulation_matrix(
         checks += 1
 
     task_value_manipulations = {
-        "Task-ID": "v27.35e",
-        "Status": "BLOCKED",
-        "Autorisiert": "NEIN",
-        "Funktionaler Ausgangsstand": "v27.34b",
-        "Letzter abgeschlossener Kontrollschritt": "v27.35b",
+        "Task-ID": "v27.35d",
+        "Status": "AUTHORIZED",
+        "Autorisiert": "JA",
+        "Letzter abgeschlossener funktionaler Stand": "v27.35b",
+        "Letzter abgeschlossener Task": "v27.35b",
+        "Abschlusscommit": f"`{'0' * 40}`",
         "Erwarteter Ausgangscommit": f"`{'0' * 40}`",
         "Erlaubte Dateien": "`app.js`",
         "Commit erlaubt": "JA",
@@ -874,22 +927,15 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            "Erlaubte Dateien: `app.js`, `index.html`, `style.css`",
-            "Erlaubte Dateien: `app.js`, `index.html`, `style.css`, `questions.json`",
-            "CURRENT_TASK zusätzliche erlaubte Dateien",
+            "Erlaubte Dateien: keine",
+            "Erlaubte Dateien: keine, `app.js`",
+            "CURRENT_TASK erlaubte Dateien trotz Abschluss ergänzt",
         ),
-        "CURRENT_TASK zusätzliche erlaubte Dateien",
+        "CURRENT_TASK erlaubte Dateien trotz Abschluss ergänzt",
     )
     checks += 1
 
-    for contradictory_grant in (
-        "Status: BLOCKED",
-        "Autorisiert: NEIN",
-        "Commit erlaubt: JA",
-        "Push erlaubt: JA",
-        "Erlaubte Dateien: keine",
-        "Task-ID: NONE",
-    ):
+    for contradictory_grant in TASK_CONTRADICTORY_GRANTS:
         must_reject(
             validate_task_text,
             task_text + f"{contradictory_grant}\n",
@@ -914,7 +960,7 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            "Kein Folgeschritt nach v27.35d wird automatisch gewählt oder autorisiert.",
+            "Kein Folgetask ist ausgewählt.",
             "`v27.35e` wird automatisch gewählt und autorisiert.",
             "automatische Auswahl eines Folgeschritts",
         ),
@@ -925,13 +971,13 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_state_text,
         state_text,
-        STATE_V2735C_EXACT_MARKERS,
+        STATE_V2735D_EXACT_MARKERS,
         "PROJECT_STATE_CURRENT",
     )
     checks += exercise_exact_marker_manipulations(
         validate_task_text,
         task_text,
-        TASK_V2735C_EXACT_MARKERS,
+        TASK_V2735D_EXACT_MARKERS,
         "CURRENT_TASK",
     )
 
@@ -1031,7 +1077,7 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_cursor_context_text,
         cursor_context_text,
-        CURSOR_V2735C_EXACT_MARKERS,
+        CURSOR_V2735D_EXACT_MARKERS,
         "CURSOR_MASTER_CONTEXT_ACCAOUI",
     )
 
@@ -1120,9 +1166,9 @@ def run_manipulation_matrix(
 
     manipulated_cursor_task_text = changed_once(
         cursor_context_text,
-        "Kein Folgeschritt nach v27.35d ist autorisiert.",
+        "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.",
         (
-            "Kein Folgeschritt nach v27.35d ist autorisiert.\n"
+            "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.\n"
             "**v24.6c – Prüfung/Lernen pausieren und später fortsetzen**"
         ),
         "Cursor alte aktive Task-Auswahl v24.6c",
@@ -1136,9 +1182,9 @@ def run_manipulation_matrix(
 
     manipulated_cursor_future_task_text = changed_once(
         cursor_context_text,
-        "Kein Folgeschritt nach v27.35d ist autorisiert.",
+        "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.",
         (
-            "Kein Folgeschritt nach v27.35d ist autorisiert.\n"
+            "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.\n"
             "**v27.35e wird automatisch fortgesetzt.**"
         ),
         "Cursor unzulässige weitere Task-Auswahl v27.35e",
@@ -1167,7 +1213,7 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_masterlist_text,
         masterlist_text,
-        MASTERLIST_V2735C_EXACT_MARKERS,
+        MASTERLIST_V2735D_EXACT_MARKERS,
         "PROJECT_MASTERLIST",
     )
 
@@ -1229,6 +1275,7 @@ def main() -> int:
         validate_masterlist_text(masterlist_text)
         validate_preflight_text(preflight_text)
         validate_v2735c_control_commit_history()
+        validate_v2735d_completion_commit_history()
         manipulation_checks = run_manipulation_matrix(
             state_text,
             task_text,
@@ -1241,12 +1288,9 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität und Task-Steuerung v27.35c: OK")
-    print("PROJECT_STATE_CURRENT: v27.35c / funktionaler Stand v27.35b")
-    print(
-        "CURRENT_TASK: v27.35d / AUTHORIZED / "
-        "app.js, index.html, style.css, kein Commit, kein Push"
-    )
+    print("Projektkontinuität und Task-Steuerung v27.35d: OK")
+    print("PROJECT_STATE_CURRENT: v27.35d / funktionaler Stand v27.35d abgeschlossen")
+    print("CURRENT_TASK: NONE / BLOCKED / keine erlaubten Dateien, kein Commit, kein Push")
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Projektpfade Arbeit und Zuhause: OK")
     print("Preflight-Einbindung: OK")
@@ -1254,7 +1298,10 @@ def main() -> int:
         "v27.35c-Steuerungscommit historisch sauber: app.js, index.html und "
         f"style.css zwischen {GATE_SHA} und {CONTROL_COMMIT_SHA} unverändert"
     )
-    print("Autorisierte v27.35d-Arbeitsbaumänderungen an app.js/style.css sind zulässig")
+    print(
+        "v27.35d-Abschlusscommit historisch sauber: app.js und style.css "
+        f"zwischen {CHECKER_FIX_SHA} und {V2735D_COMPLETION_SHA} verändert"
+    )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0
 

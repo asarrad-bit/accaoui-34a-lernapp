@@ -1,13 +1,13 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.35c
+Stand: v27.35d
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
-Letzter abgeschlossener funktionaler Stand: v27.35b
-Abschlusscommit: `f168b96ff26c88e5baca212902081932b8986e85`
+Letzter abgeschlossener funktionaler Stand: v27.35d
+Abschlusscommit: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`
 
 ## 1. Sofort-Regel
 
@@ -445,16 +445,7 @@ Cursor darf nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-Einzig autorisierter nächster Schritt: v27.35d – Lernmodus und
-Lernkarten für Teilnehmer klarer unterscheiden (siehe
-`docs/tasks/CURRENT_TASK.md`, ausschließlich `app.js`, `index.html`,
-`style.css`, kein Commit, kein Push).
-
-Kein Folgeschritt nach v27.35d ist autorisiert. Die Auswahl jedes
-darüber hinausgehenden Tasks erfolgt ausschließlich durch den
-Projekteigentümer, den verbindlichen Projektchat und
-`docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder
-Erinnerung darf kein weiterer Task abgeleitet werden.
+`CURRENT_TASK` ist `NONE` / `BLOCKED` / nicht autorisiert. v27.35d ist mit Abschlusscommit `b4d2de5002918766bb45fe001cbbfdb333a6d7c5` abgeschlossen. Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet. Die Auswahl des nächsten Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer Task abgeleitet werden.
 
 ## 15. Wenn ein neuer Chat beginnt
 
