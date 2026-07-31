@@ -1,25 +1,39 @@
 # Aktueller Projektzustand
 
-Stand: v27.35e
+Stand: v27.35g
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35d
 Abschlusscommit: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35d abgeschlossen
-Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: v27.35e
-Aktueller Blocker: Nur der Regressionstest v27.35e ist autorisiert; kein funktionaler Folgeschritt
+Weiterer funktionaler Schritt autorisiert: JA
+Aktuell autorisierter Task: v27.35g
+Aktueller Blocker: KEINER für v27.35g; jeder weitere Schritt bleibt gesperrt
 
-## Autorisierte Nichtfunktionale Steuerung v27.35e
+## Abgeschlossener Regressionstest v27.35e (FAIL)
 
-`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35e`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Funktionaler Ausgangsstand: v27.35d`, erwarteter Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`, erlaubte Datei `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
+`docs/tasks/CURRENT_TASK.md` stand auf `Task-ID: v27.35e`, `Status: AUTHORIZED`, `Autorisiert: JA`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`, erlaubte Datei `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
 
-Ziel von v27.35e: Die schriftliche Prüfung nach v27.35d vollständig regressionsprüfen. Es wird keine neue Funktion entwickelt.
+Der Regressionstest der schriftlichen Prüfung nach v27.35d wurde vollständig durchgeführt und mit Gesamtergebnis FAIL abgeschlossen. Testbericht-Commit: `db2f12a1af7792c59e9e6411bb127b2f68401713`.
 
-Der funktionale Stand bleibt v27.35d; `app.js`, `index.html` und `style.css` dürfen während der Testdurchführung nicht verändert werden. Wird eine Regression gefunden, gilt sofort STOPP: Fehler im Testbericht dokumentieren, keine Codekorrektur, kein zusätzlicher Dateiumfang.
+Ursache der Regression: Bei Zwei-Punkte-Fragen mit nur einer richtigen Antwortoption wurde bei vollständig korrekter Beantwortung nur 1 statt 2 Punkte vergeben. Betroffene Fragen-IDs im getesteten Kernfragenpool: `straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`, `technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`, `bgb_006`, `uvv_004`, `uvv_008`.
 
-Kein Folgeschritt nach v27.35e ist ausgewählt oder autorisiert.
+Es wurde in v27.35e keine Codekorrektur vorgenommen, kein Commit und kein Push ausgeführt. Der Testbericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert.
+
+## Autorisierter Task v27.35g
+
+`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35g`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Titel: Punkteberechnung schriftliche Prüfung korrigieren`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `db2f12a1af7792c59e9e6411bb127b2f68401713`, für die spätere Umsetzung ausschließlich erlaubte Dateien `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
+
+Ziel von v27.35g: Die Punkteberechnung der schriftlichen Prüfung so korrigieren, dass vollständig korrekt beantwortete Fragen stets ihre volle hinterlegte Punktzahl ergeben.
+
+Verbindlicher Bewertungsvertrag: keine Antwort ergibt 0 Punkte; die ausgewählte Antwortmenge entspricht exakt der vollständigen richtigen Antwortmenge und ergibt die volle hinterlegte Fragepunktzahl; bei einer Zwei-Punkte-Frage mit mindestens zwei richtigen Optionen ergibt eine nicht leere echte Teilmenge ausschließlich richtiger Optionen ohne falsch ausgewählte Option exakt 1 Punkt; eine falsch ausgewählte Option oder eine sonstige nicht vollständig beziehungsweise nicht zulässig teilrichtige Kombination ergibt 0 Punkte; eine Zwei-Punkte-Frage mit nur einer richtigen Antwort ergibt vollständig richtig exakt 2 Punkte; eine Ein-Punkt-Frage ergibt nur vollständig richtig 1 Punkt, sonst 0.
+
+In diesem Steuerungsschritt wird `app.js` noch nicht verändert; die Korrektur erfolgt erst in der später autorisierten Umsetzung. Der bestehende Testbericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` darf dabei nicht verändert werden.
+
+`v27.35f` bleibt ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert. `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+
+Der funktionale Stand bleibt v27.35d, bis v27.35g abgeschlossen ist. Kein Folgeschritt nach v27.35g ist ausgewählt oder autorisiert.
 
 ## Abgeschlossener funktionaler Stand v27.35d
 
