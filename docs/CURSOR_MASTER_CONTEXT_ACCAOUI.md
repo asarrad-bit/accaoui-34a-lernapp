@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.35d
+Stand: v27.35e
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -445,7 +445,7 @@ Cursor darf nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-`CURRENT_TASK` ist `NONE` / `BLOCKED` / nicht autorisiert. v27.35d ist mit Abschlusscommit `b4d2de5002918766bb45fe001cbbfdb333a6d7c5` abgeschlossen. Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet. Die Auswahl des nächsten Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer Task abgeleitet werden.
+`CURRENT_TASK` ist `v27.35e` / `AUTHORIZED`. v27.35d bleibt mit Abschlusscommit `b4d2de5002918766bb45fe001cbbfdb333a6d7c5` der letzte abgeschlossene funktionale Stand. v27.35e ist kein neuer funktionaler Task, sondern ein Regressionstest der schriftlichen Prüfung nach v27.35d; es wird keine neue Funktion entwickelt. Für die spätere Testdurchführung ist ausschließlich `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` erlaubt. Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet. Die Auswahl eines weiteren Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer Task abgeleitet werden.
 
 ## 15. Wenn ein neuer Chat beginnt
 

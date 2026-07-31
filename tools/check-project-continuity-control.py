@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Projektkontinuität für den abgeschlossenen Stand v27.35d."""
+"""Prüft die verbindliche Projektkontinuität für den autorisierten Task v27.35e."""
 
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ COMPLETION_SHA = "f168b96ff26c88e5baca212902081932b8986e85"
 CONTROL_COMMIT_SHA = "7b0e110d20e97f0bc8487fe6537e0683d9e25940"
 CHECKER_FIX_SHA = "d83869308a277e077b3da6d7e2c1a23001374a48"
 V2735D_COMPLETION_SHA = "b4d2de5002918766bb45fe001cbbfdb333a6d7c5"
+V2735E_GATE_SHA = "260e6527208769f18018d1db6e6e3b7fbe9d7d7e"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 PROTECTED_RUNTIME_FILES = ("app.js", "index.html", "style.css")
 EXPECTED_V2735C_CONTROL_FILES = (
@@ -35,9 +36,17 @@ EXPECTED_V2735C_CONTROL_FILES = (
     "tools/check-project-continuity-control.py",
 )
 EXPECTED_V2735D_CHANGED_FILES = ("app.js", "style.css")
+EXPECTED_V2735E_CONTROL_FILES = (
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "tools/check-project-continuity-control.py",
+)
+V2735E_LATER_ALLOWED_FILE = "docs/WRITTEN_EXAM_REGRESSION_V2735E.md"
 
 # Keine zukünftige Task-ID als aktiven Task einführen.
-FORBIDDEN_FUTURE_TASK_MARKERS = ("v27.35e", "v27.36")
+FORBIDDEN_FUTURE_TASK_MARKERS = ("v27.35f", "v27.36")
 
 WORK_PATH = r"C:\a34a"
 HOME_PATH = r"C:\xampp\htdocs\accaoui\v4-dashboard"
@@ -45,7 +54,7 @@ WORK_PATH_GIT_BASH = "/c/a34a"
 HOME_PATH_GIT_BASH = "/c/xampp/htdocs/accaoui/v4-dashboard"
 
 EXPECTED_STATE_FIELDS = {
-    "Stand": "v27.35d",
+    "Stand": "v27.35e",
     "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
     "Branch": "`main`",
     "Letzter abgeschlossener funktionaler Stand": "v27.35d",
@@ -53,24 +62,32 @@ EXPECTED_STATE_FIELDS = {
     "Aktueller HEAD": "DYNAMISCH ZU PRÜFEN",
     "Funktionsstatus": "v27.35d abgeschlossen",
     "Weiterer funktionaler Schritt autorisiert": "NEIN",
-    "Aktuell autorisierter Task": "NONE",
-    "Aktueller Blocker": "Kein weiterer Task durch CURRENT_TASK autorisiert",
+    "Aktuell autorisierter Task": "v27.35e",
+    "Aktueller Blocker": (
+        "Nur der Regressionstest v27.35e ist autorisiert; kein funktionaler Folgeschritt"
+    ),
 }
 
 EXPECTED_TASK_FIELDS = {
-    "Task-ID": "NONE",
-    "Status": "BLOCKED",
-    "Autorisiert": "NEIN",
-    "Letzter abgeschlossener funktionaler Stand": "v27.35d",
-    "Letzter abgeschlossener Task": "v27.35d",
-    "Abschlusscommit": f"`{V2735D_COMPLETION_SHA}`",
-    "Erwarteter Ausgangscommit": f"`{V2735D_COMPLETION_SHA}`",
-    "Erlaubte Dateien": "keine",
+    "Task-ID": "v27.35e",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": "Regressionstest der schriftlichen Prüfung",
+    "Funktionaler Ausgangsstand": "v27.35d",
+    "Erwarteter Ausgangscommit": f"`{V2735E_GATE_SHA}`",
+    "Erlaubte Dateien": f"`{V2735E_LATER_ALLOWED_FILE}`",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
 
 STATE_REQUIRED_MARKERS = (
+    "## Autorisierte Nichtfunktionale Steuerung v27.35e",
+    "erwarteter Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`",
+    f"erlaubte Datei `{V2735E_LATER_ALLOWED_FILE}`",
+    "Ziel von v27.35e: Die schriftliche Prüfung nach v27.35d vollständig regressionsprüfen.",
+    "Es wird keine neue Funktion entwickelt.",
+    "Der funktionale Stand bleibt v27.35d;",
+    "Kein Folgeschritt nach v27.35e ist ausgewählt oder autorisiert.",
     "## Abgeschlossener funktionaler Stand v27.35d",
     "Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ gekennzeichnet.",
     "Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet.",
@@ -123,11 +140,17 @@ STATE_REQUIRED_MARKERS = (
 )
 
 TASK_REQUIRED_MARKERS = (
-    "## Abschluss von v27.35d",
-    "Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ gekennzeichnet.",
-    "Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet.",
+    "## Ziel",
+    "Die schriftliche Prüfung nach v27.35d vollständig regressionsprüfen.",
+    "keine neue Funktion entwickelt.",
+    "Dieser Schritt autorisiert nur den Testtask.",
+    "## Während der Testdurchführung verboten",
+    "## Akzeptanzkriterien",
+    "Vollsimulation enthält exakt 82 Fragen.",
+    "Maximalpunktzahl beträgt exakt 120 Punkte.",
+    "## Fehlerregel",
+    "Wird eine Regression gefunden: sofort STOPP,",
     "## Verbindlich festhalten",
-    "v27.35d ist abgeschlossen.",
     "Kein Folgetask ist ausgewählt.",
     "## Pflichtfelder eines später autorisierten Tasks",
 )
@@ -167,7 +190,7 @@ REQUIRED_CHAT_READING_BLOCK = "\n".join(
 )
 
 CURSOR_REQUIRED_MARKERS = (
-    "Stand: v27.35d",
+    "Stand: v27.35e",
     "Arbeit: `C:\\a34a`",
     "Zuhause: `C:\\xampp\\htdocs\\accaoui\\v4-dashboard`",
     "Letzter abgeschlossener funktionaler Stand: v27.35d",
@@ -175,7 +198,7 @@ CURSOR_REQUIRED_MARKERS = (
     "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
     "**Erledigt:** v24.6b (Wiederholung/offene Fragen), v24.6c (Pausieren/Fortsetzen),",
     "## 14. Nächster sinnvoller Schritt",
-    "`CURRENT_TASK` ist `NONE` / `BLOCKED` / nicht autorisiert.",
+    "`CURRENT_TASK` ist `v27.35e` / `AUTHORIZED`.",
     "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.",
     "## 15. Wenn ein neuer Chat beginnt",
     "Zuerst vollständig lesen:",
@@ -184,15 +207,15 @@ CURSOR_REQUIRED_MARKERS = (
     "docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md",
 )
 
-CURSOR_V2735D_EXACT_MARKERS = (
-    "Stand: v27.35d\nProjekt:",
+CURSOR_V2735E_EXACT_MARKERS = (
+    "Stand: v27.35e\nProjekt:",
     "Arbeit: `C:\\a34a`",
     "Zuhause: `C:\\xampp\\htdocs\\accaoui\\v4-dashboard`",
     "Letzter abgeschlossener funktionaler Stand: v27.35d",
     f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
     "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
     "## 14. Nächster sinnvoller Schritt",
-    "`CURRENT_TASK` ist `NONE` / `BLOCKED` / nicht autorisiert.",
+    "`CURRENT_TASK` ist `v27.35e` / `AUTHORIZED`.",
     "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.",
     REQUIRED_CHAT_READING_BLOCK,
 )
@@ -202,21 +225,21 @@ CURSOR_NEW_CHAT_LOCAL_HEAD_MARKERS = (
     "Lokalen und GitHub-HEAD direkt vergleichen",
 )
 
-STATE_V2735D_EXACT_MARKERS = (
-    "Stand: v27.35d\nRepository:",
+STATE_V2735E_EXACT_MARKERS = (
+    "Stand: v27.35e\nRepository:",
     f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
-    "## Abgeschlossener funktionaler Stand v27.35d",
-    "Aktuell autorisierter Task: NONE",
+    "## Autorisierte Nichtfunktionale Steuerung v27.35e",
+    "Aktuell autorisierter Task: v27.35e",
     "Weiterer funktionaler Schritt autorisiert: NEIN",
 )
 
-TASK_V2735D_EXACT_MARKERS = (
-    "Task-ID: NONE",
-    "Status: BLOCKED",
-    "Autorisiert: NEIN",
-    "Erlaubte Dateien: keine",
-    "## Abschluss von v27.35d",
-    "v27.35d ist abgeschlossen.",
+TASK_V2735E_EXACT_MARKERS = (
+    "Task-ID: v27.35e",
+    "Status: AUTHORIZED",
+    "Autorisiert: JA",
+    f"Erlaubte Dateien: `{V2735E_LATER_ALLOWED_FILE}`",
+    "## Ziel",
+    "Dieser Schritt autorisiert nur den Testtask.",
 )
 
 MASTERLIST_REQUIRED_MARKERS = (
@@ -255,20 +278,26 @@ MASTERLIST_REQUIRED_MARKERS = (
     "### Abgeschlossener funktionaler Stand v27.35d",
     f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`.",
     f"Historisch: Der nichtfunktionale Checker-Fix `{CHECKER_FIX_SHA}`",
+    "| v27.35e |",
+    "### Nichtfunktionale Task-Steuerung v27.35e",
+    "- `docs/PROJECT_STATE_CURRENT.md` steht auf v27.35e und dokumentiert v27.35d als unveränderten letzten funktionalen Stand sowie v27.35e als einzigen autorisierten Task.",
+    "Regressionstest der schriftlichen Prüfung nach v27.35d autorisiert",
+    "Dieser Steuerungsschritt autorisiert nur den Testtask; die eigentliche Testdurchführung mit Browser-Tests erfolgt erst danach.",
+    "Der funktionale Stand bleibt v27.35d; in diesem Steuerungsschritt wurde ausschließlich Projektsteuerungsdokumentation geändert; kein Folgeschritt nach v27.35e ist ausgewählt oder autorisiert.",
     "Diese Bestands- und Backlogliste ist keine Task-Autorisierung.",
-    "`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED`; v27.35d ist abgeschlossen; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert.",
-    "Backlog-Kandidaten B (schriftliche Prüfungs-Regression) und C (Quellen/mündliche Musterfragen) sind nicht autorisiert.",
+    "`CURRENT_TASK` ist aktuell `v27.35e` / `AUTHORIZED` (Regressionstest der schriftlichen Prüfung, kein neuer funktionaler Task); v27.35d bleibt der letzte abgeschlossene funktionale Stand.",
+    "Backlog-Kandidat C (Quellen/mündliche Musterfragen) ist nicht autorisiert.",
     REQUIRED_CHAT_READING_BLOCK,
 )
 
-MASTERLIST_V2735D_EXACT_MARKERS = (
-    "Stand: v27.35d\nBranch:",
+MASTERLIST_V2735E_EXACT_MARKERS = (
+    "Stand: v27.35e\nBranch:",
     f"Arbeits-Laptop: `{WORK_PATH}`",
     f"Zuhause-Laptop: `{HOME_PATH}`",
-    "| v27.35d |",
-    "### Abgeschlossener funktionaler Stand v27.35d",
-    "`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED`; v27.35d ist abgeschlossen; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert.",
-    "Backlog-Kandidaten B (schriftliche Prüfungs-Regression) und C (Quellen/mündliche Musterfragen) sind nicht autorisiert.",
+    "| v27.35e |",
+    "### Nichtfunktionale Task-Steuerung v27.35e",
+    "`CURRENT_TASK` ist aktuell `v27.35e` / `AUTHORIZED` (Regressionstest der schriftlichen Prüfung, kein neuer funktionaler Task); v27.35d bleibt der letzte abgeschlossene funktionale Stand.",
+    "Backlog-Kandidat C (Quellen/mündliche Musterfragen) ist nicht autorisiert.",
     REQUIRED_CHAT_READING_BLOCK,
 )
 
@@ -376,7 +405,7 @@ def validate_state_text(text: str) -> None:
     validate_required_markers(text, STATE_REQUIRED_MARKERS, "PROJECT_STATE_CURRENT")
     validate_exact_markers(
         text,
-        STATE_V2735D_EXACT_MARKERS,
+        STATE_V2735E_EXACT_MARKERS,
         "PROJECT_STATE_CURRENT",
     )
 
@@ -389,11 +418,12 @@ def validate_state_text(text: str) -> None:
             CONTROL_COMMIT_SHA,
             CHECKER_FIX_SHA,
             V2735D_COMPLETION_SHA,
+            V2735E_GATE_SHA,
         },
         (
             "PROJECT_STATE_CURRENT darf nur die historisch bekannten Commits "
             "(Gate, v27.35b-Abschluss, v27.35c-Steuerung, Checker-Fix, "
-            "v27.35d-Abschluss) enthalten"
+            "v27.35d-Abschluss, v27.35e-Ausgangscommit) enthalten"
         ),
     )
     for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
@@ -404,12 +434,13 @@ def validate_state_text(text: str) -> None:
 
 
 TASK_CONTRADICTORY_GRANTS = (
-    "Status: AUTHORIZED",
-    "Autorisiert: JA",
+    "Status: BLOCKED",
+    "Autorisiert: NEIN",
     "Commit erlaubt: JA",
     "Push erlaubt: JA",
+    "Task-ID: NONE",
     "Task-ID: v27.35d",
-    "Task-ID: v27.35e",
+    "Task-ID: v27.35f",
     "Task-ID: v27.36",
 )
 
@@ -417,7 +448,7 @@ TASK_CONTRADICTORY_GRANTS = (
 def validate_task_text(text: str) -> None:
     validate_exact_fields(text, EXPECTED_TASK_FIELDS)
     validate_required_markers(text, TASK_REQUIRED_MARKERS, "CURRENT_TASK")
-    validate_exact_markers(text, TASK_V2735D_EXACT_MARKERS, "CURRENT_TASK")
+    validate_exact_markers(text, TASK_V2735E_EXACT_MARKERS, "CURRENT_TASK")
 
     for field_name in LATER_TASK_TEMPLATE_FIELDS:
         require(
@@ -507,7 +538,7 @@ def validate_cursor_context_text(text: str) -> None:
     )
     validate_exact_markers(
         text,
-        CURSOR_V2735D_EXACT_MARKERS,
+        CURSOR_V2735E_EXACT_MARKERS,
         "CURSOR_MASTER_CONTEXT_ACCAOUI",
     )
     validate_project_paths(text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
@@ -574,8 +605,8 @@ def validate_cursor_context_text(text: str) -> None:
 
 def validate_masterlist_text(text: str) -> None:
     require(
-        exact_field(text, "Stand") == "v27.35d",
-        "Masterliste muss exakt auf Stand v27.35d stehen",
+        exact_field(text, "Stand") == "v27.35e",
+        "Masterliste muss exakt auf Stand v27.35e stehen",
     )
     validate_required_markers(
         text,
@@ -584,7 +615,7 @@ def validate_masterlist_text(text: str) -> None:
     )
     validate_exact_markers(
         text,
-        MASTERLIST_V2735D_EXACT_MARKERS,
+        MASTERLIST_V2735E_EXACT_MARKERS,
         "PROJECT_MASTERLIST",
     )
     validate_project_paths(text, "PROJECT_MASTERLIST")
@@ -746,7 +777,8 @@ def validate_v2735d_completion_commit_history() -> None:
     )
 
     run_git(["merge-base", "--is-ancestor", CHECKER_FIX_SHA, V2735D_COMPLETION_SHA])
-    run_git(["merge-base", "--is-ancestor", V2735D_COMPLETION_SHA, "HEAD"])
+    run_git(["merge-base", "--is-ancestor", V2735D_COMPLETION_SHA, V2735E_GATE_SHA])
+    run_git(["merge-base", "--is-ancestor", V2735E_GATE_SHA, "HEAD"])
 
     completion_changed_files = {
         line.strip()
@@ -763,6 +795,57 @@ def validate_v2735d_completion_commit_history() -> None:
             f"nicht exakt die erwarteten Dateien: {sorted(completion_changed_files)}"
         ),
     )
+
+    for relative_path in PROTECTED_RUNTIME_FILES:
+        historical_diff = run_git(
+            [
+                "diff",
+                "--name-only",
+                V2735D_COMPLETION_SHA,
+                V2735E_GATE_SHA,
+                "--",
+                relative_path,
+            ]
+        ).strip()
+        require(
+            historical_diff == "",
+            (
+                f"{relative_path} wurde zwischen dem v27.35d-Abschlusscommit "
+                f"{V2735D_COMPLETION_SHA} und dem v27.35e-Ausgangscommit "
+                f"{V2735E_GATE_SHA} verändert"
+            ),
+        )
+
+
+def validate_v2735e_gate_working_tree() -> None:
+    """Prüft, dass Funktionsdateien seit dem v27.35e-Ausgangscommit unverändert sind."""
+    require(
+        (ROOT / ".git").exists(),
+        "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
+    )
+    run_git(["merge-base", "--is-ancestor", V2735E_GATE_SHA, "HEAD"])
+
+    for relative_path in PROTECTED_RUNTIME_FILES:
+        committed_diff = run_git(
+            ["diff", "--name-only", V2735E_GATE_SHA, "HEAD", "--", relative_path]
+        ).strip()
+        require(
+            committed_diff == "",
+            (
+                f"{relative_path} wurde seit dem v27.35e-Ausgangscommit "
+                f"{V2735E_GATE_SHA} in committeten Änderungen verändert"
+            ),
+        )
+        working_tree_diff = run_git(
+            ["diff", "--name-only", "HEAD", "--", relative_path]
+        ).strip()
+        require(
+            working_tree_diff == "",
+            (
+                f"{relative_path} wurde im Arbeitsbaum gegenüber HEAD verändert; "
+                "während v27.35e sind Funktionsdateien nicht erlaubt"
+            ),
+        )
 
 
 def changed_once(text: str, old: str, new: str, label: str) -> str:
@@ -851,15 +934,15 @@ def run_manipulation_matrix(
         checks += 1
 
     state_value_manipulations = {
-        "Stand": "v27.35c",
+        "Stand": "v27.35d",
         "Repository": "`anderes/repository`",
         "Branch": "`anderer-branch`",
         "Letzter abgeschlossener funktionaler Stand": "v27.35b",
         "Abschlusscommit": f"`{'0' * 40}`",
         "Aktueller HEAD": GATE_SHA,
-        "Funktionsstatus": "v27.35d offen",
+        "Funktionsstatus": "v27.35e abgeschlossen",
         "Weiterer funktionaler Schritt autorisiert": "JA",
-        "Aktuell autorisierter Task": "v27.35e",
+        "Aktuell autorisierter Task": "v27.35f",
         "Aktueller Blocker": "KEINER",
     }
     for field_name, manipulated_value in state_value_manipulations.items():
@@ -878,7 +961,7 @@ def run_manipulation_matrix(
 
     must_reject(
         validate_state_text,
-        state_text + "v27.35e wird als Folgeschritt vorgemerkt.\n",
+        state_text + "v27.35f wird als Folgeschritt vorgemerkt.\n",
         "PROJECT_STATE_CURRENT automatische Auswahl eines weiteren Tasks",
     )
     checks += 1
@@ -898,12 +981,11 @@ def run_manipulation_matrix(
         checks += 1
 
     task_value_manipulations = {
-        "Task-ID": "v27.35d",
-        "Status": "AUTHORIZED",
-        "Autorisiert": "JA",
-        "Letzter abgeschlossener funktionaler Stand": "v27.35b",
-        "Letzter abgeschlossener Task": "v27.35b",
-        "Abschlusscommit": f"`{'0' * 40}`",
+        "Task-ID": "v27.35f",
+        "Status": "BLOCKED",
+        "Autorisiert": "NEIN",
+        "Titel": "Anderer Task",
+        "Funktionaler Ausgangsstand": "v27.35c",
         "Erwarteter Ausgangscommit": f"`{'0' * 40}`",
         "Erlaubte Dateien": "`app.js`",
         "Commit erlaubt": "JA",
@@ -927,11 +1009,11 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            "Erlaubte Dateien: keine",
-            "Erlaubte Dateien: keine, `app.js`",
-            "CURRENT_TASK erlaubte Dateien trotz Abschluss ergänzt",
+            f"Erlaubte Dateien: `{V2735E_LATER_ALLOWED_FILE}`",
+            f"Erlaubte Dateien: `{V2735E_LATER_ALLOWED_FILE}`, `app.js`",
+            "CURRENT_TASK erlaubte Dateien unzulässig erweitert",
         ),
-        "CURRENT_TASK erlaubte Dateien trotz Abschluss ergänzt",
+        "CURRENT_TASK erlaubte Dateien unzulässig erweitert",
     )
     checks += 1
 
@@ -961,7 +1043,7 @@ def run_manipulation_matrix(
         changed_once(
             task_text,
             "Kein Folgetask ist ausgewählt.",
-            "`v27.35e` wird automatisch gewählt und autorisiert.",
+            "`v27.35f` wird automatisch gewählt und autorisiert.",
             "automatische Auswahl eines Folgeschritts",
         ),
         "automatische Auswahl eines Folgeschritts",
@@ -971,13 +1053,13 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_state_text,
         state_text,
-        STATE_V2735D_EXACT_MARKERS,
+        STATE_V2735E_EXACT_MARKERS,
         "PROJECT_STATE_CURRENT",
     )
     checks += exercise_exact_marker_manipulations(
         validate_task_text,
         task_text,
-        TASK_V2735D_EXACT_MARKERS,
+        TASK_V2735E_EXACT_MARKERS,
         "CURRENT_TASK",
     )
 
@@ -1077,7 +1159,7 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_cursor_context_text,
         cursor_context_text,
-        CURSOR_V2735D_EXACT_MARKERS,
+        CURSOR_V2735E_EXACT_MARKERS,
         "CURSOR_MASTER_CONTEXT_ACCAOUI",
     )
 
@@ -1185,14 +1267,14 @@ def run_manipulation_matrix(
         "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.",
         (
             "Kein nächster funktionaler Task ist ausgewählt oder automatisch abgeleitet.\n"
-            "**v27.35e wird automatisch fortgesetzt.**"
+            "**v27.35f wird automatisch fortgesetzt.**"
         ),
-        "Cursor unzulässige weitere Task-Auswahl v27.35e",
+        "Cursor unzulässige weitere Task-Auswahl v27.35f",
     )
     must_reject(
         validate_cursor_context_text,
         manipulated_cursor_future_task_text,
-        "Cursor unzulässige weitere Task-Auswahl v27.35e",
+        "Cursor unzulässige weitere Task-Auswahl v27.35f",
     )
     checks += 1
 
@@ -1213,7 +1295,7 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_masterlist_text,
         masterlist_text,
-        MASTERLIST_V2735D_EXACT_MARKERS,
+        MASTERLIST_V2735E_EXACT_MARKERS,
         "PROJECT_MASTERLIST",
     )
 
@@ -1276,6 +1358,7 @@ def main() -> int:
         validate_preflight_text(preflight_text)
         validate_v2735c_control_commit_history()
         validate_v2735d_completion_commit_history()
+        validate_v2735e_gate_working_tree()
         manipulation_checks = run_manipulation_matrix(
             state_text,
             task_text,
@@ -1288,9 +1371,12 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität und Task-Steuerung v27.35d: OK")
-    print("PROJECT_STATE_CURRENT: v27.35d / funktionaler Stand v27.35d abgeschlossen")
-    print("CURRENT_TASK: NONE / BLOCKED / keine erlaubten Dateien, kein Commit, kein Push")
+    print("Projektkontinuität und Task-Steuerung v27.35e: OK")
+    print("PROJECT_STATE_CURRENT: v27.35e / letzter funktionaler Stand v27.35d")
+    print(
+        "CURRENT_TASK: v27.35e / AUTHORIZED / kein Commit, kein Push, "
+        "nur spätere Testberichtsdatei erlaubt"
+    )
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Projektpfade Arbeit und Zuhause: OK")
     print("Preflight-Einbindung: OK")
@@ -1301,6 +1387,14 @@ def main() -> int:
     print(
         "v27.35d-Abschlusscommit historisch sauber: app.js und style.css "
         f"zwischen {CHECKER_FIX_SHA} und {V2735D_COMPLETION_SHA} verändert"
+    )
+    print(
+        "v27.35e-Ausgangsstand historisch sauber: app.js, index.html und "
+        f"style.css zwischen {V2735D_COMPLETION_SHA} und {V2735E_GATE_SHA} unverändert"
+    )
+    print(
+        "v27.35e-Arbeitsbaum sauber: app.js, index.html und style.css seit "
+        f"{V2735E_GATE_SHA} unverändert"
     )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0

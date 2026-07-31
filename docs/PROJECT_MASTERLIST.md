@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.35d
+Stand: v27.35e
 Branch: `main`
 Arbeits-Laptop: `C:\a34a`
 Git Bash Arbeits-Laptop: `/c/a34a`
@@ -795,6 +795,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.35b | Dashboard „Ihr nächster Lernschritt“: genau eine Empfehlungskarte mit fünfstufiger Prioritätslogik (neueste gültige Sitzung nach `updatedAt` beziehungsweise `createdAt`, bei Gleichstand Prüfung vor Lernen vor Lernkarten; Fehlertraining; schwächstes Thema ab 50 Prozent eindeutiger Abdeckung; unbekannte Lernkarten; Standard neue Prüfung); defensive localStorage- und Datenvalidierung; keine neue Speicherung; keine HTML-, CSS-, Fragen-, Supabase- oder Netzwerkänderung; Browserprüfung 6/6 bestanden; Abschlusscommit `f168b96ff26c88e5baca212902081932b8986e85` – **erledigt** |
 | v27.35c | Nichtfunktionale Task-Steuerung von `Task-ID: NONE` / `Status: BLOCKED` / `Autorisiert: NEIN` verbindlich auf den einzigen autorisierten Folgetask v27.35d umgestellt: UX- und Lernlogik-Verfeinerung autorisiert; `CURRENT_TASK` steht auf `Task-ID: v27.35d`, `Status: AUTHORIZED`, `Autorisiert: JA`, funktionaler Ausgangsstand v27.35b, erwarteter Ausgangscommit `e4b6929af552e4245290d3eb5db97815365162e6`, erlaubte Dateien `app.js`, `index.html`, `style.css`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; Kontinuitäts-Checker erzwingt den Zustand und prüft Unveränderlichkeit von `app.js`, `index.html` und `style.css` während v27.35c; Kandidaten B und C nicht autorisiert; kein funktionaler Code – **erledigt** |
 | v27.35d | Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ und Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet; kompakte gemeinsame Führungshinweis-Klasse `mode-guidance-v2735d` in beiden Modi (erst selbst beantworten/erinnern, danach Antwort auswählen beziehungsweise Lösung anzeigen und mit „Gewusst“ oder „Nicht gewusst“ einschätzen); bestehende Navigation, Pause/Fortsetzen, Bewertungslogik und localStorage-Logik unverändert; keine neue Speicherung, keine neuen Storage-Keys, keine Fragen-, Supabase-, SQL-, Datenbank- oder Netzwerkänderung; Browsertests Dashboard, Lernmodus, Lernkarten und Mobilansicht (ca. 390×844, kein horizontaler Überlauf, keine Konsolenfehler) bestanden, localStorage vollständig restauriert; `node --check`, `git diff --check` und Preflight bestanden; nichtfunktionaler Checker-Fix `d83869308a277e077b3da6d7e2c1a23001374a48` korrigierte zuvor den historischen v27.35c-Gate-Check; Abschlusscommit `b4d2de5002918766bb45fe001cbbfdb333a6d7c5` – **erledigt** |
+| v27.35e | Nichtfunktionale Task-Steuerung von `Task-ID: NONE` / `Status: BLOCKED` / `Autorisiert: NEIN` verbindlich auf den einzigen autorisierten Task v27.35e umgestellt: Regressionstest der schriftlichen Prüfung nach v27.35d autorisiert; `CURRENT_TASK` steht auf `Task-ID: v27.35e`, `Status: AUTHORIZED`, `Autorisiert: JA`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`, für die spätere Testdurchführung ausschließlich erlaubte Datei `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; es wird keine neue Funktion entwickelt; kein funktionaler Code in diesem Steuerungsschritt geändert – **autorisiert, Testdurchführung offen** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -888,6 +889,21 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 - Verbindlicher Projektzustand: `docs/PROJECT_STATE_CURRENT.md`
 - Verbindliche Task-Steuerung: `docs/tasks/CURRENT_TASK.md`
 - `CURRENT_TASK` steht jetzt auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`; kein weiterer Folgeschritt nach v27.35d ist ausgewählt oder autorisiert.
+
+### Nichtfunktionale Task-Steuerung v27.35e
+
+- `docs/PROJECT_STATE_CURRENT.md` steht auf v27.35e und dokumentiert v27.35d als unveränderten letzten funktionalen Stand sowie v27.35e als einzigen autorisierten Task.
+- `docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35e`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Titel: Regressionstest der schriftlichen Prüfung`, `Funktionaler Ausgangsstand: v27.35d`, erwarteter Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`, für die spätere Testdurchführung ausschließlich erlaubte Datei `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` steht auf v27.35e und nennt v27.35e als einzigen autorisierten aktuellen Task.
+- Ziel von v27.35e: Die schriftliche Prüfung nach v27.35d vollständig regressionsprüfen, ohne eine neue Funktion zu entwickeln.
+- Dieser Steuerungsschritt autorisiert nur den Testtask; die eigentliche Testdurchführung mit Browser-Tests erfolgt erst danach.
+- Während der späteren Testdurchführung sind `app.js`, `index.html`, `style.css`, `patch-v21.js`, `questions.json`, `oral-exam.js`, `tools/preflight.py`, alle Supabase-, SQL- und Migrationsdateien sowie alle weiteren Dateien verboten.
+- Wird eine Regression gefunden, gilt sofort STOPP: Fehler im Testbericht exakt dokumentieren, keine Codekorrektur, kein zusätzlicher Dateiumfang.
+- Der Kontinuitäts-Checker blockiert in der Manipulationsmatrix eine falsche Task-ID, einen falschen Status, `Autorisiert: NEIN`, einen anderen funktionalen Ausgangsstand, einen anderen Ausgangscommit, zusätzliche oder andere erlaubte Dateien, `Commit erlaubt: JA`, `Push erlaubt: JA` und die automatische Auswahl eines weiteren Tasks.
+- Der Kontinuitäts-Checker prüft zusätzlich direkt über Git, dass `app.js`, `index.html` und `style.css` seit dem Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e` unverändert bleiben.
+- Der funktionale Stand bleibt v27.35d; in diesem Steuerungsschritt wurde ausschließlich Projektsteuerungsdokumentation geändert; kein Folgeschritt nach v27.35e ist ausgewählt oder autorisiert.
+- Verbindlicher Projektzustand: `docs/PROJECT_STATE_CURRENT.md`
+- Verbindliche Task-Steuerung: `docs/tasks/CURRENT_TASK.md`
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (vorbereitete SQL-Migrationen vorhanden, aber nicht live ausgeführt; keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
@@ -1278,9 +1294,9 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-Diese Bestands- und Backlogliste ist keine Task-Autorisierung. Ein funktionaler Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt und in `docs/tasks/CURRENT_TASK.md` ausdrücklich autorisiert werden. `CURRENT_TASK` ist aktuell `NONE` / `BLOCKED`; v27.35d ist abgeschlossen; aus dieser Liste ist kein weiterer Folgeschritt ausgewählt oder autorisiert. Backlog-Kandidaten B (schriftliche Prüfungs-Regression) und C (Quellen/mündliche Musterfragen) sind nicht autorisiert.
+Diese Bestands- und Backlogliste ist keine Task-Autorisierung. Ein funktionaler Task darf ausschließlich durch den Projekteigentümer und den verbindlichen Projektchat ausgewählt und in `docs/tasks/CURRENT_TASK.md` ausdrücklich autorisiert werden. `CURRENT_TASK` ist aktuell `v27.35e` / `AUTHORIZED` (Regressionstest der schriftlichen Prüfung, kein neuer funktionaler Task); v27.35d bleibt der letzte abgeschlossene funktionale Stand. Aus dieser Liste ist kein weiterer funktionaler Folgeschritt ausgewählt oder autorisiert. Backlog-Kandidat C (Quellen/mündliche Musterfragen) ist nicht autorisiert.
 
-1. **Schriftliche Prüfung Regressionstest bei Änderungen** – Vollsimulation 82/120, Teilpunkte, Pause/Fortsetzen, Mix und Auswertung nach späteren Code-Änderungen erneut prüfen.
+1. **Schriftliche Prüfung Regressionstest bei Änderungen** – als v27.35e autorisiert (siehe oben); Vollsimulation 82/120, Teilpunkte, Pause/Fortsetzen, Mix und Auswertung nach v27.35d erneut prüfen; Testdurchführung noch offen.
 2. **Lernkarten nach größeren UI-Änderungen kurz regressionsprüfen** – Stand v26.1c ist browsergetestet.
 3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul, siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**.
 4. **UX- und Lernlogik weiter verfeinern** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall, siehe §8.1.

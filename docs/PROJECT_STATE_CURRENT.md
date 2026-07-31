@@ -1,6 +1,6 @@
 # Aktueller Projektzustand
 
-Stand: v27.35d
+Stand: v27.35e
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35d
@@ -8,8 +8,18 @@ Abschlusscommit: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35d abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: NONE
-Aktueller Blocker: Kein weiterer Task durch CURRENT_TASK autorisiert
+Aktuell autorisierter Task: v27.35e
+Aktueller Blocker: Nur der Regressionstest v27.35e ist autorisiert; kein funktionaler Folgeschritt
+
+## Autorisierte Nichtfunktionale Steuerung v27.35e
+
+`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35e`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Funktionaler Ausgangsstand: v27.35d`, erwarteter Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`, erlaubte Datei `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
+
+Ziel von v27.35e: Die schriftliche Prüfung nach v27.35d vollständig regressionsprüfen. Es wird keine neue Funktion entwickelt.
+
+Der funktionale Stand bleibt v27.35d; `app.js`, `index.html` und `style.css` dürfen während der Testdurchführung nicht verändert werden. Wird eine Regression gefunden, gilt sofort STOPP: Fehler im Testbericht dokumentieren, keine Codekorrektur, kein zusätzlicher Dateiumfang.
+
+Kein Folgeschritt nach v27.35e ist ausgewählt oder autorisiert.
 
 ## Abgeschlossener funktionaler Stand v27.35d
 

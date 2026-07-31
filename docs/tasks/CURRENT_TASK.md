@@ -1,30 +1,62 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Letzter abgeschlossener funktionaler Stand: v27.35d
-Letzter abgeschlossener Task: v27.35d
-Abschlusscommit: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`
-Erwarteter Ausgangscommit: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`
-Erlaubte Dateien: keine
+Task-ID: v27.35e
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: Regressionstest der schriftlichen Prüfung
+Funktionaler Ausgangsstand: v27.35d
+Erwarteter Ausgangscommit: `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`
+Erlaubte Dateien: `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
 
-## Abschluss von v27.35d
+## Ziel
 
-- Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ gekennzeichnet.
-- Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet.
-- Führungshinweise über die gemeinsame Klasse `mode-guidance-v2735d`.
-- Keine neue Speicherung, keine neuen Storage-Keys, keine Fragenänderung.
-- Keine Supabase-, SQL-, Datenbank- oder Netzwerkänderung.
-- Bestehende Navigation, Pause/Fortsetzen und localStorage-Logik unverändert.
-- Browser-Tests Dashboard, Lernmodus, Lernkarten und Mobilansicht bestanden.
-- `node --check app.js`, `git diff --check` und Preflight bestanden.
+Die schriftliche Prüfung nach v27.35d vollständig regressionsprüfen. Es wird
+keine neue Funktion entwickelt.
+
+Dieser Schritt autorisiert nur den Testtask. Noch keine Browsertests
+durchgeführt.
+
+## Während der Testdurchführung verboten
+
+- app.js
+- index.html
+- style.css
+- patch-v21.js
+- questions.json
+- oral-exam.js
+- tools/preflight.py
+- alle Supabase-, SQL- und Migrationsdateien
+- alle weiteren Dateien
+
+## Akzeptanzkriterien
+
+1. App startet ohne neue Konsolenfehler.
+2. Vollsimulation enthält exakt 82 Fragen.
+3. Maximalpunktzahl beträgt exakt 120 Punkte.
+4. Ein- und Mehrfachauswahl funktionieren.
+5. Ein- und Zwei-Punkte-Fragen werden korrekt bewertet.
+6. Teilrichtige Zwei-Punkte-Antworten ergeben korrekt einen Punkt.
+7. Pause und Fortsetzen erhalten Fragenreihenfolge, aktuelle Position,
+   bereits gewählte Antworten und bisherigen Punktestand.
+8. Unbeantwortete Fragen und Fehlertraining zeigen nur die tatsächlich
+   vorgesehenen Fragen.
+9. Endauswertung, richtige, falsche und unbeantwortete Antworten sowie
+   Gesamtpunkte sind rechnerisch konsistent.
+10. Desktop und Mobilansicht ca. 390 × 844 sind benutzbar.
+11. Kein horizontaler Überlauf und keine Überlagerungen.
+12. localStorage wird nach dem Test vollständig restauriert.
+13. Es wird ausschließlich der Testbericht erstellt.
+
+## Fehlerregel
+
+Wird eine Regression gefunden: sofort STOPP, Fehler im Testbericht exakt
+dokumentieren, keine Codekorrektur durchführen, keinen zusätzlichen
+Dateiumfang öffnen.
 
 ## Verbindlich festhalten
 
-- v27.35d ist abgeschlossen.
 - Kein Folgetask ist ausgewählt.
 - Kein Task darf aus Versionsfolge, Erinnerung oder früheren Chats
   abgeleitet werden.
