@@ -3775,17 +3775,29 @@ function getExamQuestionReachedPoints(question, selectedAnswersForQuestion) {
     return 0;
   }
 
+  if (!Array.isArray(question.correct) || question.correct.length === 0) {
+    return 0;
+  }
+
   const correctIndexes = new Set(question.correct);
   const selectedUnique = [...new Set(selectedAnswersForQuestion)];
-  let reached = 0;
 
-  selectedUnique.forEach(index => {
-    if (correctIndexes.has(index)) {
-      reached += 1;
-    }
-  });
+  const hasWrongSelection = selectedUnique.some(index => !correctIndexes.has(index));
+  if (hasWrongSelection) {
+    return 0;
+  }
 
-  return Math.min(reached, getQuestionPoints(question));
+  const points = getQuestionPoints(question);
+
+  if (selectedUnique.length === correctIndexes.size) {
+    return points;
+  }
+
+  if (points === 2 && correctIndexes.size >= 2) {
+    return 1;
+  }
+
+  return 0;
 }
 
 function getQuestionPoints(question) {
