@@ -1,131 +1,47 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.35g
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: Punkteberechnung schriftliche Prüfung korrigieren
-Funktionaler Ausgangsstand: v27.35d
-Letzter abgeschlossener Kontrollschritt: v27.35e
-Erwarteter Ausgangscommit: `db2f12a1af7792c59e9e6411bb127b2f68401713`
-Erlaubte Dateien: `app.js`, `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
+Letzter abgeschlossener funktionaler Stand: v27.35g
+Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+Erlaubte Dateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
 
-## Ziel von v27.35g
+## Abgeschlossener funktionaler Stand v27.35g
 
-Die Punkteberechnung der schriftlichen Prüfung so korrigieren, dass
-vollständig korrekt beantwortete Fragen stets ihre volle hinterlegte
-Punktzahl ergeben.
+Die Punkteberechnung der schriftlichen Prüfung wurde korrigiert: eine vollständig richtige Antwort ergibt stets die volle hinterlegte Punktzahl; eine zulässige Teilantwort bei einer Zwei-Punkte-Frage mit mindestens zwei richtigen Optionen ergibt exakt 1 Punkt; jede falsch ausgewählte Option ergibt 0 Punkte.
 
-## Verbindlicher Bewertungsvertrag
+Bestätigte Ergebnisse:
 
-1. Keine Antwort: 0 Punkte.
-2. Ausgewählte Antwortmenge entspricht exakt der vollständigen richtigen
-   Antwortmenge: volle hinterlegte Fragepunktzahl.
-3. Zwei-Punkte-Frage mit mindestens zwei richtigen Optionen: eine nicht
-   leere echte Teilmenge ausschließlich richtiger Optionen, ohne falsch
-   ausgewählte Option: exakt 1 Punkt.
-4. Falsch ausgewählte Option oder sonstige nicht vollständig
-   beziehungsweise nicht zulässig teilrichtige Kombination: 0 Punkte.
-5. Zwei-Punkte-Frage mit nur einer richtigen Antwort: vollständig richtig
-   = exakt 2 Punkte.
-6. Ein-Punkt-Frage: nur vollständig richtig = 1 Punkt, sonst 0.
+- 82 Fragen, 120 Maximalpunkte.
+- Alle 13 zuvor betroffenen Fragen (`straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`, `technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`, `bgb_006`, `uvv_004`, `uvv_008`) liefern bei vollständig korrekter Beantwortung jeweils exakt 2/2 Punkte.
+- Die im v27.35e-Bericht verwendete Testkonstellation ergibt jetzt exakt 114/120 statt vormals 101/120.
+- Alle 82 Fragen vollständig korrekt beantwortet ergeben jetzt exakt 120/120.
+- Pause/Fortsetzen: PASS.
+- Fehleranalyse: PASS.
+- Fehlertraining: PASS.
+- Desktop: PASS.
+- Mobil ca. 390 × 844: PASS.
+- Keine neuen Konsolenfehler.
+- `localStorage` und `sessionStorage` nach den Tests vollständig restauriert.
 
-## Akzeptanzkriterien
+Testbericht: `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`. Funktionaler Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`.
 
-1. Alle 82 Core-Fragen vollständig richtig: exakt 120/120 Punkte.
-2. Diese 13 Fragen vollständig richtig ergeben jeweils exakt 2/2 Punkte:
-   `straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`,
-   `technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`,
-   `bgb_006`, `uvv_004`, `uvv_008`.
-3. `roso_002` vollständig richtig: 2/2 Punkte.
-4. `roso_005` nur eine der zwei richtigen Optionen, keine falsche Option:
-   1/2 Punkte.
-5. `roso_005` eine richtige plus eine falsche Option: 0/2 Punkte.
-6. `roso_001` vollständig richtig: 1/1 Punkt.
-7. `roso_001` unvollständig oder mit falscher Option: 0/1 Punkte.
-8. Die im v27.35e-Bericht verwendete Testkonstellation muss nach der
-   Korrektur rechnerisch exakt 114/120 ergeben.
-9. Richtig + falsch + unbeantwortet bleibt konsistent.
-10. Pause/Fortsetzen bleibt unverändert funktionsfähig.
-11. Fehleranalyse und Fehlertraining müssen vollständig browserbasiert
-    geprüft werden.
-12. Desktop und Mobil ca. 390 × 844 müssen geprüft werden.
-13. Kein neuer Konsolenfehler.
-14. localStorage und sessionStorage müssen nach den Tests vollständig auf
-    den Ausgangszustand zurückgesetzt werden.
-15. Der bestehende Bericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` darf
-    nicht verändert werden.
+Vor der funktionalen Umsetzung wurde ein getrennter, nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) durchgeführt, der ausschließlich den Kontinuitäts-Checker und die vier Steuerungsdokumente ergänzte und im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` freigab.
 
-## Verboten
-
-- `questions.json`
-- `index.html`
-- `style.css`
-- `patch-v21.js`
-- `oral-exam.js`
-- `tools/preflight.py`
-- Supabase-, SQL- und Migrationsdateien
-- alle anderen Dateien
-- Frageninhalte oder `points`-Felder ändern
-- neue Speicherung
-- neue Storage-Keys
-- Netzwerk- oder Supabase-Anbindung
-
-## Hinweis zu v27.35f
+Der bestehende v27.35e-FAIL-Bericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische Fehlerdokumentation erhalten.
 
 `v27.35f` bleibt ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert. `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
 
-## Abgeschlossener Regressionstest v27.35e (FAIL)
-
-Der Regressionstest der schriftlichen Prüfung wurde durchgeführt und mit
-Gesamtergebnis FAIL abgeschlossen. Testbericht-Commit:
-`db2f12a1af7792c59e9e6411bb127b2f68401713`.
-
-Ursache: Bei Zwei-Punkte-Fragen mit nur einer richtigen Antwortoption
-wurde bei vollständig korrekter Beantwortung nur 1 statt 2 Punkte
-vergeben. Betroffen waren im getesteten Kernfragenpool 13 Fragen:
-`straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`,
-`technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`,
-`bgb_006`, `uvv_004`, `uvv_008`.
-
-Es wurde keine Codekorrektur vorgenommen; der Testbericht
-`docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert.
-
 ## Verbindliche Sperre
 
-- Ausschließlich v27.35g und ausschließlich die Dateien `app.js` und
-  `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` sind für die spätere
-  Umsetzung freigegeben.
-- In diesem Steuerungsschritt wird `app.js` noch nicht verändert.
-- Kein Folgeschritt nach v27.35g wird automatisch gewählt oder autorisiert.
-- `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
-- Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer
-  Task abgeleitet werden.
-- Commit und Push bleiben bis zu einer gesonderten ausdrücklichen
-  Freigabe gesperrt.
-
-## Nichtfunktionaler Implementierungs-Gate-Korrekturschritt
-
-Getrennt von der eigentlichen v27.35g-Umsetzung wurde ausschließlich
-`tools/check-project-continuity-control.py` um einen nichtfunktionalen
-Gate-Korrekturschritt ergänzt. Diese Checker-Datei gehört ausschließlich
-zu diesem getrennten, nichtfunktionalen Korrekturschritt.
-
-- v27.35g bleibt weiterhin der einzige aktive Task.
-- Status bleibt AUTHORIZED, die Autorisierung bleibt unverändert bestehen (JA).
-- Der funktionale Ausgangsstand bleibt unverändert v27.35d.
-- Der Gate-Korrekturschritt lässt im Arbeitsbaum ausschließlich `app.js`
-  und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` zu; `index.html`,
-  `style.css`, `questions.json` und alle anderen Dateien bleiben
-  vollständig gesperrt.
-- Die Punkteberechnung in `app.js` und der Testbericht
-  `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` sind bereits lokal
-  umgesetzt und werden während dieses Gate-Schritts nicht verändert.
-- Ein Commit der funktionalen Umsetzung bleibt gesperrt.
-- Ein Push bleibt gesperrt.
-- Kein Folgetask wird ausgewählt.
-- `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+- Kein neuer funktionaler oder nichtfunktionaler Task wird automatisch ausgewählt oder autorisiert.
+- Die Auswahl eines weiteren Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und diese Datei.
+- Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer Task abgeleitet werden.
+- Commit und Push bleiben bis zu einer gesonderten ausdrücklichen Freigabe gesperrt.
 
 ## Pflichtfelder eines später autorisierten Tasks
 

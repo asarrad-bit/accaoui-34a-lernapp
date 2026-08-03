@@ -3,13 +3,13 @@
 Stand: v27.35g
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
-Letzter abgeschlossener funktionaler Stand: v27.35d
-Abschlusscommit: `b4d2de5002918766bb45fe001cbbfdb333a6d7c5`
+Letzter abgeschlossener funktionaler Stand: v27.35g
+Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
-Funktionsstatus: v27.35d abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.35g
-Aktueller Blocker: KEINER für v27.35g; jeder weitere Schritt bleibt gesperrt
+Funktionsstatus: v27.35g abgeschlossen
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktueller Blocker: Kein Task autorisiert; jeder weitere funktionale Schritt bleibt gesperrt, bis ein neuer Task ausdrücklich autorisiert wird
 
 ## Abgeschlossener Regressionstest v27.35e (FAIL)
 
@@ -38,6 +38,22 @@ Der funktionale Stand bleibt v27.35d, bis v27.35g abgeschlossen ist. Kein Folges
 ### Nichtfunktionaler v27.35g-Implementierungs-Gate-Korrekturschritt
 
 Getrennt von der eigentlichen v27.35g-Umsetzung wurde ausschließlich `tools/check-project-continuity-control.py` um einen nichtfunktionalen Gate-Korrekturschritt ergänzt; diese Checker-Datei gehört ausschließlich zu diesem getrennten Korrekturschritt. v27.35g bleibt weiterhin der einzige aktive Task, Status und Autorisierung bleiben unverändert bestehen, und der funktionale Ausgangsstand bleibt unverändert v27.35d. Der Gate-Korrekturschritt lässt im Arbeitsbaum ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` zu; `index.html`, `style.css`, `questions.json` und alle anderen Dateien bleiben vollständig gesperrt. Die Punkteberechnung in `app.js` und der Testbericht `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` sind bereits lokal umgesetzt und werden während dieses Gate-Schritts nicht verändert. Ein Commit und ein Push der funktionalen Umsetzung bleiben gesperrt. Kein Folgetask wird ausgewählt; `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+
+## Abgeschlossener funktionaler Stand v27.35g
+
+Die Punkteberechnung der schriftlichen Prüfung wurde korrigiert: eine vollständig richtige Antwort ergibt stets die volle hinterlegte Punktzahl; eine zulässige Teilantwort bei einer Zwei-Punkte-Frage mit mindestens zwei richtigen Optionen ergibt exakt 1 Punkt; jede falsch ausgewählte Option ergibt 0 Punkte.
+
+Bestätigte Ergebnisse: 82 Fragen, 120 Maximalpunkte; alle 13 zuvor betroffenen Fragen (`straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`, `technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`, `bgb_006`, `uvv_004`, `uvv_008`) liefern jeweils exakt 2/2 Punkte; die im v27.35e-Bericht verwendete Testkonstellation ergibt jetzt exakt 114/120 statt vormals 101/120; alle 82 Fragen vollständig richtig ergeben jetzt exakt 120/120; Pause/Fortsetzen PASS; Fehleranalyse PASS; Fehlertraining PASS; Desktop PASS; Mobil ca. 390 × 844 PASS; keine neuen Konsolenfehler; `localStorage` und `sessionStorage` nach den Tests vollständig restauriert.
+
+Testbericht: `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`. Funktionaler Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`.
+
+Vor der funktionalen Umsetzung wurde ein getrennter, nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) durchgeführt; siehe Abschnitt „Nichtfunktionaler v27.35g-Implementierungs-Gate-Korrekturschritt“ oben.
+
+Der bestehende v27.35e-FAIL-Bericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische Fehlerdokumentation erhalten.
+
+`v27.35f` bleibt ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert; `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+
+Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet. Die Auswahl eines weiteren Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`.
 
 ## Abgeschlossener funktionaler Stand v27.35d
 

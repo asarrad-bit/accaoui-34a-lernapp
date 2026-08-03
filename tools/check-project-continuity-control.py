@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Projektkontinuität für den autorisierten Task v27.35g."""
+"""Prüft die verbindliche Projektkontinuität nach dem formalen Abschluss von v27.35g.
+
+`docs/tasks/CURRENT_TASK.md` steht danach wieder auf `Task-ID: NONE`,
+`Status: BLOCKED`, `Autorisiert: NEIN`, `Erlaubte Dateien: KEINE`; jeder
+weitere funktionale oder nichtfunktionale Folgeschritt bleibt gesperrt,
+bis er ausdrücklich neu autorisiert wird.
+"""
 
 from __future__ import annotations
 
@@ -27,6 +33,9 @@ CHECKER_FIX_SHA = "d83869308a277e077b3da6d7e2c1a23001374a48"
 V2735D_COMPLETION_SHA = "b4d2de5002918766bb45fe001cbbfdb333a6d7c5"
 V2735E_GATE_SHA = "260e6527208769f18018d1db6e6e3b7fbe9d7d7e"
 V2735G_GATE_SHA = "db2f12a1af7792c59e9e6411bb127b2f68401713"
+V2735G_AUTHORIZATION_SHA = "0018334aba07e3098111e80b4eb6218b2ca898c0"
+V2735G_GATE_FIX_SHA = "bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0"
+V2735G_COMPLETION_SHA = "f5f261fee67fc17c170ee714ae23761ff1668f17"
 CHECKER_RELATIVE_PATH = "tools/check-project-continuity-control.py"
 PROTECTED_RUNTIME_FILES = ("app.js", "index.html", "style.css")
 EXPECTED_CONTROL_FILES = (
@@ -42,9 +51,9 @@ EXPECTED_V2735E_CLOSURE_CHANGED_FILES = EXPECTED_CONTROL_FILES + (
     V2735E_TEST_REPORT_FILE,
 )
 V2735G_SCORING_FIX_REPORT_FILE = "docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md"
-V2735G_LATER_ALLOWED_FILES = ("app.js", V2735G_SCORING_FIX_REPORT_FILE)
-V2735G_LATER_ALLOWED_FIELD_VALUE = (
-    f"`app.js`, `{V2735G_SCORING_FIX_REPORT_FILE}`"
+EXPECTED_V2735G_COMPLETION_CHANGED_FILES = (
+    "app.js",
+    V2735G_SCORING_FIX_REPORT_FILE,
 )
 
 V2735G_REGRESSION_QUESTION_IDS = (
@@ -93,23 +102,26 @@ EXPECTED_STATE_FIELDS = {
     "Stand": "v27.35g",
     "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
     "Branch": "`main`",
-    "Letzter abgeschlossener funktionaler Stand": "v27.35d",
-    "Abschlusscommit": f"`{V2735D_COMPLETION_SHA}`",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35g",
+    "Abschlusscommit": f"`{V2735G_COMPLETION_SHA}`",
     "Aktueller HEAD": "DYNAMISCH ZU PRÜFEN",
-    "Funktionsstatus": "v27.35d abgeschlossen",
-    "Weiterer funktionaler Schritt autorisiert": "JA",
-    "Aktuell autorisierter Task": "v27.35g",
-    "Aktueller Blocker": "KEINER für v27.35g; jeder weitere Schritt bleibt gesperrt",
+    "Funktionsstatus": "v27.35g abgeschlossen",
+    "Weiterer funktionaler Schritt autorisiert": "NEIN",
+    "Aktuell autorisierter Task": "NONE",
+    "Aktueller Blocker": (
+        "Kein Task autorisiert; jeder weitere funktionale Schritt bleibt "
+        "gesperrt, bis ein neuer Task ausdrücklich autorisiert wird"
+    ),
 }
 
 EXPECTED_TASK_FIELDS = {
-    "Task-ID": "v27.35g",
-    "Status": "AUTHORIZED",
-    "Autorisiert": "JA",
-    "Titel": "Punkteberechnung schriftliche Prüfung korrigieren",
-    "Funktionaler Ausgangsstand": "v27.35d",
-    "Erwarteter Ausgangscommit": f"`{V2735G_GATE_SHA}`",
-    "Erlaubte Dateien": V2735G_LATER_ALLOWED_FIELD_VALUE,
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35g",
+    "Abschlusscommit": f"`{V2735G_COMPLETION_SHA}`",
+    "Erlaubte Dateien": "KEINE",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
@@ -119,8 +131,8 @@ STATE_CONTRADICTORY_VALUES = (
     "Stand: v27.35f",
     "Aktuell autorisierter Task: v27.35e",
     "Aktuell autorisierter Task: v27.35f",
-    "Aktuell autorisierter Task: NONE",
-    "Weiterer funktionaler Schritt autorisiert: NEIN",
+    "Aktuell autorisierter Task: v27.35g",
+    "Weiterer funktionaler Schritt autorisiert: JA",
 )
 
 STATE_REQUIRED_MARKERS = (
@@ -137,9 +149,15 @@ STATE_REQUIRED_MARKERS = (
     "Ziel von v27.35g: Die Punkteberechnung der schriftlichen Prüfung so korrigieren,",
     "Verbindlicher Bewertungsvertrag:",
     "In diesem Steuerungsschritt wird `app.js` noch nicht verändert;",
+    "## Nichtfunktionaler v27.35g-Implementierungs-Gate-Korrekturschritt",
+    "## Abgeschlossener funktionaler Stand v27.35g",
+    "Die Punkteberechnung der schriftlichen Prüfung wurde korrigiert: eine vollständig richtige Antwort",
+    "die im v27.35e-Bericht verwendete Testkonstellation ergibt jetzt exakt 114/120 statt vormals 101/120",
+    "alle 82 Fragen vollständig richtig ergeben jetzt exakt 120/120",
+    f"Testbericht: `{V2735G_SCORING_FIX_REPORT_FILE}`. Funktionaler Abschlusscommit: `{V2735G_COMPLETION_SHA}`.",
+    f"Implementierungs-Gate-Korrekturschritt (Commit `{V2735G_GATE_FIX_SHA}`) durchgeführt",
+    f"Der bestehende v27.35e-FAIL-Bericht `{V2735E_TEST_REPORT_FILE}` bleibt unverändert als historische Fehlerdokumentation erhalten.",
     V2735F_RESERVATION_SENTENCE,
-    "Der funktionale Stand bleibt v27.35d, bis v27.35g abgeschlossen ist.",
-    "Kein Folgeschritt nach v27.35g ist ausgewählt oder autorisiert.",
     "## Abgeschlossener funktionaler Stand v27.35d",
     "Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ gekennzeichnet.",
     "Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet.",
@@ -192,28 +210,18 @@ STATE_REQUIRED_MARKERS = (
 )
 
 TASK_REQUIRED_MARKERS = (
-    "## Ziel von v27.35g",
-    "Die Punkteberechnung der schriftlichen Prüfung so korrigieren, dass",
-    "## Verbindlicher Bewertungsvertrag",
-    "Keine Antwort: 0 Punkte.",
-    "Zwei-Punkte-Frage mit nur einer richtigen Antwort: vollständig richtig",
-    "## Akzeptanzkriterien",
-    "Alle 82 Core-Fragen vollständig richtig: exakt 120/120 Punkte.",
-    "muss nach der",
-    "Korrektur rechnerisch exakt 114/120 ergeben.",
-    f"Der bestehende Bericht `{V2735E_TEST_REPORT_FILE}` darf",
-    "## Verboten",
-    "`questions.json`",
-    "`tools/preflight.py`",
-    "## Hinweis zu v27.35f",
+    "## Abgeschlossener funktionaler Stand v27.35g",
+    "Die Punkteberechnung der schriftlichen Prüfung wurde korrigiert: eine vollständig richtige Antwort",
+    "Alle 82 Fragen vollständig korrekt beantwortet ergeben jetzt exakt 120/120.",
+    "Die im v27.35e-Bericht verwendete Testkonstellation ergibt jetzt exakt 114/120 statt vormals 101/120.",
+    f"Testbericht: `{V2735G_SCORING_FIX_REPORT_FILE}`. Funktionaler Abschlusscommit: `{V2735G_COMPLETION_SHA}`.",
+    f"Implementierungs-Gate-Korrekturschritt (Commit `{V2735G_GATE_FIX_SHA}`) durchgeführt",
+    f"Der bestehende v27.35e-FAIL-Bericht `{V2735E_TEST_REPORT_FILE}` bleibt unverändert als historische Fehlerdokumentation erhalten.",
     V2735F_RESERVATION_SENTENCE,
-    "## Abgeschlossener Regressionstest v27.35e (FAIL)",
-    "wurde durchgeführt und mit",
-    "Gesamtergebnis FAIL abgeschlossen.",
-    "Es wurde keine Codekorrektur vorgenommen;",
     "## Verbindliche Sperre",
-    "Kein Folgeschritt nach v27.35g wird automatisch gewählt oder autorisiert.",
-    "`v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.",
+    "Kein neuer funktionaler oder nichtfunktionaler Task wird automatisch ausgewählt oder autorisiert.",
+    "Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer Task abgeleitet werden.",
+    "Commit und Push bleiben bis zu einer gesonderten ausdrücklichen Freigabe gesperrt.",
     "## Pflichtfelder eines später autorisierten Tasks",
 )
 
@@ -255,15 +263,15 @@ CURSOR_REQUIRED_MARKERS = (
     "Stand: v27.35g",
     "Arbeit: `C:\\a34a`",
     "Zuhause: `C:\\xampp\\htdocs\\accaoui\\v4-dashboard`",
-    "Letzter abgeschlossener funktionaler Stand: v27.35d",
-    f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
+    "Letzter abgeschlossener funktionaler Stand: v27.35g",
+    f"Abschlusscommit: `{V2735G_COMPLETION_SHA}`",
     "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
     "**Erledigt:** v24.6b (Wiederholung/offene Fragen), v24.6c (Pausieren/Fortsetzen),",
     "## 14. Nächster sinnvoller Schritt",
-    "`CURRENT_TASK` ist `v27.35g` / `AUTHORIZED`.",
-    "Der Regressionstest v27.35e ist mit Gesamtergebnis FAIL abgeschlossen",
+    "`CURRENT_TASK` ist `NONE` / `BLOCKED`.",
+    "Der Regressionstest v27.35e bleibt mit Gesamtergebnis FAIL abgeschlossen",
     V2735F_RESERVATION_SENTENCE,
-    "Kein nächster funktionaler Task ist über v27.35g hinaus ausgewählt oder automatisch abgeleitet.",
+    "Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet.",
     "## 15. Wenn ein neuer Chat beginnt",
     "Zuerst vollständig lesen:",
     REQUIRED_CHAT_READING_BLOCK,
@@ -271,16 +279,16 @@ CURSOR_REQUIRED_MARKERS = (
     "docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md",
 )
 
-CURSOR_V2735G_EXACT_MARKERS = (
+CURSOR_CLOSURE_EXACT_MARKERS = (
     "Stand: v27.35g\nProjekt:",
     "Arbeit: `C:\\a34a`",
     "Zuhause: `C:\\xampp\\htdocs\\accaoui\\v4-dashboard`",
-    "Letzter abgeschlossener funktionaler Stand: v27.35d",
-    f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
+    "Letzter abgeschlossener funktionaler Stand: v27.35g",
+    f"Abschlusscommit: `{V2735G_COMPLETION_SHA}`",
     "| v24.6c | Pausieren/Fortsetzen Prüfung und Lernen | **erledigt** |",
     "## 14. Nächster sinnvoller Schritt",
-    "`CURRENT_TASK` ist `v27.35g` / `AUTHORIZED`.",
-    "Kein nächster funktionaler Task ist über v27.35g hinaus ausgewählt oder automatisch abgeleitet.",
+    "`CURRENT_TASK` ist `NONE` / `BLOCKED`.",
+    "Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet.",
     REQUIRED_CHAT_READING_BLOCK,
 )
 
@@ -289,22 +297,23 @@ CURSOR_NEW_CHAT_LOCAL_HEAD_MARKERS = (
     "Lokalen und GitHub-HEAD direkt vergleichen",
 )
 
-STATE_V2735G_EXACT_MARKERS = (
+STATE_CLOSURE_EXACT_MARKERS = (
     "Stand: v27.35g\nRepository:",
-    f"Abschlusscommit: `{V2735D_COMPLETION_SHA}`",
+    f"\nAbschlusscommit: `{V2735G_COMPLETION_SHA}`\n",
     "## Abgeschlossener Regressionstest v27.35e (FAIL)",
     "## Autorisierter Task v27.35g",
-    "Aktuell autorisierter Task: v27.35g",
-    "Weiterer funktionaler Schritt autorisiert: JA",
+    "## Abgeschlossener funktionaler Stand v27.35g",
+    "Aktuell autorisierter Task: NONE",
+    "Weiterer funktionaler Schritt autorisiert: NEIN",
 )
 
-TASK_V2735G_EXACT_MARKERS = (
-    "Task-ID: v27.35g",
-    "Status: AUTHORIZED",
-    "Autorisiert: JA",
-    f"Erlaubte Dateien: {V2735G_LATER_ALLOWED_FIELD_VALUE}",
-    "## Ziel von v27.35g",
-    "## Verbindlicher Bewertungsvertrag",
+TASK_CLOSURE_EXACT_MARKERS = (
+    "Task-ID: NONE",
+    "Status: BLOCKED",
+    "Autorisiert: NEIN",
+    "Titel: Kein Task autorisiert",
+    "Erlaubte Dateien: KEINE",
+    "## Abgeschlossener funktionaler Stand v27.35g",
 )
 
 MASTERLIST_REQUIRED_MARKERS = (
@@ -354,20 +363,27 @@ MASTERLIST_REQUIRED_MARKERS = (
     "Ziel von v27.35g: Die Punkteberechnung der schriftlichen Prüfung so korrigieren,",
     "Verbindlicher Bewertungsvertrag: keine Antwort ergibt 0 Punkte;",
     V2735F_RESERVATION_SENTENCE,
+    f"Nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `{V2735G_GATE_FIX_SHA}`) ergänzte danach ausschließlich",
+    f"Funktionale Umsetzung (Commit `{V2735G_COMPLETION_SHA}`) veränderte ausschließlich `app.js` und `{V2735G_SCORING_FIX_REPORT_FILE}`",
+    "`CURRENT_TASK` steht danach wieder auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`",
+    "### Abgeschlossener funktionaler Stand v27.35g",
+    f"Funktionaler Abschlusscommit: `{V2735G_COMPLETION_SHA}`. Dieser Commit veränderte ausschließlich `app.js` und `{V2735G_SCORING_FIX_REPORT_FILE}`.",
+    "`docs/tasks/CURRENT_TASK.md` steht danach wieder auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`, `Erlaubte Dateien: KEINE`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.",
     "Diese Bestands- und Backlogliste ist keine Task-Autorisierung.",
-    "`CURRENT_TASK` ist aktuell `v27.35g` / `AUTHORIZED` (Punkteberechnung schriftliche Prüfung korrigieren); v27.35d bleibt der letzte abgeschlossene funktionale Stand, bis v27.35g abgeschlossen ist.",
+    f"`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED`; v27.35g ist der letzte abgeschlossene funktionale Stand (Abschlusscommit `{V2735G_COMPLETION_SHA}`).",
     "Backlog-Kandidat C (Quellen/mündliche Musterfragen) ist nicht autorisiert.",
     "`v27.35f` (Wettbewerbsbeobachtungsnotiz) bleibt vorgemerkt und ausdrücklich nicht autorisiert.",
     REQUIRED_CHAT_READING_BLOCK,
 )
 
-MASTERLIST_V2735G_EXACT_MARKERS = (
+MASTERLIST_CLOSURE_EXACT_MARKERS = (
     "Stand: v27.35g\nBranch:",
     f"Arbeits-Laptop: `{WORK_PATH}`",
     f"Zuhause-Laptop: `{HOME_PATH}`",
     "| v27.35g |",
     "### Autorisierter Task v27.35g",
-    "`CURRENT_TASK` ist aktuell `v27.35g` / `AUTHORIZED` (Punkteberechnung schriftliche Prüfung korrigieren); v27.35d bleibt der letzte abgeschlossene funktionale Stand, bis v27.35g abgeschlossen ist.",
+    "### Abgeschlossener funktionaler Stand v27.35g",
+    f"`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED`; v27.35g ist der letzte abgeschlossene funktionale Stand (Abschlusscommit `{V2735G_COMPLETION_SHA}`).",
     "Backlog-Kandidat C (Quellen/mündliche Musterfragen) ist nicht autorisiert.",
     REQUIRED_CHAT_READING_BLOCK,
 )
@@ -496,7 +512,7 @@ def validate_state_text(text: str) -> None:
     validate_required_markers(text, STATE_REQUIRED_MARKERS, "PROJECT_STATE_CURRENT")
     validate_exact_markers(
         text,
-        STATE_V2735G_EXACT_MARKERS,
+        STATE_CLOSURE_EXACT_MARKERS,
         "PROJECT_STATE_CURRENT",
     )
     validate_v2735g_regression_ids(text, "PROJECT_STATE_CURRENT")
@@ -519,12 +535,15 @@ def validate_state_text(text: str) -> None:
             V2735D_COMPLETION_SHA,
             V2735E_GATE_SHA,
             V2735G_GATE_SHA,
+            V2735G_GATE_FIX_SHA,
+            V2735G_COMPLETION_SHA,
         },
         (
             "PROJECT_STATE_CURRENT darf nur die historisch bekannten Commits "
             "(Gate, v27.35b-Abschluss, v27.35c-Steuerung, Checker-Fix, "
             "v27.35d-Abschluss, v27.35e-Ausgangscommit, v27.35e-FAIL-Bericht/"
-            "v27.35g-Ausgangscommit) enthalten"
+            "v27.35g-Ausgangscommit, v27.35g-Gate-Korrektur, "
+            "v27.35g-Abschlusscommit) enthalten"
         ),
     )
     for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
@@ -535,14 +554,14 @@ def validate_state_text(text: str) -> None:
 
 
 TASK_CONTRADICTORY_GRANTS = (
-    "Status: BLOCKED",
-    "Autorisiert: NEIN",
+    "Status: AUTHORIZED",
+    "Autorisiert: JA",
     "Commit erlaubt: JA",
     "Push erlaubt: JA",
-    "Task-ID: NONE",
     "Task-ID: v27.35d",
     "Task-ID: v27.35e",
     "Task-ID: v27.35f",
+    "Task-ID: v27.35g",
     "Task-ID: v27.36",
 )
 
@@ -550,13 +569,12 @@ TASK_CONTRADICTORY_GRANTS = (
 def validate_task_text(text: str) -> None:
     validate_exact_fields(text, EXPECTED_TASK_FIELDS)
     validate_required_markers(text, TASK_REQUIRED_MARKERS, "CURRENT_TASK")
-    validate_exact_markers(text, TASK_V2735G_EXACT_MARKERS, "CURRENT_TASK")
+    validate_exact_markers(text, TASK_CLOSURE_EXACT_MARKERS, "CURRENT_TASK")
     validate_v2735g_regression_ids(text, "CURRENT_TASK")
     validate_v2735f_not_active(text, "CURRENT_TASK")
 
     require(
-        f"`{V2735E_TEST_REPORT_FILE}` darf" in text
-        or f"`{V2735E_TEST_REPORT_FILE}` bleibt" in text,
+        f"`{V2735E_TEST_REPORT_FILE}` bleibt" in text,
         "CURRENT_TASK: Schutz des bestehenden v27.35e-Testberichts fehlt",
     )
 
@@ -648,7 +666,7 @@ def validate_cursor_context_text(text: str) -> None:
     )
     validate_exact_markers(
         text,
-        CURSOR_V2735G_EXACT_MARKERS,
+        CURSOR_CLOSURE_EXACT_MARKERS,
         "CURSOR_MASTER_CONTEXT_ACCAOUI",
     )
     validate_project_paths(text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
@@ -730,7 +748,7 @@ def validate_masterlist_text(text: str) -> None:
     )
     validate_exact_markers(
         text,
-        MASTERLIST_V2735G_EXACT_MARKERS,
+        MASTERLIST_CLOSURE_EXACT_MARKERS,
         "PROJECT_MASTERLIST",
     )
     validate_project_paths(text, "PROJECT_MASTERLIST")
@@ -948,7 +966,7 @@ def validate_v2735e_closure_commit_history() -> None:
     )
 
     run_git(["merge-base", "--is-ancestor", V2735E_GATE_SHA, V2735G_GATE_SHA])
-    run_git(["merge-base", "--is-ancestor", V2735G_GATE_SHA, "HEAD"])
+    run_git(["merge-base", "--is-ancestor", V2735G_GATE_SHA, V2735G_AUTHORIZATION_SHA])
 
     closure_changed_files = {
         line.strip()
@@ -988,37 +1006,204 @@ def validate_v2735e_closure_commit_history() -> None:
         )
 
 
-def validate_v2735g_gate_working_tree() -> None:
-    """Prüft Funktionsdateien seit dem v27.35g-Ausgangscommit.
+def validate_v2735g_authorization_commit_history() -> None:
+    """Prüft den v27.35g-Autorisierungscommit ausschließlich historisch.
 
-    Für die ausdrücklich autorisierte v27.35g-Umsetzung ist im Arbeitsbaum
-    ausschließlich `app.js` freigegeben (siehe `V2735G_LATER_ALLOWED_FILES`
-    und die Feldangabe „Erlaubte Dateien“ in `docs/tasks/CURRENT_TASK.md`).
-    `index.html` und `style.css` bleiben weiterhin vollständig gesperrt.
-    Committete Änderungen bleiben für alle drei Kern-Dateien seit dem
-    v27.35g-Ausgangscommit weiterhin verboten; es wird ausdrücklich kein
-    Commit und kein Push in diesem Schritt zugelassen.
+    Geprüft wird der abgeschlossene Bereich zwischen dem v27.35g-
+    Ausgangscommit (V2735G_GATE_SHA, zugleich FAIL-Bericht-Commit von
+    v27.35e) und dem Autorisierungscommit (V2735G_AUTHORIZATION_SHA). In
+    diesem Bereich wurden ausschließlich die fünf Steuerungsdateien
+    verändert; app.js, index.html und style.css blieben unverändert.
     """
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
     )
-    run_git(["merge-base", "--is-ancestor", V2735G_GATE_SHA, "HEAD"])
+    run_git(
+        ["merge-base", "--is-ancestor", V2735G_GATE_SHA, V2735G_AUTHORIZATION_SHA]
+    )
+    run_git(
+        ["merge-base", "--is-ancestor", V2735G_AUTHORIZATION_SHA, V2735G_GATE_FIX_SHA]
+    )
+
+    authorization_changed_files = {
+        line.strip()
+        for line in run_git(
+            ["diff", "--name-only", V2735G_GATE_SHA, V2735G_AUTHORIZATION_SHA]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        authorization_changed_files == set(EXPECTED_CONTROL_FILES),
+        (
+            "v27.35g-Autorisierungscommit veränderte zwischen Ausgangscommit "
+            f"{V2735G_GATE_SHA} und Autorisierungscommit "
+            f"{V2735G_AUTHORIZATION_SHA} nicht exakt die erwarteten "
+            f"Steuerungsdateien: {sorted(authorization_changed_files)}"
+        ),
+    )
+
+    for relative_path in PROTECTED_RUNTIME_FILES:
+        historical_diff = run_git(
+            [
+                "diff",
+                "--name-only",
+                V2735G_GATE_SHA,
+                V2735G_AUTHORIZATION_SHA,
+                "--",
+                relative_path,
+            ]
+        ).strip()
+        require(
+            historical_diff == "",
+            (
+                f"{relative_path} wurde im historisch abgeschlossenen "
+                f"v27.35g-Autorisierungsbereich zwischen {V2735G_GATE_SHA} "
+                f"und {V2735G_AUTHORIZATION_SHA} verändert"
+            ),
+        )
+
+
+def validate_v2735g_gate_fix_commit_history() -> None:
+    """Prüft den nichtfunktionalen v27.35g-Gate-Korrekturcommit ausschließlich historisch.
+
+    Geprüft wird der abgeschlossene Bereich zwischen dem
+    Autorisierungscommit (V2735G_AUTHORIZATION_SHA) und dem
+    Gate-Korrekturcommit (V2735G_GATE_FIX_SHA). In diesem Bereich wurden
+    ausschließlich die fünf Steuerungsdateien verändert; app.js,
+    index.html und style.css blieben unverändert.
+    """
+    require(
+        (ROOT / ".git").exists(),
+        "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
+    )
+    run_git(
+        ["merge-base", "--is-ancestor", V2735G_AUTHORIZATION_SHA, V2735G_GATE_FIX_SHA]
+    )
+    run_git(
+        ["merge-base", "--is-ancestor", V2735G_GATE_FIX_SHA, V2735G_COMPLETION_SHA]
+    )
+
+    gate_fix_changed_files = {
+        line.strip()
+        for line in run_git(
+            ["diff", "--name-only", V2735G_AUTHORIZATION_SHA, V2735G_GATE_FIX_SHA]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        gate_fix_changed_files == set(EXPECTED_CONTROL_FILES),
+        (
+            "v27.35g-Gate-Korrekturcommit veränderte zwischen "
+            f"Autorisierungscommit {V2735G_AUTHORIZATION_SHA} und "
+            f"Gate-Korrekturcommit {V2735G_GATE_FIX_SHA} nicht exakt die "
+            f"erwarteten Steuerungsdateien: {sorted(gate_fix_changed_files)}"
+        ),
+    )
+
+    for relative_path in PROTECTED_RUNTIME_FILES:
+        historical_diff = run_git(
+            [
+                "diff",
+                "--name-only",
+                V2735G_AUTHORIZATION_SHA,
+                V2735G_GATE_FIX_SHA,
+                "--",
+                relative_path,
+            ]
+        ).strip()
+        require(
+            historical_diff == "",
+            (
+                f"{relative_path} wurde im historisch abgeschlossenen "
+                f"v27.35g-Gate-Korrekturbereich zwischen "
+                f"{V2735G_AUTHORIZATION_SHA} und {V2735G_GATE_FIX_SHA} verändert"
+            ),
+        )
+
+
+def validate_v2735g_completion_commit_history() -> None:
+    """Prüft den funktionalen v27.35g-Abschlusscommit ausschließlich historisch.
+
+    Geprüft wird der abgeschlossene Bereich zwischen dem
+    Gate-Korrekturcommit (V2735G_GATE_FIX_SHA) und dem funktionalen
+    Abschlusscommit (V2735G_COMPLETION_SHA). In diesem Bereich wurden
+    ausschließlich app.js und der neue v27.35g-Testbericht verändert;
+    index.html und style.css blieben unverändert.
+    """
+    require(
+        (ROOT / ".git").exists(),
+        "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
+    )
+    run_git(
+        ["merge-base", "--is-ancestor", V2735G_GATE_FIX_SHA, V2735G_COMPLETION_SHA]
+    )
+    run_git(["merge-base", "--is-ancestor", V2735G_COMPLETION_SHA, "HEAD"])
+
+    completion_changed_files = {
+        line.strip()
+        for line in run_git(
+            ["diff", "--name-only", V2735G_GATE_FIX_SHA, V2735G_COMPLETION_SHA]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        completion_changed_files == set(EXPECTED_V2735G_COMPLETION_CHANGED_FILES),
+        (
+            "v27.35g-Abschlusscommit veränderte zwischen Gate-Korrekturcommit "
+            f"{V2735G_GATE_FIX_SHA} und Abschlusscommit {V2735G_COMPLETION_SHA} "
+            f"nicht exakt die erwarteten Dateien: {sorted(completion_changed_files)}"
+        ),
+    )
+
+    for relative_path in ("index.html", "style.css"):
+        historical_diff = run_git(
+            [
+                "diff",
+                "--name-only",
+                V2735G_GATE_FIX_SHA,
+                V2735G_COMPLETION_SHA,
+                "--",
+                relative_path,
+            ]
+        ).strip()
+        require(
+            historical_diff == "",
+            (
+                f"{relative_path} wurde zwischen dem v27.35g-Gate-"
+                f"Korrekturcommit {V2735G_GATE_FIX_SHA} und dem "
+                f"v27.35g-Abschlusscommit {V2735G_COMPLETION_SHA} verändert"
+            ),
+        )
+
+
+def validate_v2735g_closure_working_tree() -> None:
+    """Prüft, dass nach dem v27.35g-Abschluss alle Kern-Dateien wieder vollständig gesperrt sind.
+
+    Nach dem funktionalen Abschlusscommit (V2735G_COMPLETION_SHA) sind
+    app.js, index.html und style.css sowie beide bestehenden
+    Testberichte im Arbeitsbaum wieder vollständig gesperrt; es ist
+    ausdrücklich keine Datei mehr für eine laufende Umsetzung
+    freigegeben (siehe `Erlaubte Dateien: KEINE` in
+    `docs/tasks/CURRENT_TASK.md`).
+    """
+    require(
+        (ROOT / ".git").exists(),
+        "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
+    )
+    run_git(["merge-base", "--is-ancestor", V2735G_COMPLETION_SHA, "HEAD"])
 
     for relative_path in PROTECTED_RUNTIME_FILES:
         committed_diff = run_git(
-            ["diff", "--name-only", V2735G_GATE_SHA, "HEAD", "--", relative_path]
+            ["diff", "--name-only", V2735G_COMPLETION_SHA, "HEAD", "--", relative_path]
         ).strip()
         require(
             committed_diff == "",
             (
-                f"{relative_path} wurde seit dem v27.35g-Ausgangscommit "
-                f"{V2735G_GATE_SHA} in committeten Änderungen verändert"
+                f"{relative_path} wurde seit dem v27.35g-Abschlusscommit "
+                f"{V2735G_COMPLETION_SHA} in committeten Änderungen verändert"
             ),
         )
-
-        if relative_path in V2735G_LATER_ALLOWED_FILES:
-            continue
 
         working_tree_diff = run_git(
             ["diff", "--name-only", "HEAD", "--", relative_path]
@@ -1026,48 +1211,24 @@ def validate_v2735g_gate_working_tree() -> None:
         require(
             working_tree_diff == "",
             (
-                f"{relative_path} wurde im Arbeitsbaum gegenüber HEAD verändert; "
-                "für die autorisierte v27.35g-Umsetzung ist im Arbeitsbaum "
-                f"ausschließlich {V2735G_LATER_ALLOWED_FIELD_VALUE} freigegeben"
+                f"{relative_path} wurde im Arbeitsbaum gegenüber HEAD "
+                "verändert; nach dem Abschluss von v27.35g ist im "
+                "Arbeitsbaum keine Funktionsdatei mehr freigegeben"
             ),
         )
 
-    changed_report_diff = run_git(
-        ["diff", "--name-only", "HEAD", "--", V2735E_TEST_REPORT_FILE]
-    ).strip()
-    require(
-        changed_report_diff == "",
-        (
-            f"{V2735E_TEST_REPORT_FILE} wurde im Arbeitsbaum verändert; der "
-            "bestehende v27.35e-Testbericht darf nicht verändert werden"
-        ),
-    )
-
-
-def run_v2735g_gate_manipulation_checks() -> int:
-    """Bestätigt, dass gesperrte Kern-Dateien im Arbeitsbaum weiterhin blockiert werden.
-
-    `index.html` und `style.css` sind für die v27.35g-Umsetzung nicht
-    freigegeben. Diese Prüfung stellt sicher, dass eine Manipulation dieser
-    Dateien im Arbeitsbaum weiterhin zuverlässig erkannt würde, ohne die
-    Dateien selbst zu verändern.
-    """
-    checks = 0
-
-    for relative_path in PROTECTED_RUNTIME_FILES:
-        if relative_path in V2735G_LATER_ALLOWED_FILES:
-            continue
-
+    for report_file in (V2735E_TEST_REPORT_FILE, V2735G_SCORING_FIX_REPORT_FILE):
+        changed_report_diff = run_git(
+            ["diff", "--name-only", "HEAD", "--", report_file]
+        ).strip()
         require(
-            relative_path not in V2735G_LATER_ALLOWED_FILES,
+            changed_report_diff == "",
             (
-                f"{relative_path} darf nicht als für v27.35g erlaubte Datei "
-                "eingetragen sein"
+                f"{report_file} wurde im Arbeitsbaum verändert; die "
+                "bestehenden Testberichte dürfen nach dem Abschluss von "
+                "v27.35g nicht mehr verändert werden"
             ),
         )
-        checks += 1
-
-    return checks
 
 
 def changed_once(text: str, old: str, new: str, label: str) -> str:
@@ -1159,11 +1320,11 @@ def run_manipulation_matrix(
         "Stand": "v27.35f",
         "Repository": "`anderes/repository`",
         "Branch": "`anderer-branch`",
-        "Letzter abgeschlossener funktionaler Stand": "v27.35b",
+        "Letzter abgeschlossener funktionaler Stand": "v27.35d",
         "Abschlusscommit": f"`{'0' * 40}`",
         "Aktueller HEAD": GATE_SHA,
-        "Funktionsstatus": "v27.35g abgeschlossen",
-        "Weiterer funktionaler Schritt autorisiert": "NEIN",
+        "Funktionsstatus": "v27.35d abgeschlossen",
+        "Weiterer funktionaler Schritt autorisiert": "JA",
         "Aktuell autorisierter Task": "v27.35f",
         "Aktueller Blocker": "KEINER",
     }
@@ -1219,11 +1380,11 @@ def run_manipulation_matrix(
 
     task_value_manipulations = {
         "Task-ID": "v27.35f",
-        "Status": "BLOCKED",
-        "Autorisiert": "NEIN",
+        "Status": "AUTHORIZED",
+        "Autorisiert": "JA",
         "Titel": "Anderer Task",
-        "Funktionaler Ausgangsstand": "v27.35c",
-        "Erwarteter Ausgangscommit": f"`{'0' * 40}`",
+        "Letzter abgeschlossener funktionaler Stand": "v27.35d",
+        "Abschlusscommit": f"`{'0' * 40}`",
         "Erlaubte Dateien": "`app.js`",
         "Commit erlaubt": "JA",
         "Push erlaubt": "JA",
@@ -1246,8 +1407,8 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            f"Erlaubte Dateien: {V2735G_LATER_ALLOWED_FIELD_VALUE}",
-            f"Erlaubte Dateien: {V2735G_LATER_ALLOWED_FIELD_VALUE}, `index.html`",
+            "Erlaubte Dateien: KEINE",
+            "Erlaubte Dateien: KEINE, `app.js`",
             "CURRENT_TASK erlaubte Dateien unzulässig erweitert",
         ),
         "CURRENT_TASK erlaubte Dateien unzulässig erweitert",
@@ -1286,7 +1447,7 @@ def run_manipulation_matrix(
         validate_task_text,
         changed_once(
             task_text,
-            "Kein Folgeschritt nach v27.35g wird automatisch gewählt oder autorisiert.",
+            "Kein neuer funktionaler oder nichtfunktionaler Task wird automatisch ausgewählt oder autorisiert.",
             "`v27.35f` wird automatisch gewählt und autorisiert.",
             "automatische Auswahl eines Folgeschritts",
         ),
@@ -1315,13 +1476,13 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_state_text,
         state_text,
-        STATE_V2735G_EXACT_MARKERS,
+        STATE_CLOSURE_EXACT_MARKERS,
         "PROJECT_STATE_CURRENT",
     )
     checks += exercise_exact_marker_manipulations(
         validate_task_text,
         task_text,
-        TASK_V2735G_EXACT_MARKERS,
+        TASK_CLOSURE_EXACT_MARKERS,
         "CURRENT_TASK",
     )
 
@@ -1421,7 +1582,7 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_cursor_context_text,
         cursor_context_text,
-        CURSOR_V2735G_EXACT_MARKERS,
+        CURSOR_CLOSURE_EXACT_MARKERS,
         "CURSOR_MASTER_CONTEXT_ACCAOUI",
     )
 
@@ -1510,9 +1671,9 @@ def run_manipulation_matrix(
 
     manipulated_cursor_task_text = changed_once(
         cursor_context_text,
-        "Kein nächster funktionaler Task ist über v27.35g hinaus ausgewählt oder automatisch abgeleitet.",
+        "Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet.",
         (
-            "Kein nächster funktionaler Task ist über v27.35g hinaus ausgewählt oder automatisch abgeleitet.\n"
+            "Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet.\n"
             "**v24.6c – Prüfung/Lernen pausieren und später fortsetzen**"
         ),
         "Cursor alte aktive Task-Auswahl v24.6c",
@@ -1526,9 +1687,9 @@ def run_manipulation_matrix(
 
     manipulated_cursor_future_task_text = changed_once(
         cursor_context_text,
-        "Kein nächster funktionaler Task ist über v27.35g hinaus ausgewählt oder automatisch abgeleitet.",
+        "Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet.",
         (
-            "Kein nächster funktionaler Task ist über v27.35g hinaus ausgewählt oder automatisch abgeleitet.\n"
+            "Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet.\n"
             "**v27.35f wird automatisch fortgesetzt.**"
         ),
         "Cursor unzulässige weitere Task-Auswahl v27.35f",
@@ -1557,7 +1718,7 @@ def run_manipulation_matrix(
     checks += exercise_exact_marker_manipulations(
         validate_masterlist_text,
         masterlist_text,
-        MASTERLIST_V2735G_EXACT_MARKERS,
+        MASTERLIST_CLOSURE_EXACT_MARKERS,
         "PROJECT_MASTERLIST",
     )
 
@@ -1621,7 +1782,10 @@ def main() -> int:
         validate_v2735c_control_commit_history()
         validate_v2735d_completion_commit_history()
         validate_v2735e_closure_commit_history()
-        validate_v2735g_gate_working_tree()
+        validate_v2735g_authorization_commit_history()
+        validate_v2735g_gate_fix_commit_history()
+        validate_v2735g_completion_commit_history()
+        validate_v2735g_closure_working_tree()
         manipulation_checks = run_manipulation_matrix(
             state_text,
             task_text,
@@ -1629,17 +1793,19 @@ def main() -> int:
             cursor_context_text,
             masterlist_text,
         )
-        manipulation_checks += run_v2735g_gate_manipulation_checks()
     except ValidationError as exc:
         print(f"FEHLER: {exc}")
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität und Task-Steuerung v27.35g: OK")
-    print("PROJECT_STATE_CURRENT: v27.35g / letzter funktionaler Stand v27.35d")
+    print("Projektkontinuität und Task-Steuerung nach v27.35g-Abschluss: OK")
     print(
-        "CURRENT_TASK: v27.35g / AUTHORIZED / kein Commit, kein Push, "
-        "app.js-Umsetzung im Arbeitsbaum freigegeben"
+        "PROJECT_STATE_CURRENT: v27.35g / letzter funktionaler Stand v27.35g "
+        "(abgeschlossen) / kein weiterer Task autorisiert"
+    )
+    print(
+        "CURRENT_TASK: NONE / BLOCKED / Autorisiert NEIN / Erlaubte Dateien "
+        "KEINE / kein Commit, kein Push"
     )
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Projektpfade Arbeit und Zuhause: OK")
@@ -1658,11 +1824,25 @@ def main() -> int:
         "und Testberichtsdateien geändert, keine Funktionsdatei"
     )
     print(
-        "v27.35g-Arbeitsbaum: index.html, style.css und der bestehende "
-        f"v27.35e-Testbericht seit {V2735G_GATE_SHA} unverändert; "
-        f"ausschließlich {V2735G_LATER_ALLOWED_FIELD_VALUE} im Arbeitsbaum "
-        "freigegeben; keine committeten Änderungen an app.js, index.html "
-        "oder style.css"
+        "v27.35g-Autorisierung historisch sauber: nur Steuerungsdateien "
+        f"zwischen {V2735G_GATE_SHA} und {V2735G_AUTHORIZATION_SHA} geändert, "
+        "keine Funktionsdatei"
+    )
+    print(
+        "v27.35g-Gate-Korrektur historisch sauber: nur Steuerungsdateien "
+        f"zwischen {V2735G_AUTHORIZATION_SHA} und {V2735G_GATE_FIX_SHA} "
+        "geändert, keine Funktionsdatei"
+    )
+    print(
+        "v27.35g-Abschlusscommit historisch sauber: nur app.js und "
+        f"{V2735G_SCORING_FIX_REPORT_FILE} zwischen {V2735G_GATE_FIX_SHA} und "
+        f"{V2735G_COMPLETION_SHA} geändert, index.html/style.css unverändert"
+    )
+    print(
+        "v27.35g-Arbeitsbaum nach Abschluss vollständig gesperrt: app.js, "
+        "index.html, style.css und beide Testberichte seit "
+        f"{V2735G_COMPLETION_SHA} unverändert; keine Datei für eine laufende "
+        "Umsetzung freigegeben"
     )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0
