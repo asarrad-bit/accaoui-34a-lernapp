@@ -1,56 +1,97 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
-Letzter abgeschlossener funktionaler Stand: v27.35g
-Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
-Erlaubte Dateien: KEINE
+Task-ID: v27.35f
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren
+Funktionaler Ausgangsstand: v27.35g
+Erwarteter Ausgangscommit: `003112eaeb9a071a6396634b6da92fa11ae8921a`
+Erlaubte Dateien: `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
 
-## Abgeschlossener funktionaler Stand v27.35g
+## Ziel
 
-Die Punkteberechnung der schriftlichen Prüfung wurde korrigiert: eine vollständig richtige Antwort ergibt stets die volle hinterlegte Punktzahl; eine zulässige Teilantwort bei einer Zwei-Punkte-Frage mit mindestens zwei richtigen Optionen ergibt exakt 1 Punkt; jede falsch ausgewählte Option ergibt 0 Punkte.
+Eine interne strategische Dokumentation erstellen, die allgemeine
+Verkaufs- und Positionierungsmechanismen eines beobachteten
+Wettbewerberangebots analysiert und daraus eine eigenständige,
+ehrliche Accaoui-Positionierung ableitet.
 
-Bestätigte Ergebnisse:
+## Verbindliche Grundlage
 
-- 82 Fragen, 120 Maximalpunkte.
-- Alle 13 zuvor betroffenen Fragen (`straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`, `technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`, `bgb_006`, `uvv_004`, `uvv_008`) liefern bei vollständig korrekter Beantwortung jeweils exakt 2/2 Punkte.
-- Die im v27.35e-Bericht verwendete Testkonstellation ergibt jetzt exakt 114/120 statt vormals 101/120.
-- Alle 82 Fragen vollständig korrekt beantwortet ergeben jetzt exakt 120/120.
-- Pause/Fortsetzen: PASS.
-- Fehleranalyse: PASS.
-- Fehlertraining: PASS.
-- Desktop: PASS.
-- Mobil ca. 390 × 844: PASS.
-- Keine neuen Konsolenfehler.
-- `localStorage` und `sessionStorage` nach den Tests vollständig restauriert.
+Die folgenden Punkte dürfen ausschließlich als beobachtete und nicht
+extern verifizierte Wettbewerber-Werbeaussagen beschrieben werden:
 
-Testbericht: `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`. Funktionaler Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`.
+- niedriger Einmalpreis im Vergleich zu möglichen Wiederholungs- und Prüfungskosten
+- zeitlich unbegrenzte Prüfungssimulationen
+- behauptete Abdeckung aller IHK-Fragen
+- behauptetes KI-basiertes Erkennen von Schwächen
+- Rückerstattungs- oder Risikoumkehr-Versprechen
+- dauerhafter Besitz beziehungsweise unbegrenzter Zugang
+- Nutzerzahlen, Bewertungen oder sonstiger Social Proof
 
-Vor der funktionalen Umsetzung wurde ein getrennter, nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) durchgeführt, der ausschließlich den Kontinuitäts-Checker und die vier Steuerungsdokumente ergänzte und im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` freigab.
+## Zulässige allgemeine Marketingmechanismen
 
-Der bestehende v27.35e-FAIL-Bericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische Fehlerdokumentation erhalten.
+- Preisanker
+- Verlustvermeidung
+- klare Nutzenkommunikation
+- Risikoumkehr
+- Social Proof
+- Einfachheit des Angebots
+- persönliche Schwächenanalyse
+- Prüfungssimulation als konkretes Leistungsversprechen
 
-`v27.35f` bleibt ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert. `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+## Verbindliche Accaoui-Differenzierung
 
-## Verbindliche Sperre
+- Wissen verständlich vermitteln
+- typische Fehler erkennen und gezielt bearbeiten
+- Inhalte langfristig festigen
+- realistische schriftliche und mündliche Prüfungsvorbereitung
+- nachvollziehbare persönliche Lernführung
+- Teilnehmer bis zur Prüfungsreife begleiten
+- echte Unterrichts- und Prüfungsvorbereitungserfahrung
+- nicht nur Fragen beantworten, sondern Inhalte verstehen
 
-- Kein neuer funktionaler oder nichtfunktionaler Task wird automatisch ausgewählt oder autorisiert.
-- Die Auswahl eines weiteren Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und diese Datei.
-- Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer Task abgeleitet werden.
-- Commit und Push bleiben bis zu einer gesonderten ausdrücklichen Freigabe gesperrt.
+## Qualitätsmaßstab
 
-## Pflichtfelder eines später autorisierten Tasks
+> „Mit dieser App habe ich es endlich verstanden.“
 
-- Task-ID
-- Ziel
-- Erwarteter Ausgangsstand
-- Erlaubte Dateien
-- Verbotene Dateien
-- Akzeptanzkriterien
-- Tests
-- Commit-Freigabe
-- Push-Freigabe
+Die Leitidee aus `docs/PROJECT_MASTERLIST.md` bleibt verbindlich.
+
+## Verboten
+
+- Wettbewerbertexte kopieren
+- geschützte Formulierungen nachahmen
+- behaupten, der Wettbewerber lüge oder handle rechtswidrig
+- nicht belegte Nutzerzahlen oder Bewertungen als Tatsachen darstellen
+- behaupten, Accaoui besitze alle originalen IHK-Fragen
+- Bestehensgarantien
+- unbelegte KI-Versprechen
+- unbelegte Rückerstattungsversprechen
+- konkrete Preise verbindlich festlegen
+- App-Code, UI, Fragenbanken oder Marketingmaterial verändern
+- Webrecherche oder externe Behauptungen ohne gesonderten Auftrag
+- Funktions-, Fragen-, UI-, Supabase-, SQL- oder Netzwerkänderungen
+- automatische Auswahl oder Autorisierung eines Folgetasks
+
+## Akzeptanzkriterien
+
+1. Beobachtung, Bewertung und Accaoui-Empfehlung sind klar getrennt.
+2. Wettbewerberaussagen sind ausdrücklich als nicht verifiziert markiert.
+3. Keine Formulierung wird vom Wettbewerber übernommen.
+4. Chancen und Risiken der Marketingmechanismen werden sachlich erklärt.
+5. Eine eigenständige Accaoui-Kernpositionierung wird formuliert.
+6. Zulässige und unzulässige Werbeaussagen werden getrennt dokumentiert.
+7. Die Leitidee aus `docs/PROJECT_MASTERLIST.md` bleibt verbindlich.
+8. Keine Funktions-, Fragen-, UI-, Supabase-, SQL- oder Netzwerkänderung.
+9. Ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` wird im späteren Umsetzungsschritt verändert.
+10. Kein Commit und kein Push ohne gesonderte Freigabe.
+
+## Verbindliche Grenze dieses Autorisierungsschritts
+
+`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` wird in diesem
+Autorisierungsschritt noch nicht erstellt oder verändert. Es wird noch
+keine Wettbewerbsnotiz erstellt und keine App-Datei verändert.
+
+Die spätere Umsetzung darf ausschließlich diesen `CURRENT_TASK`
+bearbeiten. Nach Abschluss wird kein Folgetask automatisch ausgewählt.

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Projektkontinuität nach dem formalen Abschluss von v27.35g.
+"""Prüft die verbindliche Autorisierung des Dokumentationstasks v27.35f.
 
-`docs/tasks/CURRENT_TASK.md` steht danach wieder auf `Task-ID: NONE`,
-`Status: BLOCKED`, `Autorisiert: NEIN`, `Erlaubte Dateien: KEINE`; jeder
-weitere funktionale oder nichtfunktionale Folgeschritt bleibt gesperrt,
-bis er ausdrücklich neu autorisiert wird.
+v27.35g bleibt der letzte abgeschlossene funktionale Stand. Während
+dieses Autorisierungsschritts dürfen ausschließlich die fünf
+Steuerungsdateien geändert sein; die spätere Wettbewerbsnotiz und alle
+App- oder Funktionsdateien müssen unverändert beziehungsweise noch
+nicht vorhanden bleiben.
 """
 
 from __future__ import annotations
@@ -54,6 +55,176 @@ V2735G_SCORING_FIX_REPORT_FILE = "docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md"
 EXPECTED_V2735G_COMPLETION_CHANGED_FILES = (
     "app.js",
     V2735G_SCORING_FIX_REPORT_FILE,
+)
+
+V2735F_AUTHORIZATION_BASE_SHA = "003112eaeb9a071a6396634b6da92fa11ae8921a"
+V2735F_NOTE_FILE = "docs/COMPETITOR_POSITIONING_NOTE_V2735F.md"
+V2735F_AUTHORIZATION_CONTROL_FILES = EXPECTED_CONTROL_FILES
+
+V2735F_EXPECTED_STATE_FIELDS = {
+    "Stand": "v27.35g",
+    "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
+    "Branch": "`main`",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35g",
+    "Abschlusscommit": f"`{V2735G_COMPLETION_SHA}`",
+    "Aktueller HEAD": "DYNAMISCH ZU PRÜFEN",
+    "Funktionsstatus": "v27.35g abgeschlossen",
+    "Weiterer funktionaler Schritt autorisiert": "NEIN",
+    "Aktuell autorisierter Task": "v27.35f",
+    "Aktuelle Taskart": "Dokumentation",
+    "Aktueller Blocker": (
+        "KEINER; v27.35f ist als einziger Dokumentationstask autorisiert, "
+        "Umsetzung offen"
+    ),
+}
+
+V2735F_EXPECTED_TASK_FIELDS = {
+    "Task-ID": "v27.35f",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": "Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Erwarteter Ausgangscommit": f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+    "Erlaubte Dateien": f"`{V2735F_NOTE_FILE}`",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+
+V2735F_STATE_REQUIRED_MARKERS = (
+    "## Autorisierter Dokumentationstask v27.35f",
+    "`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`",
+    "`Status: AUTHORIZED`, `Autorisiert: JA`",
+    "`Funktionaler Ausgangsstand: v27.35g`",
+    f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+    f"`{V2735F_NOTE_FILE}`",
+    "v27.35g bleibt der letzte abgeschlossene funktionale Stand.",
+    "der einzige autorisierte Dokumentationstask; seine Umsetzung ist offen.",
+    "beobachtete, nicht extern verifizierte",
+    "„Mit dieser App habe ich es endlich verstanden.“",
+    "noch nicht erstellt oder",
+    "keine Wettbewerbsnotiz erstellt, keine App-Datei",
+    "kein Folgetask automatisch ausgewählt.",
+    "Commit und Push",
+)
+
+V2735F_TASK_REQUIRED_MARKERS = (
+    "# Verbindlicher aktueller Task",
+    "## Ziel",
+    "interne strategische Dokumentation",
+    "## Verbindliche Grundlage",
+    "beobachtete und nicht",
+    "extern verifizierte Wettbewerber-Werbeaussagen",
+    "niedriger Einmalpreis",
+    "zeitlich unbegrenzte Prüfungssimulationen",
+    "behauptete Abdeckung aller IHK-Fragen",
+    "behauptetes KI-basiertes Erkennen von Schwächen",
+    "Rückerstattungs- oder Risikoumkehr-Versprechen",
+    "dauerhafter Besitz beziehungsweise unbegrenzter Zugang",
+    "Nutzerzahlen, Bewertungen oder sonstiger Social Proof",
+    "## Zulässige allgemeine Marketingmechanismen",
+    "Preisanker",
+    "Verlustvermeidung",
+    "klare Nutzenkommunikation",
+    "Risikoumkehr",
+    "Social Proof",
+    "Einfachheit des Angebots",
+    "persönliche Schwächenanalyse",
+    "Prüfungssimulation als konkretes Leistungsversprechen",
+    "## Verbindliche Accaoui-Differenzierung",
+    "Wissen verständlich vermitteln",
+    "typische Fehler erkennen und gezielt bearbeiten",
+    "Inhalte langfristig festigen",
+    "realistische schriftliche und mündliche Prüfungsvorbereitung",
+    "nachvollziehbare persönliche Lernführung",
+    "Teilnehmer bis zur Prüfungsreife begleiten",
+    "echte Unterrichts- und Prüfungsvorbereitungserfahrung",
+    "nicht nur Fragen beantworten, sondern Inhalte verstehen",
+    "## Qualitätsmaßstab",
+    "„Mit dieser App habe ich es endlich verstanden.“",
+    "Die Leitidee aus `docs/PROJECT_MASTERLIST.md` bleibt verbindlich.",
+    "## Verboten",
+    "Wettbewerbertexte kopieren",
+    "geschützte Formulierungen nachahmen",
+    "behaupten, der Wettbewerber lüge oder handle rechtswidrig",
+    "nicht belegte Nutzerzahlen oder Bewertungen als Tatsachen darstellen",
+    "behaupten, Accaoui besitze alle originalen IHK-Fragen",
+    "Bestehensgarantien",
+    "unbelegte KI-Versprechen",
+    "unbelegte Rückerstattungsversprechen",
+    "konkrete Preise verbindlich festlegen",
+    "App-Code, UI, Fragenbanken oder Marketingmaterial verändern",
+    "Webrecherche oder externe Behauptungen ohne gesonderten Auftrag",
+    "Funktions-, Fragen-, UI-, Supabase-, SQL- oder Netzwerkänderungen",
+    "automatische Auswahl oder Autorisierung eines Folgetasks",
+    "## Akzeptanzkriterien",
+    "1. Beobachtung, Bewertung und Accaoui-Empfehlung sind klar getrennt.",
+    "2. Wettbewerberaussagen sind ausdrücklich als nicht verifiziert markiert.",
+    "3. Keine Formulierung wird vom Wettbewerber übernommen.",
+    "4. Chancen und Risiken der Marketingmechanismen werden sachlich erklärt.",
+    "5. Eine eigenständige Accaoui-Kernpositionierung wird formuliert.",
+    "6. Zulässige und unzulässige Werbeaussagen werden getrennt dokumentiert.",
+    "7. Die Leitidee aus `docs/PROJECT_MASTERLIST.md` bleibt verbindlich.",
+    "8. Keine Funktions-, Fragen-, UI-, Supabase-, SQL- oder Netzwerkänderung.",
+    f"9. Ausschließlich `{V2735F_NOTE_FILE}` wird im späteren Umsetzungsschritt verändert.",
+    "10. Kein Commit und kein Push ohne gesonderte Freigabe.",
+    "## Verbindliche Grenze dieses Autorisierungsschritts",
+    "noch nicht erstellt oder verändert.",
+    "keine Wettbewerbsnotiz erstellt und keine App-Datei verändert.",
+    "ausschließlich diesen `CURRENT_TASK`",
+    "Nach Abschluss wird kein Folgetask automatisch ausgewählt.",
+)
+
+V2735F_CURSOR_REQUIRED_MARKERS = (
+    "Stand: v27.35g",
+    "Letzter abgeschlossener funktionaler Stand: v27.35g",
+    f"Abschlusscommit: `{V2735G_COMPLETION_SHA}`",
+    "Codex darf ebenfalls ausschließlich den in",
+    "`docs/tasks/CURRENT_TASK.md` ausdrücklich autorisierten Task",
+    "### Codex-Auftragsregel",
+    "Codex muss vor jeder Änderung `docs/tasks/CURRENT_TASK.md` vollständig",
+    "andere Dateien als die in `CURRENT_TASK` erlaubten Dateien verändern",
+    "einen Commit oder Push ohne ausdrückliche Freigabe ausführen",
+    "## 12. Cursor-Auftragsregel",
+    "NUR FÜR CURSOR – NICHT IN GIT BASH",
+    "NUR IN GIT BASH AUSFÜHREN",
+    "Cursor darf **keinen Commit** und **keinen Push** ausführen",
+    "`CURRENT_TASK` ist `v27.35f` / `AUTHORIZED` /",
+    "`Autorisiert: JA`.",
+    "Der einzige autorisierte Task ist v27.35f:",
+    "Funktionaler Ausgangsstand ist v27.35g",
+    f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+    f"`{V2735F_NOTE_FILE}`",
+    "In diesem\nAutorisierungsschritt wird diese Notiz noch nicht erstellt",
+    "Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`",
+    "Kein funktionaler oder sonstiger Folgetask wird",
+)
+
+V2735F_MASTERLIST_ROW = (
+    "| v27.35f | Wettbewerbsbeobachtung und Accaoui-Positionierung "
+    "dokumentieren; funktionaler Ausgangsstand v27.35g, erwarteter "
+    f"Ausgangscommit `{V2735F_AUTHORIZATION_BASE_SHA}`, spätere Umsetzung "
+    f"ausschließlich in `{V2735F_NOTE_FILE}`, kein Commit und kein Push – "
+    "**autorisiert, Umsetzung offen** |"
+)
+
+V2735F_MASTERLIST_REQUIRED_MARKERS = (
+    V2735F_MASTERLIST_ROW,
+    "### Autorisierter Dokumentationstask v27.35f (Umsetzung offen)",
+    "`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`, `Status: AUTHORIZED`, `Autorisiert: JA`.",
+    "Funktionaler Ausgangsstand: v27.35g.",
+    f"Erwarteter Ausgangscommit: `{V2735F_AUTHORIZATION_BASE_SHA}`.",
+    f"Für die spätere Umsetzung ist ausschließlich `{V2735F_NOTE_FILE}` erlaubt.",
+    "beobachtete und nicht extern verifizierte Marketingaussagen",
+    "Beobachtung, Bewertung und Accaoui-Empfehlung müssen klar getrennt bleiben.",
+    "„Mit dieser App habe ich es endlich verstanden.“",
+    "In diesem Autorisierungsschritt wird die Wettbewerbsnotiz noch nicht erstellt.",
+    "`Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.",
+    "Nach Abschluss wird kein Folgetask automatisch ausgewählt oder autorisiert.",
+    "`CURRENT_TASK` ist aktuell `v27.35f` /",
+    "`AUTHORIZED` / `Autorisiert: JA`",
+    "v27.35g bleibt der letzte abgeschlossene",
+    "In\ndiesem Autorisierungsschritt wird diese Notiz noch nicht erstellt.",
+    "Kein funktionaler oder sonstiger Folgetask wird automatisch",
 )
 
 V2735G_REGRESSION_QUESTION_IDS = (
@@ -1764,6 +1935,437 @@ def run_manipulation_matrix(
     return checks
 
 
+def validate_v2735f_authorized_state_text(text: str) -> None:
+    """Prüft den aktuellen Projektzustand für die v27.35f-Autorisierung."""
+    validate_exact_fields(text, V2735F_EXPECTED_STATE_FIELDS)
+    validate_required_markers(
+        text,
+        V2735F_STATE_REQUIRED_MARKERS,
+        "PROJECT_STATE_CURRENT / v27.35f",
+    )
+    require(
+        text.count("## Autorisierter Dokumentationstask v27.35f") == 1,
+        "PROJECT_STATE_CURRENT: v27.35f-Autorisierungsabschnitt muss exakt einmal vorkommen",
+    )
+    require(
+        "Aktuell autorisierter Task: NONE" not in text,
+        "PROJECT_STATE_CURRENT: aktueller Task darf nicht NONE sein",
+    )
+    require(
+        "Weiterer funktionaler Schritt autorisiert: JA" not in text,
+        "PROJECT_STATE_CURRENT: kein funktionaler Schritt darf autorisiert sein",
+    )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in text,
+            "PROJECT_STATE_CURRENT darf keinen Folgetask auswählen oder nennen",
+        )
+
+
+def validate_v2735f_authorized_task_text(text: str) -> None:
+    """Prüft den vollständigen verbindlichen v27.35f-Taskvertrag."""
+    validate_exact_fields(text, V2735F_EXPECTED_TASK_FIELDS)
+    validate_required_markers(
+        text,
+        V2735F_TASK_REQUIRED_MARKERS,
+        "CURRENT_TASK / v27.35f",
+    )
+    require(
+        text.count("# Verbindlicher aktueller Task") == 1,
+        "CURRENT_TASK: Hauptüberschrift muss exakt einmal vorkommen",
+    )
+    require(
+        text.count(f"Erlaubte Dateien: `{V2735F_NOTE_FILE}`") == 1,
+        "CURRENT_TASK: exakt eine erlaubte spätere Umsetzungsdatei erforderlich",
+    )
+    for forbidden_runtime_file in (
+        "app.js",
+        "index.html",
+        "style.css",
+        "questions.json",
+        "patch-v21.js",
+    ):
+        require(
+            forbidden_runtime_file not in text,
+            f"CURRENT_TASK darf keine App-Datei erlauben oder nennen: {forbidden_runtime_file}",
+        )
+    for contradictory_grant in (
+        "Status: BLOCKED",
+        "Autorisiert: NEIN",
+        "Commit erlaubt: JA",
+        "Push erlaubt: JA",
+    ):
+        require(
+            contradictory_grant not in text,
+            f"CURRENT_TASK enthält widersprüchlichen Zustand: {contradictory_grant}",
+        )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in text,
+            "CURRENT_TASK darf keinen Folgetask auswählen oder nennen",
+        )
+
+
+def validate_v2735f_cursor_context_text(text: str) -> None:
+    """Prüft Cursor- und Codex-Regeln sowie den aktuellen v27.35f-Status."""
+    validate_required_markers(
+        text,
+        V2735F_CURSOR_REQUIRED_MARKERS,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI / v27.35f",
+    )
+    validate_project_paths(text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+
+    workflow_section = section_between(
+        text,
+        "### Arbeitsworkflow / Git-Synchronisation",
+        "## 2. Ziel der App",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    validate_sync_section(
+        workflow_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        "Arbeitsworkflow / Git-Synchronisation",
+    )
+
+    next_task_section = section_between(
+        text,
+        "## 14. Nächster sinnvoller Schritt",
+        "## 15. Wenn ein neuer Chat beginnt",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    for marker in (
+        "`CURRENT_TASK` ist `v27.35f` / `AUTHORIZED` /",
+        f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+        f"`{V2735F_NOTE_FILE}`",
+        "In diesem\nAutorisierungsschritt wird diese Notiz noch nicht erstellt",
+        "Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`",
+    ):
+        require(
+            marker in next_task_section,
+            f"CURSOR_MASTER_CONTEXT_ACCAOUI / nächster Schritt fehlt: {marker}",
+        )
+    require(
+        "v24.6c" not in next_task_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI: alte aktive Task-Auswahl v24.6c",
+    )
+
+    new_chat_section = section_between(
+        text,
+        "## 15. Wenn ein neuer Chat beginnt",
+        None,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    validate_sync_section(
+        new_chat_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        "Wenn ein neuer Chat beginnt",
+    )
+    require(
+        REQUIRED_CHAT_READING_BLOCK in new_chat_section,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI: Pflichtlektüre ist unvollständig",
+    )
+    for marker in CURSOR_NEW_CHAT_LOCAL_HEAD_MARKERS:
+        require(
+            new_chat_section.count(marker) == 1,
+            f"CURSOR_MASTER_CONTEXT_ACCAOUI: Chatwechsel-Pflicht fehlt oder ist doppelt: {marker}",
+        )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in next_task_section,
+            "CURSOR_MASTER_CONTEXT_ACCAOUI darf keinen Folgetask auswählen",
+        )
+
+
+def validate_v2735f_masterlist_text(text: str) -> None:
+    """Prüft Leitidee, v27.35f-Status und die unveränderten Startregeln."""
+    require(
+        exact_field(text, "Stand") == "v27.35g",
+        "PROJECT_MASTERLIST muss auf dem funktionalen Stand v27.35g bleiben",
+    )
+    validate_required_markers(
+        text,
+        V2735F_MASTERLIST_REQUIRED_MARKERS,
+        "PROJECT_MASTERLIST / v27.35f",
+    )
+    validate_project_paths(text, "PROJECT_MASTERLIST")
+    require(
+        text.count(V2735F_MASTERLIST_ROW) == 1,
+        "PROJECT_MASTERLIST: v27.35f-Zeile muss exakt einmal vorkommen",
+    )
+    require(
+        text.count("### Autorisierter Dokumentationstask v27.35f (Umsetzung offen)") == 1,
+        "PROJECT_MASTERLIST: aktueller v27.35f-Abschnitt muss exakt einmal vorkommen",
+    )
+    require(
+        "## Leitidee der Accaoui §34a Lern-App" in text,
+        "PROJECT_MASTERLIST: Leitidee fehlt",
+    )
+    require(
+        "Jede Funktion muss mindestens eines dieser Ziele erfüllen:" in text,
+        "PROJECT_MASTERLIST: verbindliche Leitidee wurde verändert",
+    )
+
+    workflow_section = section_between(
+        text,
+        "### Projektarbeitsregel: Arbeit / Zuhause",
+        "## 2. Cursor-Regel",
+        "PROJECT_MASTERLIST",
+    )
+    validate_sync_section(
+        workflow_section,
+        "PROJECT_MASTERLIST",
+        "Projektarbeitsregel: Arbeit / Zuhause",
+    )
+
+    new_chat_section = section_between(
+        text,
+        "## 15. Start in neuem Chat",
+        None,
+        "PROJECT_MASTERLIST",
+    )
+    validate_sync_section(
+        new_chat_section,
+        "PROJECT_MASTERLIST",
+        "Start in neuem Chat",
+    )
+    require(
+        REQUIRED_CHAT_READING_BLOCK in new_chat_section,
+        "PROJECT_MASTERLIST: Pflichtlektüre ist unvollständig",
+    )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in text,
+            "PROJECT_MASTERLIST darf keinen Folgetask auswählen oder nennen",
+        )
+
+
+def validate_v2735f_authorization_working_tree() -> None:
+    """Erzwingt Basiscommit, fünf Steuerungsdateien und die vorzeitige Notizsperre."""
+    require(
+        (ROOT / ".git").exists(),
+        "Kein Git-Repository unter ROOT gefunden",
+    )
+    require(
+        run_git(["branch", "--show-current"]).strip() == "main",
+        "Autorisierungsschritt muss auf Branch main laufen",
+    )
+    require(
+        run_git(["rev-parse", "HEAD"]).strip() == V2735F_AUTHORIZATION_BASE_SHA,
+        "HEAD weicht vom verbindlichen v27.35f-Ausgangscommit ab",
+    )
+    require(
+        run_git(["rev-parse", "origin/main"]).strip()
+        == V2735F_AUTHORIZATION_BASE_SHA,
+        "origin/main weicht vom verbindlichen v27.35f-Ausgangscommit ab",
+    )
+    require(
+        not (ROOT / V2735F_NOTE_FILE).exists(),
+        f"{V2735F_NOTE_FILE} wurde vorzeitig erstellt",
+    )
+
+    expected_files = set(V2735F_AUTHORIZATION_CONTROL_FILES)
+    diff_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(["diff", "--name-only"]).splitlines()
+        if line.strip()
+    }
+    require(
+        diff_files == expected_files,
+        (
+            "Im v27.35f-Autorisierungsschritt müssen exakt die fünf "
+            f"Steuerungsdateien geändert sein: {sorted(diff_files)}"
+        ),
+    )
+    require(
+        run_git(["diff", "--cached", "--name-only"]).strip() == "",
+        "Im Autorisierungsschritt dürfen keine Änderungen gestaged sein",
+    )
+
+    status_lines = [
+        line
+        for line in run_git(
+            ["status", "--porcelain=v1", "--untracked-files=all"]
+        ).splitlines()
+        if line
+    ]
+    status_files: set[str] = set()
+    for line in status_lines:
+        require(
+            len(line) >= 4,
+            f"Ungültige git-status-Zeile: {line!r}",
+        )
+        require(
+            line[:2] == " M",
+            f"Nur ungestagte Änderungen der Steuerungsdateien sind zulässig: {line}",
+        )
+        relative_path = line[3:].replace("\\", "/")
+        require(
+            " -> " not in relative_path,
+            f"Umbenennungen sind im Autorisierungsschritt unzulässig: {relative_path}",
+        )
+        require(
+            relative_path in expected_files,
+            f"Unzulässige geänderte Datei im Autorisierungsschritt: {relative_path}",
+        )
+        status_files.add(relative_path)
+    require(
+        status_files == expected_files,
+        (
+            "git status muss exakt die fünf Steuerungsdateien enthalten: "
+            f"{sorted(status_files)}"
+        ),
+    )
+
+    for relative_path in PROTECTED_RUNTIME_FILES + (
+        "questions.json",
+        "patch-v21.js",
+        "oral-exam.js",
+        V2735E_TEST_REPORT_FILE,
+        V2735G_SCORING_FIX_REPORT_FILE,
+    ):
+        require(
+            run_git(["diff", "--name-only", "HEAD", "--", relative_path]).strip()
+            == "",
+            f"App-, Funktions- oder historische Berichtsdatei verändert: {relative_path}",
+        )
+
+
+def run_v2735f_authorization_manipulation_matrix(
+    state_text: str,
+    task_text: str,
+    cursor_context_text: str,
+    masterlist_text: str,
+) -> int:
+    """Bestätigt die verbindlichen Blockierungen des v27.35f-Vertrags."""
+    checks = 0
+
+    state_manipulations = {
+        "Stand": "v27.35f",
+        "Repository": "`anderes/repository`",
+        "Branch": "`anderer-branch`",
+        "Letzter abgeschlossener funktionaler Stand": "v27.35d",
+        "Abschlusscommit": f"`{'0' * 40}`",
+        "Aktueller HEAD": V2735G_COMPLETION_SHA,
+        "Funktionsstatus": "v27.35d abgeschlossen",
+        "Weiterer funktionaler Schritt autorisiert": "JA",
+        "Aktuell autorisierter Task": "v27.35g",
+        "Aktuelle Taskart": "Funktion",
+        "Aktueller Blocker": "Kein Task autorisiert",
+    }
+    for field_name, expected_value in V2735F_EXPECTED_STATE_FIELDS.items():
+        must_reject(
+            validate_v2735f_authorized_state_text,
+            changed_once(
+                state_text,
+                f"{field_name}: {expected_value}\n",
+                "",
+                f"PROJECT_STATE_CURRENT Feld fehlt: {field_name}",
+            ),
+            f"PROJECT_STATE_CURRENT Feld fehlt: {field_name}",
+        )
+        checks += 1
+        must_reject(
+            validate_v2735f_authorized_state_text,
+            changed_once(
+                state_text,
+                f"{field_name}: {expected_value}",
+                f"{field_name}: {state_manipulations[field_name]}",
+                f"PROJECT_STATE_CURRENT Feld manipuliert: {field_name}",
+            ),
+            f"PROJECT_STATE_CURRENT Feld manipuliert: {field_name}",
+        )
+        checks += 1
+
+    task_manipulations = {
+        "Task-ID": "v27.35g",
+        "Status": "BLOCKED",
+        "Autorisiert": "NEIN",
+        "Titel": "Anderer Task",
+        "Funktionaler Ausgangsstand": "v27.35d",
+        "Erwarteter Ausgangscommit": f"`{V2735G_COMPLETION_SHA}`",
+        "Erlaubte Dateien": f"`{V2735F_NOTE_FILE}`, `app.js`",
+        "Commit erlaubt": "JA",
+        "Push erlaubt": "JA",
+    }
+    for field_name, expected_value in V2735F_EXPECTED_TASK_FIELDS.items():
+        must_reject(
+            validate_v2735f_authorized_task_text,
+            changed_once(
+                task_text,
+                f"{field_name}: {expected_value}\n",
+                "",
+                f"CURRENT_TASK Feld fehlt: {field_name}",
+            ),
+            f"CURRENT_TASK Feld fehlt: {field_name}",
+        )
+        checks += 1
+        must_reject(
+            validate_v2735f_authorized_task_text,
+            changed_once(
+                task_text,
+                f"{field_name}: {expected_value}",
+                f"{field_name}: {task_manipulations[field_name]}",
+                f"CURRENT_TASK Feld manipuliert: {field_name}",
+            ),
+            f"CURRENT_TASK Feld manipuliert: {field_name}",
+        )
+        checks += 1
+
+    for marker in V2735F_TASK_REQUIRED_MARKERS:
+        manipulated_task_text = task_text.replace(marker, "")
+        require(
+            manipulated_task_text != task_text,
+            f"Manipulationsmatrix kann Pflichtaussage nicht finden: {marker}",
+        )
+        must_reject(
+            validate_v2735f_authorized_task_text,
+            manipulated_task_text,
+            f"CURRENT_TASK Pflichtaussage fehlt: {marker}",
+        )
+        checks += 1
+
+    must_reject(
+        validate_v2735f_authorized_task_text,
+        changed_once(
+            task_text,
+            "Nach Abschluss wird kein Folgetask automatisch ausgewählt.",
+            "Nach Abschluss wird v27.36 automatisch ausgewählt.",
+            "automatische Auswahl eines Folgetasks",
+        ),
+        "automatische Auswahl eines Folgetasks",
+    )
+    checks += 1
+
+    must_reject(
+        validate_v2735f_cursor_context_text,
+        changed_once(
+            cursor_context_text,
+            "Codex darf ebenfalls ausschließlich den in",
+            "Codex darf beliebige Tasks bearbeiten und",
+            "Codex darf nur CURRENT_TASK bearbeiten",
+        ),
+        "Codex darf nur CURRENT_TASK bearbeiten",
+    )
+    checks += 1
+
+    must_reject(
+        validate_v2735f_masterlist_text,
+        changed_once(
+            masterlist_text,
+            V2735F_MASTERLIST_ROW,
+            V2735F_MASTERLIST_ROW.replace(
+                "**autorisiert, Umsetzung offen**",
+                "**vorgemerkt, nicht autorisiert**",
+            ),
+            "PROJECT_MASTERLIST v27.35f-Autorisierungsstatus",
+        ),
+        "PROJECT_MASTERLIST v27.35f-Autorisierungsstatus",
+    )
+    checks += 1
+
+    return checks
+
+
 def main() -> int:
     try:
         state_text = read_required_text(STATE_PATH)
@@ -1773,11 +2375,11 @@ def main() -> int:
         masterlist_text = read_required_text(MASTERLIST_PATH)
         preflight_text = read_required_text(PREFLIGHT_PATH)
 
-        validate_state_text(state_text)
-        validate_task_text(task_text)
+        validate_v2735f_authorized_state_text(state_text)
+        validate_v2735f_authorized_task_text(task_text)
         validate_agents_text(agents_text)
-        validate_cursor_context_text(cursor_context_text)
-        validate_masterlist_text(masterlist_text)
+        validate_v2735f_cursor_context_text(cursor_context_text)
+        validate_v2735f_masterlist_text(masterlist_text)
         validate_preflight_text(preflight_text)
         validate_v2735c_control_commit_history()
         validate_v2735d_completion_commit_history()
@@ -1785,11 +2387,10 @@ def main() -> int:
         validate_v2735g_authorization_commit_history()
         validate_v2735g_gate_fix_commit_history()
         validate_v2735g_completion_commit_history()
-        validate_v2735g_closure_working_tree()
-        manipulation_checks = run_manipulation_matrix(
+        validate_v2735f_authorization_working_tree()
+        manipulation_checks = run_v2735f_authorization_manipulation_matrix(
             state_text,
             task_text,
-            agents_text,
             cursor_context_text,
             masterlist_text,
         )
@@ -1798,14 +2399,14 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität und Task-Steuerung nach v27.35g-Abschluss: OK")
+    print("Projektkontinuität und v27.35f-Autorisierung: OK")
     print(
-        "PROJECT_STATE_CURRENT: v27.35g / letzter funktionaler Stand v27.35g "
-        "(abgeschlossen) / kein weiterer Task autorisiert"
+        "PROJECT_STATE_CURRENT: letzter funktionaler Stand v27.35g / "
+        "einziger autorisierter Dokumentationstask v27.35f"
     )
     print(
-        "CURRENT_TASK: NONE / BLOCKED / Autorisiert NEIN / Erlaubte Dateien "
-        "KEINE / kein Commit, kein Push"
+        "CURRENT_TASK: v27.35f / AUTHORIZED / Autorisiert JA / spätere "
+        f"Umsetzung nur {V2735F_NOTE_FILE} / kein Commit, kein Push"
     )
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Projektpfade Arbeit und Zuhause: OK")
@@ -1839,10 +2440,9 @@ def main() -> int:
         f"{V2735G_COMPLETION_SHA} geändert, index.html/style.css unverändert"
     )
     print(
-        "v27.35g-Arbeitsbaum nach Abschluss vollständig gesperrt: app.js, "
-        "index.html, style.css und beide Testberichte seit "
-        f"{V2735G_COMPLETION_SHA} unverändert; keine Datei für eine laufende "
-        "Umsetzung freigegeben"
+        "v27.35f-Autorisierungsarbeitsbaum: exakt fünf Steuerungsdateien "
+        f"geändert; {V2735F_NOTE_FILE} noch nicht erstellt; App- und "
+        "Funktionsdateien unverändert"
     )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0

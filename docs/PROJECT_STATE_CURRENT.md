@@ -8,8 +8,33 @@ Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: NONE
-Aktueller Blocker: Kein Task autorisiert; jeder weitere funktionale Schritt bleibt gesperrt, bis ein neuer Task ausdrücklich autorisiert wird
+Aktuell autorisierter Task: v27.35f
+Aktuelle Taskart: Dokumentation
+Aktueller Blocker: KEINER; v27.35f ist als einziger Dokumentationstask autorisiert, Umsetzung offen
+
+## Autorisierter Dokumentationstask v27.35f
+
+`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`,
+`Status: AUTHORIZED`, `Autorisiert: JA`,
+`Titel: Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren`,
+`Funktionaler Ausgangsstand: v27.35g`, erwarteter Ausgangscommit
+`003112eaeb9a071a6396634b6da92fa11ae8921a`, ausschließlich erlaubte
+Datei für die spätere Umsetzung
+`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`,
+`Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
+
+v27.35g bleibt der letzte abgeschlossene funktionale Stand. v27.35f ist
+der einzige autorisierte Dokumentationstask; seine Umsetzung ist offen.
+Die spätere Notiz muss beobachtete, nicht extern verifizierte
+Wettbewerber-Werbeaussagen klar von Bewertung und eigener
+Accaoui-Empfehlung trennen. Die Leitidee und der Qualitätsmaßstab
+„Mit dieser App habe ich es endlich verstanden.“ bleiben verbindlich.
+
+In diesem Autorisierungsschritt wird
+`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` noch nicht erstellt oder
+verändert. Es wird keine Wettbewerbsnotiz erstellt, keine App-Datei
+verändert und kein Folgetask automatisch ausgewählt. Commit und Push
+bleiben gesperrt.
 
 ## Abgeschlossener Regressionstest v27.35e (FAIL)
 
@@ -31,13 +56,13 @@ Verbindlicher Bewertungsvertrag: keine Antwort ergibt 0 Punkte; die ausgewählte
 
 In diesem Steuerungsschritt wird `app.js` noch nicht verändert; die Korrektur erfolgt erst in der später autorisierten Umsetzung. Der bestehende Testbericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` darf dabei nicht verändert werden.
 
-`v27.35f` bleibt ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert. `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+Zum damaligen Zeitpunkt blieb `v27.35f` ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert und war noch nicht autorisiert.
 
 Der funktionale Stand bleibt v27.35d, bis v27.35g abgeschlossen ist. Kein Folgeschritt nach v27.35g ist ausgewählt oder autorisiert.
 
 ### Nichtfunktionaler v27.35g-Implementierungs-Gate-Korrekturschritt
 
-Getrennt von der eigentlichen v27.35g-Umsetzung wurde ausschließlich `tools/check-project-continuity-control.py` um einen nichtfunktionalen Gate-Korrekturschritt ergänzt; diese Checker-Datei gehört ausschließlich zu diesem getrennten Korrekturschritt. v27.35g bleibt weiterhin der einzige aktive Task, Status und Autorisierung bleiben unverändert bestehen, und der funktionale Ausgangsstand bleibt unverändert v27.35d. Der Gate-Korrekturschritt lässt im Arbeitsbaum ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` zu; `index.html`, `style.css`, `questions.json` und alle anderen Dateien bleiben vollständig gesperrt. Die Punkteberechnung in `app.js` und der Testbericht `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` sind bereits lokal umgesetzt und werden während dieses Gate-Schritts nicht verändert. Ein Commit und ein Push der funktionalen Umsetzung bleiben gesperrt. Kein Folgetask wird ausgewählt; `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+Getrennt von der eigentlichen v27.35g-Umsetzung wurde ausschließlich `tools/check-project-continuity-control.py` um einen nichtfunktionalen Gate-Korrekturschritt ergänzt; diese Checker-Datei gehört ausschließlich zu diesem getrennten Korrekturschritt. v27.35g blieb damals weiterhin der einzige aktive Task, Status und Autorisierung blieben unverändert bestehen, und der funktionale Ausgangsstand blieb unverändert v27.35d. Der Gate-Korrekturschritt ließ im Arbeitsbaum ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` zu; `index.html`, `style.css`, `questions.json` und alle anderen Dateien blieben vollständig gesperrt. Die Punkteberechnung in `app.js` und der Testbericht `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` waren bereits lokal umgesetzt und wurden während dieses Gate-Schritts nicht verändert. Ein Commit und ein Push der funktionalen Umsetzung blieben gesperrt. Damals wurde kein Folgetask ausgewählt; `v27.35f` war noch nicht autorisiert.
 
 ## Abgeschlossener funktionaler Stand v27.35g
 
@@ -51,9 +76,12 @@ Vor der funktionalen Umsetzung wurde ein getrennter, nichtfunktionaler Implement
 
 Der bestehende v27.35e-FAIL-Bericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische Fehlerdokumentation erhalten.
 
-`v27.35f` bleibt ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert; `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
-
-Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet. Die Auswahl eines weiteren Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`.
+Unmittelbar nach dem Abschluss von v27.35g blieb `v27.35f` noch für
+die spätere Wettbewerbsbeobachtungsnotiz vorgemerkt und nicht
+autorisiert. Der aktuelle Autorisierungsschritt oben ersetzt diesen
+damaligen Sperrzustand ausschließlich für den Dokumentationstask
+v27.35f. Ein funktionaler oder sonstiger Folgetask wird nicht
+automatisch ausgewählt oder abgeleitet.
 
 ## Abgeschlossener funktionaler Stand v27.35d
 

@@ -13,6 +13,11 @@ Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 
 Keine Blind-Fixes. Cursor darf nicht eigenständig optimieren.
 
+Codex darf ebenfalls ausschließlich den in
+`docs/tasks/CURRENT_TASK.md` ausdrücklich autorisierten Task und nur
+dessen erlaubte Dateien bearbeiten. Codex darf keinen Folgetask
+ableiten, automatisch auswählen oder autorisieren.
+
 Immer zuerst prüfen:
 
 ```bash
@@ -354,6 +359,22 @@ Cursor darf nicht:
 5. `test/` ändern, außer ausdrücklich erlaubt
 6. Code mit `--fix`, Prettier oder automatischer Formatierung verändern
 
+### Codex-Auftragsregel
+
+Codex muss vor jeder Änderung `docs/tasks/CURRENT_TASK.md` vollständig
+lesen und darf ausschließlich den dort ausdrücklich autorisierten Task
+bearbeiten. Für Codex gelten derselbe erlaubte Dateiumfang, dieselben
+Verbote und dieselben Prüfpflichten wie im Taskvertrag.
+
+Codex darf insbesondere nicht:
+
+1. einen Task aus Versionsfolgen, früheren Chats oder Erinnerung ableiten
+2. andere Dateien als die in `CURRENT_TASK` erlaubten Dateien verändern
+3. Zusatzoptimierungen oder Refactorings ohne Freigabe ausführen
+4. Webrecherche, Netzwerk-, Supabase- oder SQL-Arbeit ohne ausdrücklichen Auftrag ausführen
+5. einen Commit oder Push ohne ausdrückliche Freigabe ausführen
+6. nach Abschluss automatisch einen Folgetask auswählen oder autorisieren
+
 ### Kennzeichnungs- und Sicherheitsregel
 
 1. Cursor-Aufträge immer mit **„NUR FÜR CURSOR – NICHT IN GIT BASH“** kennzeichnen.
@@ -445,13 +466,28 @@ Cursor darf nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-`CURRENT_TASK` ist `NONE` / `BLOCKED`. v27.35g ist mit Abschlusscommit `f5f261fee67fc17c170ee714ae23761ff1668f17` der letzte abgeschlossene funktionale Stand: die Punkteberechnung der schriftlichen Prüfung wurde korrigiert (vollständig richtige Antwort ergibt stets die volle hinterlegte Punktzahl, eine zulässige Teilantwort bei einer Zwei-Punkte-Frage mit mindestens zwei richtigen Optionen ergibt exakt 1 Punkt, eine falsch ausgewählte Option ergibt 0 Punkte). Bestätigte Ergebnisse: 82 Fragen, 120 Maximalpunkte; alle 13 zuvor betroffenen Fragen (`straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`, `technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`, `bgb_006`, `uvv_004`, `uvv_008`) liefern jeweils exakt 2/2 Punkte; die frühere v27.35e-Testkonstellation ergibt jetzt exakt 114/120 statt 101/120; alle 82 Fragen vollständig richtig ergeben jetzt exakt 120/120; Pause/Fortsetzen, Fehleranalyse, Fehlertraining, Desktop und Mobil (ca. 390 × 844) bestanden; keine neuen Konsolenfehler; `localStorage` und `sessionStorage` vollständig restauriert.
+`CURRENT_TASK` ist `v27.35f` / `AUTHORIZED` /
+`Autorisiert: JA`. v27.35g bleibt mit Abschlusscommit
+`f5f261fee67fc17c170ee714ae23761ff1668f17` der letzte
+abgeschlossene funktionale Stand.
 
 Vor der funktionalen Umsetzung wurde ein getrennter, nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) durchgeführt, der ausschließlich `tools/check-project-continuity-control.py` und die vier Steuerungsdokumente ergänzte und im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` freigab.
 
 Der Regressionstest v27.35e bleibt mit Gesamtergebnis FAIL abgeschlossen (Testbericht-Commit `db2f12a1af7792c59e9e6411bb127b2f68401713`) und der Testbericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische Fehlerdokumentation erhalten. Testbericht der Korrektur: `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`.
 
-`v27.35f` bleibt ausschließlich für die später vorgemerkte Wettbewerbsbeobachtungsnotiz reserviert; `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet. Kein neuer funktionaler oder nichtfunktionaler Task ist ausgewählt oder automatisch abgeleitet. Die Auswahl eines weiteren Tasks erfolgt ausschließlich durch den Projekteigentümer, den verbindlichen Projektchat und `docs/tasks/CURRENT_TASK.md`. Aus Versionsfolgen, früheren Chats oder Erinnerung darf kein weiterer Task abgeleitet werden.
+Der einzige autorisierte Task ist v27.35f:
+„Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren“.
+Funktionaler Ausgangsstand ist v27.35g, erwarteter Ausgangscommit ist
+`003112eaeb9a071a6396634b6da92fa11ae8921a`. Für die spätere
+Umsetzung ist ausschließlich
+`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt. In diesem
+Autorisierungsschritt wird diese Notiz noch nicht erstellt und keine
+App-Datei verändert. Commit und Push bleiben gesperrt.
+
+Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`
+bearbeiten. Kein funktionaler oder sonstiger Folgetask wird
+automatisch ausgewählt, autorisiert oder aus Versionsfolgen, früheren
+Chats oder Erinnerung abgeleitet.
 
 ## 15. Wenn ein neuer Chat beginnt
 
