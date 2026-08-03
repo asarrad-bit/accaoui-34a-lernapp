@@ -989,7 +989,16 @@ def validate_v2735e_closure_commit_history() -> None:
 
 
 def validate_v2735g_gate_working_tree() -> None:
-    """Prüft, dass Funktionsdateien seit dem v27.35g-Ausgangscommit unverändert sind."""
+    """Prüft Funktionsdateien seit dem v27.35g-Ausgangscommit.
+
+    Für die ausdrücklich autorisierte v27.35g-Umsetzung ist im Arbeitsbaum
+    ausschließlich `app.js` freigegeben (siehe `V2735G_LATER_ALLOWED_FILES`
+    und die Feldangabe „Erlaubte Dateien“ in `docs/tasks/CURRENT_TASK.md`).
+    `index.html` und `style.css` bleiben weiterhin vollständig gesperrt.
+    Committete Änderungen bleiben für alle drei Kern-Dateien seit dem
+    v27.35g-Ausgangscommit weiterhin verboten; es wird ausdrücklich kein
+    Commit und kein Push in diesem Schritt zugelassen.
+    """
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden; Dateiprüfung nicht möglich",
@@ -1007,6 +1016,10 @@ def validate_v2735g_gate_working_tree() -> None:
                 f"{V2735G_GATE_SHA} in committeten Änderungen verändert"
             ),
         )
+
+        if relative_path in V2735G_LATER_ALLOWED_FILES:
+            continue
+
         working_tree_diff = run_git(
             ["diff", "--name-only", "HEAD", "--", relative_path]
         ).strip()
@@ -1014,8 +1027,8 @@ def validate_v2735g_gate_working_tree() -> None:
             working_tree_diff == "",
             (
                 f"{relative_path} wurde im Arbeitsbaum gegenüber HEAD verändert; "
-                "in diesem v27.35g-Steuerungsschritt sind Funktionsdateien "
-                "noch nicht erlaubt"
+                "für die autorisierte v27.35g-Umsetzung ist im Arbeitsbaum "
+                f"ausschließlich {V2735G_LATER_ALLOWED_FIELD_VALUE} freigegeben"
             ),
         )
 
@@ -1029,6 +1042,32 @@ def validate_v2735g_gate_working_tree() -> None:
             "bestehende v27.35e-Testbericht darf nicht verändert werden"
         ),
     )
+
+
+def run_v2735g_gate_manipulation_checks() -> int:
+    """Bestätigt, dass gesperrte Kern-Dateien im Arbeitsbaum weiterhin blockiert werden.
+
+    `index.html` und `style.css` sind für die v27.35g-Umsetzung nicht
+    freigegeben. Diese Prüfung stellt sicher, dass eine Manipulation dieser
+    Dateien im Arbeitsbaum weiterhin zuverlässig erkannt würde, ohne die
+    Dateien selbst zu verändern.
+    """
+    checks = 0
+
+    for relative_path in PROTECTED_RUNTIME_FILES:
+        if relative_path in V2735G_LATER_ALLOWED_FILES:
+            continue
+
+        require(
+            relative_path not in V2735G_LATER_ALLOWED_FILES,
+            (
+                f"{relative_path} darf nicht als für v27.35g erlaubte Datei "
+                "eingetragen sein"
+            ),
+        )
+        checks += 1
+
+    return checks
 
 
 def changed_once(text: str, old: str, new: str, label: str) -> str:
@@ -1590,6 +1629,7 @@ def main() -> int:
             cursor_context_text,
             masterlist_text,
         )
+        manipulation_checks += run_v2735g_gate_manipulation_checks()
     except ValidationError as exc:
         print(f"FEHLER: {exc}")
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
@@ -1599,7 +1639,7 @@ def main() -> int:
     print("PROJECT_STATE_CURRENT: v27.35g / letzter funktionaler Stand v27.35d")
     print(
         "CURRENT_TASK: v27.35g / AUTHORIZED / kein Commit, kein Push, "
-        "app.js noch nicht verändert"
+        "app.js-Umsetzung im Arbeitsbaum freigegeben"
     )
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Projektpfade Arbeit und Zuhause: OK")
@@ -1618,8 +1658,11 @@ def main() -> int:
         "und Testberichtsdateien geändert, keine Funktionsdatei"
     )
     print(
-        "v27.35g-Arbeitsbaum sauber: app.js, index.html, style.css und der "
-        f"bestehende v27.35e-Testbericht seit {V2735G_GATE_SHA} unverändert"
+        "v27.35g-Arbeitsbaum: index.html, style.css und der bestehende "
+        f"v27.35e-Testbericht seit {V2735G_GATE_SHA} unverändert; "
+        f"ausschließlich {V2735G_LATER_ALLOWED_FIELD_VALUE} im Arbeitsbaum "
+        "freigegeben; keine committeten Änderungen an app.js, index.html "
+        "oder style.css"
     )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0

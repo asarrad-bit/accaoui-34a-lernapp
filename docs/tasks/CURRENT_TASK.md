@@ -105,6 +105,28 @@ Es wurde keine Codekorrektur vorgenommen; der Testbericht
 - Commit und Push bleiben bis zu einer gesonderten ausdrücklichen
   Freigabe gesperrt.
 
+## Nichtfunktionaler Implementierungs-Gate-Korrekturschritt
+
+Getrennt von der eigentlichen v27.35g-Umsetzung wurde ausschließlich
+`tools/check-project-continuity-control.py` um einen nichtfunktionalen
+Gate-Korrekturschritt ergänzt. Diese Checker-Datei gehört ausschließlich
+zu diesem getrennten, nichtfunktionalen Korrekturschritt.
+
+- v27.35g bleibt weiterhin der einzige aktive Task.
+- Status bleibt AUTHORIZED, die Autorisierung bleibt unverändert bestehen (JA).
+- Der funktionale Ausgangsstand bleibt unverändert v27.35d.
+- Der Gate-Korrekturschritt lässt im Arbeitsbaum ausschließlich `app.js`
+  und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` zu; `index.html`,
+  `style.css`, `questions.json` und alle anderen Dateien bleiben
+  vollständig gesperrt.
+- Die Punkteberechnung in `app.js` und der Testbericht
+  `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` sind bereits lokal
+  umgesetzt und werden während dieses Gate-Schritts nicht verändert.
+- Ein Commit der funktionalen Umsetzung bleibt gesperrt.
+- Ein Push bleibt gesperrt.
+- Kein Folgetask wird ausgewählt.
+- `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+
 ## Pflichtfelder eines später autorisierten Tasks
 
 - Task-ID

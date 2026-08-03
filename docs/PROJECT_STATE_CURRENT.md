@@ -35,6 +35,10 @@ In diesem Steuerungsschritt wird `app.js` noch nicht verändert; die Korrektur e
 
 Der funktionale Stand bleibt v27.35d, bis v27.35g abgeschlossen ist. Kein Folgeschritt nach v27.35g ist ausgewählt oder autorisiert.
 
+### Nichtfunktionaler v27.35g-Implementierungs-Gate-Korrekturschritt
+
+Getrennt von der eigentlichen v27.35g-Umsetzung wurde ausschließlich `tools/check-project-continuity-control.py` um einen nichtfunktionalen Gate-Korrekturschritt ergänzt; diese Checker-Datei gehört ausschließlich zu diesem getrennten Korrekturschritt. v27.35g bleibt weiterhin der einzige aktive Task, Status und Autorisierung bleiben unverändert bestehen, und der funktionale Ausgangsstand bleibt unverändert v27.35d. Der Gate-Korrekturschritt lässt im Arbeitsbaum ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` zu; `index.html`, `style.css`, `questions.json` und alle anderen Dateien bleiben vollständig gesperrt. Die Punkteberechnung in `app.js` und der Testbericht `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` sind bereits lokal umgesetzt und werden während dieses Gate-Schritts nicht verändert. Ein Commit und ein Push der funktionalen Umsetzung bleiben gesperrt. Kein Folgetask wird ausgewählt; `v27.35f` ist nicht autorisiert und wird jetzt nicht bearbeitet.
+
 ## Abgeschlossener funktionaler Stand v27.35d
 
 Lernmodus und Lernkarten sind für Teilnehmer sprachlich und visuell eindeutig unterschieden.
