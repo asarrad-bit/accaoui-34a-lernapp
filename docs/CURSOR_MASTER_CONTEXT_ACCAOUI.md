@@ -507,6 +507,27 @@ unverändert. Sie darf als einzige ungetrackte Datei vorliegen. App-,
 Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-, Datenbank-
 und Netzwerkdateien bleiben gesperrt. Commit und Push bleiben verboten.
 
+Der v27.35f-Checker arbeitet verbindlich als vierphasige Lebenszyklus-
+State-Machine. Ab der Autorisierungsbasis
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd` klassifiziert er Commits ohne
+zukünftige hartcodierte SHAs anhand der tatsächlichen Dateimenge:
+Gate-Dateien ergeben GATE beziehungsweise nach der Implementation
+CLOSURE; exakt die Wettbewerbsnotiz ergibt höchstens einmal
+IMPLEMENTATION und muss den finalen SHA-256
+`983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
+tragen.
+
+Zulässig sind: vor Implementation der autorisierte Task mit ungetrackter
+Notiz; nach Implementation der weiterhin autorisierte Task mit sauberem
+Working Tree; lokal vorbereitete Closure mit exakt fünf Gate-Dateien und
+`CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`; sowie committete
+Closure mit sauberem Working Tree. Closure setzt einen dynamisch aus Git
+ermittelten Implementation-Commit voraus. Der Abschluss muss „v27.35f
+abgeschlossen“, `Implementierungscommit: <SHA>`, den finalen Notiz-SHA
+und „Kein Folgetask wurde ausgewählt oder autorisiert.“ dokumentieren.
+Eine Rückkehr aus dem abgeschlossenen Zustand zu v27.35f bleibt ohne neue
+Autorisierung gesperrt.
+
 Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`
 bearbeiten. Kein funktionaler oder sonstiger Folgetask wird
 automatisch ausgewählt, autorisiert oder aus Versionsfolgen, früheren

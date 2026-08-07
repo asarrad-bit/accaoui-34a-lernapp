@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Prüft Autorisierung und Implementierungs-Gate des Dokumentationstasks v27.35f.
+"""Prüft den vollständigen Lebenszyklus des Dokumentationstasks v27.35f.
 
-v27.35g bleibt der letzte abgeschlossene funktionale Stand. Der
-Vorautorisierungsstand, der historische Autorisierungscommit und der
-bekannte legitime Gate-Fix-Commit werden getrennt geprüft. Der aktuelle
-HEAD darf ein späterer Gate-Commit sein, wenn die Autorisierungsbasis ein
-Vorfahr bleibt und der gesamte committete Bereich ausschließlich die
-fünf Gate-Dateien enthält. Im Working Tree sind entweder exakt diese
-fünf Dateien oder keine getrackte Datei verändert; die finale
-Wettbewerbsnotiz bleibt als einzige ungetrackte Datei per SHA-256
-unverändert. App- und Funktionsdateien bleiben gesperrt.
+v27.35g bleibt der letzte abgeschlossene funktionale Stand. Ab der
+historischen Autorisierungsbasis werden lineare Commits anhand ihrer
+tatsächlichen Dateimenge, ihres Taskzustands und des Notiz-Blob-SHA als
+GATE, einmalige IMPLEMENTATION oder CLOSURE klassifiziert. Der Checker
+akzeptiert die vier Phasen vor Implementation, nach Implementation,
+während lokaler Closure-Vorbereitung und nach committeter Closure, ohne
+einen zukünftigen Commit-SHA vorwegzunehmen. App- und Funktionsdateien,
+zusätzliche Working-Tree-Dateien und unzulässige Taskübergänge bleiben
+geschlossen gesperrt.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import re
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
@@ -68,6 +69,20 @@ V2735F_FIRST_GATE_FIX_SHA = "d4e46edc48e967509e09ddd1096b54eb0bed5971"
 V2735F_NOTE_FILE = "docs/COMPETITOR_POSITIONING_NOTE_V2735F.md"
 V2735F_NOTE_SHA256 = "983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023"
 V2735F_GATE_CONTROL_FILES = EXPECTED_CONTROL_FILES
+V2735F_TASK_RELATIVE_PATH = "docs/tasks/CURRENT_TASK.md"
+
+V2735F_TASK_AUTHORIZED = "authorized"
+V2735F_TASK_CLOSED = "closed"
+V2735F_HISTORY_BEFORE_IMPLEMENTATION = "before_implementation"
+V2735F_HISTORY_IMPLEMENTED = "implementation_committed"
+V2735F_HISTORY_CLOSED = "closure_committed"
+V2735F_PHASE_BEFORE_IMPLEMENTATION = "phase_1_before_implementation"
+V2735F_PHASE_IMPLEMENTATION_COMMITTED = "phase_2_implementation_committed"
+V2735F_PHASE_CLOSURE_PREPARED = "phase_3_closure_prepared"
+V2735F_PHASE_CLOSURE_COMMITTED = "phase_4_closure_committed"
+V2735F_ROLE_GATE = "GATE"
+V2735F_ROLE_IMPLEMENTATION = "IMPLEMENTATION"
+V2735F_ROLE_CLOSURE = "CLOSURE"
 
 V2735F_EXPECTED_STATE_FIELDS = {
     "Stand": "v27.35g",
@@ -98,6 +113,52 @@ V2735F_EXPECTED_TASK_FIELDS = {
     "Push erlaubt": "NEIN",
 }
 
+V2735F_CLOSED_TASK_FIELDS = {
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Erlaubte Dateien": "KEINE",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+
+V2735F_CLOSED_STATE_FIELDS = {
+    "Stand": "v27.35g",
+    "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
+    "Branch": "`main`",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35g",
+    "Abschlusscommit": f"`{V2735G_COMPLETION_SHA}`",
+    "Aktueller HEAD": "DYNAMISCH ZU PRÜFEN",
+    "Funktionsstatus": "v27.35g abgeschlossen",
+    "Weiterer funktionaler Schritt autorisiert": "NEIN",
+    "Aktuell autorisierter Task": "NONE",
+}
+
+
+@dataclass(frozen=True)
+class V2735FCommitFact:
+    commit_sha: str
+    changed_files: frozenset[str]
+    task_state: str
+    note_sha256: str | None = None
+
+
+@dataclass(frozen=True)
+class V2735FHistoryState:
+    state: str
+    implementation_commit: str | None
+    roles: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class V2735FWorkingTreeFact:
+    diff_files: frozenset[str]
+    staged_files: frozenset[str]
+    untracked_files: frozenset[str]
+    status_lines: frozenset[str]
+    note_sha256: str
+
 V2735F_STATE_REQUIRED_MARKERS = (
     "## Autorisierter Dokumentationstask v27.35f",
     "`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`",
@@ -123,6 +184,10 @@ V2735F_STATE_REQUIRED_MARKERS = (
     "begrenzt den gesamten committeten Diff",
     "Der Working Tree darf entweder exakt die fünf modifizierten Gate-Dateien",
     f"SHA-256\n`{V2735F_NOTE_SHA256}`",
+    "### Verbindliche v27.35f-Lebenszyklus-State-Machine",
+    "Die State-Machine akzeptiert vier Zustände",
+    "dynamisch aus Git ermittelten",
+    "Closure ist erst nach dynamischem Nachweis des Implementation-Commits",
     "v27.35f bleibt der einzige aktive Task",
     "Commit und Push bleiben\nverboten; ein Folgetask wird nicht ausgewählt oder autorisiert.",
 )
@@ -196,6 +261,12 @@ V2735F_TASK_REQUIRED_MARKERS = (
     "ein Vorfahr des aktuellen",
     "zwei Zustände zulässig",
     f"`{V2735F_NOTE_SHA256}`",
+    "## Verbindliche v27.35f-Lebenszyklus-State-Machine",
+    "- **GATE:**",
+    "- **IMPLEMENTATION:**",
+    "- **CLOSURE:**",
+    "Die vier zulässigen Phasen sind:",
+    "Closure ohne Implementation, ein zweiter",
     "sie darf ungetrackt\nvorliegen. Keine weitere ungetrackte Datei ist zulässig.",
     "v27.35f bleibt der einzige aktive Task. Commit und Push bleiben verboten,",
     "## Historische Grenze des Autorisierungsschritts",
@@ -231,6 +302,9 @@ V2735F_CURSOR_REQUIRED_MARKERS = (
     "ancestry-/Diff-basierte Gate-Regel",
     "finaler v27.35f-Notiz-Snapshot",
     f"`{V2735F_NOTE_SHA256}`",
+    "vierphasige Lebenszyklus-",
+    "Closure setzt einen dynamisch aus Git",
+    "Eine Rückkehr aus dem abgeschlossenen Zustand zu v27.35f",
     "Sie darf als einzige ungetrackte Datei vorliegen.",
     "Commit und Push bleiben verboten.",
     "Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`",
@@ -268,6 +342,11 @@ V2735F_MASTERLIST_REQUIRED_MARKERS = (
     "Vor einem Gate-Commit sind exakt fünf modifizierte Gate-Dateien",
     "Der aktuelle finale v27.35f-Notiz-Snapshot bleibt während des Gate-Schritts",
     f"SHA-256 `{V2735F_NOTE_SHA256}` unverändert.",
+    "### Verbindliche v27.35f-Lebenszyklus-State-Machine",
+    "Phase 1 akzeptiert den autorisierten Task vor Implementation",
+    "Phase 2 akzeptiert nach genau einem IMPLEMENTATION-Commit",
+    "Phase 3 akzeptiert erst danach die lokal vorbereitete Closure",
+    "Phase 4 akzeptiert die committete Closure",
     "Sie darf als einzige ungetrackte Datei vorliegen; jede zusätzliche Datei bleibt gesperrt.",
     "v27.35f bleibt der einzige aktive Task; Commit und Push bleiben verboten, und ein Folgetask wird nicht ausgewählt oder autorisiert.",
     "`CURRENT_TASK` ist aktuell `v27.35f` /",
@@ -1061,6 +1140,26 @@ def run_git(args: list[str]) -> str:
         (
             f"git-Befehl fehlgeschlagen (git {' '.join(args)}): "
             f"{completed.stderr.strip()}"
+        ),
+    )
+    return completed.stdout
+
+
+def run_git_bytes(args: list[str]) -> bytes:
+    try:
+        completed = subprocess.run(
+            ["git", *args],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+    except (FileNotFoundError, OSError) as exc:
+        raise ValidationError(f"git ist nicht ausführbar: {exc}") from exc
+    require(
+        completed.returncode == 0,
+        (
+            f"git-Befehl fehlgeschlagen (git {' '.join(args)}): "
+            f"{completed.stderr.decode('utf-8', errors='replace').strip()}"
         ),
     )
     return completed.stdout
@@ -2204,6 +2303,129 @@ def validate_v2735f_masterlist_text(text: str) -> None:
         )
 
 
+def v2735f_closure_markers(implementation_commit: str) -> tuple[str, ...]:
+    return (
+        "v27.35f abgeschlossen",
+        f"Finaler Notiz-SHA-256: `{V2735F_NOTE_SHA256}`",
+        f"Implementierungscommit: `{implementation_commit}`",
+        "Kein Folgetask wurde ausgewählt oder autorisiert.",
+    )
+
+
+def validate_v2735f_closed_state_text(
+    text: str,
+    implementation_commit: str,
+) -> None:
+    validate_exact_fields(text, V2735F_CLOSED_STATE_FIELDS)
+    validate_required_markers(
+        text,
+        (
+            "## Abgeschlossener Dokumentationstask v27.35f",
+            *v2735f_closure_markers(implementation_commit),
+        ),
+        "PROJECT_STATE_CURRENT / v27.35f-Abschluss",
+    )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in text,
+            "PROJECT_STATE_CURRENT darf keinen Folgetask auswählen",
+        )
+
+
+def validate_v2735f_closed_task_text(
+    text: str,
+    implementation_commit: str,
+) -> None:
+    validate_exact_fields(text, V2735F_CLOSED_TASK_FIELDS)
+    validate_required_markers(
+        text,
+        (
+            "# Verbindlicher aktueller Task",
+            "## Abgeschlossener Dokumentationstask v27.35f",
+            *v2735f_closure_markers(implementation_commit),
+        ),
+        "CURRENT_TASK / v27.35f-Abschluss",
+    )
+    require(
+        text.count("Erlaubte Dateien: KEINE") == 1,
+        "CURRENT_TASK-Abschluss muss exakt Erlaubte Dateien: KEINE enthalten",
+    )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in text,
+            "CURRENT_TASK-Abschluss darf keinen Folgetask auswählen",
+        )
+
+
+def validate_v2735f_closed_cursor_text(
+    text: str,
+    implementation_commit: str,
+) -> None:
+    validate_project_paths(text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    next_task_section = section_between(
+        text,
+        "## 14. Nächster sinnvoller Schritt",
+        "## 15. Wenn ein neuer Chat beginnt",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    validate_required_markers(
+        next_task_section,
+        (
+            "`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`",
+            *v2735f_closure_markers(implementation_commit),
+        ),
+        "CURSOR_MASTER_CONTEXT_ACCAOUI / v27.35f-Abschluss",
+    )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in next_task_section,
+            "CURSOR_MASTER_CONTEXT_ACCAOUI darf keinen Folgetask auswählen",
+        )
+
+
+def validate_v2735f_closed_masterlist_text(
+    text: str,
+    implementation_commit: str,
+) -> None:
+    require(
+        exact_field(text, "Stand") == "v27.35g",
+        "PROJECT_MASTERLIST muss funktional auf v27.35g bleiben",
+    )
+    validate_project_paths(text, "PROJECT_MASTERLIST")
+    current_section = section_between(
+        text,
+        "## 14. Nächste sinnvolle Aufgaben",
+        "## 15. Start in neuem Chat",
+        "PROJECT_MASTERLIST",
+    )
+    validate_required_markers(
+        current_section,
+        (
+            "`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`",
+            *v2735f_closure_markers(implementation_commit),
+        ),
+        "PROJECT_MASTERLIST / v27.35f-Abschluss",
+    )
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in current_section,
+            "PROJECT_MASTERLIST darf keinen Folgetask auswählen",
+        )
+
+
+def validate_v2735f_closed_documents(
+    state_text: str,
+    task_text: str,
+    cursor_context_text: str,
+    masterlist_text: str,
+    implementation_commit: str,
+) -> None:
+    validate_v2735f_closed_state_text(state_text, implementation_commit)
+    validate_v2735f_closed_task_text(task_text, implementation_commit)
+    validate_v2735f_closed_cursor_text(cursor_context_text, implementation_commit)
+    validate_v2735f_closed_masterlist_text(masterlist_text, implementation_commit)
+
+
 def validate_v2735f_authorization_commit_history() -> None:
     """Prüft Autorisierung und bekannten ersten Gate-Fix historisch."""
     require(
@@ -2321,75 +2543,339 @@ def validate_v2735f_authorization_commit_history() -> None:
         )
 
 
-def validate_v2735f_committed_gate_files(committed_files: set[str]) -> None:
-    """Blockiert jede committete Datei außerhalb der fünf Gate-Dateien."""
-    unexpected_files = committed_files - set(V2735F_GATE_CONTROL_FILES)
-    require(
-        not unexpected_files,
-        (
-            "Seit der v27.35f-Autorisierungsbasis wurden unzulässige Dateien "
-            f"committet: {sorted(unexpected_files)}"
-        ),
+def detect_v2735f_task_state_text(text: str) -> str:
+    """Erkennt ausschließlich den autorisierten oder abgeschlossenen Taskzustand."""
+    for forbidden_marker in FORBIDDEN_FUTURE_TASK_MARKERS:
+        require(
+            forbidden_marker not in text,
+            "CURRENT_TASK darf keinen Folgetask auswählen oder nennen",
+        )
+
+    task_id = exact_field(text, "Task-ID")
+    if task_id == V2735F_EXPECTED_TASK_FIELDS["Task-ID"]:
+        validate_exact_fields(text, V2735F_EXPECTED_TASK_FIELDS)
+        return V2735F_TASK_AUTHORIZED
+    if task_id == V2735F_CLOSED_TASK_FIELDS["Task-ID"]:
+        validate_exact_fields(text, V2735F_CLOSED_TASK_FIELDS)
+        return V2735F_TASK_CLOSED
+    raise ValidationError(f"Unzulässiger CURRENT_TASK-Zustand: Task-ID {task_id}")
+
+
+def validate_v2735f_history_facts(
+    commit_facts: tuple[V2735FCommitFact, ...],
+) -> V2735FHistoryState:
+    """Klassifiziert die lineare Historie als GATE, IMPLEMENTATION oder CLOSURE."""
+    gate_files = set(V2735F_GATE_CONTROL_FILES)
+    implementation_commit: str | None = None
+    closure_seen = False
+    roles: list[str] = []
+
+    for fact in commit_facts:
+        changed_files = set(fact.changed_files)
+        require(
+            changed_files,
+            f"Leerer Commit im v27.35f-Lebenszyklus ist unzulässig: {fact.commit_sha}",
+        )
+
+        if changed_files == {V2735F_NOTE_FILE}:
+            require(
+                implementation_commit is None,
+                "Mehr als ein v27.35f-IMPLEMENTATION-Commit ist unzulässig",
+            )
+            require(
+                not closure_seen,
+                "IMPLEMENTATION nach einer v27.35f-CLOSURE ist unzulässig",
+            )
+            require(
+                fact.task_state == V2735F_TASK_AUTHORIZED,
+                "IMPLEMENTATION ist nur bei autorisiertem v27.35f zulässig",
+            )
+            require(
+                fact.note_sha256 == V2735F_NOTE_SHA256,
+                (
+                    "IMPLEMENTATION-Commit enthält nicht den finalen Notiz-SHA: "
+                    f"{fact.note_sha256}"
+                ),
+            )
+            implementation_commit = fact.commit_sha
+            roles.append(V2735F_ROLE_IMPLEMENTATION)
+            continue
+
+        require(
+            changed_files <= gate_files,
+            (
+                "Commit enthält Dateien außerhalb der v27.35f-Gate- oder "
+                f"Implementation-Grenze: {fact.commit_sha}: {sorted(changed_files)}"
+            ),
+        )
+
+        if fact.task_state == V2735F_TASK_AUTHORIZED:
+            require(
+                not closure_seen,
+                "Rückkehr von NONE/BLOCKED zu v27.35f ohne neue Autorisierung",
+            )
+            roles.append(V2735F_ROLE_GATE)
+            continue
+
+        require(
+            fact.task_state == V2735F_TASK_CLOSED,
+            f"Unbekannter Taskzustand in Commit {fact.commit_sha}",
+        )
+        require(
+            implementation_commit is not None,
+            "CLOSURE ohne vorherigen IMPLEMENTATION-Commit ist unzulässig",
+        )
+        closure_seen = True
+        roles.append(V2735F_ROLE_CLOSURE)
+
+    if closure_seen:
+        history_state = V2735F_HISTORY_CLOSED
+    elif implementation_commit is not None:
+        history_state = V2735F_HISTORY_IMPLEMENTED
+    else:
+        history_state = V2735F_HISTORY_BEFORE_IMPLEMENTATION
+    return V2735FHistoryState(
+        state=history_state,
+        implementation_commit=implementation_commit,
+        roles=tuple(roles),
     )
 
 
-def validate_v2735f_working_tree_snapshot(
-    diff_files: set[str],
-    staged_files: set[str],
-    untracked_files: set[str],
-    status_lines: set[str],
-) -> None:
-    """Akzeptiert exakt den Zustand vor oder nach einem legitimen Gate-Commit."""
-    expected_gate_files = set(V2735F_GATE_CONTROL_FILES)
-    require(
-        diff_files in (set(), expected_gate_files),
-        (
-            "Im v27.35f-Gate sind lokal entweder exakt die fünf Gate-Dateien "
-            "oder nach deren Commit keine getrackten Dateien verändert: "
-            f"{sorted(diff_files)}"
-        ),
-    )
-    require(
-        not staged_files,
-        (
-            "Im v27.35f-Gate dürfen keine Änderungen gestaged sein: "
-            f"{sorted(staged_files)}"
-        ),
-    )
-    require(
-        untracked_files == {V2735F_NOTE_FILE},
-        (
-            "Im v27.35f-Gate muss die Wettbewerbsnotiz die einzige "
-            f"ungetrackte Datei sein: {sorted(untracked_files)}"
-        ),
-    )
-
+def validate_v2735f_lifecycle_working_tree(
+    history_state: V2735FHistoryState,
+    current_task_state: str,
+    working_tree: V2735FWorkingTreeFact,
+) -> str:
+    """Ordnet Historie, aktuellen Task und Working Tree einer der vier Phasen zu."""
+    gate_files = frozenset(V2735F_GATE_CONTROL_FILES)
+    gate_status = frozenset(f" M {path}" for path in gate_files)
     note_status = f"?? {V2735F_NOTE_FILE}"
-    status_before_commit = {
-        *(f" M {path}" for path in expected_gate_files),
-        note_status,
-    }
-    status_after_commit = {note_status}
+
     require(
-        status_lines in (status_before_commit, status_after_commit),
-        (
-            "git status muss exakt den v27.35f-Gate-Zustand vor oder nach "
-            f"dem Gate-Commit zeigen: {sorted(status_lines)}"
+        not working_tree.staged_files,
+        f"Gestagte Dateien sind unzulässig: {sorted(working_tree.staged_files)}",
+    )
+    require(
+        working_tree.note_sha256 == V2735F_NOTE_SHA256,
+        "Der aktuelle Notiz-SHA weicht vom finalen v27.35f-Snapshot ab",
+    )
+
+    if history_state.state == V2735F_HISTORY_BEFORE_IMPLEMENTATION:
+        require(
+            current_task_state == V2735F_TASK_AUTHORIZED,
+            "Vor IMPLEMENTATION muss v27.35f autorisiert bleiben",
+        )
+        require(
+            working_tree.diff_files in (frozenset(), gate_files),
+            "Vor IMPLEMENTATION sind lokal nur null oder exakt fünf Gate-Dateien zulässig",
+        )
+        require(
+            working_tree.untracked_files == frozenset({V2735F_NOTE_FILE}),
+            "Vor IMPLEMENTATION muss ausschließlich die finale Notiz ungetrackt sein",
+        )
+        expected_status = (
+            frozenset({note_status})
+            if not working_tree.diff_files
+            else gate_status | frozenset({note_status})
+        )
+        require(
+            working_tree.status_lines == expected_status,
+            "Working Tree entspricht nicht Phase 1 vor IMPLEMENTATION",
+        )
+        return V2735F_PHASE_BEFORE_IMPLEMENTATION
+
+    if history_state.state == V2735F_HISTORY_IMPLEMENTED:
+        require(
+            history_state.implementation_commit is not None,
+            "Phase nach IMPLEMENTATION benötigt den dynamischen Commitnachweis",
+        )
+        if current_task_state == V2735F_TASK_AUTHORIZED:
+            require(
+                not working_tree.diff_files
+                and not working_tree.untracked_files
+                and not working_tree.status_lines,
+                "Phase 2 nach IMPLEMENTATION benötigt einen sauberen Working Tree",
+            )
+            return V2735F_PHASE_IMPLEMENTATION_COMMITTED
+        require(
+            current_task_state == V2735F_TASK_CLOSED,
+            "Nach IMPLEMENTATION ist nur autorisierter oder abgeschlossener Taskzustand zulässig",
+        )
+        require(
+            working_tree.diff_files == gate_files,
+            "Lokal vorbereitete CLOSURE muss exakt fünf Gate-Dateien verändern",
+        )
+        require(
+            not working_tree.untracked_files,
+            "Lokal vorbereitete CLOSURE darf keine ungetrackte Datei enthalten",
+        )
+        require(
+            working_tree.status_lines == gate_status,
+            "Working Tree entspricht nicht Phase 3 der lokal vorbereiteten CLOSURE",
+        )
+        return V2735F_PHASE_CLOSURE_PREPARED
+
+    require(
+        history_state.state == V2735F_HISTORY_CLOSED,
+        f"Unbekannter v27.35f-Historienzustand: {history_state.state}",
+    )
+    require(
+        current_task_state == V2735F_TASK_CLOSED,
+        "Nach CLOSURE darf v27.35f nicht erneut autorisiert erscheinen",
+    )
+    require(
+        not working_tree.diff_files
+        and not working_tree.untracked_files
+        and not working_tree.status_lines,
+        "Phase 4 nach CLOSURE benötigt einen sauberen Working Tree",
+    )
+    return V2735F_PHASE_CLOSURE_COMMITTED
+
+
+def read_v2735f_commit_facts(current_head: str) -> tuple[V2735FCommitFact, ...]:
+    """Liest eine lineare Commitfolge ab der Autorisierungsbasis aus Git."""
+    commit_shas = tuple(
+        line.strip()
+        for line in run_git(
+            [
+                "rev-list",
+                "--reverse",
+                "--ancestry-path",
+                f"{V2735F_AUTHORIZATION_SHA}..{current_head}",
+            ]
+        ).splitlines()
+        if line.strip()
+    )
+    previous_commit = V2735F_AUTHORIZATION_SHA
+    facts: list[V2735FCommitFact] = []
+
+    for commit_sha in commit_shas:
+        parent_line = run_git(
+            ["rev-list", "--parents", "-n", "1", commit_sha]
+        ).strip().split()
+        require(
+            len(parent_line) == 2 and parent_line[1] == previous_commit,
+            (
+                "Der v27.35f-Lebenszyklus muss ab der Autorisierungsbasis "
+                f"linear bleiben; unzulässiger Commit: {commit_sha}"
+            ),
+        )
+        changed_files = frozenset(
+            line.strip().replace("\\", "/")
+            for line in run_git(
+                ["diff", "--name-only", previous_commit, commit_sha]
+            ).splitlines()
+            if line.strip()
+        )
+        task_text = run_git(
+            ["show", f"{commit_sha}:{V2735F_TASK_RELATIVE_PATH}"]
+        ).replace("\r\n", "\n").replace("\r", "\n")
+        task_state = detect_v2735f_task_state_text(task_text)
+        note_sha256 = None
+        if changed_files == frozenset({V2735F_NOTE_FILE}):
+            note_blob = run_git_bytes(
+                ["show", f"{commit_sha}:{V2735F_NOTE_FILE}"]
+            )
+            note_sha256 = hashlib.sha256(note_blob).hexdigest()
+        facts.append(
+            V2735FCommitFact(
+                commit_sha=commit_sha,
+                changed_files=changed_files,
+                task_state=task_state,
+                note_sha256=note_sha256,
+            )
+        )
+        previous_commit = commit_sha
+
+    require(
+        previous_commit == current_head,
+        "HEAD liegt nicht auf einer linearen Historie ab der v27.35f-Autorisierungsbasis",
+    )
+    return tuple(facts)
+
+
+def read_v2735f_working_tree_fact() -> V2735FWorkingTreeFact:
+    note_path = ROOT / V2735F_NOTE_FILE
+    return V2735FWorkingTreeFact(
+        diff_files=frozenset(
+            line.strip().replace("\\", "/")
+            for line in run_git(["diff", "--name-only"]).splitlines()
+            if line.strip()
         ),
+        staged_files=frozenset(
+            line.strip().replace("\\", "/")
+            for line in run_git(["diff", "--cached", "--name-only"]).splitlines()
+            if line.strip()
+        ),
+        untracked_files=frozenset(
+            line.strip().replace("\\", "/")
+            for line in run_git(
+                ["ls-files", "--others", "--exclude-standard"]
+            ).splitlines()
+            if line.strip()
+        ),
+        status_lines=frozenset(
+            line.replace("\\", "/")
+            for line in run_git(
+                ["status", "--porcelain=v1", "--untracked-files=all"]
+            ).splitlines()
+            if line
+        ),
+        note_sha256=sha256_file(note_path),
     )
 
 
-def validate_v2735f_implementation_gate_working_tree() -> None:
-    """Prüft ancestry-/Diff-basiert Commitbereich und Working Tree."""
+def read_v2735f_commit_document(commit_sha: str, relative_path: str) -> str:
+    return run_git(["show", f"{commit_sha}:{relative_path}"]).replace(
+        "\r\n", "\n"
+    ).replace("\r", "\n")
+
+
+def validate_v2735f_committed_closure_documents(
+    commit_facts: tuple[V2735FCommitFact, ...],
+    history_state: V2735FHistoryState,
+) -> None:
+    if V2735F_ROLE_CLOSURE not in history_state.roles:
+        return
+    require(
+        history_state.implementation_commit is not None,
+        "CLOSURE-Dokumentprüfung benötigt einen IMPLEMENTATION-Commit",
+    )
+    for fact, role in zip(commit_facts, history_state.roles):
+        if role != V2735F_ROLE_CLOSURE:
+            continue
+        validate_v2735f_closed_documents(
+            read_v2735f_commit_document(
+                fact.commit_sha, "docs/PROJECT_STATE_CURRENT.md"
+            ),
+            read_v2735f_commit_document(
+                fact.commit_sha, V2735F_TASK_RELATIVE_PATH
+            ),
+            read_v2735f_commit_document(
+                fact.commit_sha, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"
+            ),
+            read_v2735f_commit_document(
+                fact.commit_sha, "docs/PROJECT_MASTERLIST.md"
+            ),
+            history_state.implementation_commit,
+        )
+
+
+def validate_v2735f_lifecycle(
+    state_text: str,
+    task_text: str,
+    cursor_context_text: str,
+    masterlist_text: str,
+) -> tuple[str, V2735FHistoryState]:
+    """Validiert reale Historie, Dokumentzustand und Working Tree gemeinsam."""
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden",
     )
     require(
         run_git(["branch", "--show-current"]).strip() == "main",
-        "v27.35f-Implementierungs-Gate muss auf Branch main laufen",
+        "v27.35f-Lebenszyklus muss auf Branch main laufen",
     )
-
     current_head = run_git(["rev-parse", "HEAD"]).strip()
     origin_main = run_git(["rev-parse", "origin/main"]).strip()
     run_git(
@@ -2410,93 +2896,49 @@ def validate_v2735f_implementation_gate_working_tree() -> None:
     )
     run_git(["merge-base", "--is-ancestor", origin_main, current_head])
 
-    committed_files = {
-        line.strip().replace("\\", "/")
-        for line in run_git(
-            [
-                "diff",
-                "--name-only",
-                V2735F_AUTHORIZATION_SHA,
-                current_head,
-            ]
-        ).splitlines()
-        if line.strip()
-    }
-    validate_v2735f_committed_gate_files(committed_files)
-    require(
-        run_git(
-            [
-                "ls-tree",
-                "-r",
-                "--name-only",
-                current_head,
-                "--",
-                V2735F_NOTE_FILE,
-            ]
-        ).strip()
-        == "",
-        "Die Wettbewerbsnotiz muss bis zum aktuellen HEAD ungetrackt bleiben",
-    )
+    commit_facts = read_v2735f_commit_facts(current_head)
+    history_state = validate_v2735f_history_facts(commit_facts)
+    validate_v2735f_committed_closure_documents(commit_facts, history_state)
 
-    note_path = ROOT / V2735F_NOTE_FILE
-    require(
-        sha256_file(note_path) == V2735F_NOTE_SHA256,
-        f"{V2735F_NOTE_FILE} wurde während des Gate-Korrekturschritts verändert",
-    )
-
-    diff_files = {
-        line.strip().replace("\\", "/")
-        for line in run_git(["diff", "--name-only"]).splitlines()
-        if line.strip()
-    }
-    staged_files = {
-        line.strip().replace("\\", "/")
-        for line in run_git(["diff", "--cached", "--name-only"]).splitlines()
-        if line.strip()
-    }
-
-    untracked_files = {
-        line.strip().replace("\\", "/")
-        for line in run_git(
-            ["ls-files", "--others", "--exclude-standard"]
-        ).splitlines()
-        if line.strip()
-    }
-    status_lines = {
-        line.replace("\\", "/")
-        for line in run_git(
-            ["status", "--porcelain=v1", "--untracked-files=all"]
-        ).splitlines()
-        if line
-    }
-    validate_v2735f_working_tree_snapshot(
-        diff_files,
-        staged_files,
-        untracked_files,
-        status_lines,
-    )
-
-    for relative_path in PROTECTED_RUNTIME_FILES + (
-        "questions.json",
-        "patch-v21.js",
-        "oral-exam.js",
-        V2735E_TEST_REPORT_FILE,
-        V2735G_SCORING_FIX_REPORT_FILE,
-    ):
+    note_in_head = run_git(
+        ["ls-tree", "-r", "--name-only", current_head, "--", V2735F_NOTE_FILE]
+    ).strip()
+    if history_state.state == V2735F_HISTORY_BEFORE_IMPLEMENTATION:
         require(
-            run_git(
-                [
-                    "diff",
-                    "--name-only",
-                    V2735F_AUTHORIZATION_SHA,
-                    current_head,
-                    "--",
-                    relative_path,
-                ]
-            ).strip()
-            == "",
-            f"App-, Funktions- oder historische Berichtsdatei verändert: {relative_path}",
+            note_in_head == "",
+            "Vor IMPLEMENTATION darf die Wettbewerbsnotiz nicht getrackt sein",
         )
+    else:
+        require(
+            note_in_head == V2735F_NOTE_FILE,
+            "Nach IMPLEMENTATION muss exakt die Wettbewerbsnotiz getrackt sein",
+        )
+
+    current_task_state = detect_v2735f_task_state_text(task_text)
+    if current_task_state == V2735F_TASK_AUTHORIZED:
+        validate_v2735f_authorized_state_text(state_text)
+        validate_v2735f_authorized_task_text(task_text)
+        validate_v2735f_cursor_context_text(cursor_context_text)
+        validate_v2735f_masterlist_text(masterlist_text)
+    else:
+        require(
+            history_state.implementation_commit is not None,
+            "Abschlussdokumente sind erst nach IMPLEMENTATION zulässig",
+        )
+        validate_v2735f_closed_documents(
+            state_text,
+            task_text,
+            cursor_context_text,
+            masterlist_text,
+            history_state.implementation_commit,
+        )
+
+    phase = validate_v2735f_lifecycle_working_tree(
+        history_state,
+        current_task_state,
+        read_v2735f_working_tree_fact(),
+    )
+    return phase, history_state
 
 
 def run_v2735f_authorization_manipulation_matrix(
@@ -2504,7 +2946,7 @@ def run_v2735f_authorization_manipulation_matrix(
     task_text: str,
     cursor_context_text: str,
     masterlist_text: str,
-) -> int:
+) -> tuple[int, int, int]:
     """Bestätigt die verbindlichen Blockierungen des v27.35f-Vertrags."""
     checks = 0
 
@@ -2666,93 +3108,203 @@ def run_v2735f_authorization_manipulation_matrix(
         )
         checks += 1
 
-    expected_gate_files = set(V2735F_GATE_CONTROL_FILES)
+    gate_files = frozenset(V2735F_GATE_CONTROL_FILES)
+    gate_status = frozenset(f" M {path}" for path in gate_files)
     note_status = f"?? {V2735F_NOTE_FILE}"
-    status_before_commit = {
-        *(f" M {path}" for path in expected_gate_files),
-        note_status,
-    }
-    status_after_commit = {note_status}
-
-    validate_v2735f_committed_gate_files(set())
-    validate_v2735f_committed_gate_files(expected_gate_files)
-    validate_v2735f_working_tree_snapshot(
-        expected_gate_files,
-        set(),
-        {V2735F_NOTE_FILE},
-        status_before_commit,
+    gate_commit = V2735FCommitFact(
+        commit_sha="1" * 40,
+        changed_files=gate_files,
+        task_state=V2735F_TASK_AUTHORIZED,
     )
-    validate_v2735f_working_tree_snapshot(
-        set(),
-        set(),
-        {V2735F_NOTE_FILE},
-        status_after_commit,
+    implementation_commit = V2735FCommitFact(
+        commit_sha="2" * 40,
+        changed_files=frozenset({V2735F_NOTE_FILE}),
+        task_state=V2735F_TASK_AUTHORIZED,
+        note_sha256=V2735F_NOTE_SHA256,
+    )
+    closure_commit = V2735FCommitFact(
+        commit_sha="3" * 40,
+        changed_files=gate_files,
+        task_state=V2735F_TASK_CLOSED,
     )
 
-    gate_state_manipulations = (
+    before_implementation = validate_v2735f_history_facts((gate_commit,))
+    phase_1 = validate_v2735f_lifecycle_working_tree(
+        before_implementation,
+        V2735F_TASK_AUTHORIZED,
+        V2735FWorkingTreeFact(
+            diff_files=gate_files,
+            staged_files=frozenset(),
+            untracked_files=frozenset({V2735F_NOTE_FILE}),
+            status_lines=gate_status | frozenset({note_status}),
+            note_sha256=V2735F_NOTE_SHA256,
+        ),
+    )
+    implemented = validate_v2735f_history_facts(
+        (gate_commit, implementation_commit)
+    )
+    phase_2 = validate_v2735f_lifecycle_working_tree(
+        implemented,
+        V2735F_TASK_AUTHORIZED,
+        V2735FWorkingTreeFact(
+            diff_files=frozenset(),
+            staged_files=frozenset(),
+            untracked_files=frozenset(),
+            status_lines=frozenset(),
+            note_sha256=V2735F_NOTE_SHA256,
+        ),
+    )
+    phase_3 = validate_v2735f_lifecycle_working_tree(
+        implemented,
+        V2735F_TASK_CLOSED,
+        V2735FWorkingTreeFact(
+            diff_files=gate_files,
+            staged_files=frozenset(),
+            untracked_files=frozenset(),
+            status_lines=gate_status,
+            note_sha256=V2735F_NOTE_SHA256,
+        ),
+    )
+    closed = validate_v2735f_history_facts(
+        (gate_commit, implementation_commit, closure_commit)
+    )
+    phase_4 = validate_v2735f_lifecycle_working_tree(
+        closed,
+        V2735F_TASK_CLOSED,
+        V2735FWorkingTreeFact(
+            diff_files=frozenset(),
+            staged_files=frozenset(),
+            untracked_files=frozenset(),
+            status_lines=frozenset(),
+            note_sha256=V2735F_NOTE_SHA256,
+        ),
+    )
+    positive_phases = (
+        phase_1,
+        phase_2,
+        phase_3,
+        phase_4,
+    )
+    require(
+        positive_phases
+        == (
+            V2735F_PHASE_BEFORE_IMPLEMENTATION,
+            V2735F_PHASE_IMPLEMENTATION_COMMITTED,
+            V2735F_PHASE_CLOSURE_PREPARED,
+            V2735F_PHASE_CLOSURE_COMMITTED,
+        ),
+        f"Vierphasige Lebenszyklus-Simulation abweichend: {positive_phases}",
+    )
+
+    second_implementation = V2735FCommitFact(
+        commit_sha="4" * 40,
+        changed_files=frozenset({V2735F_NOTE_FILE}),
+        task_state=V2735F_TASK_AUTHORIZED,
+        note_sha256=V2735F_NOTE_SHA256,
+    )
+    implementation_with_foreign_file = V2735FCommitFact(
+        commit_sha="5" * 40,
+        changed_files=frozenset({V2735F_NOTE_FILE, "unexpected.txt"}),
+        task_state=V2735F_TASK_AUTHORIZED,
+    )
+    wrong_note_sha = V2735FCommitFact(
+        commit_sha="6" * 40,
+        changed_files=frozenset({V2735F_NOTE_FILE}),
+        task_state=V2735F_TASK_AUTHORIZED,
+        note_sha256="0" * 64,
+    )
+    closure_without_implementation = V2735FCommitFact(
+        commit_sha="7" * 40,
+        changed_files=gate_files,
+        task_state=V2735F_TASK_CLOSED,
+    )
+    function_commit = V2735FCommitFact(
+        commit_sha="8" * 40,
+        changed_files=frozenset({"app.js"}),
+        task_state=V2735F_TASK_AUTHORIZED,
+    )
+    return_to_authorized = V2735FCommitFact(
+        commit_sha="9" * 40,
+        changed_files=gate_files,
+        task_state=V2735F_TASK_AUTHORIZED,
+    )
+
+    lifecycle_manipulations = (
         (
-            lambda _text: validate_v2735f_committed_gate_files(
-                expected_gate_files | {"app.js"}
+            lambda _text: validate_v2735f_history_facts(
+                (gate_commit, implementation_commit, second_implementation)
             ),
-            "committete App-Datei seit Autorisierungsbasis",
+            "zweiter IMPLEMENTATION-Commit",
         ),
         (
-            lambda _text: validate_v2735f_committed_gate_files(
-                expected_gate_files | {V2735F_NOTE_FILE}
+            lambda _text: validate_v2735f_history_facts(
+                (gate_commit, implementation_with_foreign_file)
             ),
-            "committete Wettbewerbsnotiz seit Autorisierungsbasis",
+            "IMPLEMENTATION mit fremder Datei",
         ),
         (
-            lambda _text: validate_v2735f_working_tree_snapshot(
-                {CHECKER_RELATIVE_PATH},
-                set(),
-                {V2735F_NOTE_FILE},
-                {f" M {CHECKER_RELATIVE_PATH}", note_status},
+            lambda _text: validate_v2735f_history_facts(
+                (gate_commit, wrong_note_sha)
             ),
-            "unvollständiger lokaler Gate-Dateisatz",
+            "falscher Notiz-SHA",
         ),
         (
-            lambda _text: validate_v2735f_working_tree_snapshot(
-                expected_gate_files | {"app.js"},
-                set(),
-                {V2735F_NOTE_FILE},
-                status_before_commit | {" M app.js"},
+            lambda _text: validate_v2735f_history_facts(
+                (gate_commit, closure_without_implementation)
             ),
-            "zusätzliche lokale App-Datei",
+            "CLOSURE ohne IMPLEMENTATION",
         ),
         (
-            lambda _text: validate_v2735f_working_tree_snapshot(
-                expected_gate_files,
-                {CHECKER_RELATIVE_PATH},
-                {V2735F_NOTE_FILE},
-                status_before_commit,
+            lambda _text: validate_v2735f_history_facts(
+                (gate_commit, function_commit)
             ),
-            "gestagte Gate-Datei",
+            "Funktionsdatei im Lebenszyklus",
         ),
         (
-            lambda _text: validate_v2735f_working_tree_snapshot(
-                expected_gate_files,
-                set(),
-                {V2735F_NOTE_FILE, "unexpected.txt"},
-                status_before_commit | {"?? unexpected.txt"},
+            lambda _text: detect_v2735f_task_state_text(
+                changed_once(
+                    task_text,
+                    "Task-ID: v27.35f",
+                    "Task-ID: v27.36",
+                    "automatisch gesetzter Folgetask",
+                )
+            ),
+            "automatisch gesetzter Folgetask",
+        ),
+        (
+            lambda _text: validate_v2735f_history_facts(
+                (
+                    gate_commit,
+                    implementation_commit,
+                    closure_commit,
+                    return_to_authorized,
+                )
+            ),
+            "Rückkehr zu v27.35f nach CLOSURE",
+        ),
+        (
+            lambda _text: validate_v2735f_lifecycle_working_tree(
+                before_implementation,
+                V2735F_TASK_AUTHORIZED,
+                V2735FWorkingTreeFact(
+                    diff_files=gate_files,
+                    staged_files=frozenset(),
+                    untracked_files=frozenset(
+                        {V2735F_NOTE_FILE, "unexpected.txt"}
+                    ),
+                    status_lines=gate_status
+                    | frozenset({note_status, "?? unexpected.txt"}),
+                    note_sha256=V2735F_NOTE_SHA256,
+                ),
             ),
             "zusätzliche ungetrackte Datei",
         ),
-        (
-            lambda _text: validate_v2735f_working_tree_snapshot(
-                set(),
-                set(),
-                set(),
-                set(),
-            ),
-            "fehlende ungetrackte Wettbewerbsnotiz",
-        ),
     )
-    for validator, label in gate_state_manipulations:
+    for validator, label in lifecycle_manipulations:
         must_reject(validator, "", label)
         checks += 1
 
-    return checks
+    return checks, len(positive_phases), len(lifecycle_manipulations)
 
 
 def main() -> int:
@@ -2764,11 +3316,7 @@ def main() -> int:
         masterlist_text = read_required_text(MASTERLIST_PATH)
         preflight_text = read_required_text(PREFLIGHT_PATH)
 
-        validate_v2735f_authorized_state_text(state_text)
-        validate_v2735f_authorized_task_text(task_text)
         validate_agents_text(agents_text)
-        validate_v2735f_cursor_context_text(cursor_context_text)
-        validate_v2735f_masterlist_text(masterlist_text)
         validate_preflight_text(preflight_text)
         validate_v2735c_control_commit_history()
         validate_v2735d_completion_commit_history()
@@ -2777,8 +3325,17 @@ def main() -> int:
         validate_v2735g_gate_fix_commit_history()
         validate_v2735g_completion_commit_history()
         validate_v2735f_authorization_commit_history()
-        validate_v2735f_implementation_gate_working_tree()
-        manipulation_checks = run_v2735f_authorization_manipulation_matrix(
+        lifecycle_phase, lifecycle_history = validate_v2735f_lifecycle(
+            state_text,
+            task_text,
+            cursor_context_text,
+            masterlist_text,
+        )
+        (
+            manipulation_checks,
+            positive_phase_tests,
+            lifecycle_negative_tests,
+        ) = run_v2735f_authorization_manipulation_matrix(
             state_text,
             task_text,
             cursor_context_text,
@@ -2789,14 +3346,22 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität und v27.35f-Implementierungs-Gate: OK")
+    print("Projektkontinuität und v27.35f-Lebenszyklus-State-Machine: OK")
+    if lifecycle_phase in (
+        V2735F_PHASE_BEFORE_IMPLEMENTATION,
+        V2735F_PHASE_IMPLEMENTATION_COMMITTED,
+    ):
+        task_summary = "v27.35f / AUTHORIZED / Autorisiert JA"
+    else:
+        task_summary = "NONE / BLOCKED / Autorisiert NEIN"
     print(
         "PROJECT_STATE_CURRENT: letzter funktionaler Stand v27.35g / "
-        "einziger autorisierter Dokumentationstask v27.35f"
+        f"CURRENT_TASK {task_summary}"
     )
+    print(f"Aktuelle v27.35f-Phase: {lifecycle_phase}")
     print(
-        "CURRENT_TASK: v27.35f / AUTHORIZED / Autorisiert JA / "
-        f"Umsetzung nur {V2735F_NOTE_FILE} / kein Commit, kein Push"
+        "Dynamischer IMPLEMENTATION-Commit: "
+        f"{lifecycle_history.implementation_commit or 'noch nicht vorhanden'}"
     )
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
     print("Projektpfade Arbeit und Zuhause: OK")
@@ -2840,11 +3405,14 @@ def main() -> int:
         f"{V2735F_FIRST_GATE_FIX_SHA} geändert"
     )
     print(
-        "v27.35f-Implementierungs-Gate: Autorisierungsbasis ist Vorfahr des "
-        "aktuellen HEAD; committeter Bereich enthält ausschließlich Gate-Dateien; "
-        "Working Tree entspricht dem Zustand vor oder nach dem Gate-Commit; "
-        "Wettbewerbsnotiz ist einzige ungetrackte Datei und finaler SHA-256 "
-        f"{V2735F_NOTE_SHA256}; App- und Funktionsdateien unverändert"
+        "v27.35f-Lebenszyklus: Commitrollen dynamisch aus Git-Historie, "
+        "Dateiumfang, Taskzustand und Notiz-SHA klassifiziert; finaler SHA-256 "
+        f"{V2735F_NOTE_SHA256}"
+    )
+    print(f"Vierphasige Positivsimulationen: {positive_phase_tests} / PASS")
+    print(
+        "Lebenszyklus-Negativtests: "
+        f"{lifecycle_negative_tests} / vollständig blockiert"
     )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0

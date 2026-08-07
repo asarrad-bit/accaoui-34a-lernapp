@@ -50,6 +50,48 @@ Für die Umsetzung bleibt ausschließlich
 `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt; sie darf ungetrackt
 vorliegen. Keine weitere ungetrackte Datei ist zulässig.
 
+## Verbindliche v27.35f-Lebenszyklus-State-Machine
+
+Die Autorisierungsbasis
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd` muss Vorfahr jedes aktuellen
+HEAD bleiben. Alle späteren Commitrollen werden ohne zukünftigen
+hartcodierten Commit-SHA ausschließlich aus Git-Historie, Dateiumfang,
+Taskzustand und Inhaltsnachweis abgeleitet:
+
+- **GATE:** eine nicht leere Teilmenge ausschließlich der fünf
+  Gate-Dateien; vor der Implementation bleibt `CURRENT_TASK` autorisiert.
+- **IMPLEMENTATION:** exakt nur
+  `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`, höchstens einmal und mit
+  SHA-256
+  `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`.
+- **CLOSURE:** ausschließlich Gate-Dateien, erst nach nachgewiesenem
+  IMPLEMENTATION-Commit und mit abgeschlossenem Taskzustand.
+
+Die vier zulässigen Phasen sind:
+
+1. **Vor Implementation:** `v27.35f / AUTHORIZED / Autorisiert JA`;
+   Historie nur GATE-Commits; Working Tree nur die ungetrackte finale
+   Notiz oder während eines Gate-Schritts zusätzlich exakt die fünf
+   modifizierten Gate-Dateien.
+2. **Implementation committet:** weiterhin
+   `v27.35f / AUTHORIZED / Autorisiert JA`; exakt ein IMPLEMENTATION-
+   Commit ist dynamisch aus Git nachgewiesen; Working Tree sauber.
+3. **Closure lokal vorbereitet:** erst nach Implementation; Working Tree
+   exakt die fünf Gate-Dateien; `CURRENT_TASK` lokal auf `NONE / BLOCKED /
+   Autorisiert NEIN`, `Titel: Kein Task autorisiert`, `Erlaubte Dateien:
+   KEINE` umgestellt; Commit und Push bleiben gesperrt.
+4. **Closure committet:** abgeschlossener Taskzustand und sauberer Working
+   Tree; spätere Gate-/Closure-Commits dürfen den abgeschlossenen Zustand
+   nicht wieder auf v27.35f zurücksetzen.
+
+Im Abschlusszustand müssen die Steuerungsdokumente „v27.35f
+abgeschlossen“, den finalen Notiz-SHA, den aus Git dynamisch ermittelten
+`Implementierungscommit: <SHA>` und „Kein Folgetask wurde ausgewählt oder
+autorisiert.“ dokumentieren. Closure ohne Implementation, ein zweiter
+IMPLEMENTATION-Commit, fremde Commitdateien, ein falscher Notiz-SHA,
+zusätzliche Working-Tree-Dateien sowie Commit oder Push `JA` bleiben
+geschlossen blockiert.
+
 v27.35f bleibt der einzige aktive Task. Commit und Push bleiben verboten,
 und ein Folgetask wird nicht ausgewählt oder autorisiert.
 

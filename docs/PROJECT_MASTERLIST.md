@@ -961,6 +961,18 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 - App-, Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-, Datenbank- und Netzwerkdateien bleiben unverändert.
 - v27.35f bleibt der einzige aktive Task; Commit und Push bleiben verboten, und ein Folgetask wird nicht ausgewählt oder autorisiert.
 
+### Verbindliche v27.35f-Lebenszyklus-State-Machine
+
+- Die Autorisierungsbasis `601dc6f751b6a603a27c4b3405150bf1d75e09fd` bleibt Vorfahr des aktuellen HEAD; kein zukünftiger Commit-SHA wird hartcodiert.
+- Commits werden aus Git-Historie, tatsächlicher Dateimenge, Taskzustand und Inhaltsnachweis klassifiziert: GATE und CLOSURE enthalten ausschließlich Gate-Dateien; IMPLEMENTATION enthält exakt nur `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`.
+- IMPLEMENTATION ist höchstens einmal zulässig und muss für den Notiz-Blob exakt SHA-256 `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023` nachweisen.
+- Phase 1 akzeptiert den autorisierten Task vor Implementation mit ungetrackter finaler Notiz und optional exakt fünf lokal modifizierten Gate-Dateien.
+- Phase 2 akzeptiert nach genau einem IMPLEMENTATION-Commit den weiterhin autorisierten Task mit sauberem Working Tree.
+- Phase 3 akzeptiert erst danach die lokal vorbereitete Closure mit exakt fünf Gate-Dateien und `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
+- Phase 4 akzeptiert die committete Closure mit abgeschlossenem Taskzustand und sauberem Working Tree; eine spätere Rückkehr zu v27.35f ist ohne neue Autorisierung gesperrt.
+- Der Abschluss dokumentiert „v27.35f abgeschlossen“, den finalen Notiz-SHA, den dynamisch aus Git ermittelten `Implementierungscommit: <SHA>` und „Kein Folgetask wurde ausgewählt oder autorisiert.“
+- Mehrere IMPLEMENTATION-Commits, fremde Commit- oder Working-Tree-Dateien, falscher Notiz-SHA, Closure ohne Implementation, automatisch ausgewählte Folgetasks sowie Commit oder Push `JA` bleiben geschlossen blockiert.
+
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (vorbereitete SQL-Migrationen vorhanden, aber nicht live ausgeführt; keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
 ---

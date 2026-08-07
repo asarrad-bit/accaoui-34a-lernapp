@@ -78,6 +78,34 @@ App-, Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-,
 Datenbank- und Netzwerkdateien bleiben gesperrt. Commit und Push bleiben
 verboten; ein Folgetask wird nicht ausgewählt oder autorisiert.
 
+### Verbindliche v27.35f-Lebenszyklus-State-Machine
+
+Der Kontinuitäts-Checker klassifiziert jeden Commit nach der
+Autorisierungsbasis
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd` dynamisch aus seiner
+tatsächlichen Dateimenge. Nicht leere Commitmengen ausschließlich aus
+den fünf Gate-Dateien sind GATE- beziehungsweise nach der Implementation
+CLOSURE-Commits. Exakt die Wettbewerbsnotiz ist höchstens einmal als
+IMPLEMENTATION-Commit zulässig; ihr Blob muss SHA-256
+`983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
+haben. Andere Commitmengen bleiben gesperrt.
+
+Die State-Machine akzeptiert vier Zustände: vor Implementation mit
+autorisiertem v27.35f und ungetrackter finaler Notiz; nach dem einmaligen
+Implementation-Commit weiterhin mit autorisiertem v27.35f und sauberem
+Working Tree; lokal vorbereitete Closure mit exakt fünf Gate-Dateien und
+`CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`; sowie die
+committete Closure mit abgeschlossenem Task und sauberem Working Tree.
+Closure ist erst nach dynamischem Nachweis des Implementation-Commits
+zulässig. Nach einer Closure bleibt jede Rückkehr zu v27.35f ohne neue
+Autorisierung gesperrt.
+
+Der spätere Abschlusszustand dokumentiert „v27.35f abgeschlossen“, den
+finalen Notiz-SHA, den dynamisch aus Git ermittelten
+`Implementierungscommit: <SHA>` und „Kein Folgetask wurde ausgewählt oder
+autorisiert.“ Kein zukünftiger Implementation- oder Closure-Commit-SHA
+wird vorab eingetragen.
+
 ## Abgeschlossener Regressionstest v27.35e (FAIL)
 
 `docs/tasks/CURRENT_TASK.md` stand auf `Task-ID: v27.35e`, `Status: AUTHORIZED`, `Autorisiert: JA`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `260e6527208769f18018d1db6e6e3b7fbe9d7d7e`, erlaubte Datei `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`.
