@@ -477,12 +477,21 @@ Der Regressionstest v27.35e bleibt mit Gesamtergebnis FAIL abgeschlossen (Testbe
 
 Der einzige autorisierte Task ist v27.35f:
 „Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren“.
-Funktionaler Ausgangsstand ist v27.35g, erwarteter Ausgangscommit ist
-`003112eaeb9a071a6396634b6da92fa11ae8921a`. Für die spätere
-Umsetzung ist ausschließlich
-`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt. In diesem
-Autorisierungsschritt wird diese Notiz noch nicht erstellt und keine
-App-Datei verändert. Commit und Push bleiben gesperrt.
+Funktionaler Ausgangsstand ist v27.35g. Der funktionale Ausgangs- und
+Vorautorisierungsstand ist
+`003112eaeb9a071a6396634b6da92fa11ae8921a`; der historische
+v27.35f-Autorisierungscommit und die verbindliche Umsetzungsbasis sind
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd`. Für die Umsetzung ist
+ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
+
+In einem separaten nichtfunktionalen v27.35f-Implementierungs-Gate-
+Korrekturschritt werden ausschließlich die vier Steuerungsdokumente und
+`tools/check-project-continuity-control.py` korrigiert. Die bereits lokal
+erstellte Wettbewerbsnotiz bleibt dabei mit SHA-256
+`cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7`
+unverändert. Sie darf als einzige ungetrackte Datei vorliegen. App-,
+Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-, Datenbank-
+und Netzwerkdateien bleiben gesperrt. Commit und Push bleiben verboten.
 
 Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`
 bearbeiten. Kein funktionaler oder sonstiger Folgetask wird

@@ -5,10 +5,30 @@ Status: AUTHORIZED
 Autorisiert: JA
 Titel: Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren
 Funktionaler Ausgangsstand: v27.35g
-Erwarteter Ausgangscommit: `003112eaeb9a071a6396634b6da92fa11ae8921a`
+Erwarteter Ausgangscommit: `601dc6f751b6a603a27c4b3405150bf1d75e09fd`
 Erlaubte Dateien: `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Verbindliche Committrennung und Gate-Korrektur
+
+Der Commit `003112eaeb9a071a6396634b6da92fa11ae8921a` ist der funktionale
+Ausgangs- und Vorautorisierungsstand. Der historische
+v27.35f-Autorisierungscommit
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd` ist die verbindliche
+Umsetzungsbasis.
+
+Der separate nichtfunktionale v27.35f-Implementierungs-Gate-
+Korrekturschritt darf ausschließlich die vier Steuerungsdokumente und
+`tools/check-project-continuity-control.py` verändern. Die lokal bereits
+erstellte Wettbewerbsnotiz bleibt dabei mit SHA-256
+`cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7`
+unverändert. Für die Umsetzung bleibt ausschließlich
+`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt; sie darf ungetrackt
+vorliegen. Keine weitere ungetrackte Datei ist zulässig.
+
+v27.35f bleibt der einzige aktive Task. Commit und Push bleiben verboten,
+und ein Folgetask wird nicht ausgewählt oder autorisiert.
 
 ## Ziel
 
@@ -87,11 +107,12 @@ Die Leitidee aus `docs/PROJECT_MASTERLIST.md` bleibt verbindlich.
 9. Ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` wird im späteren Umsetzungsschritt verändert.
 10. Kein Commit und kein Push ohne gesonderte Freigabe.
 
-## Verbindliche Grenze dieses Autorisierungsschritts
+## Historische Grenze des Autorisierungsschritts
 
-`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` wird in diesem
-Autorisierungsschritt noch nicht erstellt oder verändert. Es wird noch
-keine Wettbewerbsnotiz erstellt und keine App-Datei verändert.
+`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` wurde im abgeschlossenen
+Autorisierungsschritt noch nicht erstellt oder verändert. In diesem
+Schritt wurde keine Wettbewerbsnotiz erstellt und keine App-Datei
+verändert.
 
 Die spätere Umsetzung darf ausschließlich diesen `CURRENT_TASK`
 bearbeiten. Nach Abschluss wird kein Folgetask automatisch ausgewählt.

@@ -17,9 +17,12 @@ Aktueller Blocker: KEINER; v27.35f ist als einziger Dokumentationstask autorisie
 `docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`,
 `Status: AUTHORIZED`, `Autorisiert: JA`,
 `Titel: Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren`,
-`Funktionaler Ausgangsstand: v27.35g`, erwarteter Ausgangscommit
-`003112eaeb9a071a6396634b6da92fa11ae8921a`, ausschließlich erlaubte
-Datei für die spätere Umsetzung
+`Funktionaler Ausgangsstand: v27.35g`, funktionaler Ausgangs- und
+Vorautorisierungsstand
+`003112eaeb9a071a6396634b6da92fa11ae8921a`, v27.35f-Autorisierungscommit
+und Umsetzungsbasis
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd`, ausschließlich erlaubte Datei
+für die Umsetzung
 `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`,
 `Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
 
@@ -30,11 +33,30 @@ Wettbewerber-Werbeaussagen klar von Bewertung und eigener
 Accaoui-Empfehlung trennen. Die Leitidee und der Qualitätsmaßstab
 „Mit dieser App habe ich es endlich verstanden.“ bleiben verbindlich.
 
-In diesem Autorisierungsschritt wird
+Im abgeschlossenen Autorisierungsschritt wurde
 `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` noch nicht erstellt oder
-verändert. Es wird keine Wettbewerbsnotiz erstellt, keine App-Datei
-verändert und kein Folgetask automatisch ausgewählt. Commit und Push
-bleiben gesperrt.
+verändert. In diesem Schritt wurde keine Wettbewerbsnotiz erstellt,
+keine App-Datei verändert und kein Folgetask automatisch ausgewählt.
+Commit und Push blieben gesperrt.
+
+### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt
+
+Der Commit `003112eaeb9a071a6396634b6da92fa11ae8921a` bleibt der funktionale
+Ausgangs- und Vorautorisierungsstand. Der historische
+v27.35f-Autorisierungscommit
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd` ist der verbindliche
+Ausgangs-HEAD der Umsetzung.
+
+Die Wettbewerbsnotiz ist lokal bereits erstellt und bleibt während
+dieses getrennten Gate-Korrekturschritts mit SHA-256
+`cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7`
+unverändert. Der Gate-Korrekturschritt betrifft ausschließlich die vier
+Steuerungsdokumente und `tools/check-project-continuity-control.py`.
+v27.35f bleibt der einzige aktive Task; für seine Umsetzung bleibt
+ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
+App-, Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-,
+Datenbank- und Netzwerkdateien bleiben gesperrt. Commit und Push bleiben
+verboten; ein Folgetask wird nicht ausgewählt oder autorisiert.
 
 ## Abgeschlossener Regressionstest v27.35e (FAIL)
 

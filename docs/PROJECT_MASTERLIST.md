@@ -796,7 +796,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.35c | Nichtfunktionale Task-Steuerung von `Task-ID: NONE` / `Status: BLOCKED` / `Autorisiert: NEIN` verbindlich auf den einzigen autorisierten Folgetask v27.35d umgestellt: UX- und Lernlogik-Verfeinerung autorisiert; `CURRENT_TASK` steht auf `Task-ID: v27.35d`, `Status: AUTHORIZED`, `Autorisiert: JA`, funktionaler Ausgangsstand v27.35b, erwarteter Ausgangscommit `e4b6929af552e4245290d3eb5db97815365162e6`, erlaubte Dateien `app.js`, `index.html`, `style.css`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; Kontinuitäts-Checker erzwingt den Zustand und prüft Unveränderlichkeit von `app.js`, `index.html` und `style.css` während v27.35c; Kandidaten B und C nicht autorisiert; kein funktionaler Code – **erledigt** |
 | v27.35d | Lernmodus eindeutig als „Lernmodus – Wissen prüfen“ und Lernkarten eindeutig als „Lernkarten – Wissen selbst einschätzen“ gekennzeichnet; kompakte gemeinsame Führungshinweis-Klasse `mode-guidance-v2735d` in beiden Modi (erst selbst beantworten/erinnern, danach Antwort auswählen beziehungsweise Lösung anzeigen und mit „Gewusst“ oder „Nicht gewusst“ einschätzen); bestehende Navigation, Pause/Fortsetzen, Bewertungslogik und localStorage-Logik unverändert; keine neue Speicherung, keine neuen Storage-Keys, keine Fragen-, Supabase-, SQL-, Datenbank- oder Netzwerkänderung; Browsertests Dashboard, Lernmodus, Lernkarten und Mobilansicht (ca. 390×844, kein horizontaler Überlauf, keine Konsolenfehler) bestanden, localStorage vollständig restauriert; `node --check`, `git diff --check` und Preflight bestanden; nichtfunktionaler Checker-Fix `d83869308a277e077b3da6d7e2c1a23001374a48` korrigierte zuvor den historischen v27.35c-Gate-Check; Abschlusscommit `b4d2de5002918766bb45fe001cbbfdb333a6d7c5` – **erledigt** |
 | v27.35e | Regressionstest der schriftlichen Prüfung nach v27.35d autorisiert und vollständig durchgeführt: Vollsimulation 82 Fragen/120 Punkte bestätigt, Einzel- und Mehrfachauswahl, Ein-Punkt-Bewertung und Zwei-Punkte-Bewertung bei mehreren richtigen Antworten, Teilpunkt, Pause/Fortsetzen, unbeantwortete Fragen, Konsolenstatus und Speicherwiederherstellung bestanden; Regression gefunden und exakt dokumentiert: Zwei-Punkte-Fragen mit nur einer richtigen Antwortoption (`straf_009`, `bgb_009`, `waffen_004`, `straf_004`, `v23_roso_007`, `technik_004`, `straf_006`, `bgb_012`, `bgb_004`, `straf_013`, `bgb_006`, `uvv_004`, `uvv_008`) erreichen bei vollständig korrekter Beantwortung nur 1 statt 2 Punkte; Testbericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md`, Testbericht-Commit-SHA `db2f12a1af7792c59e9e6411bb127b2f68401713`; gemäß Fehlerregel sofort gestoppt, keine Codekorrektur, kein Commit, kein Push – **abgeschlossen, Gesamtergebnis FAIL** |
-| v27.35f | Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren; funktionaler Ausgangsstand v27.35g, erwarteter Ausgangscommit `003112eaeb9a071a6396634b6da92fa11ae8921a`, spätere Umsetzung ausschließlich in `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`, kein Commit und kein Push – **autorisiert, Umsetzung offen** |
+| v27.35f | Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren; funktionaler Ausgangsstand v27.35g, funktionaler Ausgangs- und Vorautorisierungsstand `003112eaeb9a071a6396634b6da92fa11ae8921a`, v27.35f-Autorisierungscommit und Umsetzungsbasis `601dc6f751b6a603a27c4b3405150bf1d75e09fd`, Umsetzung ausschließlich in `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`, kein Commit und kein Push – **autorisiert, Umsetzung offen** |
 | v27.35g | Nichtfunktionale Task-Steuerung von `Task-ID: v27.35e` verbindlich auf den einzigen autorisierten Folgetask v27.35g umgestellt: Korrektur der Punkteberechnung der schriftlichen Prüfung autorisiert; `CURRENT_TASK` stand auf `Task-ID: v27.35g`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Titel: Punkteberechnung schriftliche Prüfung korrigieren`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `db2f12a1af7792c59e9e6411bb127b2f68401713`, für die spätere Umsetzung ausschließlich erlaubte Dateien `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; verbindlicher Bewertungsvertrag für keine Antwort, vollständig richtige Antwortmenge, Teilmengen-Sonderfall bei Zwei-Punkte-Fragen mit mindestens zwei richtigen Optionen, falsche Auswahl sowie Zwei-Punkte-Fragen mit nur einer richtigen Antwort festgelegt. Nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) ergänzte danach ausschließlich `tools/check-project-continuity-control.py` und die vier Steuerungsdokumente und gab im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` frei. Funktionale Umsetzung (Commit `f5f261fee67fc17c170ee714ae23761ff1668f17`) veränderte ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, korrigierte `getExamQuestionReachedPoints()` gemäß Bewertungsvertrag und bestätigte 82 Fragen/120 Punkte, alle 13 zuvor betroffenen Fragen jeweils 2/2, die v27.35e-Testkonstellation jetzt 114/120 statt 101/120, alle 82 Fragen vollständig richtig jetzt 120/120, Pause/Fortsetzen, Fehleranalyse, Fehlertraining, Desktop und Mobil (390×844) PASS, keine neuen Konsolenfehler sowie vollständig restaurierten `localStorage`/`sessionStorage`; `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische FAIL-Dokumentation erhalten; `v27.35f` bleibt ausdrücklich nicht autorisiert; `CURRENT_TASK` steht danach wieder auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN` – **erledigt** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
@@ -937,16 +937,25 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 - `docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`, `Status: AUTHORIZED`, `Autorisiert: JA`.
 - Titel: Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren.
 - Funktionaler Ausgangsstand: v27.35g.
-- Erwarteter Ausgangscommit: `003112eaeb9a071a6396634b6da92fa11ae8921a`.
-- Für die spätere Umsetzung ist ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
+- Funktionaler Ausgangs- und Vorautorisierungsstand: `003112eaeb9a071a6396634b6da92fa11ae8921a`.
+- v27.35f-Autorisierungscommit und Umsetzungsbasis: `601dc6f751b6a603a27c4b3405150bf1d75e09fd`.
+- Für die Umsetzung ist ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
 - Wettbewerberaussagen dürfen nur als beobachtete und nicht extern verifizierte Marketingaussagen beschrieben werden.
 - Beobachtung, Bewertung und Accaoui-Empfehlung müssen klar getrennt bleiben.
 - Die Leitidee und der Qualitätsmaßstab „Mit dieser App habe ich es endlich verstanden.“ bleiben verbindlich.
 - Wettbewerbertexte, geschützte Formulierungen, unbelegte Tatsachen-, KI-, Garantie- oder Rückerstattungsversprechen sowie verbindliche Preisfestlegungen bleiben verboten.
 - App-Code, UI, Fragenbanken, Supabase, SQL, Netzwerk und Marketingmaterial bleiben unverändert.
-- In diesem Autorisierungsschritt wird die Wettbewerbsnotiz noch nicht erstellt.
+- Im abgeschlossenen Autorisierungsschritt wurde die Wettbewerbsnotiz noch nicht erstellt.
 - `Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
 - Nach Abschluss wird kein Folgetask automatisch ausgewählt oder autorisiert.
+
+### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt
+
+- Der Gate-Korrekturschritt betrifft ausschließlich die vier Steuerungsdokumente und `tools/check-project-continuity-control.py`.
+- Die Wettbewerbsnotiz ist lokal bereits erstellt und bleibt während des Gate-Schritts mit SHA-256 `cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7` unverändert.
+- Sie darf als einzige ungetrackte Datei vorliegen; jede zusätzliche Datei bleibt gesperrt.
+- App-, Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-, Datenbank- und Netzwerkdateien bleiben unverändert.
+- v27.35f bleibt der einzige aktive Task; Commit und Push bleiben verboten, und ein Folgetask wird nicht ausgewählt oder autorisiert.
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (vorbereitete SQL-Migrationen vorhanden, aber nicht live ausgeführt; keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
@@ -1345,12 +1354,14 @@ Dokumentationstask „Wettbewerbsbeobachtung und
 Accaoui-Positionierung dokumentieren“ ist autorisiert und seine
 Umsetzung ist offen. v27.35g bleibt der letzte abgeschlossene
 funktionale Stand (Abschlusscommit
-`f5f261fee67fc17c170ee714ae23761ff1668f17`), erwarteter
-Ausgangscommit für v27.35f ist
-`003112eaeb9a071a6396634b6da92fa11ae8921a`, und später darf
-ausschließlich
-`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` verändert werden. In
-diesem Autorisierungsschritt wird diese Notiz noch nicht erstellt.
+`f5f261fee67fc17c170ee714ae23761ff1668f17`). Funktionaler Ausgangs-
+und Vorautorisierungsstand für v27.35f ist
+`003112eaeb9a071a6396634b6da92fa11ae8921a`; der historische
+v27.35f-Autorisierungscommit und die verbindliche Umsetzungsbasis sind
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd`. Ausschließlich
+`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` darf umgesetzt werden. Die
+Notiz ist lokal erstellt und bleibt im getrennten Gate-Korrekturschritt
+per SHA-256 unverändert.
 Kein funktionaler oder sonstiger Folgetask wird automatisch
 ausgewählt oder autorisiert. Backlog-Kandidat C
 (Quellen/mündliche Musterfragen) ist nicht autorisiert.

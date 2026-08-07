@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Prüft die verbindliche Autorisierung des Dokumentationstasks v27.35f.
+"""Prüft Autorisierung und Implementierungs-Gate des Dokumentationstasks v27.35f.
 
-v27.35g bleibt der letzte abgeschlossene funktionale Stand. Während
-dieses Autorisierungsschritts dürfen ausschließlich die fünf
-Steuerungsdateien geändert sein; die spätere Wettbewerbsnotiz und alle
-App- oder Funktionsdateien müssen unverändert beziehungsweise noch
-nicht vorhanden bleiben.
+v27.35g bleibt der letzte abgeschlossene funktionale Stand. Der
+Vorautorisierungsstand und der historische Autorisierungscommit werden
+getrennt geprüft. Im Gate-Korrekturschritt dürfen ausschließlich die
+fünf Steuerungsdateien geändert sein; die bereits lokal erstellte
+Wettbewerbsnotiz bleibt als einzige ungetrackte Datei per SHA-256
+unverändert. App- und Funktionsdateien bleiben gesperrt.
 """
 
 from __future__ import annotations
 
+import hashlib
 import re
 import subprocess
 from pathlib import Path
@@ -57,9 +59,11 @@ EXPECTED_V2735G_COMPLETION_CHANGED_FILES = (
     V2735G_SCORING_FIX_REPORT_FILE,
 )
 
-V2735F_AUTHORIZATION_BASE_SHA = "003112eaeb9a071a6396634b6da92fa11ae8921a"
+V2735F_PREAUTHORIZATION_SHA = "003112eaeb9a071a6396634b6da92fa11ae8921a"
+V2735F_AUTHORIZATION_SHA = "601dc6f751b6a603a27c4b3405150bf1d75e09fd"
 V2735F_NOTE_FILE = "docs/COMPETITOR_POSITIONING_NOTE_V2735F.md"
-V2735F_AUTHORIZATION_CONTROL_FILES = EXPECTED_CONTROL_FILES
+V2735F_NOTE_SHA256 = "cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7"
+V2735F_GATE_CONTROL_FILES = EXPECTED_CONTROL_FILES
 
 V2735F_EXPECTED_STATE_FIELDS = {
     "Stand": "v27.35g",
@@ -84,7 +88,7 @@ V2735F_EXPECTED_TASK_FIELDS = {
     "Autorisiert": "JA",
     "Titel": "Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren",
     "Funktionaler Ausgangsstand": "v27.35g",
-    "Erwarteter Ausgangscommit": f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+    "Erwarteter Ausgangscommit": f"`{V2735F_AUTHORIZATION_SHA}`",
     "Erlaubte Dateien": f"`{V2735F_NOTE_FILE}`",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
@@ -95,16 +99,24 @@ V2735F_STATE_REQUIRED_MARKERS = (
     "`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`",
     "`Status: AUTHORIZED`, `Autorisiert: JA`",
     "`Funktionaler Ausgangsstand: v27.35g`",
-    f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+    "funktionaler Ausgangs- und\nVorautorisierungsstand",
+    f"`{V2735F_PREAUTHORIZATION_SHA}`",
+    "v27.35f-Autorisierungscommit\nund Umsetzungsbasis",
+    f"`{V2735F_AUTHORIZATION_SHA}`",
     f"`{V2735F_NOTE_FILE}`",
     "v27.35g bleibt der letzte abgeschlossene funktionale Stand.",
     "der einzige autorisierte Dokumentationstask; seine Umsetzung ist offen.",
     "beobachtete, nicht extern verifizierte",
     "„Mit dieser App habe ich es endlich verstanden.“",
+    "Im abgeschlossenen Autorisierungsschritt wurde",
     "noch nicht erstellt oder",
-    "keine Wettbewerbsnotiz erstellt, keine App-Datei",
+    "In diesem Schritt wurde keine Wettbewerbsnotiz erstellt,",
     "kein Folgetask automatisch ausgewählt.",
-    "Commit und Push",
+    "Commit und Push blieben gesperrt.",
+    "### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt",
+    f"SHA-256\n`{V2735F_NOTE_SHA256}`",
+    "v27.35f bleibt der einzige aktive Task",
+    "Commit und Push bleiben\nverboten; ein Folgetask wird nicht ausgewählt oder autorisiert.",
 )
 
 V2735F_TASK_REQUIRED_MARKERS = (
@@ -167,9 +179,16 @@ V2735F_TASK_REQUIRED_MARKERS = (
     "8. Keine Funktions-, Fragen-, UI-, Supabase-, SQL- oder Netzwerkänderung.",
     f"9. Ausschließlich `{V2735F_NOTE_FILE}` wird im späteren Umsetzungsschritt verändert.",
     "10. Kein Commit und kein Push ohne gesonderte Freigabe.",
-    "## Verbindliche Grenze dieses Autorisierungsschritts",
+    "## Verbindliche Committrennung und Gate-Korrektur",
+    f"`{V2735F_PREAUTHORIZATION_SHA}` ist der funktionale",
+    f"`{V2735F_AUTHORIZATION_SHA}` ist die verbindliche",
+    "separate nichtfunktionale v27.35f-Implementierungs-Gate-",
+    f"`{V2735F_NOTE_SHA256}`",
+    "sie darf ungetrackt\nvorliegen. Keine weitere ungetrackte Datei ist zulässig.",
+    "v27.35f bleibt der einzige aktive Task. Commit und Push bleiben verboten,",
+    "## Historische Grenze des Autorisierungsschritts",
     "noch nicht erstellt oder verändert.",
-    "keine Wettbewerbsnotiz erstellt und keine App-Datei verändert.",
+    "In diesem\nSchritt wurde keine Wettbewerbsnotiz erstellt und keine App-Datei\nverändert.",
     "ausschließlich diesen `CURRENT_TASK`",
     "Nach Abschluss wird kein Folgetask automatisch ausgewählt.",
 )
@@ -192,18 +211,24 @@ V2735F_CURSOR_REQUIRED_MARKERS = (
     "`Autorisiert: JA`.",
     "Der einzige autorisierte Task ist v27.35f:",
     "Funktionaler Ausgangsstand ist v27.35g",
-    f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+    f"`{V2735F_PREAUTHORIZATION_SHA}`",
+    f"`{V2735F_AUTHORIZATION_SHA}`",
     f"`{V2735F_NOTE_FILE}`",
-    "In diesem\nAutorisierungsschritt wird diese Notiz noch nicht erstellt",
+    "separaten nichtfunktionalen v27.35f-Implementierungs-Gate-",
+    f"`{V2735F_NOTE_SHA256}`",
+    "Sie darf als einzige ungetrackte Datei vorliegen.",
+    "Commit und Push bleiben verboten.",
     "Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`",
     "Kein funktionaler oder sonstiger Folgetask wird",
 )
 
 V2735F_MASTERLIST_ROW = (
     "| v27.35f | Wettbewerbsbeobachtung und Accaoui-Positionierung "
-    "dokumentieren; funktionaler Ausgangsstand v27.35g, erwarteter "
-    f"Ausgangscommit `{V2735F_AUTHORIZATION_BASE_SHA}`, spätere Umsetzung "
-    f"ausschließlich in `{V2735F_NOTE_FILE}`, kein Commit und kein Push – "
+    "dokumentieren; funktionaler Ausgangsstand v27.35g, funktionaler "
+    "Ausgangs- und Vorautorisierungsstand "
+    f"`{V2735F_PREAUTHORIZATION_SHA}`, v27.35f-Autorisierungscommit und "
+    f"Umsetzungsbasis `{V2735F_AUTHORIZATION_SHA}`, Umsetzung ausschließlich "
+    f"in `{V2735F_NOTE_FILE}`, kein Commit und kein Push – "
     "**autorisiert, Umsetzung offen** |"
 )
 
@@ -212,18 +237,25 @@ V2735F_MASTERLIST_REQUIRED_MARKERS = (
     "### Autorisierter Dokumentationstask v27.35f (Umsetzung offen)",
     "`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`, `Status: AUTHORIZED`, `Autorisiert: JA`.",
     "Funktionaler Ausgangsstand: v27.35g.",
-    f"Erwarteter Ausgangscommit: `{V2735F_AUTHORIZATION_BASE_SHA}`.",
-    f"Für die spätere Umsetzung ist ausschließlich `{V2735F_NOTE_FILE}` erlaubt.",
+    f"Funktionaler Ausgangs- und Vorautorisierungsstand: `{V2735F_PREAUTHORIZATION_SHA}`.",
+    f"v27.35f-Autorisierungscommit und Umsetzungsbasis: `{V2735F_AUTHORIZATION_SHA}`.",
+    f"Für die Umsetzung ist ausschließlich `{V2735F_NOTE_FILE}` erlaubt.",
     "beobachtete und nicht extern verifizierte Marketingaussagen",
     "Beobachtung, Bewertung und Accaoui-Empfehlung müssen klar getrennt bleiben.",
     "„Mit dieser App habe ich es endlich verstanden.“",
-    "In diesem Autorisierungsschritt wird die Wettbewerbsnotiz noch nicht erstellt.",
+    "Im abgeschlossenen Autorisierungsschritt wurde die Wettbewerbsnotiz noch nicht erstellt.",
     "`Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.",
     "Nach Abschluss wird kein Folgetask automatisch ausgewählt oder autorisiert.",
+    "### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt",
+    f"SHA-256 `{V2735F_NOTE_SHA256}` unverändert.",
+    "Sie darf als einzige ungetrackte Datei vorliegen; jede zusätzliche Datei bleibt gesperrt.",
+    "v27.35f bleibt der einzige aktive Task; Commit und Push bleiben verboten, und ein Folgetask wird nicht ausgewählt oder autorisiert.",
     "`CURRENT_TASK` ist aktuell `v27.35f` /",
     "`AUTHORIZED` / `Autorisiert: JA`",
     "v27.35g bleibt der letzte abgeschlossene",
-    "In\ndiesem Autorisierungsschritt wird diese Notiz noch nicht erstellt.",
+    f"`{V2735F_PREAUTHORIZATION_SHA}`; der historische",
+    f"`{V2735F_AUTHORIZATION_SHA}`. Ausschließlich",
+    "Notiz ist lokal erstellt und bleibt im getrennten Gate-Korrekturschritt\nper SHA-256 unverändert.",
     "Kein funktionaler oder sonstiger Folgetask wird automatisch",
 )
 
@@ -580,6 +612,15 @@ def read_required_text(path: Path) -> str:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     require(text.endswith("\n"), f"Abschließender Zeilenumbruch fehlt: {path}")
     return text
+
+
+def sha256_file(path: Path) -> str:
+    require(path.is_file(), f"Pflichtdatei fehlt: {path.relative_to(ROOT)}")
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def exact_field(text: str, field_name: str) -> str:
@@ -2035,9 +2076,12 @@ def validate_v2735f_cursor_context_text(text: str) -> None:
     )
     for marker in (
         "`CURRENT_TASK` ist `v27.35f` / `AUTHORIZED` /",
-        f"`{V2735F_AUTHORIZATION_BASE_SHA}`",
+        f"`{V2735F_PREAUTHORIZATION_SHA}`",
+        f"`{V2735F_AUTHORIZATION_SHA}`",
         f"`{V2735F_NOTE_FILE}`",
-        "In diesem\nAutorisierungsschritt wird diese Notiz noch nicht erstellt",
+        "separaten nichtfunktionalen v27.35f-Implementierungs-Gate-",
+        f"`{V2735F_NOTE_SHA256}`",
+        "Sie darf als einzige ungetrackte Datei vorliegen.",
         "Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`",
     ):
         require(
@@ -2139,31 +2183,109 @@ def validate_v2735f_masterlist_text(text: str) -> None:
         )
 
 
-def validate_v2735f_authorization_working_tree() -> None:
-    """Erzwingt Basiscommit, fünf Steuerungsdateien und die vorzeitige Notizsperre."""
+def validate_v2735f_authorization_commit_history() -> None:
+    """Prüft den v27.35f-Autorisierungscommit ausschließlich historisch."""
+    require(
+        (ROOT / ".git").exists(),
+        "Kein Git-Repository unter ROOT gefunden",
+    )
+    run_git(
+        [
+            "merge-base",
+            "--is-ancestor",
+            V2735F_PREAUTHORIZATION_SHA,
+            V2735F_AUTHORIZATION_SHA,
+        ]
+    )
+    run_git(["merge-base", "--is-ancestor", V2735F_AUTHORIZATION_SHA, "HEAD"])
+
+    authorization_changed_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(
+            [
+                "diff",
+                "--name-only",
+                V2735F_PREAUTHORIZATION_SHA,
+                V2735F_AUTHORIZATION_SHA,
+            ]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        authorization_changed_files == set(V2735F_GATE_CONTROL_FILES),
+        (
+            "v27.35f-Autorisierungscommit veränderte zwischen dem funktionalen "
+            f"Vorautorisierungsstand {V2735F_PREAUTHORIZATION_SHA} und dem "
+            f"Autorisierungscommit {V2735F_AUTHORIZATION_SHA} nicht exakt die "
+            f"fünf Steuerungsdateien: {sorted(authorization_changed_files)}"
+        ),
+    )
+
+    authorization_tree_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(
+            ["ls-tree", "-r", "--name-only", V2735F_AUTHORIZATION_SHA]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        V2735F_NOTE_FILE not in authorization_tree_files,
+        "Die Wettbewerbsnotiz darf nicht Teil des v27.35f-Autorisierungscommits sein",
+    )
+
+    for relative_path in PROTECTED_RUNTIME_FILES + (
+        "questions.json",
+        "patch-v21.js",
+        "oral-exam.js",
+        V2735E_TEST_REPORT_FILE,
+        V2735G_SCORING_FIX_REPORT_FILE,
+    ):
+        require(
+            run_git(
+                [
+                    "diff",
+                    "--name-only",
+                    V2735F_PREAUTHORIZATION_SHA,
+                    V2735F_AUTHORIZATION_SHA,
+                    "--",
+                    relative_path,
+                ]
+            ).strip()
+            == "",
+            (
+                "App-, Funktions- oder historische Berichtsdatei wurde im "
+                f"v27.35f-Autorisierungscommit verändert: {relative_path}"
+            ),
+        )
+
+
+def validate_v2735f_implementation_gate_working_tree() -> None:
+    """Erzwingt Autorisierungs-HEAD, fünf Gate-Dateien und exakt eine Notiz."""
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden",
     )
     require(
         run_git(["branch", "--show-current"]).strip() == "main",
-        "Autorisierungsschritt muss auf Branch main laufen",
+        "v27.35f-Implementierungs-Gate muss auf Branch main laufen",
     )
     require(
-        run_git(["rev-parse", "HEAD"]).strip() == V2735F_AUTHORIZATION_BASE_SHA,
-        "HEAD weicht vom verbindlichen v27.35f-Ausgangscommit ab",
+        run_git(["rev-parse", "HEAD"]).strip() == V2735F_AUTHORIZATION_SHA,
+        "HEAD weicht vom verbindlichen v27.35f-Autorisierungscommit ab",
     )
     require(
         run_git(["rev-parse", "origin/main"]).strip()
-        == V2735F_AUTHORIZATION_BASE_SHA,
-        "origin/main weicht vom verbindlichen v27.35f-Ausgangscommit ab",
-    )
-    require(
-        not (ROOT / V2735F_NOTE_FILE).exists(),
-        f"{V2735F_NOTE_FILE} wurde vorzeitig erstellt",
+        == V2735F_AUTHORIZATION_SHA,
+        "origin/main weicht vom verbindlichen v27.35f-Autorisierungscommit ab",
     )
 
-    expected_files = set(V2735F_AUTHORIZATION_CONTROL_FILES)
+    note_path = ROOT / V2735F_NOTE_FILE
+    require(
+        sha256_file(note_path) == V2735F_NOTE_SHA256,
+        f"{V2735F_NOTE_FILE} wurde während des Gate-Korrekturschritts verändert",
+    )
+
+    expected_files = set(V2735F_GATE_CONTROL_FILES)
     diff_files = {
         line.strip().replace("\\", "/")
         for line in run_git(["diff", "--name-only"]).splitlines()
@@ -2172,47 +2294,44 @@ def validate_v2735f_authorization_working_tree() -> None:
     require(
         diff_files == expected_files,
         (
-            "Im v27.35f-Autorisierungsschritt müssen exakt die fünf "
+            "Im v27.35f-Gate-Korrekturschritt müssen exakt die fünf "
             f"Steuerungsdateien geändert sein: {sorted(diff_files)}"
         ),
     )
     require(
         run_git(["diff", "--cached", "--name-only"]).strip() == "",
-        "Im Autorisierungsschritt dürfen keine Änderungen gestaged sein",
+        "Im v27.35f-Gate-Korrekturschritt dürfen keine Änderungen gestaged sein",
     )
 
-    status_lines = [
-        line
+    untracked_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(
+            ["ls-files", "--others", "--exclude-standard"]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        untracked_files == {V2735F_NOTE_FILE},
+        (
+            "Im v27.35f-Implementierungs-Gate muss die Wettbewerbsnotiz "
+            f"die einzige ungetrackte Datei sein: {sorted(untracked_files)}"
+        ),
+    )
+
+    status_lines = {
+        line.replace("\\", "/")
         for line in run_git(
             ["status", "--porcelain=v1", "--untracked-files=all"]
         ).splitlines()
         if line
-    ]
-    status_files: set[str] = set()
-    for line in status_lines:
-        require(
-            len(line) >= 4,
-            f"Ungültige git-status-Zeile: {line!r}",
-        )
-        require(
-            line[:2] == " M",
-            f"Nur ungestagte Änderungen der Steuerungsdateien sind zulässig: {line}",
-        )
-        relative_path = line[3:].replace("\\", "/")
-        require(
-            " -> " not in relative_path,
-            f"Umbenennungen sind im Autorisierungsschritt unzulässig: {relative_path}",
-        )
-        require(
-            relative_path in expected_files,
-            f"Unzulässige geänderte Datei im Autorisierungsschritt: {relative_path}",
-        )
-        status_files.add(relative_path)
+    }
+    expected_status_lines = {f" M {path}" for path in expected_files}
+    expected_status_lines.add(f"?? {V2735F_NOTE_FILE}")
     require(
-        status_files == expected_files,
+        status_lines == expected_status_lines,
         (
-            "git status muss exakt die fünf Steuerungsdateien enthalten: "
-            f"{sorted(status_files)}"
+            "git status muss exakt fünf ungestagte Gate-Dateien und die "
+            f"ungetrackte Wettbewerbsnotiz enthalten: {sorted(status_lines)}"
         ),
     )
 
@@ -2224,7 +2343,15 @@ def validate_v2735f_authorization_working_tree() -> None:
         V2735G_SCORING_FIX_REPORT_FILE,
     ):
         require(
-            run_git(["diff", "--name-only", "HEAD", "--", relative_path]).strip()
+            run_git(
+                [
+                    "diff",
+                    "--name-only",
+                    V2735F_AUTHORIZATION_SHA,
+                    "--",
+                    relative_path,
+                ]
+            ).strip()
             == "",
             f"App-, Funktions- oder historische Berichtsdatei verändert: {relative_path}",
         )
@@ -2282,7 +2409,7 @@ def run_v2735f_authorization_manipulation_matrix(
         "Autorisiert": "NEIN",
         "Titel": "Anderer Task",
         "Funktionaler Ausgangsstand": "v27.35d",
-        "Erwarteter Ausgangscommit": f"`{V2735G_COMPLETION_SHA}`",
+        "Erwarteter Ausgangscommit": f"`{V2735F_PREAUTHORIZATION_SHA}`",
         "Erlaubte Dateien": f"`{V2735F_NOTE_FILE}`, `app.js`",
         "Commit erlaubt": "JA",
         "Push erlaubt": "JA",
@@ -2387,7 +2514,8 @@ def main() -> int:
         validate_v2735g_authorization_commit_history()
         validate_v2735g_gate_fix_commit_history()
         validate_v2735g_completion_commit_history()
-        validate_v2735f_authorization_working_tree()
+        validate_v2735f_authorization_commit_history()
+        validate_v2735f_implementation_gate_working_tree()
         manipulation_checks = run_v2735f_authorization_manipulation_matrix(
             state_text,
             task_text,
@@ -2399,13 +2527,13 @@ def main() -> int:
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität und v27.35f-Autorisierung: OK")
+    print("Projektkontinuität und v27.35f-Implementierungs-Gate: OK")
     print(
         "PROJECT_STATE_CURRENT: letzter funktionaler Stand v27.35g / "
         "einziger autorisierter Dokumentationstask v27.35f"
     )
     print(
-        "CURRENT_TASK: v27.35f / AUTHORIZED / Autorisiert JA / spätere "
+        "CURRENT_TASK: v27.35f / AUTHORIZED / Autorisiert JA / "
         f"Umsetzung nur {V2735F_NOTE_FILE} / kein Commit, kein Push"
     )
     print("AGENTS-Regeln, Cursor-Kontext und Chatwechsel-Protokoll: OK")
@@ -2440,8 +2568,14 @@ def main() -> int:
         f"{V2735G_COMPLETION_SHA} geändert, index.html/style.css unverändert"
     )
     print(
-        "v27.35f-Autorisierungsarbeitsbaum: exakt fünf Steuerungsdateien "
-        f"geändert; {V2735F_NOTE_FILE} noch nicht erstellt; App- und "
+        "v27.35f-Autorisierung historisch sauber: exakt fünf Steuerungsdateien "
+        f"zwischen {V2735F_PREAUTHORIZATION_SHA} und "
+        f"{V2735F_AUTHORIZATION_SHA} geändert"
+    )
+    print(
+        "v27.35f-Implementierungs-Gate: HEAD/origin auf Autorisierungscommit; "
+        "exakt fünf Gate-Dateien geändert; Wettbewerbsnotiz einzige "
+        f"ungetrackte Datei und SHA-256 {V2735F_NOTE_SHA256}; App- und "
         "Funktionsdateien unverändert"
     )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
