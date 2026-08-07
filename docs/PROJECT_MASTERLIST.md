@@ -952,7 +952,11 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 ### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt
 
 - Der Gate-Korrekturschritt betrifft ausschließlich die vier Steuerungsdokumente und `tools/check-project-continuity-control.py`.
-- Die Wettbewerbsnotiz ist lokal bereits erstellt und bleibt während des Gate-Schritts mit SHA-256 `cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7` unverändert.
+- `003112eaeb9a071a6396634b6da92fa11ae8921a` ist der funktionale Ausgangs- und Vorautorisierungsstand, `601dc6f751b6a603a27c4b3405150bf1d75e09fd` der v27.35f-Autorisierungscommit und die Umsetzungsbasis und `d4e46edc48e967509e09ddd1096b54eb0bed5971` ein legitimer nichtfunktionaler v27.35f-Gate-Fix-Commit.
+- Der ursprüngliche Checkerfehler war die starre Forderung `HEAD == 601dc6f751b6a603a27c4b3405150bf1d75e09fd`, die den legitimen Gate-Fix-Commit nachträglich blockierte.
+- Die neue Gate-Regel verlangt die Autorisierungsbasis als Vorfahren des aktuellen HEAD und begrenzt den gesamten committeten Diff bis HEAD auf die fünf Gate-Dateien; kein zukünftiger Gate-Commit-SHA wird vorweggenommen.
+- Vor einem Gate-Commit sind exakt fünf modifizierte Gate-Dateien plus die ungetrackte Notiz zulässig; nach einem legitimen Gate-Commit ist ausschließlich die ungetrackte Notiz zulässig.
+- Der frühere SHA-256 `cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7` gehört zur Notizfassung vor „Reaktivierung nach Lernunterbrechung“. Der aktuelle finale v27.35f-Notiz-Snapshot bleibt während des Gate-Schritts mit SHA-256 `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023` unverändert.
 - Sie darf als einzige ungetrackte Datei vorliegen; jede zusätzliche Datei bleibt gesperrt.
 - App-, Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-, Datenbank- und Netzwerkdateien bleiben unverändert.
 - v27.35f bleibt der einzige aktive Task; Commit und Push bleiben verboten, und ein Folgetask wird nicht ausgewählt oder autorisiert.
@@ -1361,7 +1365,12 @@ v27.35f-Autorisierungscommit und die verbindliche Umsetzungsbasis sind
 `601dc6f751b6a603a27c4b3405150bf1d75e09fd`. Ausschließlich
 `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` darf umgesetzt werden. Die
 Notiz ist lokal erstellt und bleibt im getrennten Gate-Korrekturschritt
-per SHA-256 unverändert.
+als finaler v27.35f-Notiz-Snapshot per SHA-256
+`983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
+unverändert. Der legitime nichtfunktionale Gate-Fix-Commit
+`d4e46edc48e967509e09ddd1096b54eb0bed5971` darf zwischen der
+Autorisierungsbasis und einem späteren aktuellen HEAD liegen, solange der
+gesamte committete Diff ausschließlich die fünf Gate-Dateien enthält.
 Kein funktionaler oder sonstiger Folgetask wird automatisch
 ausgewählt oder autorisiert. Backlog-Kandidat C
 (Quellen/mündliche Musterfragen) ist nicht autorisiert.

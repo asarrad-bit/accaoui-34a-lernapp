@@ -2,9 +2,12 @@
 """Prüft Autorisierung und Implementierungs-Gate des Dokumentationstasks v27.35f.
 
 v27.35g bleibt der letzte abgeschlossene funktionale Stand. Der
-Vorautorisierungsstand und der historische Autorisierungscommit werden
-getrennt geprüft. Im Gate-Korrekturschritt dürfen ausschließlich die
-fünf Steuerungsdateien geändert sein; die bereits lokal erstellte
+Vorautorisierungsstand, der historische Autorisierungscommit und der
+bekannte legitime Gate-Fix-Commit werden getrennt geprüft. Der aktuelle
+HEAD darf ein späterer Gate-Commit sein, wenn die Autorisierungsbasis ein
+Vorfahr bleibt und der gesamte committete Bereich ausschließlich die
+fünf Gate-Dateien enthält. Im Working Tree sind entweder exakt diese
+fünf Dateien oder keine getrackte Datei verändert; die finale
 Wettbewerbsnotiz bleibt als einzige ungetrackte Datei per SHA-256
 unverändert. App- und Funktionsdateien bleiben gesperrt.
 """
@@ -61,8 +64,9 @@ EXPECTED_V2735G_COMPLETION_CHANGED_FILES = (
 
 V2735F_PREAUTHORIZATION_SHA = "003112eaeb9a071a6396634b6da92fa11ae8921a"
 V2735F_AUTHORIZATION_SHA = "601dc6f751b6a603a27c4b3405150bf1d75e09fd"
+V2735F_FIRST_GATE_FIX_SHA = "d4e46edc48e967509e09ddd1096b54eb0bed5971"
 V2735F_NOTE_FILE = "docs/COMPETITOR_POSITIONING_NOTE_V2735F.md"
-V2735F_NOTE_SHA256 = "cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7"
+V2735F_NOTE_SHA256 = "983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023"
 V2735F_GATE_CONTROL_FILES = EXPECTED_CONTROL_FILES
 
 V2735F_EXPECTED_STATE_FIELDS = {
@@ -114,6 +118,10 @@ V2735F_STATE_REQUIRED_MARKERS = (
     "kein Folgetask automatisch ausgewählt.",
     "Commit und Push blieben gesperrt.",
     "### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt",
+    f"`{V2735F_FIRST_GATE_FIX_SHA}` ist ein legitimer",
+    "starre Gleichheitsprüfung auf",
+    "begrenzt den gesamten committeten Diff",
+    "Der Working Tree darf entweder exakt die fünf modifizierten Gate-Dateien",
     f"SHA-256\n`{V2735F_NOTE_SHA256}`",
     "v27.35f bleibt der einzige aktive Task",
     "Commit und Push bleiben\nverboten; ein Folgetask wird nicht ausgewählt oder autorisiert.",
@@ -182,7 +190,11 @@ V2735F_TASK_REQUIRED_MARKERS = (
     "## Verbindliche Committrennung und Gate-Korrektur",
     f"`{V2735F_PREAUTHORIZATION_SHA}` ist der funktionale",
     f"`{V2735F_AUTHORIZATION_SHA}` ist die verbindliche",
+    f"`{V2735F_FIRST_GATE_FIX_SHA}` ist ein legitimer",
     "separate nichtfunktionale v27.35f-Implementierungs-Gate-",
+    "unzulässige starre Checker-Forderung",
+    "ein Vorfahr des aktuellen",
+    "zwei Zustände zulässig",
     f"`{V2735F_NOTE_SHA256}`",
     "sie darf ungetrackt\nvorliegen. Keine weitere ungetrackte Datei ist zulässig.",
     "v27.35f bleibt der einzige aktive Task. Commit und Push bleiben verboten,",
@@ -213,8 +225,11 @@ V2735F_CURSOR_REQUIRED_MARKERS = (
     "Funktionaler Ausgangsstand ist v27.35g",
     f"`{V2735F_PREAUTHORIZATION_SHA}`",
     f"`{V2735F_AUTHORIZATION_SHA}`",
+    f"`{V2735F_FIRST_GATE_FIX_SHA}`",
     f"`{V2735F_NOTE_FILE}`",
     "separaten nichtfunktionalen v27.35f-Implementierungs-Gate-",
+    "ancestry-/Diff-basierte Gate-Regel",
+    "finaler v27.35f-Notiz-Snapshot",
     f"`{V2735F_NOTE_SHA256}`",
     "Sie darf als einzige ungetrackte Datei vorliegen.",
     "Commit und Push bleiben verboten.",
@@ -239,6 +254,7 @@ V2735F_MASTERLIST_REQUIRED_MARKERS = (
     "Funktionaler Ausgangsstand: v27.35g.",
     f"Funktionaler Ausgangs- und Vorautorisierungsstand: `{V2735F_PREAUTHORIZATION_SHA}`.",
     f"v27.35f-Autorisierungscommit und Umsetzungsbasis: `{V2735F_AUTHORIZATION_SHA}`.",
+    f"`{V2735F_FIRST_GATE_FIX_SHA}` ein legitimer nichtfunktionaler v27.35f-Gate-Fix-Commit.",
     f"Für die Umsetzung ist ausschließlich `{V2735F_NOTE_FILE}` erlaubt.",
     "beobachtete und nicht extern verifizierte Marketingaussagen",
     "Beobachtung, Bewertung und Accaoui-Empfehlung müssen klar getrennt bleiben.",
@@ -247,6 +263,10 @@ V2735F_MASTERLIST_REQUIRED_MARKERS = (
     "`Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.",
     "Nach Abschluss wird kein Folgetask automatisch ausgewählt oder autorisiert.",
     "### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt",
+    "Der ursprüngliche Checkerfehler war die starre Forderung",
+    "Die neue Gate-Regel verlangt die Autorisierungsbasis als Vorfahren des aktuellen HEAD",
+    "Vor einem Gate-Commit sind exakt fünf modifizierte Gate-Dateien",
+    "Der aktuelle finale v27.35f-Notiz-Snapshot bleibt während des Gate-Schritts",
     f"SHA-256 `{V2735F_NOTE_SHA256}` unverändert.",
     "Sie darf als einzige ungetrackte Datei vorliegen; jede zusätzliche Datei bleibt gesperrt.",
     "v27.35f bleibt der einzige aktive Task; Commit und Push bleiben verboten, und ein Folgetask wird nicht ausgewählt oder autorisiert.",
@@ -255,7 +275,7 @@ V2735F_MASTERLIST_REQUIRED_MARKERS = (
     "v27.35g bleibt der letzte abgeschlossene",
     f"`{V2735F_PREAUTHORIZATION_SHA}`; der historische",
     f"`{V2735F_AUTHORIZATION_SHA}`. Ausschließlich",
-    "Notiz ist lokal erstellt und bleibt im getrennten Gate-Korrekturschritt\nper SHA-256 unverändert.",
+    "Notiz ist lokal erstellt und bleibt im getrennten Gate-Korrekturschritt\nals finaler v27.35f-Notiz-Snapshot per SHA-256",
     "Kein funktionaler oder sonstiger Folgetask wird automatisch",
 )
 
@@ -2078,6 +2098,7 @@ def validate_v2735f_cursor_context_text(text: str) -> None:
         "`CURRENT_TASK` ist `v27.35f` / `AUTHORIZED` /",
         f"`{V2735F_PREAUTHORIZATION_SHA}`",
         f"`{V2735F_AUTHORIZATION_SHA}`",
+        f"`{V2735F_FIRST_GATE_FIX_SHA}`",
         f"`{V2735F_NOTE_FILE}`",
         "separaten nichtfunktionalen v27.35f-Implementierungs-Gate-",
         f"`{V2735F_NOTE_SHA256}`",
@@ -2184,7 +2205,7 @@ def validate_v2735f_masterlist_text(text: str) -> None:
 
 
 def validate_v2735f_authorization_commit_history() -> None:
-    """Prüft den v27.35f-Autorisierungscommit ausschließlich historisch."""
+    """Prüft Autorisierung und bekannten ersten Gate-Fix historisch."""
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden",
@@ -2197,7 +2218,15 @@ def validate_v2735f_authorization_commit_history() -> None:
             V2735F_AUTHORIZATION_SHA,
         ]
     )
-    run_git(["merge-base", "--is-ancestor", V2735F_AUTHORIZATION_SHA, "HEAD"])
+    run_git(
+        [
+            "merge-base",
+            "--is-ancestor",
+            V2735F_AUTHORIZATION_SHA,
+            V2735F_FIRST_GATE_FIX_SHA,
+        ]
+    )
+    run_git(["merge-base", "--is-ancestor", V2735F_FIRST_GATE_FIX_SHA, "HEAD"])
 
     authorization_changed_files = {
         line.strip().replace("\\", "/")
@@ -2233,6 +2262,39 @@ def validate_v2735f_authorization_commit_history() -> None:
         "Die Wettbewerbsnotiz darf nicht Teil des v27.35f-Autorisierungscommits sein",
     )
 
+    first_gate_fix_changed_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(
+            [
+                "diff",
+                "--name-only",
+                V2735F_AUTHORIZATION_SHA,
+                V2735F_FIRST_GATE_FIX_SHA,
+            ]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        first_gate_fix_changed_files == set(V2735F_GATE_CONTROL_FILES),
+        (
+            "Der bekannte v27.35f-Gate-Fix-Commit muss gegenüber der "
+            "Autorisierungsbasis exakt die fünf Gate-Dateien verändern: "
+            f"{sorted(first_gate_fix_changed_files)}"
+        ),
+    )
+
+    first_gate_fix_tree_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(
+            ["ls-tree", "-r", "--name-only", V2735F_FIRST_GATE_FIX_SHA]
+        ).splitlines()
+        if line.strip()
+    }
+    require(
+        V2735F_NOTE_FILE not in first_gate_fix_tree_files,
+        "Die Wettbewerbsnotiz darf nicht Teil des v27.35f-Gate-Fix-Commits sein",
+    )
+
     for relative_path in PROTECTED_RUNTIME_FILES + (
         "questions.json",
         "patch-v21.js",
@@ -2259,8 +2321,66 @@ def validate_v2735f_authorization_commit_history() -> None:
         )
 
 
+def validate_v2735f_committed_gate_files(committed_files: set[str]) -> None:
+    """Blockiert jede committete Datei außerhalb der fünf Gate-Dateien."""
+    unexpected_files = committed_files - set(V2735F_GATE_CONTROL_FILES)
+    require(
+        not unexpected_files,
+        (
+            "Seit der v27.35f-Autorisierungsbasis wurden unzulässige Dateien "
+            f"committet: {sorted(unexpected_files)}"
+        ),
+    )
+
+
+def validate_v2735f_working_tree_snapshot(
+    diff_files: set[str],
+    staged_files: set[str],
+    untracked_files: set[str],
+    status_lines: set[str],
+) -> None:
+    """Akzeptiert exakt den Zustand vor oder nach einem legitimen Gate-Commit."""
+    expected_gate_files = set(V2735F_GATE_CONTROL_FILES)
+    require(
+        diff_files in (set(), expected_gate_files),
+        (
+            "Im v27.35f-Gate sind lokal entweder exakt die fünf Gate-Dateien "
+            "oder nach deren Commit keine getrackten Dateien verändert: "
+            f"{sorted(diff_files)}"
+        ),
+    )
+    require(
+        not staged_files,
+        (
+            "Im v27.35f-Gate dürfen keine Änderungen gestaged sein: "
+            f"{sorted(staged_files)}"
+        ),
+    )
+    require(
+        untracked_files == {V2735F_NOTE_FILE},
+        (
+            "Im v27.35f-Gate muss die Wettbewerbsnotiz die einzige "
+            f"ungetrackte Datei sein: {sorted(untracked_files)}"
+        ),
+    )
+
+    note_status = f"?? {V2735F_NOTE_FILE}"
+    status_before_commit = {
+        *(f" M {path}" for path in expected_gate_files),
+        note_status,
+    }
+    status_after_commit = {note_status}
+    require(
+        status_lines in (status_before_commit, status_after_commit),
+        (
+            "git status muss exakt den v27.35f-Gate-Zustand vor oder nach "
+            f"dem Gate-Commit zeigen: {sorted(status_lines)}"
+        ),
+    )
+
+
 def validate_v2735f_implementation_gate_working_tree() -> None:
-    """Erzwingt Autorisierungs-HEAD, fünf Gate-Dateien und exakt eine Notiz."""
+    """Prüft ancestry-/Diff-basiert Commitbereich und Working Tree."""
     require(
         (ROOT / ".git").exists(),
         "Kein Git-Repository unter ROOT gefunden",
@@ -2269,14 +2389,53 @@ def validate_v2735f_implementation_gate_working_tree() -> None:
         run_git(["branch", "--show-current"]).strip() == "main",
         "v27.35f-Implementierungs-Gate muss auf Branch main laufen",
     )
-    require(
-        run_git(["rev-parse", "HEAD"]).strip() == V2735F_AUTHORIZATION_SHA,
-        "HEAD weicht vom verbindlichen v27.35f-Autorisierungscommit ab",
+
+    current_head = run_git(["rev-parse", "HEAD"]).strip()
+    origin_main = run_git(["rev-parse", "origin/main"]).strip()
+    run_git(
+        [
+            "merge-base",
+            "--is-ancestor",
+            V2735F_AUTHORIZATION_SHA,
+            current_head,
+        ]
     )
+    run_git(
+        [
+            "merge-base",
+            "--is-ancestor",
+            V2735F_AUTHORIZATION_SHA,
+            origin_main,
+        ]
+    )
+    run_git(["merge-base", "--is-ancestor", origin_main, current_head])
+
+    committed_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(
+            [
+                "diff",
+                "--name-only",
+                V2735F_AUTHORIZATION_SHA,
+                current_head,
+            ]
+        ).splitlines()
+        if line.strip()
+    }
+    validate_v2735f_committed_gate_files(committed_files)
     require(
-        run_git(["rev-parse", "origin/main"]).strip()
-        == V2735F_AUTHORIZATION_SHA,
-        "origin/main weicht vom verbindlichen v27.35f-Autorisierungscommit ab",
+        run_git(
+            [
+                "ls-tree",
+                "-r",
+                "--name-only",
+                current_head,
+                "--",
+                V2735F_NOTE_FILE,
+            ]
+        ).strip()
+        == "",
+        "Die Wettbewerbsnotiz muss bis zum aktuellen HEAD ungetrackt bleiben",
     )
 
     note_path = ROOT / V2735F_NOTE_FILE
@@ -2285,23 +2444,16 @@ def validate_v2735f_implementation_gate_working_tree() -> None:
         f"{V2735F_NOTE_FILE} wurde während des Gate-Korrekturschritts verändert",
     )
 
-    expected_files = set(V2735F_GATE_CONTROL_FILES)
     diff_files = {
         line.strip().replace("\\", "/")
         for line in run_git(["diff", "--name-only"]).splitlines()
         if line.strip()
     }
-    require(
-        diff_files == expected_files,
-        (
-            "Im v27.35f-Gate-Korrekturschritt müssen exakt die fünf "
-            f"Steuerungsdateien geändert sein: {sorted(diff_files)}"
-        ),
-    )
-    require(
-        run_git(["diff", "--cached", "--name-only"]).strip() == "",
-        "Im v27.35f-Gate-Korrekturschritt dürfen keine Änderungen gestaged sein",
-    )
+    staged_files = {
+        line.strip().replace("\\", "/")
+        for line in run_git(["diff", "--cached", "--name-only"]).splitlines()
+        if line.strip()
+    }
 
     untracked_files = {
         line.strip().replace("\\", "/")
@@ -2310,14 +2462,6 @@ def validate_v2735f_implementation_gate_working_tree() -> None:
         ).splitlines()
         if line.strip()
     }
-    require(
-        untracked_files == {V2735F_NOTE_FILE},
-        (
-            "Im v27.35f-Implementierungs-Gate muss die Wettbewerbsnotiz "
-            f"die einzige ungetrackte Datei sein: {sorted(untracked_files)}"
-        ),
-    )
-
     status_lines = {
         line.replace("\\", "/")
         for line in run_git(
@@ -2325,14 +2469,11 @@ def validate_v2735f_implementation_gate_working_tree() -> None:
         ).splitlines()
         if line
     }
-    expected_status_lines = {f" M {path}" for path in expected_files}
-    expected_status_lines.add(f"?? {V2735F_NOTE_FILE}")
-    require(
-        status_lines == expected_status_lines,
-        (
-            "git status muss exakt fünf ungestagte Gate-Dateien und die "
-            f"ungetrackte Wettbewerbsnotiz enthalten: {sorted(status_lines)}"
-        ),
+    validate_v2735f_working_tree_snapshot(
+        diff_files,
+        staged_files,
+        untracked_files,
+        status_lines,
     )
 
     for relative_path in PROTECTED_RUNTIME_FILES + (
@@ -2348,6 +2489,7 @@ def validate_v2735f_implementation_gate_working_tree() -> None:
                     "diff",
                     "--name-only",
                     V2735F_AUTHORIZATION_SHA,
+                    current_head,
                     "--",
                     relative_path,
                 ]
@@ -2490,6 +2632,126 @@ def run_v2735f_authorization_manipulation_matrix(
     )
     checks += 1
 
+    gate_rule_document_markers = (
+        (
+            validate_v2735f_authorized_state_text,
+            state_text,
+            "starre Gleichheitsprüfung auf",
+            "PROJECT_STATE_CURRENT dokumentiert den ursprünglichen Checkerfehler",
+        ),
+        (
+            validate_v2735f_authorized_task_text,
+            task_text,
+            "unzulässige starre Checker-Forderung",
+            "CURRENT_TASK dokumentiert den ursprünglichen Checkerfehler",
+        ),
+        (
+            validate_v2735f_cursor_context_text,
+            cursor_context_text,
+            "ancestry-/Diff-basierte Gate-Regel",
+            "Cursor-Kontext dokumentiert die ancestry-/Diff-Gate-Regel",
+        ),
+        (
+            validate_v2735f_masterlist_text,
+            masterlist_text,
+            "Die neue Gate-Regel verlangt die Autorisierungsbasis als Vorfahren",
+            "Masterliste dokumentiert die ancestry-/Diff-Gate-Regel",
+        ),
+    )
+    for validator, document_text, marker, label in gate_rule_document_markers:
+        must_reject(
+            validator,
+            changed_once(document_text, marker, "", label),
+            label,
+        )
+        checks += 1
+
+    expected_gate_files = set(V2735F_GATE_CONTROL_FILES)
+    note_status = f"?? {V2735F_NOTE_FILE}"
+    status_before_commit = {
+        *(f" M {path}" for path in expected_gate_files),
+        note_status,
+    }
+    status_after_commit = {note_status}
+
+    validate_v2735f_committed_gate_files(set())
+    validate_v2735f_committed_gate_files(expected_gate_files)
+    validate_v2735f_working_tree_snapshot(
+        expected_gate_files,
+        set(),
+        {V2735F_NOTE_FILE},
+        status_before_commit,
+    )
+    validate_v2735f_working_tree_snapshot(
+        set(),
+        set(),
+        {V2735F_NOTE_FILE},
+        status_after_commit,
+    )
+
+    gate_state_manipulations = (
+        (
+            lambda _text: validate_v2735f_committed_gate_files(
+                expected_gate_files | {"app.js"}
+            ),
+            "committete App-Datei seit Autorisierungsbasis",
+        ),
+        (
+            lambda _text: validate_v2735f_committed_gate_files(
+                expected_gate_files | {V2735F_NOTE_FILE}
+            ),
+            "committete Wettbewerbsnotiz seit Autorisierungsbasis",
+        ),
+        (
+            lambda _text: validate_v2735f_working_tree_snapshot(
+                {CHECKER_RELATIVE_PATH},
+                set(),
+                {V2735F_NOTE_FILE},
+                {f" M {CHECKER_RELATIVE_PATH}", note_status},
+            ),
+            "unvollständiger lokaler Gate-Dateisatz",
+        ),
+        (
+            lambda _text: validate_v2735f_working_tree_snapshot(
+                expected_gate_files | {"app.js"},
+                set(),
+                {V2735F_NOTE_FILE},
+                status_before_commit | {" M app.js"},
+            ),
+            "zusätzliche lokale App-Datei",
+        ),
+        (
+            lambda _text: validate_v2735f_working_tree_snapshot(
+                expected_gate_files,
+                {CHECKER_RELATIVE_PATH},
+                {V2735F_NOTE_FILE},
+                status_before_commit,
+            ),
+            "gestagte Gate-Datei",
+        ),
+        (
+            lambda _text: validate_v2735f_working_tree_snapshot(
+                expected_gate_files,
+                set(),
+                {V2735F_NOTE_FILE, "unexpected.txt"},
+                status_before_commit | {"?? unexpected.txt"},
+            ),
+            "zusätzliche ungetrackte Datei",
+        ),
+        (
+            lambda _text: validate_v2735f_working_tree_snapshot(
+                set(),
+                set(),
+                set(),
+                set(),
+            ),
+            "fehlende ungetrackte Wettbewerbsnotiz",
+        ),
+    )
+    for validator, label in gate_state_manipulations:
+        must_reject(validator, "", label)
+        checks += 1
+
     return checks
 
 
@@ -2573,10 +2835,16 @@ def main() -> int:
         f"{V2735F_AUTHORIZATION_SHA} geändert"
     )
     print(
-        "v27.35f-Implementierungs-Gate: HEAD/origin auf Autorisierungscommit; "
-        "exakt fünf Gate-Dateien geändert; Wettbewerbsnotiz einzige "
-        f"ungetrackte Datei und SHA-256 {V2735F_NOTE_SHA256}; App- und "
-        "Funktionsdateien unverändert"
+        "v27.35f-erster Gate-Fix historisch sauber: exakt fünf Gate-Dateien "
+        f"zwischen {V2735F_AUTHORIZATION_SHA} und "
+        f"{V2735F_FIRST_GATE_FIX_SHA} geändert"
+    )
+    print(
+        "v27.35f-Implementierungs-Gate: Autorisierungsbasis ist Vorfahr des "
+        "aktuellen HEAD; committeter Bereich enthält ausschließlich Gate-Dateien; "
+        "Working Tree entspricht dem Zustand vor oder nach dem Gate-Commit; "
+        "Wettbewerbsnotiz ist einzige ungetrackte Datei und finaler SHA-256 "
+        f"{V2735F_NOTE_SHA256}; App- und Funktionsdateien unverändert"
     )
     print(f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt")
     return 0

@@ -44,14 +44,34 @@ Commit und Push blieben gesperrt.
 Der Commit `003112eaeb9a071a6396634b6da92fa11ae8921a` bleibt der funktionale
 Ausgangs- und Vorautorisierungsstand. Der historische
 v27.35f-Autorisierungscommit
-`601dc6f751b6a603a27c4b3405150bf1d75e09fd` ist der verbindliche
-Ausgangs-HEAD der Umsetzung.
+`601dc6f751b6a603a27c4b3405150bf1d75e09fd` ist die verbindliche
+Umsetzungsbasis. Der Commit
+`d4e46edc48e967509e09ddd1096b54eb0bed5971` ist ein legitimer
+nichtfunktionaler v27.35f-Gate-Fix-Commit; zwischen der Umsetzungsbasis
+und diesem Commit wurden ausschließlich die vier Steuerungsdokumente
+und `tools/check-project-continuity-control.py` verändert.
 
-Die Wettbewerbsnotiz ist lokal bereits erstellt und bleibt während
-dieses getrennten Gate-Korrekturschritts mit SHA-256
+Der ursprüngliche Checkerfehler war eine starre Gleichheitsprüfung auf
+`HEAD == 601dc6f751b6a603a27c4b3405150bf1d75e09fd`. Dadurch wurde der
+legitime Gate-Fix-Commit `d4e46edc48e967509e09ddd1096b54eb0bed5971`
+nach seinem Commit fälschlich blockiert. Der Checker verlangt deshalb
+künftig die Autorisierungsbasis als Vorfahren des aktuellen HEAD und
+begrenzt den gesamten committeten Diff von dieser Basis bis HEAD auf die
+fünf Gate-Dateien. Der aktuelle HEAD darf ein späterer legitimer
+Gate-Commit sein; ein zukünftiger Commit-SHA wird nicht vorweggenommen.
+
+Der frühere SHA-256
 `cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7`
-unverändert. Der Gate-Korrekturschritt betrifft ausschließlich die vier
-Steuerungsdokumente und `tools/check-project-continuity-control.py`.
+gehört zur Notizfassung vor der autorisierten Ergänzung „Reaktivierung
+nach Lernunterbrechung“. Der aktuelle finale v27.35f-Notiz-Snapshot hat
+SHA-256
+`983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
+und bleibt während dieses getrennten Gate-Korrekturschritts unverändert.
+Der Working Tree darf entweder exakt die fünf modifizierten Gate-Dateien
+und die ungetrackte Notiz oder nach einem legitimen Gate-Commit nur die
+ungetrackte Notiz enthalten. Der Gate-Korrekturschritt betrifft
+ausschließlich die vier Steuerungsdokumente und
+`tools/check-project-continuity-control.py`.
 v27.35f bleibt der einzige aktive Task; für seine Umsetzung bleibt
 ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
 App-, Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-,

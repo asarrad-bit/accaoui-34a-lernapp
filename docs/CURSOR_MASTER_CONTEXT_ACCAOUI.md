@@ -486,9 +486,23 @@ ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
 
 In einem separaten nichtfunktionalen v27.35f-Implementierungs-Gate-
 Korrekturschritt werden ausschließlich die vier Steuerungsdokumente und
-`tools/check-project-continuity-control.py` korrigiert. Die bereits lokal
-erstellte Wettbewerbsnotiz bleibt dabei mit SHA-256
+`tools/check-project-continuity-control.py` korrigiert. Der Commit
+`d4e46edc48e967509e09ddd1096b54eb0bed5971` ist ein legitimer
+nichtfunktionaler v27.35f-Gate-Fix-Commit. Die bisherige starre Forderung
+`HEAD == 601dc6f751b6a603a27c4b3405150bf1d75e09fd` blockierte diesen Commit
+fälschlich und wird durch eine ancestry-/Diff-basierte Gate-Regel ersetzt:
+Die Autorisierungsbasis muss Vorfahr des aktuellen HEAD sein, und der
+committete Bereich bis HEAD darf ausschließlich die fünf Gate-Dateien
+enthalten. Der Working Tree darf vor dem Gate-Commit exakt diese fünf
+modifizierten Dateien plus die ungetrackte Notiz und danach ausschließlich
+die ungetrackte Notiz enthalten.
+
+Der frühere Notiz-SHA
 `cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7`
+bezeichnet die Fassung vor „Reaktivierung nach Lernunterbrechung“. Die
+fertig ergänzte Wettbewerbsnotiz bleibt während dieses Gate-Schritts als
+finaler v27.35f-Notiz-Snapshot mit SHA-256
+`983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
 unverändert. Sie darf als einzige ungetrackte Datei vorliegen. App-,
 Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-, Datenbank-
 und Netzwerkdateien bleiben gesperrt. Commit und Push bleiben verboten.
