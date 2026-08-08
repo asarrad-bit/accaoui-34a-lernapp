@@ -2306,8 +2306,16 @@ def validate_v2735f_masterlist_text(text: str) -> None:
 def v2735f_closure_markers(implementation_commit: str) -> tuple[str, ...]:
     return (
         "v27.35f abgeschlossen",
+        "Taskart: interne strategische Dokumentation.",
+        f"Finale Notiz: `{V2735F_NOTE_FILE}`",
         f"Finaler Notiz-SHA-256: `{V2735F_NOTE_SHA256}`",
         f"Implementierungscommit: `{implementation_commit}`",
+        (
+            "Wettbewerbsbeobachtung, Accaoui-Differenzierung und "
+            "Reaktivierung nach\nLernunterbrechung sind dokumentiert."
+        ),
+        "Kein App-Code wurde durch v27.35f verändert.",
+        "Der letzte abgeschlossene funktionale Stand bleibt v27.35g.",
         "Kein Folgetask wurde ausgewählt oder autorisiert.",
     )
 
@@ -2946,9 +2954,28 @@ def run_v2735f_authorization_manipulation_matrix(
     task_text: str,
     cursor_context_text: str,
     masterlist_text: str,
+    implementation_commit: str | None,
 ) -> tuple[int, int, int]:
     """Bestätigt die verbindlichen Blockierungen des v27.35f-Vertrags."""
     checks = 0
+
+    if detect_v2735f_task_state_text(task_text) == V2735F_TASK_CLOSED:
+        require(
+            implementation_commit is not None,
+            "Abschluss-Manipulationsmatrix benötigt den IMPLEMENTATION-Commit",
+        )
+        state_text = read_v2735f_commit_document(
+            implementation_commit, "docs/PROJECT_STATE_CURRENT.md"
+        )
+        task_text = read_v2735f_commit_document(
+            implementation_commit, V2735F_TASK_RELATIVE_PATH
+        )
+        cursor_context_text = read_v2735f_commit_document(
+            implementation_commit, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"
+        )
+        masterlist_text = read_v2735f_commit_document(
+            implementation_commit, "docs/PROJECT_MASTERLIST.md"
+        )
 
     state_manipulations = {
         "Stand": "v27.35f",
@@ -3340,6 +3367,7 @@ def main() -> int:
             task_text,
             cursor_context_text,
             masterlist_text,
+            lifecycle_history.implementation_commit,
         )
     except ValidationError as exc:
         print(f"FEHLER: {exc}")

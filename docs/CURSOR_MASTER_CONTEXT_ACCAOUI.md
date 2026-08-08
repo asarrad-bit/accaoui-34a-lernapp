@@ -466,72 +466,31 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-`CURRENT_TASK` ist `v27.35f` / `AUTHORIZED` /
-`Autorisiert: JA`. v27.35g bleibt mit Abschlusscommit
-`f5f261fee67fc17c170ee714ae23761ff1668f17` der letzte
-abgeschlossene funktionale Stand.
+`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
 
-Vor der funktionalen Umsetzung wurde ein getrennter, nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) durchgeführt, der ausschließlich `tools/check-project-continuity-control.py` und die vier Steuerungsdokumente ergänzte und im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` freigab.
+v27.35f abgeschlossen.
 
-Der Regressionstest v27.35e bleibt mit Gesamtergebnis FAIL abgeschlossen (Testbericht-Commit `db2f12a1af7792c59e9e6411bb127b2f68401713`) und der Testbericht `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische Fehlerdokumentation erhalten. Testbericht der Korrektur: `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`.
+Taskart: interne strategische Dokumentation.
 
-Der einzige autorisierte Task ist v27.35f:
-„Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren“.
-Funktionaler Ausgangsstand ist v27.35g. Der funktionale Ausgangs- und
-Vorautorisierungsstand ist
-`003112eaeb9a071a6396634b6da92fa11ae8921a`; der historische
-v27.35f-Autorisierungscommit und die verbindliche Umsetzungsbasis sind
-`601dc6f751b6a603a27c4b3405150bf1d75e09fd`. Für die Umsetzung ist
-ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
+Implementierungscommit: `25829727db8c3bafbc13b6e626748fa1f76b174f`
 
-In einem separaten nichtfunktionalen v27.35f-Implementierungs-Gate-
-Korrekturschritt werden ausschließlich die vier Steuerungsdokumente und
-`tools/check-project-continuity-control.py` korrigiert. Der Commit
-`d4e46edc48e967509e09ddd1096b54eb0bed5971` ist ein legitimer
-nichtfunktionaler v27.35f-Gate-Fix-Commit. Die bisherige starre Forderung
-`HEAD == 601dc6f751b6a603a27c4b3405150bf1d75e09fd` blockierte diesen Commit
-fälschlich und wird durch eine ancestry-/Diff-basierte Gate-Regel ersetzt:
-Die Autorisierungsbasis muss Vorfahr des aktuellen HEAD sein, und der
-committete Bereich bis HEAD darf ausschließlich die fünf Gate-Dateien
-enthalten. Der Working Tree darf vor dem Gate-Commit exakt diese fünf
-modifizierten Dateien plus die ungetrackte Notiz und danach ausschließlich
-die ungetrackte Notiz enthalten.
+Finale Notiz: `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`
 
-Der frühere Notiz-SHA
-`cff217d2b8cd0e9c50c3c1a351ff3de8ee595f0e3c59ed0def0ae1a3f8a799f7`
-bezeichnet die Fassung vor „Reaktivierung nach Lernunterbrechung“. Die
-fertig ergänzte Wettbewerbsnotiz bleibt während dieses Gate-Schritts als
-finaler v27.35f-Notiz-Snapshot mit SHA-256
-`983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
-unverändert. Sie darf als einzige ungetrackte Datei vorliegen. App-,
-Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-, Datenbank-
-und Netzwerkdateien bleiben gesperrt. Commit und Push bleiben verboten.
+Finaler Notiz-SHA-256: `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
 
-Der v27.35f-Checker arbeitet verbindlich als vierphasige Lebenszyklus-
-State-Machine. Ab der Autorisierungsbasis
-`601dc6f751b6a603a27c4b3405150bf1d75e09fd` klassifiziert er Commits ohne
-zukünftige hartcodierte SHAs anhand der tatsächlichen Dateimenge:
-Gate-Dateien ergeben GATE beziehungsweise nach der Implementation
-CLOSURE; exakt die Wettbewerbsnotiz ergibt höchstens einmal
-IMPLEMENTATION und muss den finalen SHA-256
-`983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
-tragen.
+Wettbewerbsbeobachtung, Accaoui-Differenzierung und Reaktivierung nach
+Lernunterbrechung sind dokumentiert.
 
-Zulässig sind: vor Implementation der autorisierte Task mit ungetrackter
-Notiz; nach Implementation der weiterhin autorisierte Task mit sauberem
-Working Tree; lokal vorbereitete Closure mit exakt fünf Gate-Dateien und
-`CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`; sowie committete
-Closure mit sauberem Working Tree. Closure setzt einen dynamisch aus Git
-ermittelten Implementation-Commit voraus. Der Abschluss muss „v27.35f
-abgeschlossen“, `Implementierungscommit: <SHA>`, den finalen Notiz-SHA
-und „Kein Folgetask wurde ausgewählt oder autorisiert.“ dokumentieren.
-Eine Rückkehr aus dem abgeschlossenen Zustand zu v27.35f bleibt ohne neue
-Autorisierung gesperrt.
+Kein App-Code wurde durch v27.35f verändert.
 
-Codex darf ebenso wie Cursor ausschließlich diesen `CURRENT_TASK`
-bearbeiten. Kein funktionaler oder sonstiger Folgetask wird
-automatisch ausgewählt, autorisiert oder aus Versionsfolgen, früheren
-Chats oder Erinnerung abgeleitet.
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Sein Abschlusscommit ist `f5f261fee67fc17c170ee714ae23761ff1668f17`.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
+
+Jeder weitere funktionale oder dokumentarische Schritt bleibt gesperrt,
+bis ein neuer Task ausdrücklich autorisiert wird. Eine Rückkehr zum
+abgeschlossenen v27.35f ohne neue Autorisierung bleibt blockiert.
 
 ## 15. Wenn ein neuer Chat beginnt
 

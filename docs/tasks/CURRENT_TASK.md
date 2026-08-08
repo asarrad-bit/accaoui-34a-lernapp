@@ -1,16 +1,39 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.35f
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren
-Funktionaler Ausgangsstand: v27.35g
-Erwarteter Ausgangscommit: `601dc6f751b6a603a27c4b3405150bf1d75e09fd`
-Erlaubte Dateien: `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
+Erlaubte Dateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
 
-## Verbindliche Committrennung und Gate-Korrektur
+## Abgeschlossener Dokumentationstask v27.35f
+
+v27.35f abgeschlossen.
+
+Taskart: interne strategische Dokumentation.
+
+Implementierungscommit: `25829727db8c3bafbc13b6e626748fa1f76b174f`
+
+Finale Notiz: `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`
+
+Finaler Notiz-SHA-256: `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
+
+Wettbewerbsbeobachtung, Accaoui-Differenzierung und Reaktivierung nach
+Lernunterbrechung sind dokumentiert.
+
+Kein App-Code wurde durch v27.35f verändert.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
+
+Jeder weitere Schritt bleibt gesperrt, bis ein neuer Task ausdrücklich
+autorisiert wird. Eine Rückkehr zu v27.35f ist ohne neue ausdrückliche
+Autorisierung nicht zulässig.
+
+## Historische Committrennung und Gate-Korrektur
 
 Der Commit `003112eaeb9a071a6396634b6da92fa11ae8921a` ist der funktionale
 Ausgangs- und Vorautorisierungsstand. Der historische
@@ -92,10 +115,11 @@ IMPLEMENTATION-Commit, fremde Commitdateien, ein falscher Notiz-SHA,
 zusätzliche Working-Tree-Dateien sowie Commit oder Push `JA` bleiben
 geschlossen blockiert.
 
-v27.35f bleibt der einzige aktive Task. Commit und Push bleiben verboten,
-und ein Folgetask wird nicht ausgewählt oder autorisiert.
+Während der Umsetzung blieb v27.35f der einzige aktive Task. Commit und
+Push blieben verboten, und ein Folgetask wurde nicht ausgewählt oder
+autorisiert.
 
-## Ziel
+## Historisches Ziel
 
 Eine interne strategische Dokumentation erstellen, die allgemeine
 Verkaufs- und Positionierungsmechanismen eines beobachteten
@@ -179,5 +203,5 @@ Autorisierungsschritt noch nicht erstellt oder verändert. In diesem
 Schritt wurde keine Wettbewerbsnotiz erstellt und keine App-Datei
 verändert.
 
-Die spätere Umsetzung darf ausschließlich diesen `CURRENT_TASK`
-bearbeiten. Nach Abschluss wird kein Folgetask automatisch ausgewählt.
+Die Umsetzung durfte ausschließlich diesen damaligen `CURRENT_TASK`
+bearbeiten. Nach dem Abschluss wurde kein Folgetask automatisch ausgewählt.

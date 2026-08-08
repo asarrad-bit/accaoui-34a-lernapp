@@ -8,36 +8,34 @@ Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: v27.35f
-Aktuelle Taskart: Dokumentation
-Aktueller Blocker: KEINER; v27.35f ist als einziger Dokumentationstask autorisiert, Umsetzung offen
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: KEINE
+Aktueller Blocker: Kein Task autorisiert; jeder weitere funktionale oder dokumentarische Schritt bleibt gesperrt, bis ein neuer Task ausdrücklich autorisiert wird
 
-## Autorisierter Dokumentationstask v27.35f
+## Abgeschlossener Dokumentationstask v27.35f
 
-`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: v27.35f`,
-`Status: AUTHORIZED`, `Autorisiert: JA`,
-`Titel: Wettbewerbsbeobachtung und Accaoui-Positionierung dokumentieren`,
-`Funktionaler Ausgangsstand: v27.35g`, funktionaler Ausgangs- und
-Vorautorisierungsstand
-`003112eaeb9a071a6396634b6da92fa11ae8921a`, v27.35f-Autorisierungscommit
-und Umsetzungsbasis
-`601dc6f751b6a603a27c4b3405150bf1d75e09fd`, ausschließlich erlaubte Datei
-für die Umsetzung
-`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`,
-`Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
+v27.35f abgeschlossen.
 
-v27.35g bleibt der letzte abgeschlossene funktionale Stand. v27.35f ist
-der einzige autorisierte Dokumentationstask; seine Umsetzung ist offen.
-Die spätere Notiz muss beobachtete, nicht extern verifizierte
-Wettbewerber-Werbeaussagen klar von Bewertung und eigener
-Accaoui-Empfehlung trennen. Die Leitidee und der Qualitätsmaßstab
-„Mit dieser App habe ich es endlich verstanden.“ bleiben verbindlich.
+Taskart: interne strategische Dokumentation.
 
-Im abgeschlossenen Autorisierungsschritt wurde
-`docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` noch nicht erstellt oder
-verändert. In diesem Schritt wurde keine Wettbewerbsnotiz erstellt,
-keine App-Datei verändert und kein Folgetask automatisch ausgewählt.
-Commit und Push blieben gesperrt.
+Implementierungscommit: `25829727db8c3bafbc13b6e626748fa1f76b174f`
+
+Finale Notiz: `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`
+
+Finaler Notiz-SHA-256: `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
+
+Wettbewerbsbeobachtung, Accaoui-Differenzierung und Reaktivierung nach
+Lernunterbrechung sind dokumentiert.
+
+Kein App-Code wurde durch v27.35f verändert.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+
+`docs/tasks/CURRENT_TASK.md` steht auf `Task-ID: NONE`,
+`Status: BLOCKED`, `Autorisiert: NEIN`, `Titel: Kein Task autorisiert`,
+`Erlaubte Dateien: KEINE`; Commit und Push bleiben gesperrt.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
 
 ### Separater nichtfunktionaler v27.35f-Implementierungs-Gate-Korrekturschritt
 
@@ -72,11 +70,11 @@ und die ungetrackte Notiz oder nach einem legitimen Gate-Commit nur die
 ungetrackte Notiz enthalten. Der Gate-Korrekturschritt betrifft
 ausschließlich die vier Steuerungsdokumente und
 `tools/check-project-continuity-control.py`.
-v27.35f bleibt der einzige aktive Task; für seine Umsetzung bleibt
+Während der Umsetzung blieb v27.35f der einzige aktive Task; dafür war
 ausschließlich `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md` erlaubt.
 App-, Funktions-, Fragen-, UI-, Marketingmaterial-, Supabase-, SQL-,
-Datenbank- und Netzwerkdateien bleiben gesperrt. Commit und Push bleiben
-verboten; ein Folgetask wird nicht ausgewählt oder autorisiert.
+Datenbank- und Netzwerkdateien blieben gesperrt. Commit und Push blieben
+verboten; ein Folgetask wurde nicht ausgewählt oder autorisiert.
 
 ### Verbindliche v27.35f-Lebenszyklus-State-Machine
 
@@ -100,11 +98,10 @@ Closure ist erst nach dynamischem Nachweis des Implementation-Commits
 zulässig. Nach einer Closure bleibt jede Rückkehr zu v27.35f ohne neue
 Autorisierung gesperrt.
 
-Der spätere Abschlusszustand dokumentiert „v27.35f abgeschlossen“, den
-finalen Notiz-SHA, den dynamisch aus Git ermittelten
-`Implementierungscommit: <SHA>` und „Kein Folgetask wurde ausgewählt oder
-autorisiert.“ Kein zukünftiger Implementation- oder Closure-Commit-SHA
-wird vorab eingetragen.
+Der erreichte Abschlusszustand dokumentiert „v27.35f abgeschlossen“, den
+finalen Notiz-SHA und den dynamisch aus Git ermittelten
+Implementierungscommit. Kein zukünftiger Closure-Commit-SHA wird vorab
+eingetragen.
 
 ## Abgeschlossener Regressionstest v27.35e (FAIL)
 
