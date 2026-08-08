@@ -466,31 +466,63 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
+`CURRENT_TASK` ist `v27.36a` / `AUTHORIZED` / `Autorisiert: JA`.
 
-v27.35f abgeschlossen.
+Einziger autorisierter Task: Supabase/Login-Bestandsaudit und nächsten
+sicheren Umsetzungsbaustein festlegen.
 
-Taskart: interne strategische Dokumentation.
+Taskart: Dokumentations-/Bestandsaudit.
 
-Implementierungscommit: `25829727db8c3bafbc13b6e626748fa1f76b174f`
+Funktionaler Ausgangsstand: v27.35g.
 
-Finale Notiz: `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`
+Erwarteter Ausgangscommit:
+`d69290f9de2921886566b1bb398231bf009fc433`.
 
-Finaler Notiz-SHA-256: `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`
+Für die spätere Umsetzung ist ausschließlich
+`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` erlaubt. In diesem
+Autorisierungsschritt wird diese Audit-Datei noch nicht erstellt oder
+verändert; der Audit selbst wird noch nicht durchgeführt.
 
-Wettbewerbsbeobachtung, Accaoui-Differenzierung und Reaktivierung nach
-Lernunterbrechung sind dokumentiert.
+Der spätere Audit inventarisiert Auth-/Login-Planungen, lokale
+Auth-Guards, Config-Platzhalter und Loader, Adapter- und SDK-Readiness,
+Teilnehmerzugang, Kurs-/Enrollment-/Ablaufdatum-Verträge, Fortschritts-
+und Dashboard-Datenquellen sowie vorhandene SQL-/RPC-Planungen und
+Migrationen. Er trennt geplante, lokal simulierte, vorbereitete und
+tatsächlich implementierte Teile und empfiehlt genau einen kleinsten,
+sicher begrenzten nächsten Umsetzungsbaustein.
 
-Kein App-Code wurde durch v27.35f verändert.
+v27.35f bleibt abgeschlossen; der letzte funktionale Stand bleibt
+v27.35g. Supabase bleibt nicht live. App-, UI-, Fragen-, SQL-,
+Migrations-, Supabase-, Config-, Adapter-, Datenbank- und
+Netzwerkänderungen sowie echte Schlüssel und echte Teilnehmerdaten sind
+verboten. Der Audit darf keinen Folgetask automatisch auswählen oder
+autorisieren. Commit und Push bleiben gesperrt.
 
-Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
-Sein Abschlusscommit ist `f5f261fee67fc17c170ee714ae23761ff1668f17`.
+### Permanenter v27.36a-Lebenszyklus
 
-Kein Folgetask wurde ausgewählt oder autorisiert.
+`d69290f9de2921886566b1bb398231bf009fc433` ist die stabile
+Autorisierungsbasis und muss Vorfahr des aktuellen HEAD bleiben; der
+HEAD darf nach legitimen Commits weiterlaufen. Kein zukünftiger
+Commit-SHA wird vorweggenommen oder als dauerhafte Gleichheit verlangt.
 
-Jeder weitere funktionale oder dokumentarische Schritt bleibt gesperrt,
-bis ein neuer Task ausdrücklich autorisiert wird. Eine Rückkehr zum
-abgeschlossenen v27.35f ohne neue Autorisierung bleibt blockiert.
+Der legitime Autorisierungs-GATE-Commit der Phase 2 wird dynamisch aus
+der Git-Historie und seiner tatsächlichen Dateimenge erkannt. Sein SHA
+wird nicht fest eingetragen und ist keine dauerhafte HEAD-Vorgabe.
+
+Der Checker klassifiziert alle Commits nach der Basis aus Git-Historie,
+Dateimenge und Taskstatus als GATE, genau einmal IMPLEMENTATION/AUDIT
+oder erst danach CLOSURE. Zusammen mit dem Working Tree ergeben sich
+sechs Phasen: Autorisierung lokal vorbereitet; Autorisierung committet
+mit optionaler lokaler Gate-Korrektur; Audit-Datei lokal als einzige
+ungetrackte Datei; Audit einmal committet; Closure lokal vorbereitet;
+Closure committet und sauber.
+
+Fremde Commit- oder Working-Tree-Dateien, App-, UI-, Fragen-, SQL-,
+Migrations-, Config-, Adapter- und Netzwerkänderungen, Audit vor GATE,
+mehr als ein Audit-Commit, Closure vor Audit sowie eine Rückkehr aus dem
+geschlossenen Zustand bleiben gesperrt. Die Audit-Datei ist aktuell
+weiterhin nicht erstellt. Kein Folgetask ist ausgewählt oder
+autorisiert; Commit und Push bleiben gesperrt.
 
 ## 15. Wenn ein neuer Chat beginnt
 

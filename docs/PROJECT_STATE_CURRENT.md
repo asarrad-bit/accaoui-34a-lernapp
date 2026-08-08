@@ -8,9 +8,72 @@ Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: NONE
-Aktuelle Taskart: KEINE
-Aktueller Blocker: Kein Task autorisiert; jeder weitere funktionale oder dokumentarische Schritt bleibt gesperrt, bis ein neuer Task ausdrücklich autorisiert wird
+Aktuell autorisierter Task: v27.36a
+Aktuelle Taskart: Dokumentations-/Bestandsaudit
+Aktueller Blocker: KEINER für den ausschließlich dokumentarischen v27.36a-Bestandsaudit; jede funktionale Umsetzung und jeder Folgetask bleiben gesperrt
+
+## Autorisierter Dokumentations-/Bestandsaudit v27.36a
+
+v27.36a ist der einzige autorisierte Task.
+
+Titel: Supabase/Login-Bestandsaudit und nächsten sicheren
+Umsetzungsbaustein festlegen.
+
+Funktionaler Ausgangsstand: v27.35g.
+
+Erwarteter Ausgangscommit:
+`d69290f9de2921886566b1bb398231bf009fc433`.
+
+Für die spätere Umsetzung ist ausschließlich
+`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` erlaubt. Dieser
+Autorisierungsschritt führt den Audit noch nicht aus und erstellt oder
+verändert die Audit-Datei noch nicht.
+
+Der spätere Audit inventarisiert den tatsächlich vorhandenen
+Supabase-/Login-Stand und leitet daraus genau einen kleinsten, sicher
+begrenzten nächsten Umsetzungsbaustein ab. Er trennt ausdrücklich
+Planung, lokale Simulation, Vorbereitung und tatsächliche
+Implementierung und berücksichtigt Sicherheitsgrenzen, Abhängigkeiten,
+Reihenfolge, technische Schulden und redundante Vorbereitungen.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g. v27.35f
+bleibt abgeschlossen. Durch diesen Autorisierungsschritt wird kein
+funktionaler Schritt ausgeführt, Supabase bleibt nicht live, und ein
+Folgetask nach v27.36a wird weder ausgewählt noch autorisiert. App-, UI-,
+Fragen-, SQL-, Migrations-, Supabase-, Config-, Adapter-, Datenbank- und
+Netzwerkdateien bleiben unverändert. Echte Schlüssel und echte
+Teilnehmerdaten bleiben verboten. Commit und Push bleiben gesperrt.
+
+### Permanenter v27.36a-Lebenszyklus
+
+`d69290f9de2921886566b1bb398231bf009fc433` ist die stabile
+v27.36a-Autorisierungsbasis und muss Vorfahr jedes legitimen späteren
+HEAD bleiben. Eine dauerhafte Gleichheitsforderung des HEAD mit dieser
+Basis ist unzulässig; zukünftige Commit-SHAs werden nicht hartcodiert.
+
+Der legitime Autorisierungs-GATE-Commit der Phase 2 wird dynamisch aus
+Git-Historie und tatsächlicher Dateimenge erkannt. Sein SHA wird nicht
+hartcodiert und ist keine dauerhaft erforderliche HEAD-Gleichheit.
+
+Der Checker leitet den Zustand aus Git-Historie, tatsächlicher
+Dateimenge, Taskstatus und Working Tree ab. GATE-Commits enthalten nur
+eine nichtleere Teilmenge der fünf Gate-Dateien. Genau ein späterer
+IMPLEMENTATION-/AUDIT-Commit darf ausschließlich
+`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` enthalten. CLOSURE-
+Commits dürfen erst danach ausschließlich Gate-Dateien enthalten.
+
+Die sechs Phasen sind: lokal vorbereitete Autorisierung; committierte
+Autorisierung einschließlich einer lokal vorbereiteten weiteren
+Gate-Korrektur; lokal erstellte ungetrackte Audit-Datei; genau einmal
+committierter Audit bei weiterhin autorisiertem Task; erst danach lokal
+vorbereitete Closure auf `NONE / BLOCKED / Autorisiert NEIN`; sowie
+committierte Closure mit sauberem Working Tree. Audit vor
+Autorisierung, zweiter Audit-Commit, fremde Dateien, Closure vor Audit
+und Rückkehr aus der Closure bleiben gesperrt.
+
+Aktuell bleibt v27.36a der einzige autorisierte Task. Die Audit-Datei
+ist weiterhin nicht erstellt, und kein Folgetask wurde ausgewählt oder
+autorisiert. Commit und Push bleiben gesperrt.
 
 ## Abgeschlossener Dokumentationstask v27.35f
 
