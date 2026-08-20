@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.36a
+Stand: v27.36b
 Branch: `main`
 Arbeits-Laptop: `C:\a34a`
 Git Bash Arbeits-Laptop: `/c/a34a`
@@ -800,6 +800,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.35g | Nichtfunktionale Task-Steuerung von `Task-ID: v27.35e` verbindlich auf den einzigen autorisierten Folgetask v27.35g umgestellt: Korrektur der Punkteberechnung der schriftlichen Prüfung autorisiert; `CURRENT_TASK` stand auf `Task-ID: v27.35g`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Titel: Punkteberechnung schriftliche Prüfung korrigieren`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `db2f12a1af7792c59e9e6411bb127b2f68401713`, für die spätere Umsetzung ausschließlich erlaubte Dateien `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; verbindlicher Bewertungsvertrag für keine Antwort, vollständig richtige Antwortmenge, Teilmengen-Sonderfall bei Zwei-Punkte-Fragen mit mindestens zwei richtigen Optionen, falsche Auswahl sowie Zwei-Punkte-Fragen mit nur einer richtigen Antwort festgelegt. Nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) ergänzte danach ausschließlich `tools/check-project-continuity-control.py` und die vier Steuerungsdokumente und gab im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` frei. Funktionale Umsetzung (Commit `f5f261fee67fc17c170ee714ae23761ff1668f17`) veränderte ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, korrigierte `getExamQuestionReachedPoints()` gemäß Bewertungsvertrag und bestätigte 82 Fragen/120 Punkte, alle 13 zuvor betroffenen Fragen jeweils 2/2, die v27.35e-Testkonstellation jetzt 114/120 statt 101/120, alle 82 Fragen vollständig richtig jetzt 120/120, Pause/Fortsetzen, Fehleranalyse, Fehlertraining, Desktop und Mobil (390×844) PASS, keine neuen Konsolenfehler sowie vollständig restaurierten `localStorage`/`sessionStorage`; `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische FAIL-Dokumentation erhalten; `v27.35f` bleibt ausdrücklich nicht autorisiert; `CURRENT_TASK` steht danach wieder auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN` – **erledigt** |
 
 | v27.36a | Supabase/Login-Bestandsaudit abgeschlossen: Audit-Commit `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`, Audit-Datei `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`; Supabase/Login umfangreich lokal vorbereitet, aber NICHT live; genau eine nicht autorisierende Empfehlung für eine lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit lokalem Fake-Client; funktionaler Stand bleibt v27.35g, kein Folgetask ausgewählt oder autorisiert – **erledigt** |
+| v27.36b | Lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit Fake-Client: als einziger Task ausdrücklich autorisiert; Ausgangs-HEAD `f7672c98a1368dec501416853830ac03e0de2d41`; genau vier spätere Implementierungsdateien erlaubt; in diesem Autorisierungsschritt noch keine Implementierung; Supabase NICHT LIVE, keine echten Keys oder Teilnehmerdaten, kein Folgetask, Commit und Push NEIN – **autorisiert** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -1426,65 +1427,68 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-Diese Bestands- und Backlogliste ist keine Task-Autorisierung.
-`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
-
-v27.36a abgeschlossen.
+v27.36a ist vollständig abgeschlossen.
 
 Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
 
-Audit-Datei: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
+`CURRENT_TASK` ist aktuell `v27.36b` / `AUTHORIZED` / `Autorisiert: JA`.
 
-Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.
+Ausgangs-HEAD: `f7672c98a1368dec501416853830ac03e0de2d41`
 
-Zentrale Lücken:
-
-- kanonisches Auth-/Teilnehmerzugangsschema
-- SDK/öffentliche Dev-Config noch nicht aktiv
-- Auth-/Access-Adapter noch nicht an realen Client angebunden
-- keine ausgeführten echten RLS-/Datenbanktests
-
-Technische Schulden:
-
-- doppelte Config-Ladewege
-- isolierter Bootstrap
-- übergroßer zentraler Adapter
-- fragmentierte historische Vertrags-/Readiness-Kette
-
-Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
+Die zuvor nicht autorisierende Audit-Empfehlung wird jetzt ausdrücklich als
+v27.36b autorisiert: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
 mit lokalem Fake-Client.
 
-Diese Audit-Empfehlung ist KEINE Autorisierung.
+v27.36b ist der einzige autorisierte Task. Der funktionale Stand bleibt
+v27.35g.
 
-Kein Folgetask wurde ausgewählt oder autorisiert.
+Genau vier Dateien sind für die spätere Umsetzung erlaubt:
 
-Kein Live-Supabase.
+- `data/supabase-participant-access-adapter.js`
+- `tools/check-supabase-participant-access-adapter.py`
+- `docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md`
+- `tools/preflight.py`
 
-Keine echten Keys.
+In diesem Autorisierungsschritt wird die Komponente noch nicht implementiert.
 
-Keine echten Teilnehmerdaten.
+Der spätere Baustein erhält ausschließlich einen explizit injizierten
+Supabase-kompatiblen Client und eine injizierte UTC-Zeitquelle. Er bindet
+`session.user.id` an die kanonischen Tabellen `participants`, `enrollments`
+und `courses`, arbeitet fail-closed und wird ausschließlich mit einem
+lokalen synthetischen In-Memory-Fake-Client getestet.
 
-Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Keine globale Supabase-Auflösung, kein SDK, kein echter Client, keine
+Config-Aktivierung, kein Netzwerk, keine Datenbank, keine SQL- oder
+Migrationsausführung, keine App-, UI-, zentrale Adapter- oder
+Bootstrap-Änderung. Supabase bleibt NICHT LIVE. Keine echten Keys. Keine
+echten Teilnehmerdaten.
 
-Die stabile Basis `d69290f9de2921886566b1bb398231bf009fc433`
-muss Vorfahr des aktuellen HEAD bleiben. GATE-Commit(s), exakt ein
-IMPLEMENTATION-/AUDIT-Commit, die lokal vorbereitete CLOSURE und ein
-späterer CLOSURE-Commit werden dynamisch aus Historie, Dateimenge,
-Taskstatus und Working Tree erkannt. Ein zukünftiger Closure-SHA wird
-nicht hartcodiert. Die Rückkehr zu `v27.36a / AUTHORIZED` bleibt ohne
-neue ausdrückliche Autorisierung geschlossen blockiert.
+Kein Folgetask nach v27.36b wurde ausgewählt oder autorisiert. Commit und
+Push bleiben NEIN.
 
-Die nachstehende Bestands- und Backlogliste autorisiert keinen Punkt.
+### Permanenter v27.36b-Lebenszyklus
 
-1. **Schriftliche Prüfung Regressionstest bei Änderungen** – als v27.35e durchgeführt und mit Gesamtergebnis FAIL abgeschlossen (siehe oben); als Folge ist v27.35g zur Korrektur der Punkteberechnung autorisiert.
-2. **Lernkarten nach größeren UI-Änderungen kurz regressionsprüfen** – Stand v26.1c ist browsergetestet.
-3. **Lernstrategie-Modul** – Vergessenskurve als UI-Modul, siehe `docs/LEARNING_STRATEGY_MODULE.md` – **kein sofortiger Code-Task**.
-4. **UX- und Lernlogik weiter verfeinern** – Ergebnisdarstellung, Lernmodus vs. Lernkarten, Active Recall, siehe §8.1.
-5. **Später Oral Exam Cleanup** – Patch-Schichten reduzieren, einheitliche Bogenlogik A/B/C/D/E/Zufall.
-6. **Spätere SQL-Planung** – Phase 2 laut `docs/SUPABASE_IMPLEMENTATION_ROADMAP.md`.
-7. **Später Datenschutz / Rechtstexte** – Impressum, Datenschutz, Nutzungsbedingungen.
-8. **Supabase / Login als nächster Hauptblock** – Auth, Kurse, Teilnehmerzugang, Ablaufdatum und Fortschritt pro `user_id`; Plan v26.3a, Login-UI-Konzept v26.3c, Auth-Einstiegspunkt-Audit v26.3e, lokales Auth-Guard-Gerüst v26.4a, lokaler Testmodus v26.4c, Auth-Hinweisdesign v26.4e, Supabase-Sicherheitsplan v26.5a, Config-Platzhalter v26.5c, Config-Ladeweg-Audit v26.5e, Config-State-Check v26.6a, optionaler Config-Loader v26.6c, lokaler Loader-Test v26.6e, Client-Adapter-Plan v26.7a, Adapter-Gerüst v26.7c, Adapter-Test v26.7e, SDK-Ladeweg-Plan v26.8a, SDK-Status im Adapter v26.8c und SDK-Status-Test v26.8e, Client-Readiness v26.9a und Client-Readiness-Test v26.9c, Auth-Readiness v26.10a, Auth-Readiness-Test v26.10c und Teilnehmerzugangs-Readiness v26.11a vorhanden.
-9. **Quellenpakete und mündliche Musterfragen gezielt auswerten** – nicht vollständig in neuen Chat laden; siehe `docs/ACCAOUI_SOURCE_MATERIAL_STATUS.md` und `docs/ACCAOUI_ORAL_QUESTIONS_STATUS.md`.
+Die stabile Basis `f7672c98a1368dec501416853830ac03e0de2d41` muss Vorfahr
+jedes legitimen späteren v27.36b-HEAD bleiben. Eine dauerhafte exakte
+HEAD-Gleichheit ist unzulässig. Keine zukünftige Autorisierungs-,
+Implementierungs- oder Closure-SHA wird hartcodiert.
+
+GATE-Commit(s) enthalten nur eine nichtleere Teilmenge der fünf
+Gate-Dateien. Genau ein IMPLEMENTATION-Commit enthält exakt die vier
+autorisierten Implementierungsdateien. CLOSURE folgt erst danach und enthält
+ausschließlich Gate-Dateien mit geschlossenem Taskzustand.
+
+Der Checker erkennt dynamisch mindestens sechs Phasen: Autorisierung lokal
+vorbereitet; Autorisierung committet; Implementation lokal vorbereitet;
+Implementation committet; Closure lokal vorbereitet; Closure committet.
+Legitime Gate-Korrekturen bleiben ohne hartcodierten aktuellen HEAD möglich.
+
+Falsche Basis, fremde Commit- oder Working-Tree-Dateien, Implementation vor
+Autorisierung, mehrere Implementierungscommits, App-, UI-, bestehende
+Adapter-, Bootstrap-, Config-, SQL-, Migrations-, Supabase- oder
+Netzwerkänderungen, Commit oder Push `JA`, automatischer Folgetask, Closure
+vor Implementation und Rückkehr aus abgeschlossener v27.36b-Closure bleiben
+geschlossen blockiert.
 
 **Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert); v26.3c (Login-UI-Konzept); v26.3d (Masterliste Login-UI aktualisiert); v26.3e (Auth-Einstiegspunkt-Audit); v26.3f (Masterliste Auth-Audit aktualisiert); v26.4a (lokales Auth-Guard-Gerüst); v26.4b (Masterliste Auth-Guard aktualisiert); v26.4c (lokaler Auth-Guard-Testmodus); v26.4d (Masterliste Auth-Testmodus aktualisiert); v26.4e (Auth-Hinweisdesign); v26.4f (Masterliste Auth-Hinweisdesign aktualisiert); v26.5a (Supabase-Konfigurations- und Sicherheitsplan); v26.5b (Masterliste Supabase-Sicherheitsplan aktualisiert); v26.5c (Supabase-Config-Platzhalter); v26.5d (Masterliste Config-Platzhalter aktualisiert); v26.5e (Supabase-Config-Ladeweg-Audit); v26.5f (Masterliste Config-Ladeweg aktualisiert); v26.6a (Supabase-Config-State-Check); v26.6b (Masterliste Config-State aktualisiert); v26.6c (optionaler lokaler Config-Loader); v26.6d (Masterliste Config-Loader aktualisiert); v26.6e (lokaler Config-Loader-Test); v26.6f (Masterliste Config-Loader-Test aktualisiert); v26.7a (Supabase-Client-Adapter-Plan); v26.7b (Masterliste Client-Adapter aktualisiert); v26.7c (Supabase-Adapter-Gerüst ohne SDK); v26.7d (Masterliste Adapter-Gerüst aktualisiert); v26.7e (Supabase-Adapter-Test); v26.7f (Masterliste Adapter-Test aktualisiert); v26.8a (Supabase-SDK-Ladeweg-Plan); v26.8b (Masterliste SDK-Ladeweg aktualisiert); v26.8c (SDK-Status im Adapter); v26.8d (Masterliste SDK-Status aktualisiert); v26.8e (SDK-Status-Test); v26.8f (Masterliste SDK-Status-Test aktualisiert); v26.9a (Client-Readiness im Adapter); v26.9b (Masterliste Client-Readiness aktualisiert); v26.9c (Client-Readiness-Test); v26.9d (Masterliste Client-Readiness-Test aktualisiert); v26.10a (Auth-Readiness im Adapter); v26.10b (Masterliste Auth-Readiness aktualisiert); v26.10c (Auth-Readiness-Test); v26.10d (Masterliste Auth-Readiness-Test aktualisiert); v26.11a (Teilnehmerzugangs-Readiness im Adapter); v26.11b (Masterliste Teilnehmerzugangs-Readiness aktualisiert); v27.35d (Lernmodus/Lernkarten UX-Trennung mit gemeinsamen Führungshinweisen).
 

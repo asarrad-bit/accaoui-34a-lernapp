@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.36a
+Stand: v27.36b
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -466,75 +466,74 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
-
-v27.36a abgeschlossen.
+v27.36a ist vollständig abgeschlossen.
 
 Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
 
-Audit-Datei: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
+`CURRENT_TASK` ist `v27.36b` / `AUTHORIZED` / `Autorisiert: JA`.
 
-Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.
+Ausgangs-HEAD: `f7672c98a1368dec501416853830ac03e0de2d41`
 
-Zentrale Lücken:
+Die Audit-Empfehlung „lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
+mit lokalem Fake-Client“ ist jetzt ausdrücklich als v27.36b autorisiert.
 
-- kanonisches Auth-/Teilnehmerzugangsschema
-- SDK/öffentliche Dev-Config noch nicht aktiv
-- Auth-/Access-Adapter noch nicht an realen Client angebunden
-- keine ausgeführten echten RLS-/Datenbanktests
+Einziger autorisierter Task: Lokale injizierbare
+Auth-/Teilnehmerzugangs-Komponente mit Fake-Client umsetzen.
 
-Technische Schulden:
+Für die spätere Umsetzung sind genau vier Dateien erlaubt:
 
-- doppelte Config-Ladewege
-- isolierter Bootstrap
-- übergroßer zentraler Adapter
-- fragmentierte historische Vertrags-/Readiness-Kette
+- `data/supabase-participant-access-adapter.js`
+- `tools/check-supabase-participant-access-adapter.py`
+- `docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md`
+- `tools/preflight.py`
 
-Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
-mit lokalem Fake-Client.
+In diesem Autorisierungsschritt wird die Komponente noch nicht implementiert.
 
-Diese Audit-Empfehlung ist KEINE Autorisierung.
+Die spätere Komponente erhält ausschließlich einen explizit injizierten
+Supabase-kompatiblen Client und eine injizierte UTC-Zeitquelle. Sie bindet
+Nutzer nur über `session.user.id` und verwendet ausschließlich die
+kanonischen Tabellen `participants`, `enrollments` und `courses` der
+aktuellen MVP-Migrationen. Der Access-State bleibt bei fehlenden,
+fehlerhaften, gesperrten, abgelaufenen, fremden, mehrdeutigen oder
+inkonsistenten Daten fail-closed.
 
-Kein Folgetask wurde ausgewählt oder autorisiert.
+Der spätere Test verwendet ausschließlich einen lokalen synthetischen
+In-Memory-Fake-Client. Keine globale Supabase-Auflösung, kein echter Client,
+kein Netzwerk, keine Datenbank, keine SQL- oder Migrationsausführung, kein
+SDK und keine Config-Aktivierung.
 
-Kein Live-Supabase.
+Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten
+Teilnehmerdaten. `app.js`, `index.html`, der zentrale Adapter, Bootstrap,
+Config, SQL, Migrationen, RLS, RPCs und Login-UI bleiben unverändert.
 
-Keine echten Keys.
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g. Kein Folgetask
+nach v27.36b wurde ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
 
-Keine echten Teilnehmerdaten.
+### Permanenter v27.36b-Lebenszyklus
 
-Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+`f7672c98a1368dec501416853830ac03e0de2d41` ist die stabile
+v27.36b-Autorisierungsbasis und muss Vorfahr jedes legitimen späteren HEAD
+bleiben. `HEAD ==` Basis darf nicht dauerhaft verlangt werden. Keine
+zukünftige Autorisierungs-, Implementierungs- oder Closure-SHA wird
+hartcodiert.
 
-### Permanenter v27.36a-Lebenszyklus
+Der Checker klassifiziert Commits dynamisch aus Git-Historie, tatsächlicher
+Dateimenge, CURRENT_TASK-Zustand und Working Tree. GATE ist eine nichtleere
+Teilmenge der fünf Gate-Dateien. IMPLEMENTATION enthält exakt die vier
+autorisierten Implementierungsdateien und ist nur einmal zulässig. CLOSURE
+folgt erst nach gültiger IMPLEMENTATION und enthält ausschließlich
+Gate-Dateien mit geschlossenem Taskzustand.
 
-`d69290f9de2921886566b1bb398231bf009fc433` ist die stabile
-Autorisierungsbasis und muss Vorfahr des aktuellen HEAD bleiben; der
-HEAD darf nach legitimen Commits weiterlaufen. Kein zukünftiger
-Commit-SHA wird vorweggenommen oder als dauerhafte Gleichheit verlangt.
+Mindestens sechs Phasen werden erkannt: Autorisierung lokal vorbereitet;
+Autorisierung committet; Implementation lokal vorbereitet; Implementation
+committet; Closure lokal vorbereitet; Closure committet. Legitime
+Gate-Korrekturen bleiben möglich.
 
-Der legitime Autorisierungs-GATE-Commit der Phase 2 wird dynamisch aus
-der Git-Historie und seiner tatsächlichen Dateimenge erkannt. Sein SHA
-wird nicht fest eingetragen und ist keine dauerhafte HEAD-Vorgabe.
-
-Der Checker klassifiziert alle Commits nach der Basis aus Git-Historie,
-Dateimenge und Taskstatus als GATE, genau einmal IMPLEMENTATION/AUDIT
-oder erst danach CLOSURE. Zusammen mit dem Working Tree ergeben sich
-sechs Phasen: Autorisierung lokal vorbereitet; Autorisierung committet
-mit optionaler lokaler Gate-Korrektur; Audit-Datei lokal als einzige
-ungetrackte Datei; Audit einmal committet; Closure lokal vorbereitet;
-Closure committet und sauber.
-
-Fremde Commit- oder Working-Tree-Dateien, App-, UI-, Fragen-, SQL-,
-Migrations-, Config-, Adapter- und Netzwerkänderungen, Audit vor GATE,
-mehr als ein Audit-Commit und Closure vor Audit bleiben gesperrt. Der
-Audit ist exakt einmal im dynamisch ermittelten Commit
-`f545a6c2b14a64a5bcb7bf60a2932315e571ef01` enthalten. Die lokale
-Closure verändert exakt die fünf Gate-Dateien; ein späterer
-CLOSURE-Commit wird ohne hartcodierten zukünftigen SHA erkannt.
-
-Nach der Closure bleibt eine Rückkehr zu `v27.36a / AUTHORIZED` ohne
-neue ausdrückliche Autorisierung geschlossen blockiert. Kein Folgetask
-ist ausgewählt oder autorisiert; Commit und Push bleiben gesperrt.
+Falsche Basis, fremde Dateien, Implementation vor Autorisierung, mehrere
+Implementierungscommits, App-, UI-, zentraler Adapter-, Bootstrap-, Config-,
+SQL-, Migrations-, Supabase- oder Netzwerkänderungen, Commit oder Push `JA`,
+automatischer Folgetask, Closure vor Implementation und Rückkehr aus der
+abgeschlossenen v27.36b-Closure bleiben geschlossen blockiert.
 
 ## 15. Wenn ein neuer Chat beginnt
 
