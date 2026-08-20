@@ -800,7 +800,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.35g | Nichtfunktionale Task-Steuerung von `Task-ID: v27.35e` verbindlich auf den einzigen autorisierten Folgetask v27.35g umgestellt: Korrektur der Punkteberechnung der schriftlichen Prüfung autorisiert; `CURRENT_TASK` stand auf `Task-ID: v27.35g`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Titel: Punkteberechnung schriftliche Prüfung korrigieren`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `db2f12a1af7792c59e9e6411bb127b2f68401713`, für die spätere Umsetzung ausschließlich erlaubte Dateien `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; verbindlicher Bewertungsvertrag für keine Antwort, vollständig richtige Antwortmenge, Teilmengen-Sonderfall bei Zwei-Punkte-Fragen mit mindestens zwei richtigen Optionen, falsche Auswahl sowie Zwei-Punkte-Fragen mit nur einer richtigen Antwort festgelegt. Nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) ergänzte danach ausschließlich `tools/check-project-continuity-control.py` und die vier Steuerungsdokumente und gab im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` frei. Funktionale Umsetzung (Commit `f5f261fee67fc17c170ee714ae23761ff1668f17`) veränderte ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, korrigierte `getExamQuestionReachedPoints()` gemäß Bewertungsvertrag und bestätigte 82 Fragen/120 Punkte, alle 13 zuvor betroffenen Fragen jeweils 2/2, die v27.35e-Testkonstellation jetzt 114/120 statt 101/120, alle 82 Fragen vollständig richtig jetzt 120/120, Pause/Fortsetzen, Fehleranalyse, Fehlertraining, Desktop und Mobil (390×844) PASS, keine neuen Konsolenfehler sowie vollständig restaurierten `localStorage`/`sessionStorage`; `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische FAIL-Dokumentation erhalten; `v27.35f` bleibt ausdrücklich nicht autorisiert; `CURRENT_TASK` steht danach wieder auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN` – **erledigt** |
 
 | v27.36a | Supabase/Login-Bestandsaudit abgeschlossen: Audit-Commit `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`, Audit-Datei `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`; Supabase/Login umfangreich lokal vorbereitet, aber NICHT live; genau eine nicht autorisierende Empfehlung für eine lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit lokalem Fake-Client; funktionaler Stand bleibt v27.35g, kein Folgetask ausgewählt oder autorisiert – **erledigt** |
-| v27.36b | Lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit Fake-Client: als einziger Task ausdrücklich autorisiert; Ausgangs-HEAD `f7672c98a1368dec501416853830ac03e0de2d41`; genau vier spätere Implementierungsdateien erlaubt; in diesem Autorisierungsschritt noch keine Implementierung; Supabase NICHT LIVE, keine echten Keys oder Teilnehmerdaten, kein Folgetask, Commit und Push NEIN – **autorisiert** |
+| v27.36b | Lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit Fake-Client isoliert umgesetzt: Implementierungscommit `c551f1fb973240bfe2a73a26ff38d4e66d2ccff7`; explizit injizierter Client und UTC-Zeit, `session.user.id` als einzige Autorität, fail-closed, lokaler Fake-Client; 49 Mindestprüfungen plus 26 Manipulationsprüfungen = 75 PASS; keine App-Integration, Supabase NICHT LIVE, kein Folgetask – **erledigt** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -1427,68 +1427,59 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-v27.36a ist vollständig abgeschlossen.
+v27.36b abgeschlossen.
 
-Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
+Implementierungscommit: `c551f1fb973240bfe2a73a26ff38d4e66d2ccff7`
 
-`CURRENT_TASK` ist aktuell `v27.36b` / `AUTHORIZED` / `Autorisiert: JA`.
+`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
 
-Ausgangs-HEAD: `f7672c98a1368dec501416853830ac03e0de2d41`
-
-Die zuvor nicht autorisierende Audit-Empfehlung wird jetzt ausdrücklich als
-v27.36b autorisiert: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
-mit lokalem Fake-Client.
-
-v27.36b ist der einzige autorisierte Task. Der funktionale Stand bleibt
-v27.35g.
-
-Genau vier Dateien sind für die spätere Umsetzung erlaubt:
+Implementierungsdateien:
 
 - `data/supabase-participant-access-adapter.js`
 - `tools/check-supabase-participant-access-adapter.py`
 - `docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md`
 - `tools/preflight.py`
 
-In diesem Autorisierungsschritt wird die Komponente noch nicht implementiert.
+Der permanente Preflight enthält den Adapter-Checker. Ergebnis: 49
+Mindestprüfungen plus 26 Manipulationsprüfungen = 75 PASS.
 
-Der spätere Baustein erhält ausschließlich einen explizit injizierten
-Supabase-kompatiblen Client und eine injizierte UTC-Zeitquelle. Er bindet
-`session.user.id` an die kanonischen Tabellen `participants`, `enrollments`
-und `courses`, arbeitet fail-closed und wird ausschließlich mit einem
-lokalen synthetischen In-Memory-Fake-Client getestet.
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
 
-Keine globale Supabase-Auflösung, kein SDK, kein echter Client, keine
-Config-Aktivierung, kein Netzwerk, keine Datenbank, keine SQL- oder
-Migrationsausführung, keine App-, UI-, zentrale Adapter- oder
-Bootstrap-Änderung. Supabase bleibt NICHT LIVE. Keine echten Keys. Keine
-echten Teilnehmerdaten.
+Die isolierte Komponente verwendet ausschließlich einen explizit injizierten
+Supabase-kompatiblen Client und eine explizit injizierte UTC-Zeitquelle.
+`session.user.id` ist die einzige Autorität für die Bindung an die
+kanonischen Tabellen `participants`, `enrollments` und `courses`.
 
-Kein Folgetask nach v27.36b wurde ausgewählt oder autorisiert. Commit und
-Push bleiben NEIN.
+Der Access-State arbeitet fail-closed bei fehlendem oder ungültigem Client,
+fehlender oder ungültiger Session, Queryfehlern und fehlenden, gesperrten,
+abgelaufenen, noch nicht aktiven, fremden, mehrdeutigen oder inkonsistenten
+Teilnehmer-, Enrollment- oder Kursdaten. Die Prüfung verwendet ausschließlich
+einen lokalen synthetischen In-Memory-Fake-Client.
+
+Keine App-Integration. Kein SDK. Kein realer Client. Kein Netzwerkzugriff.
+Kein Datenbankzugriff. Keine SQL-Ausführung. Keine Migrationsausführung.
+Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
+Kein Folgetask wurde ausgewählt oder autorisiert. Die nächste Umsetzung
+bleibt vollständig BLOCKED, bis sie ausdrücklich autorisiert wird. Commit
+und Push bleiben NEIN.
 
 ### Permanenter v27.36b-Lebenszyklus
 
 Die stabile Basis `f7672c98a1368dec501416853830ac03e0de2d41` muss Vorfahr
-jedes legitimen späteren v27.36b-HEAD bleiben. Eine dauerhafte exakte
-HEAD-Gleichheit ist unzulässig. Keine zukünftige Autorisierungs-,
-Implementierungs- oder Closure-SHA wird hartcodiert.
+jedes legitimen v27.36b-HEAD bleiben. Der Implementierungscommit wird
+dynamisch aus Historie und exakter Dateimenge erkannt. Keine zukünftige
+Closure-SHA wird hartcodiert.
 
 GATE-Commit(s) enthalten nur eine nichtleere Teilmenge der fünf
 Gate-Dateien. Genau ein IMPLEMENTATION-Commit enthält exakt die vier
 autorisierten Implementierungsdateien. CLOSURE folgt erst danach und enthält
 ausschließlich Gate-Dateien mit geschlossenem Taskzustand.
 
-Der Checker erkennt dynamisch mindestens sechs Phasen: Autorisierung lokal
-vorbereitet; Autorisierung committet; Implementation lokal vorbereitet;
-Implementation committet; Closure lokal vorbereitet; Closure committet.
-Legitime Gate-Korrekturen bleiben ohne hartcodierten aktuellen HEAD möglich.
-
-Falsche Basis, fremde Commit- oder Working-Tree-Dateien, Implementation vor
-Autorisierung, mehrere Implementierungscommits, App-, UI-, bestehende
-Adapter-, Bootstrap-, Config-, SQL-, Migrations-, Supabase- oder
-Netzwerkänderungen, Commit oder Push `JA`, automatischer Folgetask, Closure
-vor Implementation und Rückkehr aus abgeschlossener v27.36b-Closure bleiben
-geschlossen blockiert.
+Der Lifecycle erkennt Autorisierungs-GATE, exakt eine IMPLEMENTATION,
+lokal vorbereitete CLOSURE und einen späteren CLOSURE-Commit dynamisch. Eine
+Rückkehr zu einem autorisierten v27.36b-Zustand bleibt ohne neue
+ausdrückliche Autorisierung blockiert.
 
 **Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert); v26.3c (Login-UI-Konzept); v26.3d (Masterliste Login-UI aktualisiert); v26.3e (Auth-Einstiegspunkt-Audit); v26.3f (Masterliste Auth-Audit aktualisiert); v26.4a (lokales Auth-Guard-Gerüst); v26.4b (Masterliste Auth-Guard aktualisiert); v26.4c (lokaler Auth-Guard-Testmodus); v26.4d (Masterliste Auth-Testmodus aktualisiert); v26.4e (Auth-Hinweisdesign); v26.4f (Masterliste Auth-Hinweisdesign aktualisiert); v26.5a (Supabase-Konfigurations- und Sicherheitsplan); v26.5b (Masterliste Supabase-Sicherheitsplan aktualisiert); v26.5c (Supabase-Config-Platzhalter); v26.5d (Masterliste Config-Platzhalter aktualisiert); v26.5e (Supabase-Config-Ladeweg-Audit); v26.5f (Masterliste Config-Ladeweg aktualisiert); v26.6a (Supabase-Config-State-Check); v26.6b (Masterliste Config-State aktualisiert); v26.6c (optionaler lokaler Config-Loader); v26.6d (Masterliste Config-Loader aktualisiert); v26.6e (lokaler Config-Loader-Test); v26.6f (Masterliste Config-Loader-Test aktualisiert); v26.7a (Supabase-Client-Adapter-Plan); v26.7b (Masterliste Client-Adapter aktualisiert); v26.7c (Supabase-Adapter-Gerüst ohne SDK); v26.7d (Masterliste Adapter-Gerüst aktualisiert); v26.7e (Supabase-Adapter-Test); v26.7f (Masterliste Adapter-Test aktualisiert); v26.8a (Supabase-SDK-Ladeweg-Plan); v26.8b (Masterliste SDK-Ladeweg aktualisiert); v26.8c (SDK-Status im Adapter); v26.8d (Masterliste SDK-Status aktualisiert); v26.8e (SDK-Status-Test); v26.8f (Masterliste SDK-Status-Test aktualisiert); v26.9a (Client-Readiness im Adapter); v26.9b (Masterliste Client-Readiness aktualisiert); v26.9c (Client-Readiness-Test); v26.9d (Masterliste Client-Readiness-Test aktualisiert); v26.10a (Auth-Readiness im Adapter); v26.10b (Masterliste Auth-Readiness aktualisiert); v26.10c (Auth-Readiness-Test); v26.10d (Masterliste Auth-Readiness-Test aktualisiert); v26.11a (Teilnehmerzugangs-Readiness im Adapter); v26.11b (Masterliste Teilnehmerzugangs-Readiness aktualisiert); v27.35d (Lernmodus/Lernkarten UX-Trennung mit gemeinsamen Führungshinweisen).
 

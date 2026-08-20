@@ -466,74 +466,58 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-v27.36a ist vollständig abgeschlossen.
+v27.36b abgeschlossen.
 
-Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
+Implementierungscommit: `c551f1fb973240bfe2a73a26ff38d4e66d2ccff7`
 
-`CURRENT_TASK` ist `v27.36b` / `AUTHORIZED` / `Autorisiert: JA`.
+`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
 
-Ausgangs-HEAD: `f7672c98a1368dec501416853830ac03e0de2d41`
-
-Die Audit-Empfehlung „lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
-mit lokalem Fake-Client“ ist jetzt ausdrücklich als v27.36b autorisiert.
-
-Einziger autorisierter Task: Lokale injizierbare
-Auth-/Teilnehmerzugangs-Komponente mit Fake-Client umsetzen.
-
-Für die spätere Umsetzung sind genau vier Dateien erlaubt:
+Implementierungsdateien:
 
 - `data/supabase-participant-access-adapter.js`
 - `tools/check-supabase-participant-access-adapter.py`
 - `docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md`
 - `tools/preflight.py`
 
-In diesem Autorisierungsschritt wird die Komponente noch nicht implementiert.
+Der permanente Preflight enthält den Adapter-Checker. Ergebnis: 49
+Mindestprüfungen plus 26 Manipulationsprüfungen = 75 PASS.
 
-Die spätere Komponente erhält ausschließlich einen explizit injizierten
-Supabase-kompatiblen Client und eine injizierte UTC-Zeitquelle. Sie bindet
-Nutzer nur über `session.user.id` und verwendet ausschließlich die
-kanonischen Tabellen `participants`, `enrollments` und `courses` der
-aktuellen MVP-Migrationen. Der Access-State bleibt bei fehlenden,
-fehlerhaften, gesperrten, abgelaufenen, fremden, mehrdeutigen oder
-inkonsistenten Daten fail-closed.
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
 
-Der spätere Test verwendet ausschließlich einen lokalen synthetischen
-In-Memory-Fake-Client. Keine globale Supabase-Auflösung, kein echter Client,
-kein Netzwerk, keine Datenbank, keine SQL- oder Migrationsausführung, kein
-SDK und keine Config-Aktivierung.
+Die isolierte Komponente verwendet ausschließlich einen explizit injizierten
+Supabase-kompatiblen Client und eine explizit injizierte UTC-Zeitquelle.
+`session.user.id` ist die einzige Autorität für die Bindung an die
+kanonischen Tabellen `participants`, `enrollments` und `courses`.
 
-Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten
-Teilnehmerdaten. `app.js`, `index.html`, der zentrale Adapter, Bootstrap,
-Config, SQL, Migrationen, RLS, RPCs und Login-UI bleiben unverändert.
+Der Access-State arbeitet fail-closed bei fehlendem oder ungültigem Client,
+fehlender oder ungültiger Session, Queryfehlern und fehlenden, gesperrten,
+abgelaufenen, noch nicht aktiven, fremden, mehrdeutigen oder inkonsistenten
+Teilnehmer-, Enrollment- oder Kursdaten. Die Prüfung verwendet ausschließlich
+einen lokalen synthetischen In-Memory-Fake-Client.
 
-Der letzte abgeschlossene funktionale Stand bleibt v27.35g. Kein Folgetask
-nach v27.36b wurde ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
+Keine App-Integration. Kein SDK. Kein realer Client. Kein Netzwerkzugriff.
+Kein Datenbankzugriff. Keine SQL-Ausführung. Keine Migrationsausführung.
+Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
+Kein Folgetask wurde ausgewählt oder autorisiert. Die nächste Umsetzung
+bleibt vollständig BLOCKED, bis sie ausdrücklich autorisiert wird. Commit
+und Push bleiben NEIN.
 
 ### Permanenter v27.36b-Lebenszyklus
 
-`f7672c98a1368dec501416853830ac03e0de2d41` ist die stabile
-v27.36b-Autorisierungsbasis und muss Vorfahr jedes legitimen späteren HEAD
-bleiben. `HEAD ==` Basis darf nicht dauerhaft verlangt werden. Keine
-zukünftige Autorisierungs-, Implementierungs- oder Closure-SHA wird
-hartcodiert.
+Die stabile Basis `f7672c98a1368dec501416853830ac03e0de2d41` muss Vorfahr
+jedes legitimen v27.36b-HEAD bleiben. Der Implementierungscommit wird
+dynamisch aus Historie und exakter Dateimenge erkannt. Keine zukünftige
+Closure-SHA wird hartcodiert.
 
-Der Checker klassifiziert Commits dynamisch aus Git-Historie, tatsächlicher
-Dateimenge, CURRENT_TASK-Zustand und Working Tree. GATE ist eine nichtleere
-Teilmenge der fünf Gate-Dateien. IMPLEMENTATION enthält exakt die vier
-autorisierten Implementierungsdateien und ist nur einmal zulässig. CLOSURE
-folgt erst nach gültiger IMPLEMENTATION und enthält ausschließlich
-Gate-Dateien mit geschlossenem Taskzustand.
-
-Mindestens sechs Phasen werden erkannt: Autorisierung lokal vorbereitet;
-Autorisierung committet; Implementation lokal vorbereitet; Implementation
-committet; Closure lokal vorbereitet; Closure committet. Legitime
-Gate-Korrekturen bleiben möglich.
-
-Falsche Basis, fremde Dateien, Implementation vor Autorisierung, mehrere
-Implementierungscommits, App-, UI-, zentraler Adapter-, Bootstrap-, Config-,
-SQL-, Migrations-, Supabase- oder Netzwerkänderungen, Commit oder Push `JA`,
-automatischer Folgetask, Closure vor Implementation und Rückkehr aus der
-abgeschlossenen v27.36b-Closure bleiben geschlossen blockiert.
+GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
+IMPLEMENTATION enthält exakt die vier autorisierten Implementierungsdateien
+und ist höchstens einmal zulässig. CLOSURE enthält erst nach gültiger
+IMPLEMENTATION ausschließlich Gate-Dateien und den geschlossenen Taskzustand.
+Der Lifecycle erkennt Autorisierungs-GATE, exakt eine IMPLEMENTATION,
+lokal vorbereitete CLOSURE und einen späteren CLOSURE-Commit dynamisch. Eine
+Rückkehr zu einem autorisierten v27.36b-Zustand bleibt ohne neue
+ausdrückliche Autorisierung blockiert.
 
 ## 15. Wenn ein neuer Chat beginnt
 

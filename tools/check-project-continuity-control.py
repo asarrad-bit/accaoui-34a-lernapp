@@ -4527,10 +4527,22 @@ V2736B_MASTERLIST_MARKERS = (
 V2736B_CLOSURE_MARKERS = (
     "v27.36b abgeschlossen.",
     "Der letzte abgeschlossene funktionale Stand bleibt v27.35g.",
+    "Der permanente Preflight enthält den Adapter-Checker.",
+    "Mindestprüfungen plus 26 Manipulationsprüfungen = 75 PASS.",
+    "einen explizit injizierten\nSupabase-kompatiblen Client und eine explizit injizierte UTC-Zeitquelle.",
+    "`session.user.id` ist die einzige Autorität",
+    "`participants`, `enrollments` und `courses`.",
+    "fail-closed",
+    "In-Memory-Fake-Client.",
+    "Keine App-Integration. Kein SDK. Kein realer Client. Kein Netzwerkzugriff.",
+    "Kein Datenbankzugriff. Keine SQL-Ausführung. Keine Migrationsausführung.",
     "Supabase bleibt NICHT LIVE.",
     "Keine echten Keys.",
     "Keine echten Teilnehmerdaten.",
     "Kein Folgetask wurde ausgewählt oder autorisiert.",
+    "Die nächste Umsetzung\nbleibt vollständig BLOCKED, bis sie ausdrücklich autorisiert wird.",
+    "Keine zukünftige\nClosure-SHA wird hartcodiert.",
+    "Rückkehr zu einem autorisierten v27.36b-Zustand bleibt ohne neue\nausdrückliche Autorisierung blockiert.",
 )
 V2736B_TASK_AUTHORIZED = "authorized"
 V2736B_TASK_CLOSED = "closed"
@@ -4697,32 +4709,50 @@ def validate_v2736b_closed_documents(
     task_text: str,
     cursor_text: str,
     masterlist_text: str,
+    implementation_commit: str,
 ) -> None:
+    require(
+        re.fullmatch(r"[0-9a-f]{40}", implementation_commit) is not None,
+        "v27.36b-Closure benötigt einen dynamisch erkannten Implementierungscommit",
+    )
     validate_exact_fields(state_text, V2736B_CLOSED_STATE_FIELDS)
     validate_exact_fields(task_text, V2736B_CLOSED_TASK_FIELDS)
     require(exact_field(cursor_text, "Stand") == "v27.36b", "CURSOR-Kontext muss nach v27.36b-Closure auf v27.36b stehen")
     require(exact_field(masterlist_text, "Stand") == "v27.36b", "PROJECT_MASTERLIST muss nach v27.36b-Closure auf v27.36b stehen")
     validate_project_paths(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
     validate_project_paths(masterlist_text, "PROJECT_MASTERLIST")
+    state_section = section_between(state_text, "## Abgeschlossener isolierter Technikschritt v27.36b", "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", "PROJECT_STATE_CURRENT")
+    task_section = section_between(task_text, "## Abgeschlossener isolierter Technikschritt v27.36b", "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", "CURRENT_TASK")
     cursor_section = section_between(cursor_text, "## 14. Nächster sinnvoller Schritt", "## 15. Wenn ein neuer Chat beginnt", "CURSOR_MASTER_CONTEXT_ACCAOUI")
     master_section = section_between(masterlist_text, "## 14. Nächste sinnvolle Aufgaben", "## 15. Start in neuem Chat", "PROJECT_MASTERLIST")
     for text, name in (
-        (state_text, "PROJECT_STATE_CURRENT"),
-        (task_text, "CURRENT_TASK"),
+        (state_section, "PROJECT_STATE_CURRENT"),
+        (task_section, "CURRENT_TASK"),
         (cursor_section, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
         (master_section, "PROJECT_MASTERLIST"),
     ):
         validate_required_markers(text, V2736B_CLOSURE_MARKERS, f"{name} / v27.36b-Closure")
         require("v27.36b / AUTHORIZED" not in text, f"{name}: Rückkehr zu v27.36b / AUTHORIZED nach Closure")
+        require(
+            text.count(f"Implementierungscommit: `{implementation_commit}`") == 1,
+            f"{name}: dynamisch erkannter v27.36b-Implementierungscommit fehlt oder ist doppelt",
+        )
         validate_no_future_v2736b_sha(
             text,
-            frozenset({V2736A_AUDIT_COMMIT_SHA, V2736B_AUTHORIZATION_BASE_SHA}),
+            frozenset({V2736A_AUDIT_COMMIT_SHA, V2736B_AUTHORIZATION_BASE_SHA, implementation_commit}),
             f"{name} / v27.36b-Closure",
         )
+        for path in V2736B_IMPLEMENTATION_FILES:
+            require(text.count(f"`{path}`") == 1, f"{name}: v27.36b-Implementierungsdatei fehlt oder ist doppelt: {path}")
     require("`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`." in cursor_section, "CURSOR-Kontext muss v27.36b geschlossen blockieren")
     require("`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`." in master_section, "PROJECT_MASTERLIST muss v27.36b geschlossen blockieren")
     rows = re.findall(r"(?m)^\| v27\.36b \|.*$", masterlist_text)
-    require(len(rows) == 1 and "**erledigt**" in rows[0], "PROJECT_MASTERLIST muss v27.36b nach Closure exakt einmal als erledigt führen")
+    require(
+        len(rows) == 1
+        and "**erledigt**" in rows[0]
+        and implementation_commit in rows[0],
+        "PROJECT_MASTERLIST muss v27.36b nach Closure exakt einmal mit dynamischem Implementierungscommit als erledigt führen",
+    )
 
 
 def validate_v2736a_completed_base() -> tuple[V2736AHistoryState, tuple[str, str, str, str]]:
@@ -4961,6 +4991,7 @@ def validate_v2736b_committed_closure_documents(
 ) -> None:
     if V2736B_ROLE_CLOSURE not in history.roles:
         return
+    require(history.implementation_commit is not None, "v27.36b-CLOSURE benötigt einen dynamisch erkannten Implementierungscommit")
     for fact, role in zip(facts, history.roles):
         if role == V2736B_ROLE_CLOSURE:
             validate_v2736b_closed_documents(
@@ -4968,6 +4999,7 @@ def validate_v2736b_committed_closure_documents(
                 read_v2735f_commit_document(fact.commit_sha, V2735F_TASK_RELATIVE_PATH),
                 read_v2735f_commit_document(fact.commit_sha, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
                 read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_MASTERLIST.md"),
+                history.implementation_commit,
             )
 
 
@@ -4990,7 +5022,13 @@ def validate_v2736b_lifecycle(
         validate_v2736b_masterlist_text(masterlist_text)
     else:
         require(history.implementation_commit is not None, "v27.36b-Abschluss vor IMPLEMENTATION unzulässig")
-        validate_v2736b_closed_documents(state_text, task_text, cursor_text, masterlist_text)
+        validate_v2736b_closed_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            masterlist_text,
+            history.implementation_commit,
+        )
     phase = validate_v2736b_lifecycle_working_tree(history, task_state, fact)
     if phase == V2736B_PHASE_3_IMPLEMENTATION_PREPARED:
         validate_v2736b_local_source_contract()
@@ -5008,36 +5046,126 @@ def run_v2736b_manipulation_matrix(
     current_fact: V2736BWorkingTreeFact,
 ) -> tuple[int, int, int]:
     checks = 0
-    for text, validator, fields, name in (
-        (state_text, validate_v2736b_state_text, V2736B_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736b_task_text, V2736B_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
-    ):
-        for field, value in fields.items():
-            manipulated = changed_once(text, f"{field}: {value}", f"{field}: MANIPULIERT", f"{name} / {field}")
-            must_reject(validator, manipulated, f"{name}: manipuliertes Feld {field}")
-            checks += 1
-    for text, validator, markers, name in (
-        (state_text, validate_v2736b_state_text, V2736B_STATE_MARKERS, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736b_task_text, V2736B_TASK_MARKERS, "CURRENT_TASK"),
-        (cursor_text, validate_v2736b_cursor_text, V2736B_CURSOR_MARKERS, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
-        (masterlist_text, validate_v2736b_masterlist_text, V2736B_MASTERLIST_MARKERS, "PROJECT_MASTERLIST"),
-    ):
-        for marker in markers:
-            require(marker in text, f"Manipulationsmatrix kann v27.36b-Pflichtaussage nicht finden: {name} / {marker}")
-            must_reject(validator, text.replace(marker, ""), f"{name}: v27.36b-Pflichtaussage entfernt: {marker}")
-            checks += 1
-    must_reject(
-        validate_v2736b_task_text,
-        task_text.replace("## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", "Zukünftiger Commit: `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`\n\n## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", 1),
-        "zukünftige IMPLEMENTATION-/Closure-SHA hartcodiert",
-    )
-    checks += 1
-    must_reject(
-        validate_v2736b_task_text,
-        task_text.replace("Kein Folgetask\nnach v27.36b", "v27.36c / AUTHORIZED\n\nKein Folgetask\nnach v27.36b", 1),
-        "automatischer Folgetask v27.36c",
-    )
-    checks += 1
+    current_task_state = detect_v2736b_task_state_text(task_text)
+    if current_task_state == V2736B_TASK_AUTHORIZED:
+        for text, validator, fields, name in (
+            (state_text, validate_v2736b_state_text, V2736B_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+            (task_text, validate_v2736b_task_text, V2736B_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
+        ):
+            for field, value in fields.items():
+                manipulated = changed_once(text, f"{field}: {value}", f"{field}: MANIPULIERT", f"{name} / {field}")
+                must_reject(validator, manipulated, f"{name}: manipuliertes Feld {field}")
+                checks += 1
+        for text, validator, markers, name in (
+            (state_text, validate_v2736b_state_text, V2736B_STATE_MARKERS, "PROJECT_STATE_CURRENT"),
+            (task_text, validate_v2736b_task_text, V2736B_TASK_MARKERS, "CURRENT_TASK"),
+            (cursor_text, validate_v2736b_cursor_text, V2736B_CURSOR_MARKERS, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+            (masterlist_text, validate_v2736b_masterlist_text, V2736B_MASTERLIST_MARKERS, "PROJECT_MASTERLIST"),
+        ):
+            for marker in markers:
+                require(marker in text, f"Manipulationsmatrix kann v27.36b-Pflichtaussage nicht finden: {name} / {marker}")
+                must_reject(validator, text.replace(marker, ""), f"{name}: v27.36b-Pflichtaussage entfernt: {marker}")
+                checks += 1
+        must_reject(
+            validate_v2736b_task_text,
+            task_text.replace("## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", "Zukünftiger Commit: `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`\n\n## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", 1),
+            "zukünftige IMPLEMENTATION-/Closure-SHA hartcodiert",
+        )
+        checks += 1
+        must_reject(
+            validate_v2736b_task_text,
+            task_text.replace("Kein Folgetask\nnach v27.36b", "v27.36c / AUTHORIZED\n\nKein Folgetask\nnach v27.36b", 1),
+            "automatischer Folgetask v27.36c",
+        )
+        checks += 1
+    else:
+        require(current_history.implementation_commit is not None, "v27.36b-Closure-Matrix benötigt den dynamischen Implementierungscommit")
+        closed_documents = (state_text, task_text, cursor_text, masterlist_text)
+
+        def validate_closed_mutation(document_index: int, manipulated_text: str) -> None:
+            documents = list(closed_documents)
+            documents[document_index] = manipulated_text
+            validate_v2736b_closed_documents(
+                documents[0],
+                documents[1],
+                documents[2],
+                documents[3],
+                current_history.implementation_commit,
+            )
+
+        closure_boundaries = (
+            ("## Abgeschlossener isolierter Technikschritt v27.36b", "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a"),
+            ("## Abgeschlossener isolierter Technikschritt v27.36b", "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a"),
+            ("## 14. Nächster sinnvoller Schritt", "## 15. Wenn ein neuer Chat beginnt"),
+            ("## 14. Nächste sinnvolle Aufgaben", "## 15. Start in neuem Chat"),
+        )
+
+        def replaced_in_closure(document_index: int, text: str, marker: str, replacement: str, label: str) -> str:
+            start_marker, end_marker = closure_boundaries[document_index]
+            start_index = text.find(start_marker)
+            end_index = text.find(end_marker, start_index + len(start_marker))
+            require(start_index >= 0 and end_index > start_index, f"Manipulationsmatrix kann v27.36b-Closure-Abschnitt nicht finden: {label}")
+            marker_index = text.find(marker, start_index, end_index)
+            require(marker_index >= 0, f"Manipulationsmatrix kann v27.36b-Closure-Wert nicht finden: {label}")
+            return text[:marker_index] + replacement + text[marker_index + len(marker):]
+
+        for document_index, text, fields, name in (
+            (0, state_text, V2736B_CLOSED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+            (1, task_text, V2736B_CLOSED_TASK_FIELDS, "CURRENT_TASK"),
+        ):
+            for field, value in fields.items():
+                manipulated = changed_once(text, f"{field}: {value}", f"{field}: MANIPULIERT", f"{name} / {field}")
+                must_reject(
+                    lambda changed, index=document_index: validate_closed_mutation(index, changed),
+                    manipulated,
+                    f"{name}: manipuliertes Closure-Feld {field}",
+                )
+                checks += 1
+        implementation_marker = f"Implementierungscommit: `{current_history.implementation_commit}`"
+        for document_index, text, name in (
+            (0, state_text, "PROJECT_STATE_CURRENT"),
+            (1, task_text, "CURRENT_TASK"),
+            (2, cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+            (3, masterlist_text, "PROJECT_MASTERLIST"),
+        ):
+            for marker in (*V2736B_CLOSURE_MARKERS, implementation_marker):
+                require(marker in text, f"Manipulationsmatrix kann v27.36b-Closure-Aussage nicht finden: {name} / {marker}")
+                must_reject(
+                    lambda changed, index=document_index: validate_closed_mutation(index, changed),
+                    replaced_in_closure(document_index, text, marker, "", f"{name} / {marker}"),
+                    f"{name}: v27.36b-Closure-Aussage entfernt: {marker}",
+                )
+                checks += 1
+            for path in V2736B_IMPLEMENTATION_FILES:
+                marker = f"`{path}`"
+                must_reject(
+                    lambda changed, index=document_index: validate_closed_mutation(index, changed),
+                    replaced_in_closure(document_index, text, marker, "", f"{name} / {path}"),
+                    f"{name}: v27.36b-Implementierungsdatei entfernt: {path}",
+                )
+                checks += 1
+        must_reject(
+            lambda changed: validate_closed_mutation(1, changed),
+            task_text.replace(
+                "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a",
+                "Zukünftiger Closure-Commit: `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`\n\n## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a",
+                1,
+            ),
+            "zukünftige Closure-SHA hartcodiert",
+        )
+        checks += 1
+        must_reject(
+            lambda changed: validate_closed_mutation(1, changed),
+            replaced_in_closure(
+                1,
+                task_text,
+                "Kein Folgetask wurde ausgewählt oder autorisiert.",
+                "v27.36c / AUTHORIZED",
+                "CURRENT_TASK / Folgetask",
+            ),
+            "automatischer Folgetask v27.36c nach Closure",
+        )
+        checks += 1
 
     gate = V2736BCommitFact("1" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736B_TASK_AUTHORIZED)
     implementation = V2736BCommitFact("2" * 40, V2736B_IMPLEMENTATION_FILES, V2736B_TASK_AUTHORIZED)
