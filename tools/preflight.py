@@ -1512,6 +1512,25 @@ def check_exam_result_history_disposable_postgresql_test_python_environment_mate
         )
 
 
+def check_supabase_participant_access_adapter():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-participant-access-adapter.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Teilnehmerzugangs-Adapterprüfung v27.36b "
+            "fehlgeschlagen"
+        )
+
+
 def check_project_continuity_control():
     code, stdout, stderr = run_command(
         f'"{sys.executable}" tools/check-project-continuity-control.py'
@@ -1814,6 +1833,9 @@ def main():
         "docs/contracts/exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-adapter-contract.json",
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-adapter-contract.py",
         "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_ADAPTER_CONTRACT.md",
+        "data/supabase-participant-access-adapter.js",
+        "tools/check-supabase-participant-access-adapter.py",
+        "docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md",
         "docs/PROJECT_STATE_CURRENT.md",
         "docs/tasks/CURRENT_TASK.md",
         "tools/check-project-continuity-control.py",
@@ -1933,6 +1955,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_interface_contract()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_adapter_contract()
+    check_supabase_participant_access_adapter()
     check_project_continuity_control()
     check_git_diff_check()
     check_protected_core_files_v2356()
