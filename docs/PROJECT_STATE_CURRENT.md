@@ -1,6 +1,6 @@
 # Aktueller Projektzustand
 
-Stand: v27.35g
+Stand: v27.36a
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
@@ -8,41 +8,48 @@ Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: v27.36a
-Aktuelle Taskart: Dokumentations-/Bestandsaudit
-Aktueller Blocker: KEINER für den ausschließlich dokumentarischen v27.36a-Bestandsaudit; jede funktionale Umsetzung und jeder Folgetask bleiben gesperrt
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
 
-## Autorisierter Dokumentations-/Bestandsaudit v27.36a
+## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a
 
-v27.36a ist der einzige autorisierte Task.
+v27.36a abgeschlossen.
 
-Titel: Supabase/Login-Bestandsaudit und nächsten sicheren
-Umsetzungsbaustein festlegen.
+Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
 
-Funktionaler Ausgangsstand: v27.35g.
+Audit-Datei: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
 
-Erwarteter Ausgangscommit:
-`d69290f9de2921886566b1bb398231bf009fc433`.
+Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.
 
-Für die spätere Umsetzung ist ausschließlich
-`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` erlaubt. Dieser
-Autorisierungsschritt führt den Audit noch nicht aus und erstellt oder
-verändert die Audit-Datei noch nicht.
+Zentrale Lücken:
 
-Der spätere Audit inventarisiert den tatsächlich vorhandenen
-Supabase-/Login-Stand und leitet daraus genau einen kleinsten, sicher
-begrenzten nächsten Umsetzungsbaustein ab. Er trennt ausdrücklich
-Planung, lokale Simulation, Vorbereitung und tatsächliche
-Implementierung und berücksichtigt Sicherheitsgrenzen, Abhängigkeiten,
-Reihenfolge, technische Schulden und redundante Vorbereitungen.
+- kanonisches Auth-/Teilnehmerzugangsschema
+- SDK/öffentliche Dev-Config noch nicht aktiv
+- Auth-/Access-Adapter noch nicht an realen Client angebunden
+- keine ausgeführten echten RLS-/Datenbanktests
 
-Der letzte abgeschlossene funktionale Stand bleibt v27.35g. v27.35f
-bleibt abgeschlossen. Durch diesen Autorisierungsschritt wird kein
-funktionaler Schritt ausgeführt, Supabase bleibt nicht live, und ein
-Folgetask nach v27.36a wird weder ausgewählt noch autorisiert. App-, UI-,
-Fragen-, SQL-, Migrations-, Supabase-, Config-, Adapter-, Datenbank- und
-Netzwerkdateien bleiben unverändert. Echte Schlüssel und echte
-Teilnehmerdaten bleiben verboten. Commit und Push bleiben gesperrt.
+Technische Schulden:
+
+- doppelte Config-Ladewege
+- isolierter Bootstrap
+- übergroßer zentraler Adapter
+- fragmentierte historische Vertrags-/Readiness-Kette
+
+Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
+mit lokalem Fake-Client.
+
+Diese Audit-Empfehlung ist KEINE Autorisierung.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
+
+Kein Live-Supabase.
+
+Keine echten Keys.
+
+Keine echten Teilnehmerdaten.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
 
 ### Permanenter v27.36a-Lebenszyklus
 
@@ -71,9 +78,15 @@ committierte Closure mit sauberem Working Tree. Audit vor
 Autorisierung, zweiter Audit-Commit, fremde Dateien, Closure vor Audit
 und Rückkehr aus der Closure bleiben gesperrt.
 
-Aktuell bleibt v27.36a der einzige autorisierte Task. Die Audit-Datei
-ist weiterhin nicht erstellt, und kein Folgetask wurde ausgewählt oder
-autorisiert. Commit und Push bleiben gesperrt.
+Der Audit ist exakt einmal im dynamisch ermittelten Commit
+`f545a6c2b14a64a5bcb7bf60a2932315e571ef01` enthalten. Die lokale
+Closure verändert exakt die fünf Gate-Dateien und schließt `CURRENT_TASK`
+auf `NONE / BLOCKED / Autorisiert NEIN`. Ein späterer CLOSURE-Commit
+wird weiterhin dynamisch erkannt; sein SHA wird nicht hartcodiert.
+
+Nach der Closure bleibt eine Rückkehr zu `v27.36a / AUTHORIZED` ohne
+neue ausdrückliche Autorisierung geschlossen blockiert. Kein Folgetask
+ist ausgewählt oder autorisiert. Commit und Push bleiben gesperrt.
 
 ## Abgeschlossener Dokumentationstask v27.35f
 

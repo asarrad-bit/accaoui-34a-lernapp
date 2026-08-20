@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.35g
+Stand: v27.36a
 Branch: `main`
 Arbeits-Laptop: `C:\a34a`
 Git Bash Arbeits-Laptop: `/c/a34a`
@@ -799,7 +799,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.35f | Interne strategische Dokumentation zur Wettbewerbsbeobachtung und Accaoui-Positionierung einschließlich Reaktivierungs- und Wiedereinstiegsstrategie; Implementierungscommit `25829727db8c3bafbc13b6e626748fa1f76b174f`; finale Notiz `docs/COMPETITOR_POSITIONING_NOTE_V2735F.md`; finaler Notiz-SHA-256 `983af73fb711cb2b77eb69b51d38ae5f4cf2991d1d976274eee0b4379ef9b023`; kein App-Code verändert; funktionaler Stand bleibt v27.35g; kein Folgetask – **erledigt** |
 | v27.35g | Nichtfunktionale Task-Steuerung von `Task-ID: v27.35e` verbindlich auf den einzigen autorisierten Folgetask v27.35g umgestellt: Korrektur der Punkteberechnung der schriftlichen Prüfung autorisiert; `CURRENT_TASK` stand auf `Task-ID: v27.35g`, `Status: AUTHORIZED`, `Autorisiert: JA`, `Titel: Punkteberechnung schriftliche Prüfung korrigieren`, funktionaler Ausgangsstand v27.35d, erwarteter Ausgangscommit `db2f12a1af7792c59e9e6411bb127b2f68401713`, für die spätere Umsetzung ausschließlich erlaubte Dateien `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, `Commit erlaubt: NEIN`, `Push erlaubt: NEIN`; verbindlicher Bewertungsvertrag für keine Antwort, vollständig richtige Antwortmenge, Teilmengen-Sonderfall bei Zwei-Punkte-Fragen mit mindestens zwei richtigen Optionen, falsche Auswahl sowie Zwei-Punkte-Fragen mit nur einer richtigen Antwort festgelegt. Nichtfunktionaler Implementierungs-Gate-Korrekturschritt (Commit `bbe5f6ea5366e026327c3fc0c866e1ef37ead6f0`) ergänzte danach ausschließlich `tools/check-project-continuity-control.py` und die vier Steuerungsdokumente und gab im Arbeitsbaum ausschließlich `app.js` sowie `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md` frei. Funktionale Umsetzung (Commit `f5f261fee67fc17c170ee714ae23761ff1668f17`) veränderte ausschließlich `app.js` und `docs/WRITTEN_EXAM_SCORING_FIX_V2735G.md`, korrigierte `getExamQuestionReachedPoints()` gemäß Bewertungsvertrag und bestätigte 82 Fragen/120 Punkte, alle 13 zuvor betroffenen Fragen jeweils 2/2, die v27.35e-Testkonstellation jetzt 114/120 statt 101/120, alle 82 Fragen vollständig richtig jetzt 120/120, Pause/Fortsetzen, Fehleranalyse, Fehlertraining, Desktop und Mobil (390×844) PASS, keine neuen Konsolenfehler sowie vollständig restaurierten `localStorage`/`sessionStorage`; `docs/WRITTEN_EXAM_REGRESSION_V2735E.md` bleibt unverändert als historische FAIL-Dokumentation erhalten; `v27.35f` bleibt ausdrücklich nicht autorisiert; `CURRENT_TASK` steht danach wieder auf `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN` – **erledigt** |
 
-| v27.36a | Supabase/Login-Bestandsaudit und nächsten sicheren Umsetzungsbaustein festlegen: einziger autorisierter Dokumentations-/Bestandsaudit; funktionaler Ausgangsstand v27.35g, erwarteter Ausgangscommit `d69290f9de2921886566b1bb398231bf009fc433`, spätere Umsetzung ausschließlich in `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`; Audit in diesem Autorisierungsschritt noch nicht ausgeführt und Datei noch nicht erstellt oder verändert; kein Code, kein Live-Supabase, kein Folgetask, kein Commit und kein Push – **autorisiert, Audit offen** |
+| v27.36a | Supabase/Login-Bestandsaudit abgeschlossen: Audit-Commit `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`, Audit-Datei `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`; Supabase/Login umfangreich lokal vorbereitet, aber NICHT live; genau eine nicht autorisierende Empfehlung für eine lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit lokalem Fake-Client; funktionaler Stand bleibt v27.35g, kein Folgetask ausgewählt oder autorisiert – **erledigt** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -984,20 +984,44 @@ Kein Folgetask wurde ausgewählt oder autorisiert.
 - Der Abschluss dokumentiert „v27.35f abgeschlossen“, den finalen Notiz-SHA, den dynamisch aus Git ermittelten `Implementierungscommit: <SHA>` und „Kein Folgetask wurde ausgewählt oder autorisiert.“
 - Mehrere IMPLEMENTATION-Commits, fremde Commit- oder Working-Tree-Dateien, falscher Notiz-SHA, Closure ohne Implementation, automatisch ausgewählte Folgetasks sowie Commit oder Push `JA` bleiben geschlossen blockiert.
 
-### Autorisierter Dokumentations-/Bestandsaudit v27.36a
+### Abgeschlossener Dokumentations-/Bestandsaudit v27.36a
 
-- v27.36a ist der einzige autorisierte und noch offene Task.
-- Titel: Supabase/Login-Bestandsaudit und nächsten sicheren Umsetzungsbaustein festlegen.
-- Taskart: Dokumentations-/Bestandsaudit.
-- Funktionaler Ausgangsstand: v27.35g.
-- Erwarteter Ausgangscommit: `d69290f9de2921886566b1bb398231bf009fc433`.
-- Für die spätere Umsetzung ist ausschließlich `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` erlaubt.
-- Der Audit wird in diesem Autorisierungsschritt noch nicht ausgeführt; die Audit-Datei wird noch nicht erstellt oder verändert.
-- Supabase/Login bleibt der nächste Hauptblock. Der Audit inventarisiert den tatsächlichen Stand und leitet daraus genau einen kleinsten, sicher begrenzten tatsächlichen Implementierungsschritt ab.
-- Planung, lokale Simulation, Vorbereitung und tatsächliche Implementierung müssen klar getrennt werden; ebenso fehlende Voraussetzungen, Abhängigkeiten, Reihenfolge, technische Schulden und redundante Vorbereitungen.
-- App-, UI-, Fragen-, SQL-, Migrations-, Supabase-, Config-, Adapter-, Datenbank- und Netzwerkänderungen bleiben gesperrt. Live-Supabase, echte Schlüssel und echte Teilnehmerdaten bleiben verboten.
-- Der Audit darf einen nächsten Schritt empfehlen, aber keinen Folgetask automatisch auswählen oder autorisieren.
-- In diesem Autorisierungsschritt gibt es keinen Code, keinen Commit und keinen Push.
+v27.36a abgeschlossen.
+
+Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
+
+Audit-Datei: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
+
+Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.
+
+Zentrale Lücken:
+
+- kanonisches Auth-/Teilnehmerzugangsschema
+- SDK/öffentliche Dev-Config noch nicht aktiv
+- Auth-/Access-Adapter noch nicht an realen Client angebunden
+- keine ausgeführten echten RLS-/Datenbanktests
+
+Technische Schulden:
+
+- doppelte Config-Ladewege
+- isolierter Bootstrap
+- übergroßer zentraler Adapter
+- fragmentierte historische Vertrags-/Readiness-Kette
+
+Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
+mit lokalem Fake-Client.
+
+Diese Audit-Empfehlung ist KEINE Autorisierung.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
+
+Kein Live-Supabase.
+
+Keine echten Keys.
+
+Keine echten Teilnehmerdaten.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
 
 #### Permanenter v27.36a-Lebenszyklus
 
@@ -1007,7 +1031,11 @@ Kein Folgetask wurde ausgewählt oder autorisiert.
 - GATE enthält eine nichtleere Teilmenge der fünf Gate-Dateien; IMPLEMENTATION/AUDIT enthält exakt nur `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` und ist höchstens einmal zulässig; CLOSURE enthält erst nach dem Audit ausschließlich Gate-Dateien.
 - Die sechs Phasen sind: Autorisierung lokal vorbereitet; Autorisierung committet mit optionaler weiterer lokaler Gate-Korrektur; Audit-Datei lokal als einzige ungetrackte Datei; Audit exakt einmal committet; Closure lokal vorbereitet; Closure committet und sauber.
 - Audit vor GATE, ein zweiter Audit-Commit, fremde Dateien, Closure vor Audit, automatischer Folgetask und Rückkehr aus der Closure bleiben gesperrt.
-- Die Audit-Datei ist weiterhin nicht erstellt. Kein Folgetask wurde ausgewählt oder autorisiert; Commit und Push bleiben gesperrt.
+- Der Audit ist exakt einmal im dynamisch ermittelten Commit `f545a6c2b14a64a5bcb7bf60a2932315e571ef01` enthalten.
+- Die lokale Closure verändert exakt die fünf Gate-Dateien und schließt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
+- Ein späterer CLOSURE-Commit wird dynamisch erkannt; sein SHA wird nicht hartcodiert.
+- Nach der Closure bleibt eine Rückkehr zu `v27.36a / AUTHORIZED` ohne neue ausdrückliche Autorisierung geschlossen blockiert.
+- Kein Folgetask ist ausgewählt oder autorisiert; Commit und Push bleiben gesperrt.
 
 **Hinweis:** Supabase ist geplant, aber noch **nicht live** in der App eingebunden (vorbereitete SQL-Migrationen vorhanden, aber nicht live ausgeführt; keine echte Supabase-Verbindung). Seit v26.3a ist der Login-/Teilnehmerzugang-Plan vorhanden; seit v26.3c ist das Login-UI-Konzept dokumentiert; seit v26.3e ist der spätere Auth-Einstiegspunkt geprüft; seit v26.4a existiert ein lokales Auth-Guard-Gerüst ohne Login-Zwang; seit v26.4c sind lokale Teststatus für Login-/Sperr-/Ablaufseiten vorhanden; seit v26.4e sind diese Hinweisseiten optisch verbessert; seit v26.5a ist der Supabase-Konfigurations- und Sicherheitsplan dokumentiert; seit v26.5c existiert ein sicherer Config-Platzhalter ohne echte Keys; seit v26.5e ist der spätere Config-Ladeweg dokumentiert; seit v26.6a erkennt die App lokal den Supabase-Config-Status ohne Live-Verbindung; seit v26.6c ist ein optionaler lokaler Config-Loader vorhanden; seit v26.6e ist dieser Loader lokal getestet; seit v26.7a ist die spätere Supabase-Adapter-Schicht geplant; seit v26.7c existiert ein Adapter-Gerüst ohne SDK und ohne Live-Verbindung; seit v26.7e ist dieses Adapter-Gerüst lokal getestet; seit v26.8a ist der spätere Supabase-SDK-Ladeweg geplant; seit v26.8c erkennt der Adapter zusätzlich den SDK-Status ohne SDK-Live-Anbindung; seit v26.8e ist dieser SDK-Status lokal getestet; seit v26.9a ist die Client-Readiness-Auswertung im Adapter vorbereitet; seit v26.9c ist diese Readiness lokal getestet; seit v26.10a ist die Auth-Readiness im Adapter vorbereitet; seit v26.10c ist diese Auth-Readiness lokal getestet; seit v26.11a ist die Teilnehmerzugangs-Readiness im Adapter vorbereitet.
 
@@ -1398,35 +1426,55 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-Diese Bestands- und Backlogliste ist außerhalb des ausdrücklich in
-`docs/tasks/CURRENT_TASK.md` geregelten Tasks keine
-Task-Autorisierung. `CURRENT_TASK` ist aktuell `v27.36a` / `AUTHORIZED` /
-`Autorisiert: JA`. Ausschließlich der Dokumentations-/Bestandsaudit
-„Supabase/Login-Bestandsaudit und nächsten sicheren Umsetzungsbaustein
-festlegen“ ist autorisiert.
+Diese Bestands- und Backlogliste ist keine Task-Autorisierung.
+`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
 
-Der funktionale Ausgangsstand bleibt v27.35g; v27.35f ist abgeschlossen.
-Der spätere Audit darf ausschließlich
-`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` verändern. In diesem
-Autorisierungsschritt wird die Datei noch nicht erstellt oder verändert
-und kein Audit ausgeführt.
+v27.36a abgeschlossen.
 
-Supabase/Login bleibt der nächste Hauptblock. Der Audit dient der
-Ermittlung genau eines kleinsten sicheren tatsächlichen
-Implementierungsschritts. Er darf diesen Schritt nur empfehlen und nicht
-automatisch auswählen oder autorisieren. Kein Code, kein Live-Supabase,
-kein Folgetask, kein Commit und kein Push.
+Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
+
+Audit-Datei: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
+
+Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.
+
+Zentrale Lücken:
+
+- kanonisches Auth-/Teilnehmerzugangsschema
+- SDK/öffentliche Dev-Config noch nicht aktiv
+- Auth-/Access-Adapter noch nicht an realen Client angebunden
+- keine ausgeführten echten RLS-/Datenbanktests
+
+Technische Schulden:
+
+- doppelte Config-Ladewege
+- isolierter Bootstrap
+- übergroßer zentraler Adapter
+- fragmentierte historische Vertrags-/Readiness-Kette
+
+Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
+mit lokalem Fake-Client.
+
+Diese Audit-Empfehlung ist KEINE Autorisierung.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
+
+Kein Live-Supabase.
+
+Keine echten Keys.
+
+Keine echten Teilnehmerdaten.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
 
 Die stabile Basis `d69290f9de2921886566b1bb398231bf009fc433`
-muss Vorfahr des aktuellen HEAD bleiben. Der legitime Phase-2-GATE-Commit wird dynamisch aus Git-Historie,
-Dateimenge und Taskstatus erkannt. Sein SHA wird nicht fest dokumentiert
-und nicht als dauerhafte HEAD-Gleichheit verlangt. Der sechsphasige Lifecycle wird dynamisch aus
-Historie, Dateimenge, Taskstatus und Working Tree abgeleitet; zukünftige
-Commit-SHAs werden nicht vorweggenommen. Die Audit-Datei ist weiterhin
-nicht erstellt.
+muss Vorfahr des aktuellen HEAD bleiben. GATE-Commit(s), exakt ein
+IMPLEMENTATION-/AUDIT-Commit, die lokal vorbereitete CLOSURE und ein
+späterer CLOSURE-Commit werden dynamisch aus Historie, Dateimenge,
+Taskstatus und Working Tree erkannt. Ein zukünftiger Closure-SHA wird
+nicht hartcodiert. Die Rückkehr zu `v27.36a / AUTHORIZED` bleibt ohne
+neue ausdrückliche Autorisierung geschlossen blockiert.
 
-Die nachstehende Bestands- und Backlogliste autorisiert keinen weiteren
-Punkt.
+Die nachstehende Bestands- und Backlogliste autorisiert keinen Punkt.
 
 1. **Schriftliche Prüfung Regressionstest bei Änderungen** – als v27.35e durchgeführt und mit Gesamtergebnis FAIL abgeschlossen (siehe oben); als Folge ist v27.35g zur Korrektur der Punkteberechnung autorisiert.
 2. **Lernkarten nach größeren UI-Änderungen kurz regressionsprüfen** – Stand v26.1c ist browsergetestet.

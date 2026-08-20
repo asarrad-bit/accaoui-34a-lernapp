@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.35g
+Stand: v27.36a
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -466,37 +466,44 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-`CURRENT_TASK` ist `v27.36a` / `AUTHORIZED` / `Autorisiert: JA`.
+`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
 
-Einziger autorisierter Task: Supabase/Login-Bestandsaudit und nächsten
-sicheren Umsetzungsbaustein festlegen.
+v27.36a abgeschlossen.
 
-Taskart: Dokumentations-/Bestandsaudit.
+Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
 
-Funktionaler Ausgangsstand: v27.35g.
+Audit-Datei: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
 
-Erwarteter Ausgangscommit:
-`d69290f9de2921886566b1bb398231bf009fc433`.
+Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.
 
-Für die spätere Umsetzung ist ausschließlich
-`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` erlaubt. In diesem
-Autorisierungsschritt wird diese Audit-Datei noch nicht erstellt oder
-verändert; der Audit selbst wird noch nicht durchgeführt.
+Zentrale Lücken:
 
-Der spätere Audit inventarisiert Auth-/Login-Planungen, lokale
-Auth-Guards, Config-Platzhalter und Loader, Adapter- und SDK-Readiness,
-Teilnehmerzugang, Kurs-/Enrollment-/Ablaufdatum-Verträge, Fortschritts-
-und Dashboard-Datenquellen sowie vorhandene SQL-/RPC-Planungen und
-Migrationen. Er trennt geplante, lokal simulierte, vorbereitete und
-tatsächlich implementierte Teile und empfiehlt genau einen kleinsten,
-sicher begrenzten nächsten Umsetzungsbaustein.
+- kanonisches Auth-/Teilnehmerzugangsschema
+- SDK/öffentliche Dev-Config noch nicht aktiv
+- Auth-/Access-Adapter noch nicht an realen Client angebunden
+- keine ausgeführten echten RLS-/Datenbanktests
 
-v27.35f bleibt abgeschlossen; der letzte funktionale Stand bleibt
-v27.35g. Supabase bleibt nicht live. App-, UI-, Fragen-, SQL-,
-Migrations-, Supabase-, Config-, Adapter-, Datenbank- und
-Netzwerkänderungen sowie echte Schlüssel und echte Teilnehmerdaten sind
-verboten. Der Audit darf keinen Folgetask automatisch auswählen oder
-autorisieren. Commit und Push bleiben gesperrt.
+Technische Schulden:
+
+- doppelte Config-Ladewege
+- isolierter Bootstrap
+- übergroßer zentraler Adapter
+- fragmentierte historische Vertrags-/Readiness-Kette
+
+Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
+mit lokalem Fake-Client.
+
+Diese Audit-Empfehlung ist KEINE Autorisierung.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
+
+Kein Live-Supabase.
+
+Keine echten Keys.
+
+Keine echten Teilnehmerdaten.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
 
 ### Permanenter v27.36a-Lebenszyklus
 
@@ -519,10 +526,15 @@ Closure committet und sauber.
 
 Fremde Commit- oder Working-Tree-Dateien, App-, UI-, Fragen-, SQL-,
 Migrations-, Config-, Adapter- und Netzwerkänderungen, Audit vor GATE,
-mehr als ein Audit-Commit, Closure vor Audit sowie eine Rückkehr aus dem
-geschlossenen Zustand bleiben gesperrt. Die Audit-Datei ist aktuell
-weiterhin nicht erstellt. Kein Folgetask ist ausgewählt oder
-autorisiert; Commit und Push bleiben gesperrt.
+mehr als ein Audit-Commit und Closure vor Audit bleiben gesperrt. Der
+Audit ist exakt einmal im dynamisch ermittelten Commit
+`f545a6c2b14a64a5bcb7bf60a2932315e571ef01` enthalten. Die lokale
+Closure verändert exakt die fünf Gate-Dateien; ein späterer
+CLOSURE-Commit wird ohne hartcodierten zukünftigen SHA erkannt.
+
+Nach der Closure bleibt eine Rückkehr zu `v27.36a / AUTHORIZED` ohne
+neue ausdrückliche Autorisierung geschlossen blockiert. Kein Folgetask
+ist ausgewählt oder autorisiert; Commit und Push bleiben gesperrt.
 
 ## 15. Wenn ein neuer Chat beginnt
 

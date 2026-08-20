@@ -1,44 +1,53 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.36a
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: Supabase/Login-Bestandsaudit und nächsten sicheren Umsetzungsbaustein festlegen
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Erwarteter Ausgangscommit: `d69290f9de2921886566b1bb398231bf009fc433`
-Erlaubte Dateien: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
+Letzter abgeschlossener Kontrollschritt: v27.36a
+Erlaubte Dateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
 
-## Autorisierter Dokumentations-/Bestandsaudit v27.36a
+## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a
 
-v27.36a ist der einzige autorisierte Task. Dieser Autorisierungsschritt
-führt den Audit noch nicht aus und erstellt oder verändert die spätere
-Audit-Datei noch nicht.
+v27.36a abgeschlossen.
 
-Ziel des späteren Audits ist, den tatsächlich vorhandenen
-Supabase-/Login-Stand vollständig zu inventarisieren und daraus genau
-einen kleinsten, sicher begrenzten nächsten Umsetzungsbaustein
-abzuleiten. Der Audit muss insbesondere Auth-/Login-Planungen, lokale
-Auth-Guards, Config-Platzhalter und Loader, Adapter- und SDK-Readiness,
-Teilnehmerzugang, Kurs-/Enrollment-/Ablaufdatum-Verträge, Fortschritts-
-und Dashboard-Datenquellen sowie SQL-/RPC-Planungen und Migrationen
-unterscheiden. Geplante, lokal simulierte, vorbereitete und tatsächlich
-implementierte Teile, fehlende Voraussetzungen, Abhängigkeiten,
-Reihenfolge, technische Schulden und redundante Vorbereitungen müssen
-klar ausgewiesen werden.
+Audit-Commit: `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`
 
-Für die spätere Umsetzung ist ausschließlich
-`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md` erlaubt. Vorhandene
-Dateien dürfen dafür gelesen, aber nicht verändert werden. Der Audit darf
-genau einen nächsten Schritt empfehlen, ihn jedoch weder automatisch
-auswählen noch autorisieren.
+Audit-Datei: `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`
 
-Verboten bleiben App-Code-, UI-, Fragenbank-, SQL-, Migrations-,
-Supabase-, Config- und Adapteränderungen, Live-Supabase, Projekt-
-Konfiguration, echte Schlüssel, Netzwerk- und Datenbankzugriffe, echte
-Teilnehmerdaten sowie die Aktivierung des Logins. Ein Folgetask nach
-v27.36a ist nicht autorisiert. Commit und Push bleiben gesperrt.
+Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.
+
+Zentrale Lücken:
+
+- kanonisches Auth-/Teilnehmerzugangsschema
+- SDK/öffentliche Dev-Config noch nicht aktiv
+- Auth-/Access-Adapter noch nicht an realen Client angebunden
+- keine ausgeführten echten RLS-/Datenbanktests
+
+Technische Schulden:
+
+- doppelte Config-Ladewege
+- isolierter Bootstrap
+- übergroßer zentraler Adapter
+- fragmentierte historische Vertrags-/Readiness-Kette
+
+Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente
+mit lokalem Fake-Client.
+
+Diese Audit-Empfehlung ist KEINE Autorisierung.
+
+Kein Folgetask wurde ausgewählt oder autorisiert.
+
+Kein Live-Supabase.
+
+Keine echten Keys.
+
+Keine echten Teilnehmerdaten.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
 
 ## Permanenter v27.36a-Lebenszyklus
 
@@ -71,9 +80,14 @@ GATE, ein zweiter Audit, Closure vor Audit, Commit oder Push `JA`, ein
 automatischer Folgetask und eine Rückkehr aus der Closure bleiben
 gesperrt.
 
-Die eigentliche Audit-Datei wird durch diese Gate-Korrektur weiterhin
-nicht erstellt oder inhaltlich vorweggenommen. Kein Folgetask ist
-ausgewählt oder autorisiert.
+Der Audit ist exakt einmal im dynamisch ermittelten Commit
+`f545a6c2b14a64a5bcb7bf60a2932315e571ef01` enthalten. Die lokale
+Closure verändert exakt die fünf Gate-Dateien. Ein späterer
+CLOSURE-Commit wird dynamisch erkannt; sein SHA wird nicht hartcodiert.
+
+Nach der Closure bleibt eine Rückkehr zu `v27.36a / AUTHORIZED` ohne
+neue ausdrückliche Autorisierung geschlossen blockiert. Kein Folgetask
+ist ausgewählt oder autorisiert.
 
 ## Abgeschlossener Dokumentationstask v27.35f
 

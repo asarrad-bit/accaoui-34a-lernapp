@@ -154,6 +154,16 @@ V2736A_MASTERLIST_ROW = (
     "Umsetzungsbaustein festlegen: einziger autorisierter "
     "Dokumentations-/Bestandsaudit;"
 )
+V2736A_CLOSED_MASTERLIST_ROW = (
+    "| v27.36a | Supabase/Login-Bestandsaudit abgeschlossen: Audit-Commit "
+    "`f545a6c2b14a64a5bcb7bf60a2932315e571ef01`, Audit-Datei "
+    "`docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`; Supabase/Login "
+    "umfangreich lokal vorbereitet, aber NICHT live; genau eine nicht "
+    "autorisierende Empfehlung für eine lokale injizierbare "
+    "Auth-/Teilnehmerzugangs-Komponente mit lokalem Fake-Client; funktionaler "
+    "Stand bleibt v27.35g, kein Folgetask ausgewählt oder autorisiert – "
+    "**erledigt** |"
+)
 V2736A_MASTERLIST_REQUIRED_MARKERS = (
     V2736A_MASTERLIST_ROW,
     "### Autorisierter Dokumentations-/Bestandsaudit v27.36a",
@@ -188,12 +198,14 @@ V2736A_CLOSED_TASK_FIELDS = {
     "Status": "BLOCKED",
     "Autorisiert": "NEIN",
     "Titel": "Kein Task autorisiert",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.36a",
     "Erlaubte Dateien": "KEINE",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
 V2736A_CLOSED_STATE_FIELDS = {
-    "Stand": "v27.35g",
+    "Stand": "v27.36a",
     "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
     "Branch": "`main`",
     "Letzter abgeschlossener funktionaler Stand": "v27.35g",
@@ -202,7 +214,35 @@ V2736A_CLOSED_STATE_FIELDS = {
     "Funktionsstatus": "v27.35g abgeschlossen",
     "Weiterer funktionaler Schritt autorisiert": "NEIN",
     "Aktuell autorisierter Task": "NONE",
+    "Aktuelle Taskart": "Kein Task autorisiert",
+    "Aktueller Blocker": (
+        "Neue Taskauswahl und ausdrückliche Autorisierung durch "
+        "Projekteigentümer und verbindlichen Projektchat"
+    ),
 }
+V2736A_CLOSURE_CONTENT_MARKERS = (
+    "v27.36a abgeschlossen.",
+    f"Audit-Datei: `{V2736A_AUDIT_FILE}`",
+    "Ergebnis: Supabase/Login ist umfangreich lokal vorbereitet, aber NICHT live.",
+    "Zentrale Lücken:",
+    "- kanonisches Auth-/Teilnehmerzugangsschema",
+    "- SDK/öffentliche Dev-Config noch nicht aktiv",
+    "- Auth-/Access-Adapter noch nicht an realen Client angebunden",
+    "- keine ausgeführten echten RLS-/Datenbanktests",
+    "Technische Schulden:",
+    "- doppelte Config-Ladewege",
+    "- isolierter Bootstrap",
+    "- übergroßer zentraler Adapter",
+    "- fragmentierte historische Vertrags-/Readiness-Kette",
+    "Audit-Empfehlung: lokale injizierbare Auth-/Teilnehmerzugangs-Komponente\n"
+    "mit lokalem Fake-Client.",
+    "Diese Audit-Empfehlung ist KEINE Autorisierung.",
+    "Kein Folgetask wurde ausgewählt oder autorisiert.",
+    "Kein Live-Supabase.",
+    "Keine echten Keys.",
+    "Keine echten Teilnehmerdaten.",
+    "Der letzte abgeschlossene funktionale Stand bleibt v27.35g.",
+)
 V2736A_STATE_LIFECYCLE_MARKERS = (
     "### Permanenter v27.36a-Lebenszyklus",
     f"`{V2736A_AUTHORIZATION_BASE_SHA}` ist die stabile",
@@ -3788,10 +3828,140 @@ def detect_v2736a_task_state_text(text: str) -> str:
 
 def v2736a_closure_markers(audit_commit: str) -> tuple[str, ...]:
     return (
-        "v27.36a abgeschlossen",
-        f"Audit-Datei: `{V2736A_AUDIT_FILE}`",
         f"Audit-Commit: `{audit_commit}`",
-        "Kein Folgetask wurde ausgewählt oder autorisiert.",
+        *V2736A_CLOSURE_CONTENT_MARKERS,
+    )
+
+
+def validate_v2736a_closed_state_text(text: str, audit_commit: str) -> None:
+    validate_exact_fields(text, V2736A_CLOSED_STATE_FIELDS)
+    section = section_between(
+        text,
+        "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a",
+        "## Abgeschlossener Dokumentationstask v27.35f",
+        "PROJECT_STATE_CURRENT",
+    )
+    validate_exact_markers(
+        section,
+        v2736a_closure_markers(audit_commit),
+        "PROJECT_STATE_CURRENT / v27.36a-Abschluss",
+    )
+    validate_required_markers(
+        section,
+        (
+            "### Permanenter v27.36a-Lebenszyklus",
+            f"`{V2736A_AUTHORIZATION_BASE_SHA}` ist die stabile",
+            "Die lokale\nClosure verändert exakt die fünf Gate-Dateien",
+            "Ein späterer CLOSURE-Commit\nwird weiterhin dynamisch erkannt; sein SHA wird nicht hartcodiert.",
+            "Rückkehr zu `v27.36a / AUTHORIZED` ohne\nneue ausdrückliche Autorisierung geschlossen blockiert.",
+        ),
+        "PROJECT_STATE_CURRENT / v27.36a-Closure-Lebenszyklus",
+    )
+
+
+def validate_v2736a_closed_task_text(text: str, audit_commit: str) -> None:
+    validate_exact_fields(text, V2736A_CLOSED_TASK_FIELDS)
+    section = section_between(
+        text,
+        "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a",
+        "## Abgeschlossener Dokumentationstask v27.35f",
+        "CURRENT_TASK",
+    )
+    validate_exact_markers(
+        section,
+        v2736a_closure_markers(audit_commit),
+        "CURRENT_TASK / v27.36a-Abschluss",
+    )
+    validate_required_markers(
+        section,
+        (
+            "## Permanenter v27.36a-Lebenszyklus",
+            f"`{V2736A_AUTHORIZATION_BASE_SHA}`",
+            "Die lokale\nClosure verändert exakt die fünf Gate-Dateien.",
+            "CLOSURE-Commit wird dynamisch erkannt; sein SHA wird nicht hartcodiert.",
+            "Rückkehr zu `v27.36a / AUTHORIZED` ohne\nneue ausdrückliche Autorisierung geschlossen blockiert.",
+        ),
+        "CURRENT_TASK / v27.36a-Closure-Lebenszyklus",
+    )
+
+
+def validate_v2736a_closed_cursor_text(text: str, audit_commit: str) -> None:
+    require(
+        exact_field(text, "Stand") == "v27.36a",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI muss auf v27.36a stehen",
+    )
+    validate_project_paths(text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    section = section_between(
+        text,
+        "## 14. Nächster sinnvoller Schritt",
+        "## 15. Wenn ein neuer Chat beginnt",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+    )
+    validate_exact_markers(
+        section,
+        (
+            "`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.",
+            *v2736a_closure_markers(audit_commit),
+        ),
+        "CURSOR_MASTER_CONTEXT_ACCAOUI / v27.36a-Abschluss",
+    )
+    validate_required_markers(
+        section,
+        (
+            "### Permanenter v27.36a-Lebenszyklus",
+            f"`{V2736A_AUTHORIZATION_BASE_SHA}` ist die stabile",
+            "Die lokale\nClosure verändert exakt die fünf Gate-Dateien",
+            "CLOSURE-Commit wird ohne hartcodierten zukünftigen SHA erkannt.",
+            "Rückkehr zu `v27.36a / AUTHORIZED` ohne\nneue ausdrückliche Autorisierung geschlossen blockiert.",
+        ),
+        "CURSOR_MASTER_CONTEXT_ACCAOUI / v27.36a-Closure-Lebenszyklus",
+    )
+    require(
+        re.search(r"\bv27\.(?:36[b-z]|3[7-9])\b", section, re.IGNORECASE)
+        is None,
+        "CURSOR_MASTER_CONTEXT_ACCAOUI darf nach v27.36a keinen Folgetask autorisieren",
+    )
+
+
+def validate_v2736a_closed_masterlist_text(text: str, audit_commit: str) -> None:
+    require(
+        exact_field(text, "Stand") == "v27.36a",
+        "PROJECT_MASTERLIST muss auf v27.36a stehen",
+    )
+    validate_project_paths(text, "PROJECT_MASTERLIST")
+    require(
+        text.count(V2736A_CLOSED_MASTERLIST_ROW) == 1,
+        "PROJECT_MASTERLIST muss den abgeschlossenen v27.36a-Tabelleneintrag exakt einmal führen",
+    )
+    section = section_between(
+        text,
+        "## 14. Nächste sinnvolle Aufgaben",
+        "## 15. Start in neuem Chat",
+        "PROJECT_MASTERLIST",
+    )
+    validate_exact_markers(
+        section,
+        (
+            "`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`.",
+            *v2736a_closure_markers(audit_commit),
+        ),
+        "PROJECT_MASTERLIST / v27.36a-Abschluss",
+    )
+    validate_required_markers(
+        section,
+        (
+            f"Die stabile Basis `{V2736A_AUTHORIZATION_BASE_SHA}`",
+            "exakt ein\nIMPLEMENTATION-/AUDIT-Commit",
+            "späterer CLOSURE-Commit werden dynamisch",
+            "Ein zukünftiger Closure-SHA wird\nnicht hartcodiert.",
+            "Rückkehr zu `v27.36a / AUTHORIZED` bleibt ohne\nneue ausdrückliche Autorisierung geschlossen blockiert.",
+        ),
+        "PROJECT_MASTERLIST / v27.36a-Closure-Lebenszyklus",
+    )
+    require(
+        re.search(r"\bv27\.(?:36[b-z]|3[7-9])\b", section, re.IGNORECASE)
+        is None,
+        "PROJECT_MASTERLIST darf nach v27.36a keinen Folgetask autorisieren",
     )
 
 
@@ -3802,52 +3972,10 @@ def validate_v2736a_closed_documents(
     masterlist_text: str,
     audit_commit: str,
 ) -> None:
-    markers = v2736a_closure_markers(audit_commit)
-    validate_exact_fields(state_text, V2736A_CLOSED_STATE_FIELDS)
-    validate_required_markers(
-        state_text,
-        ("## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", *markers),
-        "PROJECT_STATE_CURRENT / v27.36a-Abschluss",
-    )
-    validate_exact_fields(task_text, V2736A_CLOSED_TASK_FIELDS)
-    validate_required_markers(
-        task_text,
-        ("## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a", *markers),
-        "CURRENT_TASK / v27.36a-Abschluss",
-    )
-    validate_project_paths(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
-    cursor_section = section_between(
-        cursor_text,
-        "## 14. Nächster sinnvoller Schritt",
-        "## 15. Wenn ein neuer Chat beginnt",
-        "CURSOR_MASTER_CONTEXT_ACCAOUI",
-    )
-    validate_required_markers(
-        cursor_section,
-        ("`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.", *markers),
-        "CURSOR_MASTER_CONTEXT_ACCAOUI / v27.36a-Abschluss",
-    )
-    validate_project_paths(masterlist_text, "PROJECT_MASTERLIST")
-    master_section = section_between(
-        masterlist_text,
-        "## 14. Nächste sinnvolle Aufgaben",
-        "## 15. Start in neuem Chat",
-        "PROJECT_MASTERLIST",
-    )
-    validate_required_markers(
-        master_section,
-        ("`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`.", *markers),
-        "PROJECT_MASTERLIST / v27.36a-Abschluss",
-    )
-    for document_name, section in (
-        ("CURSOR_MASTER_CONTEXT_ACCAOUI", cursor_section),
-        ("PROJECT_MASTERLIST", master_section),
-    ):
-        require(
-            re.search(r"\bv27\.(?:36[b-z]|3[7-9])\b", section, re.IGNORECASE)
-            is None,
-            f"{document_name} darf nach v27.36a keinen Folgetask autorisieren",
-        )
+    validate_v2736a_closed_state_text(state_text, audit_commit)
+    validate_v2736a_closed_task_text(task_text, audit_commit)
+    validate_v2736a_closed_cursor_text(cursor_text, audit_commit)
+    validate_v2736a_closed_masterlist_text(masterlist_text, audit_commit)
 
 
 def read_v2736a_commit_facts(current_head: str) -> tuple[V2736ACommitFact, ...]:
@@ -3925,6 +4053,7 @@ def validate_v2736a_history_facts(
             f"Unbekannter Taskzustand in v27.36a-Commit {fact.commit_sha}",
         )
         require(audit_commit is not None, "v27.36a-CLOSURE vor Audit unzulässig")
+        require(not closed, "Mehr als ein v27.36a-CLOSURE-Commit unzulässig")
         closed = True
         roles.append(V2736A_ROLE_CLOSURE)
 
@@ -4050,6 +4179,38 @@ def validate_v2736a_lifecycle(
     return phase, history_state, fact
 
 
+def exercise_v2736a_section_marker_manipulations(
+    validator: Callable[[str], None],
+    text: str,
+    start_heading: str,
+    end_heading: str,
+    markers: tuple[str, ...],
+    document_name: str,
+) -> int:
+    section = section_between(text, start_heading, end_heading, document_name)
+    checks = 0
+    for marker in markers:
+        require(
+            section.count(marker) == 1,
+            f"{document_name}: Closure-Pflichtaussage muss für die Manipulation exakt einmal im aktiven Abschnitt vorkommen: {marker}",
+        )
+        removed_section = section.replace(marker, "", 1)
+        must_reject(
+            validator,
+            text.replace(section, removed_section, 1),
+            f"{document_name}: Closure-Pflichtaussage entfernt: {marker}",
+        )
+        checks += 1
+        duplicated_section = section.replace(marker, marker + "\n" + marker, 1)
+        must_reject(
+            validator,
+            text.replace(section, duplicated_section, 1),
+            f"{document_name}: Closure-Pflichtaussage dupliziert: {marker}",
+        )
+        checks += 1
+    return checks
+
+
 def run_v2736a_lifecycle_manipulation_matrix(
     state_text: str,
     task_text: str,
@@ -4059,26 +4220,104 @@ def run_v2736a_lifecycle_manipulation_matrix(
     current_fact: V2736AWorkingTreeFact,
 ) -> tuple[int, int, int]:
     checks = 0
-    for text, validator, expected_fields, document_name in (
-        (state_text, validate_v2736a_state_text, V2736A_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736a_task_text, V2736A_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
-    ):
+    task_state = detect_v2736a_task_state_text(task_text)
+    if task_state == V2736A_TASK_AUTHORIZED:
+        field_groups = (
+            (state_text, validate_v2736a_state_text, V2736A_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+            (task_text, validate_v2736a_task_text, V2736A_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
+        )
+        marker_groups = (
+            (state_text, validate_v2736a_state_text, V2736A_STATE_REQUIRED_MARKERS + V2736A_STATE_LIFECYCLE_MARKERS, "PROJECT_STATE_CURRENT"),
+            (task_text, validate_v2736a_task_text, V2736A_TASK_REQUIRED_MARKERS + V2736A_TASK_LIFECYCLE_MARKERS, "CURRENT_TASK"),
+            (cursor_text, validate_v2736a_cursor_text, V2736A_CURSOR_REQUIRED_MARKERS + V2736A_CURSOR_LIFECYCLE_MARKERS, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+            (masterlist_text, validate_v2736a_masterlist_text, V2736A_MASTERLIST_REQUIRED_MARKERS + V2736A_MASTERLIST_LIFECYCLE_MARKERS, "PROJECT_MASTERLIST"),
+        )
+    else:
+        require(
+            current_history.audit_commit is not None,
+            "v27.36a-Closure-Manipulationsmatrix benötigt den Audit-Commit",
+        )
+        audit_commit = current_history.audit_commit
+        closed_state_validator = lambda value: validate_v2736a_closed_state_text(value, audit_commit)
+        closed_task_validator = lambda value: validate_v2736a_closed_task_text(value, audit_commit)
+        closed_cursor_validator = lambda value: validate_v2736a_closed_cursor_text(value, audit_commit)
+        closed_masterlist_validator = lambda value: validate_v2736a_closed_masterlist_text(value, audit_commit)
+        field_groups = (
+            (state_text, closed_state_validator, V2736A_CLOSED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+            (task_text, closed_task_validator, V2736A_CLOSED_TASK_FIELDS, "CURRENT_TASK"),
+        )
+        marker_groups = tuple()
+
+    for text, validator, expected_fields, document_name in field_groups:
         for field_name, expected_value in expected_fields.items():
             manipulated = changed_once(text, f"{field_name}: {expected_value}", f"{field_name}: MANIPULIERT", f"{document_name} / {field_name}")
             must_reject(validator, manipulated, f"{document_name}: manipuliertes Feld {field_name}")
             checks += 1
 
-    marker_groups = (
-        (state_text, validate_v2736a_state_text, V2736A_STATE_REQUIRED_MARKERS + V2736A_STATE_LIFECYCLE_MARKERS, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736a_task_text, V2736A_TASK_REQUIRED_MARKERS + V2736A_TASK_LIFECYCLE_MARKERS, "CURRENT_TASK"),
-        (cursor_text, validate_v2736a_cursor_text, V2736A_CURSOR_REQUIRED_MARKERS + V2736A_CURSOR_LIFECYCLE_MARKERS, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
-        (masterlist_text, validate_v2736a_masterlist_text, V2736A_MASTERLIST_REQUIRED_MARKERS + V2736A_MASTERLIST_LIFECYCLE_MARKERS, "PROJECT_MASTERLIST"),
-    )
     for text, validator, markers, document_name in marker_groups:
         for marker in markers:
             require(marker in text, f"Manipulationsmatrix kann Pflichtaussage nicht finden: {document_name} / {marker}")
             must_reject(validator, text.replace(marker, ""), f"{document_name}: Pflichtaussage entfernt: {marker}")
             checks += 1
+
+    if task_state == V2736A_TASK_CLOSED:
+        closure_markers = v2736a_closure_markers(audit_commit)
+        checks += exercise_v2736a_section_marker_manipulations(
+            closed_state_validator,
+            state_text,
+            "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a",
+            "## Abgeschlossener Dokumentationstask v27.35f",
+            closure_markers,
+            "PROJECT_STATE_CURRENT",
+        )
+        checks += exercise_v2736a_section_marker_manipulations(
+            closed_task_validator,
+            task_text,
+            "## Abgeschlossener Dokumentations-/Bestandsaudit v27.36a",
+            "## Abgeschlossener Dokumentationstask v27.35f",
+            closure_markers,
+            "CURRENT_TASK",
+        )
+        checks += exercise_v2736a_section_marker_manipulations(
+            closed_cursor_validator,
+            cursor_text,
+            "## 14. Nächster sinnvoller Schritt",
+            "## 15. Wenn ein neuer Chat beginnt",
+            ("`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.", *closure_markers),
+            "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        )
+        checks += exercise_v2736a_section_marker_manipulations(
+            closed_masterlist_validator,
+            masterlist_text,
+            "## 14. Nächste sinnvolle Aufgaben",
+            "## 15. Start in neuem Chat",
+            ("`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`.", *closure_markers),
+            "PROJECT_MASTERLIST",
+        )
+        removed_row = changed_once(
+            masterlist_text,
+            V2736A_CLOSED_MASTERLIST_ROW,
+            "",
+            "PROJECT_MASTERLIST / abgeschlossener v27.36a-Tabelleneintrag",
+        )
+        must_reject(
+            closed_masterlist_validator,
+            removed_row,
+            "PROJECT_MASTERLIST: abgeschlossener v27.36a-Tabelleneintrag entfernt",
+        )
+        checks += 1
+        duplicated_row = changed_once(
+            masterlist_text,
+            V2736A_CLOSED_MASTERLIST_ROW,
+            V2736A_CLOSED_MASTERLIST_ROW + "\n" + V2736A_CLOSED_MASTERLIST_ROW,
+            "PROJECT_MASTERLIST / duplizierter v27.36a-Tabelleneintrag",
+        )
+        must_reject(
+            closed_masterlist_validator,
+            duplicated_row,
+            "PROJECT_MASTERLIST: abgeschlossener v27.36a-Tabelleneintrag dupliziert",
+        )
+        checks += 1
 
     gate = V2736ACommitFact("1" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736A_TASK_AUTHORIZED)
     audit = V2736ACommitFact("2" * 40, frozenset({V2736A_AUDIT_FILE}), V2736A_TASK_AUTHORIZED)
@@ -4118,6 +4357,7 @@ def run_v2736a_lifecycle_manipulation_matrix(
         ((gate, closure), "Closure vor Audit"),
         ((gate, V2736ACommitFact("6" * 40, frozenset({V2736A_AUDIT_FILE}), V2736A_TASK_CLOSED)), "Audit mit geschlossenem Task"),
         ((gate, audit, closure, gate), "Rückkehr aus Closure"),
+        ((gate, audit, closure, closure), "zweiter Closure-Commit"),
         ((gate, V2736ACommitFact("7" * 40, frozenset({V2736A_AUDIT_FILE, "app.js"}), V2736A_TASK_AUTHORIZED)), "Audit mit Zusatzdatei"),
     )
     for facts, label in bad_history_fixtures:
@@ -4137,6 +4377,7 @@ def run_v2736a_lifecycle_manipulation_matrix(
         (current_history, V2736A_TASK_AUTHORIZED, replace(current_fact, audit_file_tracked_at_base=True), "Audit an Basis"),
         (histories[0], V2736A_TASK_AUTHORIZED, replace(clean_fact, head=V2736A_AUTHORIZATION_BASE_SHA, untracked_files=frozenset({V2736A_AUDIT_FILE}), status_lines=frozenset({f"?? {V2736A_AUDIT_FILE}"}), audit_file_exists=True), "Audit lokal vor Autorisierung"),
         (histories[1], V2736A_TASK_CLOSED, replace(clean_fact, diff_files=gate_files, status_lines=frozenset(f" M {p}" for p in gate_files)), "Closure lokal vor Audit"),
+        (histories[2], V2736A_TASK_AUTHORIZED, replace(clean_fact, diff_files=gate_files, status_lines=frozenset(f" M {p}" for p in gate_files), audit_file_exists=True, audit_file_tracked_at_head=True), "Rückkehr zu AUTHORIZED während lokaler Closure"),
     )
     for history, task_state, fact, label in bad_working_fixtures:
         try:
@@ -4205,7 +4446,11 @@ def main() -> int:
         return 1
 
     print("Projektkontinuität und v27.36a-Lebenszyklus: OK")
-    task_summary = "v27.36a / AUTHORIZED / Autorisiert JA"
+    task_summary = (
+        "v27.36a / AUTHORIZED / Autorisiert JA"
+        if detect_v2736a_task_state_text(task_text) == V2736A_TASK_AUTHORIZED
+        else "NONE / BLOCKED / Autorisiert NEIN"
+    )
     print(
         "PROJECT_STATE_CURRENT: letzter funktionaler Stand v27.35g / "
         f"CURRENT_TASK {task_summary}"
