@@ -1,14 +1,112 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
+Task-ID: v27.36c
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: Lokale Teilnehmerzugangs-Brücke zum bestehenden Supabase-Bootstrap-Pfad vorbereiten
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.36b
-Erlaubte Dateien: KEINE
+Erwarteter Ausgangscommit: `d28f3710d6f3e4b9abc427dec8589d3ea98c09be`
+Erlaubte Dateien: `data/supabase-participant-access-bootstrap-bridge.js`, `tools/check-supabase-participant-access-bootstrap-bridge.py`, `docs/SUPABASE_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_V2736C.md`, `tools/preflight.py`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Autorisierter Task v27.36c
+
+Dieser Codex-Schritt autorisiert v27.36c nur. v27.36b ist vollständig
+abgeschlossen; sein Closure-HEAD ist
+`d28f3710d6f3e4b9abc427dec8589d3ea98c09be`. Der letzte abgeschlossene
+funktionale Stand bleibt v27.35g.
+
+In diesem Autorisierungsschritt wird keine Brücke implementiert, keine der
+später erlaubten Implementierungsdateien angelegt oder verändert und keine
+App-, Bootstrap-, Adapter-, Config-, Supabase-, SQL- oder Migrationsdatei
+geändert.
+
+## Verbindliches Funktionsziel
+
+Eine spätere kleine isolierte Teilnehmerzugangs-Brücke darf ausschließlich
+folgende Dependencies explizit injiziert erhalten:
+
+- einen bootstrap-kompatiblen Provider
+- die Factory des bestehenden v27.36b-Teilnehmerzugangs-Adapters
+- eine UTC-Zeitquelle
+
+Der Provider stellt `getClient()` bereit. Die Brücke liest vom Bootstrap
+ausschließlich `bootstrap.getClient()`. Sie verwendet keine Globals, erzeugt
+und initialisiert keinen Supabase-Client und aktiviert keinen Live- oder
+Netzwerkpfad. Der bestehende Bootstrap, der zentrale Supabase-Adapter und der
+v27.36b-Teilnehmerzugangs-Adapter bleiben unverändert.
+
+## Fail-closed Brückenverhalten
+
+Die spätere Brücke blockiert geschlossen bei:
+
+- fehlendem oder ungültigem Bootstrap-Provider
+- fehlendem oder werfendem `getClient()`-Pfad
+- fehlender oder ungültiger Adapter-Factory oder UTC-Zeitquelle
+- einem Factoryfehler oder einem ungültigen Adapter-Ergebnis
+- fehlendem oder ungültigem `resolveAccess`
+
+Ein ungültiger bereits vorhandener Client wird nicht durch duplizierte
+Fachlogik der Brücke bewertet, sondern an den bestehenden v27.36b-Adapter
+weitergereicht und dort fail-closed behandelt.
+
+## Lokaler Fake-Bootstrap und Testgrenze
+
+Die spätere Prüfung verwendet ausschließlich einen lokalen synthetischen
+Fake-Bootstrap, einen lokalen Fake-Client und eine injizierte feste UTC-Zeit.
+Sie führt kein Netzwerk, keine Datenbank, kein SDK und kein echtes Supabase
+aus.
+
+Später exakt erlaubte Implementierungsdateien:
+
+- `data/supabase-participant-access-bootstrap-bridge.js`
+- `tools/check-supabase-participant-access-bootstrap-bridge.py`
+- `docs/SUPABASE_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_V2736C.md`
+- `tools/preflight.py`
+
+## Ausdrücklich verboten
+
+- Änderung von `data/supabase-client-bootstrap.js`
+- Änderung von `data/supabase-client-adapter.js`
+- Änderung von `data/supabase-participant-access-adapter.js`
+- Änderung von `app.js`, `index.html`, `style.css` oder Config-Dateien
+- `initializeClient()` oder `createClient()`
+- `getState()` als Voraussetzung der Brücke
+- Bootstrap-, Config-, SDK- oder Live-State-Schalter
+- globale Supabase-Objekte oder sonstige Globals
+- Netzwerk oder Datenbank-Livezugriff
+- SQL, Migrationen oder echte RLS-/Datenbanktests
+- echte Keys oder echte Teilnehmerdaten
+- App- oder UI-Integration
+- Commit oder Push in diesem Autorisierungsschritt
+
+Supabase bleibt NICHT LIVE. Kein Folgetask nach v27.36c wurde ausgewählt oder
+autorisiert.
+
+## Permanenter v27.36c-Lebenszyklus
+
+Stabile Autorisierungsbasis:
+`d28f3710d6f3e4b9abc427dec8589d3ea98c09be`.
+
+Sechs Phasen werden dynamisch erkannt:
+
+1. `authorization_prepared`
+2. `authorization_committed`
+3. `implementation_prepared`
+4. `implementation_committed`
+5. `closure_prepared`
+6. `closure_committed`
+
+GATE ist ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
+IMPLEMENTATION ist exakt die vier erlaubten Implementierungsdateien und nur
+einmal zulässig. CLOSURE folgt erst nach IMPLEMENTATION, enthält ausschließlich
+Gate-Dateien und setzt den Task auf geschlossen. Keine zukünftige
+Autorisierungs-, Implementierungs- oder Closure-SHA wird hartcodiert; die
+stabile Basis bleibt nur Vorfahr und keine permanente HEAD-Gleichheit.
+
+Eine Rückkehr aus abgeschlossener v27.36c-Closure zu v27.36c / AUTHORIZED
+bleibt ohne neue ausdrückliche Autorisierung blockiert.
 
 ## Abgeschlossener isolierter Technikschritt v27.36b
 
