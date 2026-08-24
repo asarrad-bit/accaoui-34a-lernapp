@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prüft die Historie bis v27.36b und den vollständigen v27.36c-Lebenszyklus.
+"""Prüft die Historie bis v27.36c und den vollständigen v27.36d-Lebenszyklus.
 
 v27.35g bleibt der letzte abgeschlossene funktionale Stand. Ab der
 historischen Autorisierungsbasis werden lineare Commits anhand ihrer
@@ -15,8 +15,8 @@ oder CLOSURE und akzeptiert sechs Phasen bis zum späteren Abschluss, ohne
 einen zukünftigen Commit-SHA oder den Inhalt der Audit-Datei vorwegzunehmen.
 Der abgeschlossene v27.36a-Zustand wird an der stabilen v27.36b-Basis
 belegt. Danach werden GATE, genau eine IMPLEMENTATION und die spätere
-CLOSURE von v27.36b sowie alle Phasen von v27.36c dynamisch erkannt, ohne künftige Commit-SHAs
-hartzucodieren.
+CLOSURE von v27.36b und v27.36c sowie alle Phasen von v27.36d dynamisch
+erkannt, ohne künftige Commit-SHAs hartzucodieren.
 """
 
 from __future__ import annotations
@@ -6166,6 +6166,752 @@ def run_v2736c_manipulation_matrix(
     return checks, positive_tests, negative_tests
 
 
+V2736D_AUTHORIZATION_BASE_SHA = "f2f40389a22ea4a40acd7ebdf7ca672add4baf8e"
+V2736D_TITLE = "Teilnehmerzugangs-Entscheidung lokal an den bestehenden App-Auth-Einstieg anbinden"
+V2736D_IMPLEMENTATION_FILES = frozenset(
+    {
+        "app.js",
+        "tools/check-participant-access-app-entry-v2736d.py",
+        "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md",
+        "tools/preflight.py",
+    }
+)
+V2736D_NEW_IMPLEMENTATION_FILES = frozenset(
+    V2736D_IMPLEMENTATION_FILES - {"app.js", "tools/preflight.py"}
+)
+V2736D_ALLOWED_FILES_VALUE = (
+    "`app.js`, `tools/check-participant-access-app-entry-v2736d.py`, "
+    "`docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md`, `tools/preflight.py`"
+)
+V2736D_EXPECTED_STATE_FIELDS = {
+    "Stand": "v27.36d",
+    "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
+    "Branch": "`main`",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35g",
+    "Abschlusscommit": f"`{V2735G_COMPLETION_SHA}`",
+    "Aktueller HEAD": "DYNAMISCH ZU PRÜFEN",
+    "Funktionsstatus": "v27.35g abgeschlossen",
+    "Weiterer funktionaler Schritt autorisiert": "JA",
+    "Aktuell autorisierter Task": "v27.36d",
+    "Aktuelle Taskart": "Teilnehmerzugangs-Entscheidung am App-Auth-Einstieg",
+    "Aktueller Blocker": "KEINER – v27.36d ist autorisiert; die Umsetzung ist noch nicht begonnen",
+}
+V2736D_EXPECTED_TASK_FIELDS = {
+    "Task-ID": "v27.36d",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": V2736D_TITLE,
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Technischer Ausgangsstand": "v27.36c abgeschlossen",
+    "Stabile Autorisierungsbasis": f"`{V2736D_AUTHORIZATION_BASE_SHA}`",
+    "Erlaubte Implementierungsdateien": V2736D_ALLOWED_FILES_VALUE,
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+V2736D_CLOSED_STATE_FIELDS = {
+    "Stand": "v27.36d",
+    "Repository": "`asarrad-bit/accaoui-34a-lernapp`",
+    "Branch": "`main`",
+    "Letzter abgeschlossener funktionaler Stand": "v27.35g",
+    "Abschlusscommit": f"`{V2735G_COMPLETION_SHA}`",
+    "Aktueller HEAD": "DYNAMISCH ZU PRÜFEN",
+    "Funktionsstatus": "v27.35g abgeschlossen",
+    "Weiterer funktionaler Schritt autorisiert": "NEIN",
+    "Aktuell autorisierter Task": "NONE",
+    "Aktuelle Taskart": "Kein Task autorisiert",
+    "Aktueller Blocker": (
+        "Neue Taskauswahl und ausdrückliche Autorisierung durch "
+        "Projekteigentümer und verbindlichen Projektchat"
+    ),
+}
+V2736D_CLOSED_TASK_FIELDS = {
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.36d",
+    "Erlaubte Dateien": "KEINE",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+V2736D_AUTHORIZATION_MARKERS = (
+    "v27.36c ist vollständig abgeschlossen.",
+    "v27.36d ist der einzige autorisierte",
+    "Teilnehmerzugangs-Entscheidung lokal an den bestehenden",
+    "App-Auth-Einstieg anbinden",
+    "Dieser GATE-Schritt autorisiert nur die spätere Umsetzung.",
+    "window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER",
+    "resolveAccess()",
+    "lokale Standardstart unverändert",
+    "access_allowed",
+    "startLocalApp()",
+    "fail-closed",
+    "rohe interne Fehlerausgabe",
+    "niemals ein Rückfall auf den",
+    "Auth-Guard-Testzustände",
+    "Bestehender Bootstrap",
+    "v27.36b-/v27.36c-CommonJS-Module",
+    "lokalen synthetischen Provider",
+    "Supabase bleibt NICHT LIVE.",
+    "Keine echten Keys.",
+    "Keine echten Teilnehmerdaten.",
+    "Kein Folgetask nach v27.36d wurde ausgewählt oder",
+    "### Permanenter v27.36d-Lebenszyklus",
+    "authorization_prepared",
+    "authorization_committed",
+    "implementation_prepared",
+    "implementation_committed",
+    "closure_prepared",
+    "closure_committed",
+    "GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.",
+    "IMPLEMENTATION enthält exakt die vier autorisierten Implementierungsdateien",
+    "CLOSURE ist erst nach IMPLEMENTATION zulässig",
+    "Keine zukünftige GATE-, IMPLEMENTATION-",
+    "ausdrücklichen fachlichen Autorisierung BLOCKED",
+)
+V2736D_DETAILED_CODE_MARKERS = (
+    "session_missing",
+    "session_invalid",
+    "session_user_missing",
+    "session_user_id_invalid",
+    "participant_blocked",
+    "enrollment_blocked",
+    "participant_expired",
+    "enrollment_expired",
+    "enrollment_access_ended",
+    "course_ended",
+    "participant_completed",
+    "enrollment_missing",
+    "enrollment_completed",
+    "enrollment_access_not_started",
+    "course_missing",
+    "course_inactive",
+    "course_archived",
+    "course_not_started",
+)
+V2736D_PERMANENT_MASTERLIST_MODE_MARKERS = (
+    "### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten",
+    "Für einen fachlich autorisierten Task ist bei einem legitimen GATE-, IMPLEMENTATION- oder CLOSURE-Schritt keine zusätzliche Nutzerfreigabe nur für Commit/Push erforderlich.",
+    "technische Lead darf Commit und Push für einen solchen Schritt auslösen oder empfehlen",
+    "Task und Lifecycle korrekt",
+    "ausschließlich erlaubte Dateien geändert",
+    "alle verbindlichen Checker PASS",
+    "der Preflight PASS",
+    "`git diff --check` PASS",
+    "keine unerwarteten Änderungen",
+    "keine offene Sicherheits- oder Architekturabweichung",
+    "Bei jeder Abweichung gilt sofort STOPP.",
+    "Diese Regel ersetzt nicht die fachliche Autorisierung eines neuen Tasks.",
+    "Nach einer Closure bleibt jede neue Implementierung vollständig BLOCKED",
+)
+V2736D_CLOSURE_MARKERS = (
+    "v27.36d abgeschlossen.",
+    "Der letzte abgeschlossene funktionale Stand bleibt v27.35g.",
+    "Bestehender Bootstrap, zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben unverändert.",
+    "Supabase bleibt NICHT LIVE.",
+    "Keine echten Keys.",
+    "Keine echten Teilnehmerdaten.",
+    "Kein Folgetask wurde ausgewählt oder autorisiert.",
+    "vollständig BLOCKED, bis sie ausdrücklich autorisiert wird.",
+    "Keine zukünftige CLOSURE-SHA wird hartcodiert.",
+    "Rückkehr zu einem autorisierten v27.36d-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.",
+)
+V2736D_SUPABASE_NOT_LIVE_PATTERN = re.compile(r"Supabase\s+bleibt\s+NICHT\s+LIVE\.")
+V2736D_TASK_AUTHORIZED = "authorized"
+V2736D_TASK_CLOSED = "closed"
+V2736D_HISTORY_BEFORE_AUTHORIZATION = "before_authorization_commit"
+V2736D_HISTORY_AUTHORIZED = "authorization_committed"
+V2736D_HISTORY_IMPLEMENTED = "implementation_committed"
+V2736D_HISTORY_CLOSED = "closure_committed"
+V2736D_PHASE_AUTHORIZATION_PREPARED = "authorization_prepared"
+V2736D_PHASE_AUTHORIZATION_COMMITTED = "authorization_committed"
+V2736D_PHASE_IMPLEMENTATION_PREPARED = "implementation_prepared"
+V2736D_PHASE_IMPLEMENTATION_COMMITTED = "implementation_committed"
+V2736D_PHASE_CLOSURE_PREPARED = "closure_prepared"
+V2736D_PHASE_CLOSURE_COMMITTED = "closure_committed"
+V2736D_ROLE_GATE = "GATE"
+V2736D_ROLE_IMPLEMENTATION = "IMPLEMENTATION"
+V2736D_ROLE_CLOSURE = "CLOSURE"
+
+
+@dataclass(frozen=True)
+class V2736DCommitFact:
+    commit_sha: str
+    changed_files: frozenset[str]
+    task_state: str
+
+
+@dataclass(frozen=True)
+class V2736DHistoryState:
+    state: str
+    implementation_commit: str | None
+    roles: tuple[str, ...]
+    gate_commits: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class V2736DWorkingTreeFact:
+    branch: str
+    head: str
+    origin_main: str
+    diff_files: frozenset[str]
+    staged_files: frozenset[str]
+    untracked_files: frozenset[str]
+    status_lines: frozenset[str]
+    implementation_files_existing: frozenset[str]
+    implementation_files_tracked_at_base: frozenset[str]
+    implementation_files_tracked_at_head: frozenset[str]
+    base_is_head_ancestor: bool
+    base_is_origin_ancestor: bool
+    origin_is_head_ancestor: bool
+
+
+def validate_v2736c_completed_base() -> tuple[V2736CHistoryState, tuple[str, str, str, str]]:
+    require(
+        git_is_ancestor(V2736C_AUTHORIZATION_BASE_SHA, V2736D_AUTHORIZATION_BASE_SHA),
+        "v27.36c-Basis ist kein Vorfahr des v27.36c-Closure-HEAD",
+    )
+    commit_facts = read_v2736c_commit_facts(V2736D_AUTHORIZATION_BASE_SHA)
+    history = validate_v2736c_history_facts(commit_facts)
+    require(history.state == V2736C_HISTORY_CLOSED, "v27.36c muss an der v27.36d-Basis vollständig geschlossen sein")
+    require(history.implementation_commit is not None, "v27.36c benötigt an der v27.36d-Basis exakt eine IMPLEMENTATION")
+    require(history.roles.count(V2736C_ROLE_IMPLEMENTATION) == 1, "v27.36c benötigt exakt einen IMPLEMENTATION-Commit")
+    require(history.roles.count(V2736C_ROLE_CLOSURE) == 1 and history.roles[-1] == V2736C_ROLE_CLOSURE, "v27.36c-Closure muss exakt einmal und zuletzt vorliegen")
+    require(commit_facts[-1].commit_sha == V2736D_AUTHORIZATION_BASE_SHA, "Verbindlicher v27.36c-Closure-HEAD wurde nicht erkannt")
+    require(commit_facts[-1].changed_files == frozenset(EXPECTED_CONTROL_FILES), "v27.36c-Closure-HEAD muss exakt die fünf Gate-Dateien ändern")
+    validate_v2736c_committed_closure_documents(commit_facts, history)
+    validate_v2736c_source_contract_at_revision(history.implementation_commit)
+    base_documents = (
+        read_v2735f_commit_document(V2736D_AUTHORIZATION_BASE_SHA, "docs/PROJECT_STATE_CURRENT.md"),
+        read_v2735f_commit_document(V2736D_AUTHORIZATION_BASE_SHA, V2735F_TASK_RELATIVE_PATH),
+        read_v2735f_commit_document(V2736D_AUTHORIZATION_BASE_SHA, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
+        read_v2735f_commit_document(V2736D_AUTHORIZATION_BASE_SHA, "docs/PROJECT_MASTERLIST.md"),
+    )
+    validate_v2736c_closed_documents(*base_documents, history.implementation_commit)
+    return history, base_documents
+
+
+def synthetic_v2736c_closed_working_fact() -> V2736CWorkingTreeFact:
+    return V2736CWorkingTreeFact(
+        branch="main",
+        head=V2736D_AUTHORIZATION_BASE_SHA,
+        origin_main=V2736D_AUTHORIZATION_BASE_SHA,
+        diff_files=frozenset(),
+        staged_files=frozenset(),
+        untracked_files=frozenset(),
+        status_lines=frozenset(),
+        implementation_files_existing=V2736C_NEW_IMPLEMENTATION_FILES,
+        implementation_files_tracked_at_base=frozenset(),
+        implementation_files_tracked_at_head=V2736C_NEW_IMPLEMENTATION_FILES,
+        base_is_head_ancestor=True,
+        base_is_origin_ancestor=True,
+        origin_is_head_ancestor=True,
+    )
+
+
+def validate_no_future_v2736d_sha(section: str, allowed_shas: frozenset[str], document_name: str) -> None:
+    shas = frozenset(re.findall(r"\b[0-9a-f]{40}\b", section))
+    require(
+        shas.issubset(allowed_shas),
+        f"{document_name}: zukünftige v27.36d-Commit-SHA hartcodiert: {sorted(shas - allowed_shas)}",
+    )
+    require(
+        re.search(r"\bv27\.(?:36[e-z]|3[7-9])\b", section, re.IGNORECASE) is None,
+        f"{document_name}: automatischer Folgetask nach v27.36d unzulässig",
+    )
+
+
+def validate_v2736d_supabase_not_live_statement(text: str) -> None:
+    require(
+        V2736D_SUPABASE_NOT_LIVE_PATTERN.search(text) is not None,
+        "v27.36d-Pflichtaussage fehlt oder wurde verändert: Supabase bleibt NICHT LIVE.",
+    )
+
+
+def validate_v2736d_permanent_masterlist_contract(text: str) -> None:
+    require(exact_field(text, "Arbeits-Laptop") == f"`{V2736C_VERIFIED_WORK_PATH}`", "PROJECT_MASTERLIST: verifizierter Arbeits-Laptop-Pfad fehlt")
+    require(exact_field(text, "Git Bash Arbeits-Laptop") == f"`{V2736C_VERIFIED_WORK_PATH_GIT_BASH}`", "PROJECT_MASTERLIST: verifizierter Git-Bash-Arbeits-Laptop-Pfad fehlt")
+    require(text.count("### Arbeits-, Produkt- und Übergabemodus") == 1, "PROJECT_MASTERLIST: Arbeits-, Produkt- und Übergabemodus muss exakt einmal vorkommen")
+    require(text.count("### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten") == 1, "PROJECT_MASTERLIST: Commit-/Push-Freigaberegel muss exakt einmal vorkommen")
+    validate_required_markers(text, V2736D_PERMANENT_MASTERLIST_MODE_MARKERS, "PROJECT_MASTERLIST / Commit-/Push-Regel")
+
+
+def validate_v2736d_authorization_section(section: str, document_name: str, detailed_codes: bool = False) -> None:
+    validate_required_markers(section, V2736D_AUTHORIZATION_MARKERS, f"{document_name} / v27.36d")
+    if detailed_codes:
+        validate_required_markers(section, V2736D_DETAILED_CODE_MARKERS, f"{document_name} / v27.36d-Codeabbildung")
+    validate_v2736d_supabase_not_live_statement(section)
+    validate_no_future_v2736d_sha(section, frozenset({V2736D_AUTHORIZATION_BASE_SHA}), f"{document_name} / v27.36d")
+    for path in V2736D_IMPLEMENTATION_FILES:
+        require(section.count(f"`{path}`") == 1, f"{document_name}: v27.36d-Datei fehlt oder ist doppelt: {path}")
+
+
+def validate_v2736d_state_text(text: str) -> None:
+    validate_exact_fields(text, V2736D_EXPECTED_STATE_FIELDS)
+    section = section_between(text, "## Autorisierter Task v27.36d", "## Abgeschlossener isolierter Technikschritt v27.36c", "PROJECT_STATE_CURRENT")
+    validate_v2736d_authorization_section(section, "PROJECT_STATE_CURRENT", detailed_codes=True)
+
+
+def validate_v2736d_task_text(text: str) -> None:
+    validate_exact_fields(text, V2736D_EXPECTED_TASK_FIELDS)
+    require(text.count(f"Erlaubte Implementierungsdateien: {V2736D_ALLOWED_FILES_VALUE}") == 1, "CURRENT_TASK muss exakt eine verbindliche v27.36d-Dateifreigabe enthalten")
+    section = section_between(text, "## Autorisierter Task v27.36d", "## Abgeschlossener isolierter Technikschritt v27.36c", "CURRENT_TASK")
+    validate_v2736d_authorization_section(section, "CURRENT_TASK", detailed_codes=True)
+
+
+def validate_v2736d_cursor_text(text: str) -> None:
+    require(exact_field(text, "Stand") == "v27.36d", "CURSOR-Kontext muss auf v27.36d stehen")
+    validate_project_paths(text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    section = section_between(text, "## 14. Nächster sinnvoller Schritt", "## 15. Wenn ein neuer Chat beginnt", "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    validate_v2736d_authorization_section(section, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+
+
+def validate_v2736d_masterlist_text(text: str) -> None:
+    require(exact_field(text, "Stand") == "v27.36d", "PROJECT_MASTERLIST muss auf v27.36d stehen")
+    validate_v2736d_permanent_masterlist_contract(text)
+    rows = re.findall(r"(?m)^\| v27\.36d \|.*$", text)
+    require(len(rows) == 1 and "**autorisiert**" in rows[0], "PROJECT_MASTERLIST muss v27.36d exakt einmal als autorisiert führen")
+    section = section_between(text, "## 14. Nächste sinnvolle Aufgaben", "## 15. Start in neuem Chat", "PROJECT_MASTERLIST")
+    validate_v2736d_authorization_section(section, "PROJECT_MASTERLIST")
+
+
+def detect_v2736d_task_state_text(text: str) -> str:
+    task_id = exact_field(text, "Task-ID")
+    if task_id == "v27.36d":
+        validate_exact_fields(text, V2736D_EXPECTED_TASK_FIELDS)
+        return V2736D_TASK_AUTHORIZED
+    if task_id == "NONE":
+        validate_exact_fields(text, V2736D_CLOSED_TASK_FIELDS)
+        return V2736D_TASK_CLOSED
+    raise ValidationError(f"Unzulässiger v27.36d-Taskzustand: {task_id}")
+
+
+def validate_v2736d_closed_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    implementation_commit: str,
+) -> None:
+    require(re.fullmatch(r"[0-9a-f]{40}", implementation_commit) is not None, "v27.36d-Closure benötigt einen dynamisch erkannten Implementierungscommit")
+    validate_exact_fields(state_text, V2736D_CLOSED_STATE_FIELDS)
+    validate_exact_fields(task_text, V2736D_CLOSED_TASK_FIELDS)
+    require(exact_field(cursor_text, "Stand") == "v27.36d", "CURSOR-Kontext muss nach v27.36d-Closure auf v27.36d stehen")
+    require(exact_field(masterlist_text, "Stand") == "v27.36d", "PROJECT_MASTERLIST muss nach v27.36d-Closure auf v27.36d stehen")
+    validate_project_paths(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    validate_v2736d_permanent_masterlist_contract(masterlist_text)
+    sections = (
+        section_between(state_text, "## Abgeschlossener technischer Schritt v27.36d", "## Abgeschlossener isolierter Technikschritt v27.36c", "PROJECT_STATE_CURRENT"),
+        section_between(task_text, "## Abgeschlossener technischer Schritt v27.36d", "## Abgeschlossener isolierter Technikschritt v27.36c", "CURRENT_TASK"),
+        section_between(cursor_text, "## 14. Nächster sinnvoller Schritt", "## 15. Wenn ein neuer Chat beginnt", "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        section_between(masterlist_text, "## 14. Nächste sinnvolle Aufgaben", "## 15. Start in neuem Chat", "PROJECT_MASTERLIST"),
+    )
+    for section, name in zip(sections, ("PROJECT_STATE_CURRENT", "CURRENT_TASK", "CURSOR_MASTER_CONTEXT_ACCAOUI", "PROJECT_MASTERLIST")):
+        validate_required_markers(section, V2736D_CLOSURE_MARKERS, f"{name} / v27.36d-Closure")
+        validate_v2736d_supabase_not_live_statement(section)
+        require(section.count(f"Implementierungscommit: `{implementation_commit}`") == 1, f"{name}: dynamischer v27.36d-Implementierungscommit fehlt oder ist doppelt")
+        validate_no_future_v2736d_sha(section, frozenset({V2736D_AUTHORIZATION_BASE_SHA, implementation_commit}), f"{name} / v27.36d-Closure")
+        for path in V2736D_IMPLEMENTATION_FILES:
+            require(section.count(f"`{path}`") == 1, f"{name}: v27.36d-Implementierungsdatei fehlt oder ist doppelt: {path}")
+    rows = re.findall(r"(?m)^\| v27\.36d \|.*$", masterlist_text)
+    require(len(rows) == 1 and "**erledigt**" in rows[0] and implementation_commit in rows[0], "PROJECT_MASTERLIST muss v27.36d nach Closure exakt einmal als erledigt führen")
+
+
+def read_v2736d_commit_facts(current_head: str) -> tuple[V2736DCommitFact, ...]:
+    commit_shas = tuple(line.strip() for line in run_git(["rev-list", "--reverse", f"{V2736D_AUTHORIZATION_BASE_SHA}..{current_head}"]).splitlines() if line.strip())
+    previous = V2736D_AUTHORIZATION_BASE_SHA
+    facts: list[V2736DCommitFact] = []
+    for commit_sha in commit_shas:
+        lineage = run_git(["rev-list", "--parents", "-n", "1", commit_sha]).split()
+        require(len(lineage) == 2 and lineage[1] == previous, "v27.36d erlaubt nur eine lineare Historie ohne Merge-Commit")
+        changed_files = frozenset(line.strip().replace("\\", "/") for line in run_git(["diff", "--name-only", previous, commit_sha]).splitlines() if line.strip())
+        require(changed_files, f"Leerer v27.36d-Commit unzulässig: {commit_sha}")
+        commit_task = read_v2735f_commit_document(commit_sha, V2735F_TASK_RELATIVE_PATH)
+        facts.append(V2736DCommitFact(commit_sha, changed_files, detect_v2736d_task_state_text(commit_task)))
+        previous = commit_sha
+    return tuple(facts)
+
+
+def validate_v2736d_history_facts(commit_facts: tuple[V2736DCommitFact, ...]) -> V2736DHistoryState:
+    gate_files = frozenset(EXPECTED_CONTROL_FILES)
+    roles: list[str] = []
+    gate_commits: list[str] = []
+    implementation_commit: str | None = None
+    closed = False
+    for fact in commit_facts:
+        files = fact.changed_files
+        if files == V2736D_IMPLEMENTATION_FILES:
+            require(gate_commits, "v27.36d-IMPLEMENTATION vor Autorisierungs-GATE unzulässig")
+            require(implementation_commit is None, "Mehr als ein v27.36d-IMPLEMENTATION-Commit unzulässig")
+            require(not closed, "v27.36d-IMPLEMENTATION nach CLOSURE unzulässig")
+            require(fact.task_state == V2736D_TASK_AUTHORIZED, "v27.36d-IMPLEMENTATION benötigt AUTHORIZED / Autorisiert JA")
+            implementation_commit = fact.commit_sha
+            roles.append(V2736D_ROLE_IMPLEMENTATION)
+            continue
+        require(files and files.issubset(gate_files), f"Fremde Datei in v27.36d-Commit {fact.commit_sha}: {sorted(files - gate_files)}")
+        if fact.task_state == V2736D_TASK_AUTHORIZED:
+            require(not closed, "Rückkehr zu v27.36d / AUTHORIZED nach CLOSURE unzulässig")
+            gate_commits.append(fact.commit_sha)
+            roles.append(V2736D_ROLE_GATE)
+            continue
+        require(implementation_commit is not None, "v27.36d-CLOSURE vor IMPLEMENTATION unzulässig")
+        require(not closed, "Mehr als ein v27.36d-CLOSURE-Commit unzulässig")
+        require(files == gate_files, "v27.36d-CLOSURE muss exakt die fünf Gate-Dateien ändern")
+        closed = True
+        roles.append(V2736D_ROLE_CLOSURE)
+    state = (
+        V2736D_HISTORY_CLOSED if closed else
+        V2736D_HISTORY_IMPLEMENTED if implementation_commit is not None else
+        V2736D_HISTORY_AUTHORIZED if gate_commits else
+        V2736D_HISTORY_BEFORE_AUTHORIZATION
+    )
+    return V2736DHistoryState(state, implementation_commit, tuple(roles), tuple(gate_commits))
+
+
+def read_v2736d_working_tree_fact() -> V2736DWorkingTreeFact:
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    origin_main = run_git(["rev-parse", "origin/main"]).strip()
+
+    def tracked_at(revision: str) -> frozenset[str]:
+        return frozenset(line.strip().replace("\\", "/") for line in run_git(["ls-tree", "-r", "--name-only", revision, "--", *sorted(V2736D_NEW_IMPLEMENTATION_FILES)]).splitlines() if line.strip())
+
+    return V2736DWorkingTreeFact(
+        branch=run_git(["branch", "--show-current"]).strip(),
+        head=head,
+        origin_main=origin_main,
+        diff_files=frozenset(line.strip().replace("\\", "/") for line in run_git(["diff", "--name-only"]).splitlines() if line.strip()),
+        staged_files=frozenset(line.strip().replace("\\", "/") for line in run_git(["diff", "--cached", "--name-only"]).splitlines() if line.strip()),
+        untracked_files=frozenset(line.strip().replace("\\", "/") for line in run_git(["ls-files", "--others", "--exclude-standard"]).splitlines() if line.strip()),
+        status_lines=frozenset(line.replace("\\", "/") for line in run_git(["status", "--porcelain=v1", "--untracked-files=all"]).splitlines() if line),
+        implementation_files_existing=frozenset(path for path in V2736D_NEW_IMPLEMENTATION_FILES if (ROOT / path).is_file()),
+        implementation_files_tracked_at_base=tracked_at(V2736D_AUTHORIZATION_BASE_SHA),
+        implementation_files_tracked_at_head=tracked_at(head),
+        base_is_head_ancestor=git_is_ancestor(V2736D_AUTHORIZATION_BASE_SHA, head),
+        base_is_origin_ancestor=git_is_ancestor(V2736D_AUTHORIZATION_BASE_SHA, origin_main),
+        origin_is_head_ancestor=git_is_ancestor(origin_main, head),
+    )
+
+
+def validate_v2736d_working_tree_fact(fact: V2736DWorkingTreeFact) -> None:
+    require(fact.branch == "main", "v27.36d-Lebenszyklus muss auf main laufen")
+    require(fact.base_is_head_ancestor, "Die stabile v27.36d-Basis ist kein Vorfahr von HEAD")
+    require(fact.base_is_origin_ancestor, "Die stabile v27.36d-Basis ist kein Vorfahr von origin/main")
+    require(fact.origin_is_head_ancestor, "origin/main ist kein Vorfahr des lokalen v27.36d-HEAD")
+    require(not fact.implementation_files_tracked_at_base, "Neue v27.36d-Implementierungsdateien dürfen an der Basis nicht existieren")
+    require(not fact.staged_files, "v27.36d-Lebenszyklus darf nichts stagen")
+
+
+def extract_added_lines(diff_text: str) -> str:
+    return "\n".join(
+        line[1:]
+        for line in diff_text.splitlines()
+        if line.startswith("+") and not line.startswith("+++")
+    )
+
+
+def validate_v2736d_source_contract(app_text: str, app_added_text: str, checker_text: str, report_text: str, preflight_text: str) -> None:
+    for marker in (
+        "ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER", "resolveAccess", "access_allowed",
+        "startLocalApp", "login_required", "blocked", "expired", "no_course",
+    ):
+        require(marker in app_text, f"v27.36d-App-Anbindung fehlt: {marker}")
+    for marker in V2736D_DETAILED_CODE_MARKERS:
+        require(marker in app_text, f"v27.36d-App-Codeabbildung fehlt: {marker}")
+    forbidden_added_tokens = (
+        ".from(", "getSession(", "createClient(", "initializeClient(",
+        "getClient(", "getState(", "getConfig(", "fetch(", "XMLHttpRequest",
+        "WebSocket", "globalThis", "global.", "require(", "module.exports",
+        "supabase-participant-access-adapter", "supabase-participant-access-bootstrap-bridge",
+        "supabase-client-bootstrap", "userId", "console.error", ".message",
+    )
+    added_folded = app_added_text.casefold()
+    for token in forbidden_added_tokens:
+        require(token.casefold() not in added_folded, f"v27.36d-App-Diff verletzt Anbindungsgrenze: {token}")
+    for marker in (
+        "synthet", "ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER", "resolveAccess",
+        "access_allowed", "startLocalApp", "login_required", "blocked",
+        "expired", "no_course", "fail-closed", "Auth-Guard",
+    ):
+        require(marker.casefold() in checker_text.casefold(), f"v27.36d-Checker fehlt Testbindung: {marker}")
+    for marker in (
+        "Ziel", "Sicherheitsgrenze", "optionaler Provider", "resolveAccess()",
+        "fail-closed", "lokaler synthetischer Provider", "getestete Fälle",
+        "unveränderte Bestandsmodule", "Supabase live: NEIN",
+        "echte Keys: NEIN", "echte Teilnehmerdaten: NEIN",
+    ):
+        require(marker in report_text, f"v27.36d-Umsetzungsbericht fehlt: {marker}")
+    for required_checker in (
+        "check-project-continuity-control.py",
+        "check-supabase-participant-access-adapter.py",
+        "check-supabase-participant-access-bootstrap-bridge.py",
+        "check-participant-access-app-entry-v2736d.py",
+    ):
+        require(required_checker in preflight_text, f"Preflight-Pflichtchecker fehlt: {required_checker}")
+
+
+def validate_v2736d_local_source_contract() -> None:
+    app_diff = run_git(["diff", "--unified=0", V2736D_AUTHORIZATION_BASE_SHA, "--", "app.js"])
+    validate_v2736d_source_contract(
+        read_required_text(APP_JS_PATH),
+        extract_added_lines(app_diff),
+        read_required_text(ROOT / "tools/check-participant-access-app-entry-v2736d.py"),
+        read_required_text(ROOT / "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md"),
+        read_required_text(PREFLIGHT_PATH),
+    )
+
+
+def validate_v2736d_source_contract_at_revision(revision: str) -> None:
+    parent = run_git(["rev-parse", f"{revision}^"]).strip()
+    app_diff = run_git(["diff", "--unified=0", parent, revision, "--", "app.js"])
+    validate_v2736d_source_contract(
+        read_v2735f_commit_document(revision, "app.js"),
+        extract_added_lines(app_diff),
+        read_v2735f_commit_document(revision, "tools/check-participant-access-app-entry-v2736d.py"),
+        read_v2735f_commit_document(revision, "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md"),
+        read_v2735f_commit_document(revision, "tools/preflight.py"),
+    )
+
+
+def validate_v2736d_lifecycle_working_tree(history: V2736DHistoryState, task_state: str, fact: V2736DWorkingTreeFact) -> str:
+    validate_v2736d_working_tree_fact(fact)
+    gate_files = frozenset(EXPECTED_CONTROL_FILES)
+    clean = not fact.diff_files and not fact.untracked_files and not fact.status_lines
+    if history.state == V2736D_HISTORY_BEFORE_AUTHORIZATION:
+        require(fact.head == V2736D_AUTHORIZATION_BASE_SHA, "Autorisierungsvorbereitung benötigt die stabile v27.36d-Basis als HEAD")
+        require(task_state == V2736D_TASK_AUTHORIZED, "Autorisierungsvorbereitung benötigt v27.36d / AUTHORIZED")
+        require(fact.diff_files == gate_files, "Autorisierungsvorbereitung muss exakt fünf Gate-Dateien ändern")
+        require(not fact.untracked_files and fact.status_lines == frozenset(f" M {path}" for path in gate_files), "Working Tree entspricht nicht authorization_prepared")
+        require(not fact.implementation_files_existing, "v27.36d-Implementation vor Autorisierungscommit unzulässig")
+        return V2736D_PHASE_AUTHORIZATION_PREPARED
+    if history.state == V2736D_HISTORY_AUTHORIZED:
+        require(fact.head != V2736D_AUTHORIZATION_BASE_SHA, "Autorisierungscommit fehlt")
+        require(task_state == V2736D_TASK_AUTHORIZED, "Autorisierte Phasen benötigen v27.36d / AUTHORIZED")
+        require(not fact.implementation_files_tracked_at_head, "Neue v27.36d-Dateien dürfen vor IMPLEMENTATION nicht getrackt sein")
+        if clean:
+            require(not fact.implementation_files_existing, "Implementation darf vor preparation nicht lokal existieren")
+            return V2736D_PHASE_AUTHORIZATION_COMMITTED
+        if fact.diff_files and fact.diff_files.issubset(gate_files) and not fact.untracked_files:
+            require(fact.status_lines == frozenset(f" M {path}" for path in fact.diff_files), "Lokale v27.36d-Gate-Korrektur enthält fremden Status")
+            require(not fact.implementation_files_existing, "Implementation während Gate-Korrektur unzulässig")
+            return V2736D_PHASE_AUTHORIZATION_COMMITTED
+        require(fact.diff_files == frozenset({"app.js", "tools/preflight.py"}), "implementation_prepared muss exakt app.js und tools/preflight.py ändern")
+        require(fact.untracked_files == V2736D_NEW_IMPLEMENTATION_FILES, "implementation_prepared benötigt exakt zwei neue Implementierungsdateien")
+        require(fact.implementation_files_existing == V2736D_NEW_IMPLEMENTATION_FILES, "implementation_prepared benötigt beide neuen Dateien")
+        expected_status = frozenset({" M app.js", " M tools/preflight.py", *(f"?? {path}" for path in V2736D_NEW_IMPLEMENTATION_FILES)})
+        require(fact.status_lines == expected_status, "Working Tree entspricht nicht implementation_prepared")
+        return V2736D_PHASE_IMPLEMENTATION_PREPARED
+    require(history.implementation_commit is not None, "Phase nach IMPLEMENTATION benötigt den dynamischen Implementierungscommit")
+    require(fact.implementation_files_tracked_at_head == V2736D_NEW_IMPLEMENTATION_FILES, "Nach IMPLEMENTATION müssen beide neuen Dateien getrackt sein")
+    require(fact.implementation_files_existing == V2736D_NEW_IMPLEMENTATION_FILES, "Nach IMPLEMENTATION müssen beide neuen Dateien vorhanden sein")
+    if history.state == V2736D_HISTORY_IMPLEMENTED:
+        if task_state == V2736D_TASK_AUTHORIZED:
+            if clean:
+                return V2736D_PHASE_IMPLEMENTATION_COMMITTED
+            require(fact.diff_files and fact.diff_files.issubset(gate_files) and not fact.untracked_files, "Nach IMPLEMENTATION sind lokal nur Gate-Korrekturen oder Closure zulässig")
+            require(fact.status_lines == frozenset(f" M {path}" for path in fact.diff_files), "Lokale Gate-Korrektur nach IMPLEMENTATION enthält fremden Status")
+            return V2736D_PHASE_IMPLEMENTATION_COMMITTED
+        require(task_state == V2736D_TASK_CLOSED, "closure_prepared benötigt den geschlossenen v27.36d-Taskzustand")
+        require(fact.diff_files == gate_files and not fact.untracked_files, "closure_prepared muss exakt fünf Gate-Dateien ändern")
+        require(fact.status_lines == frozenset(f" M {path}" for path in gate_files), "Working Tree entspricht nicht closure_prepared")
+        return V2736D_PHASE_CLOSURE_PREPARED
+    require(history.state == V2736D_HISTORY_CLOSED, "Unbekannter v27.36d-Historienzustand")
+    require(task_state == V2736D_TASK_CLOSED, "Nach v27.36d-CLOSURE darf keine Rückkehr zu AUTHORIZED erfolgen")
+    require(clean, "closure_committed benötigt einen sauberen Working Tree")
+    return V2736D_PHASE_CLOSURE_COMMITTED
+
+
+def validate_v2736d_committed_closure_documents(facts: tuple[V2736DCommitFact, ...], history: V2736DHistoryState) -> None:
+    if V2736D_ROLE_CLOSURE not in history.roles:
+        return
+    require(history.implementation_commit is not None, "v27.36d-CLOSURE benötigt einen dynamischen Implementierungscommit")
+    for fact, role in zip(facts, history.roles):
+        if role == V2736D_ROLE_CLOSURE:
+            validate_v2736d_closed_documents(
+                read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_STATE_CURRENT.md"),
+                read_v2735f_commit_document(fact.commit_sha, V2735F_TASK_RELATIVE_PATH),
+                read_v2735f_commit_document(fact.commit_sha, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
+                read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_MASTERLIST.md"),
+                history.implementation_commit,
+            )
+
+
+def validate_v2736d_lifecycle(state_text: str, task_text: str, cursor_text: str, masterlist_text: str) -> tuple[str, V2736DHistoryState, V2736DWorkingTreeFact]:
+    fact = read_v2736d_working_tree_fact()
+    validate_v2736d_working_tree_fact(fact)
+    commit_facts = read_v2736d_commit_facts(fact.head)
+    history = validate_v2736d_history_facts(commit_facts)
+    validate_v2736d_committed_closure_documents(commit_facts, history)
+    task_state = detect_v2736d_task_state_text(task_text)
+    if task_state == V2736D_TASK_AUTHORIZED:
+        validate_v2736d_state_text(state_text)
+        validate_v2736d_task_text(task_text)
+        validate_v2736d_cursor_text(cursor_text)
+        validate_v2736d_masterlist_text(masterlist_text)
+    else:
+        require(history.implementation_commit is not None, "v27.36d-Abschluss vor IMPLEMENTATION unzulässig")
+        validate_v2736d_closed_documents(state_text, task_text, cursor_text, masterlist_text, history.implementation_commit)
+    phase = validate_v2736d_lifecycle_working_tree(history, task_state, fact)
+    if phase == V2736D_PHASE_IMPLEMENTATION_PREPARED:
+        validate_v2736d_local_source_contract()
+    if history.implementation_commit is not None:
+        validate_v2736d_source_contract_at_revision(history.implementation_commit)
+    return phase, history, fact
+
+
+def run_v2736d_manipulation_matrix(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    current_history: V2736DHistoryState,
+    current_fact: V2736DWorkingTreeFact,
+) -> tuple[int, int, int]:
+    checks = 0
+
+    def must_reject(validator: Callable[[str], None], manipulated: str, label: str) -> None:
+        nonlocal checks
+        try:
+            validator(manipulated)
+        except ValidationError:
+            checks += 1
+            return
+        raise ValidationError(f"v27.36d-Dokumentmanipulation wurde nicht blockiert: {label}")
+
+    def remove_authorization_marker(text: str, marker: str, name: str) -> str:
+        boundaries = {
+            "PROJECT_STATE_CURRENT": (
+                "## Autorisierter Task v27.36d",
+                "## Abgeschlossener isolierter Technikschritt v27.36c",
+            ),
+            "CURRENT_TASK": (
+                "## Autorisierter Task v27.36d",
+                "## Abgeschlossener isolierter Technikschritt v27.36c",
+            ),
+            "CURSOR_MASTER_CONTEXT_ACCAOUI": (
+                "## 14. Nächster sinnvoller Schritt",
+                "## 15. Wenn ein neuer Chat beginnt",
+            ),
+            "PROJECT_MASTERLIST": (
+                "## 14. Nächste sinnvolle Aufgaben",
+                "## 15. Start in neuem Chat",
+            ),
+        }
+        start_marker, end_marker = boundaries[name]
+        start = text.find(start_marker)
+        end = text.find(end_marker, start + len(start_marker))
+        require(start >= 0 and end > start, f"Manipulationsmatrix kann v27.36d-Vertragsbereich nicht abgrenzen: {name}")
+        section = text[start:end]
+        require(marker in section, f"Manipulationsmatrix kann v27.36d-Pflichtaussage im Vertragsbereich nicht finden: {name} / {marker}")
+        manipulated_section = section.replace(marker, "")
+        require(marker not in manipulated_section, f"Manipulationsmatrix konnte v27.36d-Pflichtaussage nicht vollständig entfernen: {name} / {marker}")
+        return text[:start] + manipulated_section + text[end:]
+
+    for text, validator, fields, name in (
+        (state_text, validate_v2736d_state_text, V2736D_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+        (task_text, validate_v2736d_task_text, V2736D_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
+    ):
+        for field, expected in fields.items():
+            must_reject(validator, text.replace(f"{field}: {expected}", f"{field}: MANIPULIERT", 1), f"{name}: Feld {field}")
+    for text, validator, name in (
+        (state_text, validate_v2736d_state_text, "PROJECT_STATE_CURRENT"),
+        (task_text, validate_v2736d_task_text, "CURRENT_TASK"),
+        (cursor_text, validate_v2736d_cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (masterlist_text, validate_v2736d_masterlist_text, "PROJECT_MASTERLIST"),
+    ):
+        for marker in V2736D_AUTHORIZATION_MARKERS:
+            manipulated = remove_authorization_marker(text, marker, name)
+            must_reject(validator, manipulated, f"{name}: Pflichtaussage {marker}")
+    for marker in V2736D_PERMANENT_MASTERLIST_MODE_MARKERS:
+        require(marker in masterlist_text, f"Manipulationsmatrix kann permanente Pflichtregel nicht finden: {marker}")
+        must_reject(validate_v2736d_masterlist_text, masterlist_text.replace(marker, "", 1), f"PROJECT_MASTERLIST: permanente Regel {marker}")
+
+    gate = V2736DCommitFact("1" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736D_TASK_AUTHORIZED)
+    implementation = V2736DCommitFact("2" * 40, V2736D_IMPLEMENTATION_FILES, V2736D_TASK_AUTHORIZED)
+    closure = V2736DCommitFact("3" * 40, frozenset(EXPECTED_CONTROL_FILES), V2736D_TASK_CLOSED)
+    histories = (
+        validate_v2736d_history_facts(tuple()),
+        validate_v2736d_history_facts((gate,)),
+        validate_v2736d_history_facts((gate, implementation)),
+        validate_v2736d_history_facts((gate, implementation, closure)),
+    )
+    clean_fact = replace(
+        current_fact,
+        head="1" * 40,
+        diff_files=frozenset(), staged_files=frozenset(), untracked_files=frozenset(), status_lines=frozenset(),
+        implementation_files_existing=frozenset(), implementation_files_tracked_at_base=frozenset(), implementation_files_tracked_at_head=frozenset(),
+        base_is_head_ancestor=True, base_is_origin_ancestor=True, origin_is_head_ancestor=True,
+    )
+    gate_files = frozenset(EXPECTED_CONTROL_FILES)
+    implemented_fact = replace(clean_fact, head="2" * 40, implementation_files_existing=V2736D_NEW_IMPLEMENTATION_FILES, implementation_files_tracked_at_head=V2736D_NEW_IMPLEMENTATION_FILES)
+    implementation_status = frozenset({" M app.js", " M tools/preflight.py", *(f"?? {path}" for path in V2736D_NEW_IMPLEMENTATION_FILES)})
+    phase_fixtures = (
+        (histories[0], V2736D_TASK_AUTHORIZED, replace(clean_fact, head=V2736D_AUTHORIZATION_BASE_SHA, diff_files=gate_files, status_lines=frozenset(f" M {p}" for p in gate_files)), V2736D_PHASE_AUTHORIZATION_PREPARED),
+        (histories[1], V2736D_TASK_AUTHORIZED, clean_fact, V2736D_PHASE_AUTHORIZATION_COMMITTED),
+        (histories[1], V2736D_TASK_AUTHORIZED, replace(clean_fact, diff_files=frozenset({"app.js", "tools/preflight.py"}), untracked_files=V2736D_NEW_IMPLEMENTATION_FILES, status_lines=implementation_status, implementation_files_existing=V2736D_NEW_IMPLEMENTATION_FILES), V2736D_PHASE_IMPLEMENTATION_PREPARED),
+        (histories[2], V2736D_TASK_AUTHORIZED, implemented_fact, V2736D_PHASE_IMPLEMENTATION_COMMITTED),
+        (histories[2], V2736D_TASK_CLOSED, replace(implemented_fact, diff_files=gate_files, status_lines=frozenset(f" M {p}" for p in gate_files)), V2736D_PHASE_CLOSURE_PREPARED),
+        (histories[3], V2736D_TASK_CLOSED, implemented_fact, V2736D_PHASE_CLOSURE_COMMITTED),
+    )
+    for history, task_state, fact, expected in phase_fixtures:
+        require(validate_v2736d_lifecycle_working_tree(history, task_state, fact) == expected, f"v27.36d-Positivsimulation fehlgeschlagen: {expected}")
+    positive_tests = len(phase_fixtures)
+
+    bad_histories = (
+        ((implementation,), "Implementation vor Autorisierung"),
+        ((gate, implementation, implementation), "zweite Implementation"),
+        ((gate, closure), "Closure vor Implementation"),
+        ((gate, implementation, closure, gate), "Rückkehr nach Closure"),
+        ((gate, implementation, V2736DCommitFact("4" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736D_TASK_CLOSED)), "partielle Closure"),
+        ((gate, V2736DCommitFact("5" * 40, frozenset(set(V2736D_IMPLEMENTATION_FILES) - {"tools/preflight.py"}), V2736D_TASK_AUTHORIZED)), "partielle Implementation"),
+        ((gate, V2736DCommitFact("6" * 40, V2736D_IMPLEMENTATION_FILES | {"index.html"}, V2736D_TASK_AUTHORIZED)), "Implementation mit Zusatzdatei"),
+        ((V2736DCommitFact("7" * 40, frozenset({"data/supabase-participant-access-adapter.js"}), V2736D_TASK_AUTHORIZED),), "Bestandsadapter geändert"),
+        ((V2736DCommitFact("8" * 40, frozenset({"data/supabase-participant-access-bootstrap-bridge.js"}), V2736D_TASK_AUTHORIZED),), "Bestandsbrücke geändert"),
+        ((V2736DCommitFact("9" * 40, frozenset({"index.html"}), V2736D_TASK_AUTHORIZED),), "index.html geändert"),
+    )
+    for facts, label in bad_histories:
+        try:
+            validate_v2736d_history_facts(facts)
+        except ValidationError:
+            checks += 1
+            continue
+        raise ValidationError(f"v27.36d-Historienmanipulation wurde nicht blockiert: {label}")
+
+    bad_working = (
+        (current_history, V2736D_TASK_AUTHORIZED, replace(current_fact, staged_files=frozenset({EXPECTED_CONTROL_FILES[0]})), "gestagte Datei"),
+        (current_history, V2736D_TASK_AUTHORIZED, replace(current_fact, diff_files=current_fact.diff_files | {"index.html"}, status_lines=current_fact.status_lines | {" M index.html"}), "fremde lokale Datei"),
+        (current_history, V2736D_TASK_AUTHORIZED, replace(current_fact, untracked_files=frozenset({"unexpected.txt"}), status_lines=current_fact.status_lines | {"?? unexpected.txt"}), "fremde ungetrackte Datei"),
+        (current_history, V2736D_TASK_AUTHORIZED, replace(current_fact, base_is_head_ancestor=False), "falsche Basis"),
+        (current_history, V2736D_TASK_AUTHORIZED, replace(current_fact, origin_is_head_ancestor=False), "origin nicht Vorfahr"),
+        (current_history, V2736D_TASK_AUTHORIZED, replace(current_fact, implementation_files_tracked_at_base=V2736D_NEW_IMPLEMENTATION_FILES), "Implementierungsdateien bereits an Basis"),
+        (histories[0], V2736D_TASK_AUTHORIZED, replace(clean_fact, head=V2736D_AUTHORIZATION_BASE_SHA, untracked_files=V2736D_NEW_IMPLEMENTATION_FILES, status_lines=frozenset(f"?? {p}" for p in V2736D_NEW_IMPLEMENTATION_FILES), implementation_files_existing=V2736D_NEW_IMPLEMENTATION_FILES), "Implementation lokal vor Autorisierung"),
+        (histories[1], V2736D_TASK_CLOSED, replace(clean_fact, diff_files=gate_files, status_lines=frozenset(f" M {p}" for p in gate_files)), "Closure lokal vor Implementation"),
+        (histories[3], V2736D_TASK_AUTHORIZED, implemented_fact, "Rückkehr zu AUTHORIZED nach Closure"),
+    )
+    for history, task_state, fact, label in bad_working:
+        try:
+            validate_v2736d_lifecycle_working_tree(history, task_state, fact)
+        except ValidationError:
+            checks += 1
+            continue
+        raise ValidationError(f"v27.36d-Working-Tree-Manipulation wurde nicht blockiert: {label}")
+
+    valid_app = "ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER resolveAccess access_allowed startLocalApp login_required blocked expired no_course " + " ".join(V2736D_DETAILED_CODE_MARKERS)
+    valid_checker = "synthetischer ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER resolveAccess access_allowed startLocalApp login_required blocked expired no_course fail-closed Auth-Guard"
+    valid_report = "\n".join(("Ziel", "Sicherheitsgrenze", "optionaler Provider", "resolveAccess()", "fail-closed", "lokaler synthetischer Provider", "getestete Fälle", "unveränderte Bestandsmodule", "Supabase live: NEIN", "echte Keys: NEIN", "echte Teilnehmerdaten: NEIN"))
+    valid_preflight = "check-project-continuity-control.py check-supabase-participant-access-adapter.py check-supabase-participant-access-bootstrap-bridge.py check-participant-access-app-entry-v2736d.py"
+    validate_v2736d_source_contract(valid_app, "window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER resolveAccess", valid_checker, valid_report, valid_preflight)
+    for token in (".from(", "getSession(", "createClient(", "getClient(", "fetch(", "require(", "userId", "console.error"):
+        try:
+            validate_v2736d_source_contract(valid_app, f"window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER {token}", valid_checker, valid_report, valid_preflight)
+        except ValidationError:
+            checks += 1
+            continue
+        raise ValidationError(f"v27.36d-Quellmanipulation wurde nicht blockiert: {token}")
+    negative_tests = len(bad_histories) + len(bad_working) + 8
+    return checks, positive_tests, negative_tests
+
+
 def main() -> int:
     try:
         state_text = read_required_text(STATE_PATH)
@@ -6201,10 +6947,15 @@ def main() -> int:
         ) = validate_v2736b_completed_base()
         v2736b_working_tree = read_v2736b_working_tree_fact()
         (
-            v2736c_phase,
             v2736c_history,
-            v2736c_working_tree,
-        ) = validate_v2736c_lifecycle(
+            v2736c_base_documents,
+        ) = validate_v2736c_completed_base()
+        v2736c_working_tree = synthetic_v2736c_closed_working_fact()
+        (
+            v2736d_phase,
+            v2736d_history,
+            v2736d_working_tree,
+        ) = validate_v2736d_lifecycle(
             state_text,
             task_text,
             cursor_context_text,
@@ -6244,23 +6995,33 @@ def main() -> int:
             v2736c_positive_tests,
             v2736c_negative_tests,
         ) = run_v2736c_manipulation_matrix(
-            state_text,
-            task_text,
-            cursor_context_text,
-            masterlist_text,
+            *v2736c_base_documents,
             v2736c_history,
             v2736c_working_tree,
         )
         manipulation_checks += v2736c_manipulation_checks
+        (
+            v2736d_manipulation_checks,
+            v2736d_positive_tests,
+            v2736d_negative_tests,
+        ) = run_v2736d_manipulation_matrix(
+            state_text,
+            task_text,
+            cursor_context_text,
+            masterlist_text,
+            v2736d_history,
+            v2736d_working_tree,
+        )
+        manipulation_checks += v2736d_manipulation_checks
     except ValidationError as exc:
         print(f"FEHLER: {exc}")
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität, v27.36b-Abschluss und v27.36c-Lebenszyklus: OK")
+    print("Projektkontinuität, v27.36c-Abschluss und v27.36d-Lebenszyklus: OK")
     task_summary = (
-        "v27.36c / AUTHORIZED / Autorisiert JA"
-        if detect_v2736c_task_state_text(task_text) == V2736C_TASK_AUTHORIZED
+        "v27.36d / AUTHORIZED / Autorisiert JA"
+        if detect_v2736d_task_state_text(task_text) == V2736D_TASK_AUTHORIZED
         else "NONE / BLOCKED / Autorisiert NEIN"
     )
     print(
@@ -6338,19 +7099,15 @@ def main() -> int:
         f"{v2736b_history.implementation_commit}; Closure-HEAD "
         f"{V2736C_AUTHORIZATION_BASE_SHA}"
     )
-    print(f"Aktuelle v27.36c-Phase: {v2736c_phase}")
+    print("Abgeschlossene v27.36c-Phase: closure_committed")
     print(
-        "v27.36c-Historie: stabile Basis "
-        f"{V2736C_AUTHORIZATION_BASE_SHA} ist Vorfahr von HEAD; "
+        "v27.36c abgeschlossen: stabile Basis "
+        f"{V2736C_AUTHORIZATION_BASE_SHA} ist Vorfahr von "
+        f"{V2736D_AUTHORIZATION_BASE_SHA}; "
         f"{len(v2736c_history.gate_commits)} GATE-Commit(s); "
         "IMPLEMENTATION-Commit "
-        f"{v2736c_history.implementation_commit or 'noch nicht vorhanden'}"
-    )
-    print(
-        "v27.36c-Synchronisation: lokaler HEAD "
-        f"{v2736c_working_tree.head}; origin/main "
-        f"{v2736c_working_tree.origin_main}; Remote darf legitimer Vorfahr "
-        "des lokalen HEAD sein"
+        f"{v2736c_history.implementation_commit}; Closure-HEAD "
+        f"{V2736D_AUTHORIZATION_BASE_SHA}"
     )
     print(
         "v27.36c-Sicherheitsgrenze: injizierter Bootstrap-Provider, "
@@ -6360,6 +7117,27 @@ def main() -> int:
         "kein App-, UI-, SQL-, Migrations-, "
         "Datenbank- oder Netzwerkzugriff; "
         "Live-Supabase NEIN"
+    )
+    print(f"Aktuelle v27.36d-Phase: {v2736d_phase}")
+    print(
+        "v27.36d-Historie: stabile Basis "
+        f"{V2736D_AUTHORIZATION_BASE_SHA} ist Vorfahr von HEAD; "
+        f"{len(v2736d_history.gate_commits)} GATE-Commit(s); "
+        "IMPLEMENTATION-Commit "
+        f"{v2736d_history.implementation_commit or 'noch nicht vorhanden'}"
+    )
+    print(
+        "v27.36d-Synchronisation: lokaler HEAD "
+        f"{v2736d_working_tree.head}; origin/main "
+        f"{v2736d_working_tree.origin_main}; Remote darf legitimer Vorfahr "
+        "des lokalen HEAD sein"
+    )
+    print(
+        "v27.36d-Sicherheitsgrenze: optional injizierter App-Provider; "
+        "resolveAccess() exakt einmal je Auth-Entscheidung; gültiges "
+        "access_allowed startet die lokale App, alle übrigen Ergebnisse "
+        "werden auf bestehende Ansichten oder generisch fail-closed abgebildet; "
+        "Bestandsmodule unverändert; Live-Supabase NEIN"
     )
     print(f"Vierphasige Positivsimulationen: {positive_phase_tests} / PASS")
     print(
@@ -6382,10 +7160,16 @@ def main() -> int:
         f"{v2736c_negative_tests} / vollständig blockiert"
     )
     print(
+        "v27.36d-Phasensimulationen: "
+        f"{v2736d_positive_tests} / PASS; Negativtests: "
+        f"{v2736d_negative_tests} / vollständig blockiert"
+    )
+    print(
         f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt "
         f"(davon v27.36a: {v2736a_manipulation_checks}; "
         f"v27.36b: {v2736b_manipulation_checks}; "
-        f"v27.36c: {v2736c_manipulation_checks})"
+        f"v27.36c: {v2736c_manipulation_checks}; "
+        f"v27.36d: {v2736d_manipulation_checks})"
     )
     return 0
 

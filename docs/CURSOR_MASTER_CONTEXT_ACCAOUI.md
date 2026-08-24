@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.36c
+Stand: v27.36d
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -466,51 +466,65 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-v27.36c abgeschlossen.
+### Autorisierter Task v27.36d
 
-Implementierungscommit: `3b1190a21f1b23aa58a1d90c5b41fa4f7e8d93e6`
+v27.36c ist vollständig abgeschlossen. v27.36d ist der einzige autorisierte
+Task: **Teilnehmerzugangs-Entscheidung lokal an den bestehenden
+App-Auth-Einstieg anbinden**. Funktionale Grundlage ist v27.35g, technische
+Grundlage ist der abgeschlossene Stand v27.36c. Die stabile
+Autorisierungsbasis ist `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`.
 
-Implementierungsdateien:
+Dieser GATE-Schritt autorisiert nur die spätere Umsetzung. Er nimmt keine
+Runtime-, App- oder UI-Änderung vor. Für die IMPLEMENTATION sind später exakt
+diese vier Dateien erlaubt:
 
-- `data/supabase-participant-access-bootstrap-bridge.js`
-- `tools/check-supabase-participant-access-bootstrap-bridge.py`
-- `docs/SUPABASE_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_V2736C.md`
+- `app.js`
+- `tools/check-participant-access-app-entry-v2736d.py`
+- `docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md`
 - `tools/preflight.py`
 
-Die isolierte Teilnehmerzugangs-Brücke liest ausschließlich
-`bootstrap.getClient()`, reicht den vorhandenen Client an die injizierte
-Factory des bestehenden v27.36b-Teilnehmerzugangs-Adapters weiter, verwendet
-die injizierte UTC-Zeitquelle und delegiert `resolveAccess()`. Alle
-Fehlergrenzen bleiben fail-closed; die Brücke dupliziert keine Fachlogik.
+Die spätere App-Anbindung darf ausschließlich den optional injizierten
+Provider `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER` verwenden und an ihm
+nur `resolveAccess()` aufrufen. Fehlt der Provider, bleibt der bestehende
+lokale Standardstart unverändert. Ist der Provider vorhanden, wird
+`resolveAccess()` je Auth-Entscheidung exakt einmal ausgeführt und sein Ergebnis
+validiert. Nur `allowed: true` zusammen mit `code: "access_allowed"` darf
+`startLocalApp()` exakt einmal starten.
 
-Die Prüfung verwendet ausschließlich einen lokalen synthetischen
-Fake-Bootstrap und Fake-Client. Der Bridge-Checker bestätigt 35
-Mindestprüfungen und 20 Manipulationsprüfungen, jeweils PASS.
+Die Ablehnungscodes werden auf `login_required`, `blocked`, `expired` oder
+`no_course` abgebildet. Alle technischen, ungültigen, mehrdeutigen, Query-,
+Dependency-, Bridge- und unbekannten Ergebnisse werden generisch fail-closed
+behandelt. Es gibt keine rohe interne Fehlerausgabe. Werfen, Reject oder ein
+ungültiges Ergebnis bleiben fail-closed; war ein Provider vorhanden, erfolgt
+niemals ein Rückfall auf den lokalen Zugriff. Bestehende lokale
+Auth-Guard-Testzustände bleiben verbindliche blockierende Testfälle.
 
-Bootstrap, zentraler Adapter und v27.36b-Teilnehmerzugangs-Adapter bleiben unverändert.
-Keine App- oder UI-Integration. Kein Netzwerkzugriff. Kein SQL. Keine
-Migrationen. Supabase bleibt NICHT LIVE.
-Keine echten Keys.
-Keine echten Teilnehmerdaten.
+Die App darf weder direkte Teilnehmer-, Enrollment-, Kurs- oder Auth-Abfragen
+noch Client-Erzeugung, Initialisierung, Config-, SDK-, frei injizierbare
+`userId`- oder duplizierte Domänenlogik ergänzen. Bestehender Bootstrap,
+zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben
+unverändert. Die v27.36b-/v27.36c-CommonJS-Module werden nicht im Browser
+geladen und nicht konvertiert. `index.html`, `style.css`, SQL, Migrationen und
+Config bleiben unverändert. Spätere Tests verwenden ausschließlich einen
+lokalen synthetischen Provider. Supabase bleibt NICHT LIVE. Keine echten Keys.
+Keine echten Teilnehmerdaten. Kein Folgetask nach v27.36d wurde ausgewählt oder
+autorisiert.
 
-Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
-`CURRENT_TASK` ist `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
-Kein Folgetask wurde ausgewählt oder autorisiert. Die nächste Umsetzung bleibt
-vollständig BLOCKED, bis sie ausdrücklich autorisiert wird. Commit und Push
-bleiben NEIN.
+### Permanenter v27.36d-Lebenszyklus
 
-### Permanenter v27.36c-Lebenszyklus
+Die stabile Basis `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e` muss Vorfahr
+jedes legitimen v27.36d-HEAD bleiben. Der Lifecycle erkennt dynamisch genau die
+Phasen `authorization_prepared`, `authorization_committed`,
+`implementation_prepared`, `implementation_committed`, `closure_prepared` und
+`closure_committed`.
 
-Die stabile Basis `d28f3710d6f3e4b9abc427dec8589d3ea98c09be` muss Vorfahr
-jedes legitimen v27.36c-HEAD bleiben. Der Implementierungscommit wird dynamisch
-aus Historie und exakter Dateimenge erkannt. Keine zukünftige Closure-SHA wird hartcodiert.
-
-GATE, exakt eine IMPLEMENTATION, `closure_prepared` und
-`closure_committed` werden dynamisch aus Git-Historie, Dateiumfang,
-Taskzustand und Working Tree erkannt. Die Closure ändert ausschließlich die
-fünf Gate-Dateien.
-
-Rückkehr zu einem autorisierten v27.36c-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.
+GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
+IMPLEMENTATION enthält exakt die vier autorisierten Implementierungsdateien und
+ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig,
+enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` wieder auf
+`NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige GATE-, IMPLEMENTATION-
+oder CLOSURE-SHA wird hartcodiert. Nach der Closure bleibt jeder neue Task bis
+zu seiner ausdrücklichen fachlichen Autorisierung BLOCKED.
 
 ## 15. Wenn ein neuer Chat beginnt
 

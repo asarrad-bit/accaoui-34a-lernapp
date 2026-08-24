@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.36c
+Stand: v27.36d
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
@@ -126,7 +126,7 @@ Details: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md` → Arbeitsworkflow / Git-Synch
 
 ### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten
 
-- Für einen bereits fachlich autorisierten IMPLEMENTATION- oder CLOSURE-Schritt ist keine zusätzliche Nutzerfreigabe nur für Commit/Push erforderlich.
+- Für einen fachlich autorisierten Task ist bei einem legitimen GATE-, IMPLEMENTATION- oder CLOSURE-Schritt keine zusätzliche Nutzerfreigabe nur für Commit/Push erforderlich.
 - Der technische Lead darf Commit und Push für einen solchen Schritt auslösen oder empfehlen, wenn Task und Lifecycle korrekt sind, ausschließlich erlaubte Dateien geändert wurden, alle verbindlichen Checker PASS sind, der Preflight PASS ist, `git diff --check` PASS ist, keine unerwarteten Änderungen vorliegen und keine offene Sicherheits- oder Architekturabweichung besteht.
 - Bei jeder Abweichung gilt sofort STOPP.
 - Diese Regel ersetzt nicht die fachliche Autorisierung eines neuen Tasks. Nach einer Closure bleibt jede neue Implementierung vollständig BLOCKED, bis sie ausdrücklich autorisiert wird.
@@ -842,6 +842,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.36a | Supabase/Login-Bestandsaudit abgeschlossen: Audit-Commit `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`, Audit-Datei `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`; Supabase/Login umfangreich lokal vorbereitet, aber NICHT live; genau eine nicht autorisierende Empfehlung für eine lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit lokalem Fake-Client; funktionaler Stand bleibt v27.35g, kein Folgetask ausgewählt oder autorisiert – **erledigt** |
 | v27.36b | Lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit Fake-Client isoliert umgesetzt: Implementierungscommit `c551f1fb973240bfe2a73a26ff38d4e66d2ccff7`; explizit injizierter Client und UTC-Zeit, `session.user.id` als einzige Autorität, fail-closed, lokaler Fake-Client; 49 Mindestprüfungen plus 26 Manipulationsprüfungen = 75 PASS; keine App-Integration, Supabase NICHT LIVE, kein Folgetask – **erledigt** |
 | v27.36c | Lokale Teilnehmerzugangs-Brücke isoliert umgesetzt; Implementierungscommit `3b1190a21f1b23aa58a1d90c5b41fa4f7e8d93e6`; ausschließlich `bootstrap.getClient()`, injizierte v27.36b-Adapter-Factory und UTC-Zeitquelle, fail-closed, lokaler Fake-Bootstrap, keine duplizierte Fachlogik; 35 Mindestprüfungen und 20 Manipulationsprüfungen PASS; Bootstrap und v27.36b-Adapter unverändert, keine App-/UI-Integration, kein Netzwerk, kein SQL oder Migrationen, Supabase NICHT LIVE, keine echten Keys oder Teilnehmerdaten, kein Folgetask – **erledigt** |
+| v27.36d | Teilnehmerzugangs-Entscheidung lokal an den bestehenden App-Auth-Einstieg anbinden; funktionale Grundlage v27.35g, technische Grundlage v27.36c abgeschlossen, stabile Autorisierungsbasis `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`; optional injizierter App-Provider, lokaler Standardstart ohne Provider unverändert, Provider-Ergebnisse fail-closed auf bestehende Zugangsansichten abbilden; ausschließlich vier Implementierungsdateien, keine Bestandsmodul-, Live-Supabase-, Key- oder Teilnehmerdatenänderung, kein Folgetask – **autorisiert** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -1468,51 +1469,65 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-v27.36c abgeschlossen.
+### Autorisierter Task v27.36d
 
-Implementierungscommit: `3b1190a21f1b23aa58a1d90c5b41fa4f7e8d93e6`
+v27.36c ist vollständig abgeschlossen. v27.36d ist der einzige autorisierte
+Task: **Teilnehmerzugangs-Entscheidung lokal an den bestehenden
+App-Auth-Einstieg anbinden**. Funktionale Grundlage ist v27.35g, technische
+Grundlage ist der abgeschlossene Stand v27.36c. Die stabile
+Autorisierungsbasis ist `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`.
 
-Implementierungsdateien:
+Dieser GATE-Schritt autorisiert nur die spätere Umsetzung. Er nimmt keine
+Runtime-, App- oder UI-Änderung vor. Für die IMPLEMENTATION sind später exakt
+diese vier Dateien erlaubt:
 
-- `data/supabase-participant-access-bootstrap-bridge.js`
-- `tools/check-supabase-participant-access-bootstrap-bridge.py`
-- `docs/SUPABASE_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_V2736C.md`
+- `app.js`
+- `tools/check-participant-access-app-entry-v2736d.py`
+- `docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md`
 - `tools/preflight.py`
 
-Die isolierte Teilnehmerzugangs-Brücke liest ausschließlich
-`bootstrap.getClient()`, reicht den vorhandenen Client an die injizierte
-Factory des bestehenden v27.36b-Teilnehmerzugangs-Adapters weiter, verwendet
-die injizierte UTC-Zeitquelle und delegiert `resolveAccess()`. Alle
-Fehlergrenzen bleiben fail-closed; die Brücke dupliziert keine Fachlogik.
+Die spätere App-Anbindung darf ausschließlich den optional injizierten
+Provider `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER` verwenden und an ihm
+nur `resolveAccess()` aufrufen. Fehlt der Provider, bleibt der bestehende
+lokale Standardstart unverändert. Ist der Provider vorhanden, wird
+`resolveAccess()` je Auth-Entscheidung exakt einmal ausgeführt und sein Ergebnis
+validiert. Nur `allowed: true` zusammen mit `code: "access_allowed"` darf
+`startLocalApp()` exakt einmal starten.
 
-Die Prüfung verwendet ausschließlich einen lokalen synthetischen
-Fake-Bootstrap und Fake-Client. Der Bridge-Checker bestätigt 35
-Mindestprüfungen und 20 Manipulationsprüfungen, jeweils PASS.
+Die Ablehnungscodes werden auf `login_required`, `blocked`, `expired` oder
+`no_course` abgebildet. Alle technischen, ungültigen, mehrdeutigen, Query-,
+Dependency-, Bridge- und unbekannten Ergebnisse werden generisch fail-closed
+behandelt. Es gibt keine rohe interne Fehlerausgabe. Werfen, Reject oder ein
+ungültiges Ergebnis bleiben fail-closed; war ein Provider vorhanden, erfolgt
+niemals ein Rückfall auf den lokalen Zugriff. Bestehende lokale
+Auth-Guard-Testzustände bleiben verbindliche blockierende Testfälle.
 
-Bootstrap, zentraler Adapter und v27.36b-Teilnehmerzugangs-Adapter bleiben unverändert.
-Keine App- oder UI-Integration. Kein Netzwerkzugriff. Kein SQL. Keine
-Migrationen. Supabase bleibt NICHT LIVE.
-Keine echten Keys.
-Keine echten Teilnehmerdaten.
+Die App darf weder direkte Teilnehmer-, Enrollment-, Kurs- oder Auth-Abfragen
+noch Client-Erzeugung, Initialisierung, Config-, SDK-, frei injizierbare
+`userId`- oder duplizierte Domänenlogik ergänzen. Bestehender Bootstrap,
+zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben
+unverändert. Die v27.36b-/v27.36c-CommonJS-Module werden nicht im Browser
+geladen und nicht konvertiert. `index.html`, `style.css`, SQL, Migrationen und
+Config bleiben unverändert. Spätere Tests verwenden ausschließlich einen
+lokalen synthetischen Provider. Supabase bleibt NICHT LIVE. Keine echten Keys.
+Keine echten Teilnehmerdaten. Kein Folgetask nach v27.36d wurde ausgewählt oder
+autorisiert.
 
-Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
-`CURRENT_TASK` ist aktuell `NONE` / `BLOCKED` / `Autorisiert: NEIN`.
-Kein Folgetask wurde ausgewählt oder autorisiert. Die nächste Umsetzung bleibt
-vollständig BLOCKED, bis sie ausdrücklich autorisiert wird. Commit und Push
-bleiben NEIN.
+### Permanenter v27.36d-Lebenszyklus
 
-### Permanenter v27.36c-Lebenszyklus
+Die stabile Basis `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e` muss Vorfahr
+jedes legitimen v27.36d-HEAD bleiben. Der Lifecycle erkennt dynamisch genau die
+Phasen `authorization_prepared`, `authorization_committed`,
+`implementation_prepared`, `implementation_committed`, `closure_prepared` und
+`closure_committed`.
 
-Die stabile Basis `d28f3710d6f3e4b9abc427dec8589d3ea98c09be` muss Vorfahr
-jedes legitimen v27.36c-HEAD bleiben. Der Implementierungscommit wird dynamisch
-aus Historie und exakter Dateimenge erkannt. Keine zukünftige Closure-SHA wird hartcodiert.
-
-GATE, exakt eine IMPLEMENTATION, `closure_prepared` und
-`closure_committed` werden dynamisch aus Git-Historie, Dateiumfang,
-Taskzustand und Working Tree erkannt. Die Closure ändert ausschließlich die
-fünf Gate-Dateien.
-
-Rückkehr zu einem autorisierten v27.36c-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.
+GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
+IMPLEMENTATION enthält exakt die vier autorisierten Implementierungsdateien und
+ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig,
+enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` wieder auf
+`NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige GATE-, IMPLEMENTATION-
+oder CLOSURE-SHA wird hartcodiert. Nach der Closure bleibt jeder neue Task bis
+zu seiner ausdrücklichen fachlichen Autorisierung BLOCKED.
 
 **Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert); v26.3c (Login-UI-Konzept); v26.3d (Masterliste Login-UI aktualisiert); v26.3e (Auth-Einstiegspunkt-Audit); v26.3f (Masterliste Auth-Audit aktualisiert); v26.4a (lokales Auth-Guard-Gerüst); v26.4b (Masterliste Auth-Guard aktualisiert); v26.4c (lokaler Auth-Guard-Testmodus); v26.4d (Masterliste Auth-Testmodus aktualisiert); v26.4e (Auth-Hinweisdesign); v26.4f (Masterliste Auth-Hinweisdesign aktualisiert); v26.5a (Supabase-Konfigurations- und Sicherheitsplan); v26.5b (Masterliste Supabase-Sicherheitsplan aktualisiert); v26.5c (Supabase-Config-Platzhalter); v26.5d (Masterliste Config-Platzhalter aktualisiert); v26.5e (Supabase-Config-Ladeweg-Audit); v26.5f (Masterliste Config-Ladeweg aktualisiert); v26.6a (Supabase-Config-State-Check); v26.6b (Masterliste Config-State aktualisiert); v26.6c (optionaler lokaler Config-Loader); v26.6d (Masterliste Config-Loader aktualisiert); v26.6e (lokaler Config-Loader-Test); v26.6f (Masterliste Config-Loader-Test aktualisiert); v26.7a (Supabase-Client-Adapter-Plan); v26.7b (Masterliste Client-Adapter aktualisiert); v26.7c (Supabase-Adapter-Gerüst ohne SDK); v26.7d (Masterliste Adapter-Gerüst aktualisiert); v26.7e (Supabase-Adapter-Test); v26.7f (Masterliste Adapter-Test aktualisiert); v26.8a (Supabase-SDK-Ladeweg-Plan); v26.8b (Masterliste SDK-Ladeweg aktualisiert); v26.8c (SDK-Status im Adapter); v26.8d (Masterliste SDK-Status aktualisiert); v26.8e (SDK-Status-Test); v26.8f (Masterliste SDK-Status-Test aktualisiert); v26.9a (Client-Readiness im Adapter); v26.9b (Masterliste Client-Readiness aktualisiert); v26.9c (Client-Readiness-Test); v26.9d (Masterliste Client-Readiness-Test aktualisiert); v26.10a (Auth-Readiness im Adapter); v26.10b (Masterliste Auth-Readiness aktualisiert); v26.10c (Auth-Readiness-Test); v26.10d (Masterliste Auth-Readiness-Test aktualisiert); v26.11a (Teilnehmerzugangs-Readiness im Adapter); v26.11b (Masterliste Teilnehmerzugangs-Readiness aktualisiert); v27.35d (Lernmodus/Lernkarten UX-Trennung mit gemeinsamen Führungshinweisen).
 

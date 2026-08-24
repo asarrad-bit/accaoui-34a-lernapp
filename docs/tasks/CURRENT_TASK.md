@@ -1,14 +1,85 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
+Task-ID: v27.36d
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: Teilnehmerzugangs-Entscheidung lokal an den bestehenden App-Auth-Einstieg anbinden
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.36c
-Erlaubte Dateien: KEINE
+Technischer Ausgangsstand: v27.36c abgeschlossen
+Stabile Autorisierungsbasis: `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`
+Erlaubte Implementierungsdateien: `app.js`, `tools/check-participant-access-app-entry-v2736d.py`, `docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md`, `tools/preflight.py`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Autorisierter Task v27.36d
+
+v27.36c ist vollständig abgeschlossen. v27.36d ist der einzige autorisierte
+Task: **Teilnehmerzugangs-Entscheidung lokal an den bestehenden
+App-Auth-Einstieg anbinden**. Funktionale Grundlage ist v27.35g, technische
+Grundlage ist der abgeschlossene Stand v27.36c. Die stabile
+Autorisierungsbasis ist `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`.
+
+Dieser GATE-Schritt autorisiert nur die spätere Umsetzung. Er nimmt keine
+Runtime-, App- oder UI-Änderung vor. Für die IMPLEMENTATION sind später exakt
+diese vier Dateien erlaubt:
+
+- `app.js`
+- `tools/check-participant-access-app-entry-v2736d.py`
+- `docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md`
+- `tools/preflight.py`
+
+Die spätere App-Anbindung darf ausschließlich den optional injizierten
+Provider `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER` verwenden und an ihm
+nur `resolveAccess()` aufrufen. Fehlt der Provider, bleibt der bestehende
+lokale Standardstart unverändert. Ist der Provider vorhanden, wird
+`resolveAccess()` je Auth-Entscheidung exakt einmal ausgeführt und sein Ergebnis
+validiert. Nur `allowed: true` zusammen mit `code: "access_allowed"` darf
+`startLocalApp()` exakt einmal starten.
+
+Ablehnungen werden ausschließlich auf die bestehenden Ansichten abgebildet:
+
+- `login_required`: `session_missing`, `session_invalid`,
+  `session_user_missing`, `session_user_id_invalid`
+- `blocked`: `participant_blocked`, `enrollment_blocked`
+- `expired`: `participant_expired`, `enrollment_expired`,
+  `enrollment_access_ended`, `course_ended`
+- `no_course`: `participant_completed`, `enrollment_missing`,
+  `enrollment_completed`, `enrollment_access_not_started`, `course_missing`,
+  `course_inactive`, `course_archived`, `course_not_started`
+
+Alle technischen, ungültigen, mehrdeutigen, Query-, Dependency-, Bridge- und
+unbekannten Ergebnisse werden generisch fail-closed behandelt. Es gibt keine
+rohe interne Fehlerausgabe. Werfen, Reject oder ein ungültiges Ergebnis bleiben
+fail-closed; war ein Provider vorhanden, erfolgt niemals ein Rückfall auf den
+lokalen Zugriff. Bestehende lokale Auth-Guard-Testzustände bleiben verbindliche
+blockierende Testfälle.
+
+Die App darf weder direkte Teilnehmer-, Enrollment-, Kurs- oder Auth-Abfragen
+noch Client-Erzeugung, Initialisierung, Config-, SDK-, frei injizierbare
+`userId`- oder duplizierte Domänenlogik ergänzen. Bestehender Bootstrap,
+zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben
+unverändert. Die v27.36b-/v27.36c-CommonJS-Module werden nicht im Browser
+geladen und nicht konvertiert. `index.html`, `style.css`, SQL, Migrationen und
+Config bleiben unverändert. Spätere Tests verwenden ausschließlich einen
+lokalen synthetischen Provider. Supabase bleibt NICHT LIVE. Keine echten Keys.
+Keine echten Teilnehmerdaten. Kein Folgetask nach v27.36d wurde ausgewählt oder
+autorisiert.
+
+### Permanenter v27.36d-Lebenszyklus
+
+Die stabile Basis `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e` muss Vorfahr
+jedes legitimen v27.36d-HEAD bleiben. Der Lifecycle erkennt dynamisch genau die
+Phasen `authorization_prepared`, `authorization_committed`,
+`implementation_prepared`, `implementation_committed`, `closure_prepared` und
+`closure_committed`.
+
+GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
+IMPLEMENTATION enthält exakt die vier autorisierten Implementierungsdateien und
+ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig,
+enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` wieder auf
+`NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige GATE-, IMPLEMENTATION-
+oder CLOSURE-SHA wird hartcodiert. Nach der Closure bleibt jeder neue Task bis
+zu seiner ausdrücklichen fachlichen Autorisierung BLOCKED.
 
 ## Abgeschlossener isolierter Technikschritt v27.36c
 
