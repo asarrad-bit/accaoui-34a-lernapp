@@ -5497,6 +5497,18 @@ V2736C_PERMANENT_MASTERLIST_MODE_MARKERS = (
     "kürzesten\n  sinnvollen Weg zu einem nutzbaren, konkurrenzfähigen Produkt",
     "nicht unnötig mit internen Implementierungsdetails belastet",
     "technische Entscheidungen werden fachlich verständlich erklärt",
+    "### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten",
+    "bereits fachlich autorisierten IMPLEMENTATION- oder CLOSURE-Schritt",
+    "keine zusätzliche Nutzerfreigabe nur für Commit/Push erforderlich",
+    "technische Lead darf Commit und Push für einen solchen Schritt auslösen oder empfehlen",
+    "alle verbindlichen Checker PASS",
+    "der Preflight PASS",
+    "`git diff --check` PASS",
+    "keine unerwarteten Änderungen",
+    "keine offene Sicherheits- oder Architekturabweichung",
+    "Bei jeder Abweichung gilt sofort STOPP.",
+    "Diese Regel ersetzt nicht die fachliche Autorisierung eines neuen Tasks.",
+    "Nach einer Closure bleibt jede neue Implementierung vollständig BLOCKED",
 )
 V2736C_CLOSURE_MARKERS = (
     "v27.36c abgeschlossen.",
@@ -5598,6 +5610,10 @@ def validate_v2736c_permanent_masterlist_contract(text: str) -> None:
     require(
         text.count("### Arbeits-, Produkt- und Übergabemodus") == 1,
         "PROJECT_MASTERLIST: Arbeits-, Produkt- und Übergabemodus muss exakt einmal vorkommen",
+    )
+    require(
+        text.count("### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten") == 1,
+        "PROJECT_MASTERLIST: Commit-/Push-Freigaberegel muss exakt einmal vorkommen",
     )
     validate_required_markers(
         text,

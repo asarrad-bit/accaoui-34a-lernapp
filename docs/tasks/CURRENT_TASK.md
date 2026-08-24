@@ -1,112 +1,61 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.36c
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: Lokale Teilnehmerzugangs-Brücke zum bestehenden Supabase-Bootstrap-Pfad vorbereiten
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Erwarteter Ausgangscommit: `d28f3710d6f3e4b9abc427dec8589d3ea98c09be`
-Erlaubte Dateien: `data/supabase-participant-access-bootstrap-bridge.js`, `tools/check-supabase-participant-access-bootstrap-bridge.py`, `docs/SUPABASE_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_V2736C.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.36c
+Erlaubte Dateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
 
-## Autorisierter Task v27.36c
+## Abgeschlossener isolierter Technikschritt v27.36c
 
-Dieser Codex-Schritt autorisiert v27.36c nur. v27.36b ist vollständig
-abgeschlossen; sein Closure-HEAD ist
-`d28f3710d6f3e4b9abc427dec8589d3ea98c09be`. Der letzte abgeschlossene
-funktionale Stand bleibt v27.35g.
+v27.36c abgeschlossen.
 
-In diesem Autorisierungsschritt wird keine Brücke implementiert, keine der
-später erlaubten Implementierungsdateien angelegt oder verändert und keine
-App-, Bootstrap-, Adapter-, Config-, Supabase-, SQL- oder Migrationsdatei
-geändert.
+Implementierungscommit: `3b1190a21f1b23aa58a1d90c5b41fa4f7e8d93e6`
 
-## Verbindliches Funktionsziel
-
-Eine spätere kleine isolierte Teilnehmerzugangs-Brücke darf ausschließlich
-folgende Dependencies explizit injiziert erhalten:
-
-- einen bootstrap-kompatiblen Provider
-- die Factory des bestehenden v27.36b-Teilnehmerzugangs-Adapters
-- eine UTC-Zeitquelle
-
-Der Provider stellt `getClient()` bereit. Die Brücke liest vom Bootstrap
-ausschließlich `bootstrap.getClient()`. Sie verwendet keine Globals, erzeugt
-und initialisiert keinen Supabase-Client und aktiviert keinen Live- oder
-Netzwerkpfad. Der bestehende Bootstrap, der zentrale Supabase-Adapter und der
-v27.36b-Teilnehmerzugangs-Adapter bleiben unverändert.
-
-## Fail-closed Brückenverhalten
-
-Die spätere Brücke blockiert geschlossen bei:
-
-- fehlendem oder ungültigem Bootstrap-Provider
-- fehlendem oder werfendem `getClient()`-Pfad
-- fehlender oder ungültiger Adapter-Factory oder UTC-Zeitquelle
-- einem Factoryfehler oder einem ungültigen Adapter-Ergebnis
-- fehlendem oder ungültigem `resolveAccess`
-
-Ein ungültiger bereits vorhandener Client wird nicht durch duplizierte
-Fachlogik der Brücke bewertet, sondern an den bestehenden v27.36b-Adapter
-weitergereicht und dort fail-closed behandelt.
-
-## Lokaler Fake-Bootstrap und Testgrenze
-
-Die spätere Prüfung verwendet ausschließlich einen lokalen synthetischen
-Fake-Bootstrap, einen lokalen Fake-Client und eine injizierte feste UTC-Zeit.
-Sie führt kein Netzwerk, keine Datenbank, kein SDK und kein echtes Supabase
-aus.
-
-Später exakt erlaubte Implementierungsdateien:
+Implementierungsdateien:
 
 - `data/supabase-participant-access-bootstrap-bridge.js`
 - `tools/check-supabase-participant-access-bootstrap-bridge.py`
 - `docs/SUPABASE_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_V2736C.md`
 - `tools/preflight.py`
 
-## Ausdrücklich verboten
+Die isolierte Teilnehmerzugangs-Brücke liest ausschließlich
+`bootstrap.getClient()`, reicht den vorhandenen Client an die injizierte
+Factory des bestehenden v27.36b-Teilnehmerzugangs-Adapters weiter, verwendet
+die injizierte UTC-Zeitquelle und delegiert `resolveAccess()`. Alle
+Fehlergrenzen bleiben fail-closed; die Brücke dupliziert keine Fachlogik.
 
-- Änderung von `data/supabase-client-bootstrap.js`
-- Änderung von `data/supabase-client-adapter.js`
-- Änderung von `data/supabase-participant-access-adapter.js`
-- Änderung von `app.js`, `index.html`, `style.css` oder Config-Dateien
-- `initializeClient()` oder `createClient()`
-- `getState()` als Voraussetzung der Brücke
-- Bootstrap-, Config-, SDK- oder Live-State-Schalter
-- globale Supabase-Objekte oder sonstige Globals
-- Netzwerk oder Datenbank-Livezugriff
-- SQL, Migrationen oder echte RLS-/Datenbanktests
-- echte Keys oder echte Teilnehmerdaten
-- App- oder UI-Integration
-- Commit oder Push in diesem Autorisierungsschritt
+Die Prüfung verwendet ausschließlich einen lokalen synthetischen
+Fake-Bootstrap und Fake-Client. Der Bridge-Checker bestätigt 35
+Mindestprüfungen und 20 Manipulationsprüfungen, jeweils PASS.
 
-Supabase bleibt NICHT LIVE. Kein Folgetask nach v27.36c wurde ausgewählt oder
-autorisiert.
+Bootstrap, zentraler Adapter und v27.36b-Teilnehmerzugangs-Adapter bleiben unverändert.
+Keine App- oder UI-Integration. Kein Netzwerkzugriff. Kein SQL. Keine
+Migrationen. Supabase bleibt NICHT LIVE.
+Keine echten Keys.
+Keine echten Teilnehmerdaten.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Kein Folgetask wurde ausgewählt oder autorisiert. Die nächste Umsetzung bleibt
+vollständig BLOCKED, bis sie ausdrücklich autorisiert wird. Commit und Push
+bleiben NEIN.
 
 ## Permanenter v27.36c-Lebenszyklus
 
-Stabile Autorisierungsbasis:
-`d28f3710d6f3e4b9abc427dec8589d3ea98c09be`.
+Die stabile Basis `d28f3710d6f3e4b9abc427dec8589d3ea98c09be` muss Vorfahr
+jedes legitimen v27.36c-HEAD bleiben. Der Implementierungscommit wird dynamisch
+aus Historie und exakter Dateimenge erkannt. Keine zukünftige Closure-SHA wird hartcodiert.
 
-Sechs Phasen werden dynamisch erkannt:
+GATE, exakt eine IMPLEMENTATION, `closure_prepared` und
+`closure_committed` werden dynamisch aus Git-Historie, Dateiumfang,
+Taskzustand und Working Tree erkannt. Die Closure ändert ausschließlich die
+fünf Gate-Dateien.
 
-1. `authorization_prepared`
-2. `authorization_committed`
-3. `implementation_prepared`
-4. `implementation_committed`
-5. `closure_prepared`
-6. `closure_committed`
-
-GATE ist ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
-IMPLEMENTATION ist exakt die vier erlaubten Implementierungsdateien und nur
-einmal zulässig. CLOSURE folgt erst nach IMPLEMENTATION, enthält ausschließlich
-Gate-Dateien und setzt den Task auf geschlossen. Keine zukünftige
-Autorisierungs-, Implementierungs- oder Closure-SHA wird hartcodiert; die
-stabile Basis bleibt nur Vorfahr und keine permanente HEAD-Gleichheit.
-
-Eine Rückkehr aus abgeschlossener v27.36c-Closure zu v27.36c / AUTHORIZED
-bleibt ohne neue ausdrückliche Autorisierung blockiert.
+Rückkehr zu einem autorisierten v27.36c-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.
 
 ## Abgeschlossener isolierter Technikschritt v27.36b
 
