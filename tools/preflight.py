@@ -1531,6 +1531,25 @@ def check_supabase_participant_access_adapter():
         )
 
 
+def check_supabase_participant_access_bootstrap_bridge():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-participant-access-bootstrap-bridge.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Teilnehmerzugangs-Bootstrap-Brückenprüfung v27.36c "
+            "fehlgeschlagen"
+        )
+
+
 def check_project_continuity_control():
     code, stdout, stderr = run_command(
         f'"{sys.executable}" tools/check-project-continuity-control.py'
@@ -1956,6 +1975,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver()
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_adapter_contract()
     check_supabase_participant_access_adapter()
+    check_supabase_participant_access_bootstrap_bridge()
     check_project_continuity_control()
     check_git_diff_check()
     check_protected_core_files_v2356()
