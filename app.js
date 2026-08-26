@@ -49,6 +49,55 @@ const APP_VERSION = "v26.12c-access-health-flow";
 const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
 const SUPABASE_LOCAL_CONFIG_PATH = "data/supabase-config.local.js";
 
+const AUTH_ACCESS_NOTICE_STATES_V2736D = Object.freeze({
+  login_required: Object.freeze({
+    status: "login_required",
+    title: "Teilnehmer-Login erforderlich",
+    message: "Bitte melden Sie sich mit einem gültigen Teilnehmerzugang an."
+  }),
+  blocked: Object.freeze({
+    status: "blocked",
+    title: "Zugang gesperrt",
+    message: "Ihr Zugang ist aktuell gesperrt. Bitte wenden Sie sich an die Verwaltung."
+  }),
+  expired: Object.freeze({
+    status: "expired",
+    title: "Kurszugang abgelaufen",
+    message: "Ihr Kurszugang ist abgelaufen. Bitte wenden Sie sich an Accaoui Bildung."
+  }),
+  no_course: Object.freeze({
+    status: "no_course",
+    title: "Kein aktiver Kurs",
+    message: "Ihrem Konto ist aktuell kein aktiver Kurs zugeordnet. Bitte wenden Sie sich an Accaoui Bildung."
+  }),
+  access_error: Object.freeze({
+    status: "access_error",
+    title: "Teilnehmerzugang erforderlich",
+    message: "Ihr Teilnehmerzugang konnte nicht freigegeben werden. Bitte wenden Sie sich an Accaoui Bildung."
+  })
+});
+
+const PARTICIPANT_ACCESS_CODE_TO_NOTICE_STATUS_V2736D = Object.freeze({
+  session_missing: "login_required",
+  session_invalid: "login_required",
+  session_user_missing: "login_required",
+  session_user_id_invalid: "login_required",
+  participant_blocked: "blocked",
+  enrollment_blocked: "blocked",
+  participant_expired: "expired",
+  enrollment_expired: "expired",
+  enrollment_access_ended: "expired",
+  course_ended: "expired",
+  participant_completed: "no_course",
+  enrollment_missing: "no_course",
+  enrollment_completed: "no_course",
+  enrollment_access_not_started: "no_course",
+  course_missing: "no_course",
+  course_inactive: "no_course",
+  course_archived: "no_course",
+  course_not_started: "no_course"
+});
+
 const DEFAULT_QUESTION_POINTS = 1;
 
 // Technische Bestehensgrenze.
@@ -115,7 +164,7 @@ async function initAppBoot() {
 
   logSupabaseConfigState();
   logSupabaseAdapterHealthState();
-  initAuthFlow();
+  await initAuthFlow();
 }
 
 async function loadOptionalSupabaseConfig() {
@@ -266,15 +315,127 @@ function logSupabaseAdapterHealthState() {
   console.info("Supabase-Adapter-Live:", adapterHealthState.isSupabaseLive === true);
 }
 
-function initAuthFlow() {
+async function initAuthFlow() {
   const accessState = getCurrentAccessState();
 
-  if (accessState.isAllowed) {
+  // Lokale Auth-Guard-Testzustände und bestehende lokale Sperren behalten
+  // Vorrang; ein injizierter Provider wird dann nicht ausgewertet.
+  if (!accessState.isAllowed) {
+    renderLoginOrAccessNotice(accessState);
+    return;
+  }
+
+  const providerAccessState = await resolveParticipantAccessAppProviderV2736D();
+
+  if (providerAccessState.isProviderAbsent) {
     startLocalApp();
     return;
   }
 
-  renderLoginOrAccessNotice(accessState);
+  if (providerAccessState.isAllowed) {
+    startLocalApp();
+    return;
+  }
+
+  renderLoginOrAccessNotice(providerAccessState);
+}
+
+function createParticipantAccessNoticeStateV2736D(status) {
+  const notice =
+    AUTH_ACCESS_NOTICE_STATES_V2736D[status] ||
+    AUTH_ACCESS_NOTICE_STATES_V2736D.access_error;
+  const { title, message } = notice;
+
+  return {
+    isAllowed: false,
+    status: notice.status,
+    title,
+    message,
+    source: "participant-access-app-provider-v27.36d"
+  };
+}
+
+function createParticipantAccessFailureStateV2736D() {
+  return createParticipantAccessNoticeStateV2736D("access_error");
+}
+
+async function resolveParticipantAccessAppProviderV2736D() {
+  let provider;
+
+  try {
+    provider = window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER;
+  } catch (_error) {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  // Ausschließlich undefined bedeutet: Es wurde kein Provider injiziert.
+  if (provider === undefined) {
+    return { isProviderAbsent: true };
+  }
+
+  if (
+    provider === null ||
+    typeof provider !== "object" ||
+    Array.isArray(provider)
+  ) {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  let providerResolveAccess;
+
+  try {
+    providerResolveAccess = provider.resolveAccess;
+  } catch (_error) {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  if (typeof providerResolveAccess !== "function") {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  let result;
+
+  try {
+    result = await providerResolveAccess.call(provider);
+  } catch (_error) {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  if (result === null || typeof result !== "object" || Array.isArray(result)) {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  let resultAllowed;
+  let resultCode;
+
+  try {
+    resultAllowed = result.allowed;
+    resultCode = result.code;
+  } catch (_error) {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  if (typeof resultAllowed !== "boolean" || typeof resultCode !== "string") {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  if (resultAllowed === true && resultCode === "access_allowed") {
+    return {
+      isAllowed: true,
+      status: "access_allowed",
+      source: "participant-access-app-provider-v27.36d"
+    };
+  }
+
+  if (resultAllowed !== false || resultCode === "access_allowed") {
+    return createParticipantAccessFailureStateV2736D();
+  }
+
+  const noticeStatus =
+    PARTICIPANT_ACCESS_CODE_TO_NOTICE_STATUS_V2736D[resultCode] ||
+    "access_error";
+
+  return createParticipantAccessNoticeStateV2736D(noticeStatus);
 }
 
 function getCurrentAccessState() {
@@ -288,34 +449,11 @@ function getCurrentAccessState() {
     console.warn("Auth-Guard-Teststatus konnte nicht gelesen werden.", error);
   }
 
-  const blockedStates = {
-    login_required: {
-      status: "login_required",
-      title: "Teilnehmer-Login erforderlich",
-      message: "Bitte melden Sie sich mit einem gültigen Teilnehmerzugang an."
-    },
-    expired: {
-      status: "expired",
-      title: "Kurszugang abgelaufen",
-      message: "Ihr Kurszugang ist abgelaufen. Bitte wenden Sie sich an Accaoui Bildung."
-    },
-    blocked: {
-      status: "blocked",
-      title: "Zugang gesperrt",
-      message: "Ihr Zugang ist aktuell gesperrt. Bitte wenden Sie sich an die Verwaltung."
-    },
-    no_course: {
-      status: "no_course",
-      title: "Kein aktiver Kurs",
-      message: "Ihrem Konto ist aktuell kein aktiver Kurs zugeordnet. Bitte wenden Sie sich an Accaoui Bildung."
-    }
-  };
-
-  if (blockedStates[testState]) {
+  if (AUTH_ACCESS_NOTICE_STATES_V2736D[testState]) {
     return {
       isAllowed: false,
       source: "local-auth-guard-test-v26.4c",
-      ...blockedStates[testState]
+      ...AUTH_ACCESS_NOTICE_STATES_V2736D[testState]
     };
   }
 

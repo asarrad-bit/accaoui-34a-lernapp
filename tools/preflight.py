@@ -1550,6 +1550,24 @@ def check_supabase_participant_access_bootstrap_bridge():
         )
 
 
+def check_participant_access_app_entry_v2736d():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-participant-access-app-entry-v2736d.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Teilnehmerzugangs-App-Einstiegsprüfung v27.36d fehlgeschlagen"
+        )
+
+
 def check_project_continuity_control():
     code, stdout, stderr = run_command(
         f'"{sys.executable}" tools/check-project-continuity-control.py'
@@ -1591,6 +1609,47 @@ PROTECTED_CORE_FILES_V2356 = [
     "data/oral-sheets-bank.js",
 ]
 
+V2736D_AUTHORIZED_IMPLEMENTATION_FILES = (
+    "app.js",
+    "tools/check-participant-access-app-entry-v2736d.py",
+    "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md",
+    "tools/preflight.py",
+)
+
+
+def _is_authorized_v2736d_app_scope(changed_paths):
+    expected_paths = set(V2736D_AUTHORIZED_IMPLEMENTATION_FILES)
+    if changed_paths != expected_paths:
+        return False
+
+    try:
+        task_text = Path("docs/tasks/CURRENT_TASK.md").read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return False
+
+    task_lines = task_text.splitlines()
+
+    def single_value(prefix):
+        values = [
+            line[len(prefix):].strip()
+            for line in task_lines
+            if line.startswith(prefix)
+        ]
+        return values[0] if len(values) == 1 else None
+
+    expected_allowed_files = ", ".join(
+        f"`{path}`" for path in V2736D_AUTHORIZED_IMPLEMENTATION_FILES
+    )
+    return (
+        single_value("Task-ID:") == "v27.36d"
+        and single_value("Status:") == "AUTHORIZED"
+        and single_value("Autorisiert:") == "JA"
+        and single_value("Erlaubte Implementierungsdateien:")
+        == expected_allowed_files
+        and single_value("Commit erlaubt:") == "NEIN"
+        and single_value("Push erlaubt:") == "NEIN"
+    )
+
 def _parse_allowed_protected_v2356():
     raw = os.environ.get("ACCAOUI_ALLOW_PROTECTED", "").strip()
     if not raw:
@@ -1613,6 +1672,7 @@ def check_protected_core_files_v2356():
         return
 
     allowed_protected = _parse_allowed_protected_v2356()
+    changed_paths = set()
     changed_protected = set()
 
     for line in stdout.splitlines():
@@ -1629,13 +1689,20 @@ def check_protected_core_files_v2356():
             path_part = path_part.split(" -> ", 1)[1].strip().strip('"')
 
         path_part = path_part.replace("\\", "/")
+        changed_paths.add(path_part)
 
         for protected in PROTECTED_CORE_FILES_V2356:
             if path_part == protected:
                 changed_protected.add(protected)
 
+    authorized_v2736d_app_scope = _is_authorized_v2736d_app_scope(
+        changed_paths
+    )
+
     for protected in sorted(changed_protected):
         if protected in allowed_protected:
+            continue
+        if protected == "app.js" and authorized_v2736d_app_scope:
             continue
         errors.append(
             "KRITISCH: Geschützte Datei geändert: " + protected + "\n"
@@ -1855,6 +1922,8 @@ def main():
         "data/supabase-participant-access-adapter.js",
         "tools/check-supabase-participant-access-adapter.py",
         "docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md",
+        "tools/check-participant-access-app-entry-v2736d.py",
+        "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md",
         "docs/PROJECT_STATE_CURRENT.md",
         "docs/tasks/CURRENT_TASK.md",
         "tools/check-project-continuity-control.py",
@@ -1976,6 +2045,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_adapter_contract()
     check_supabase_participant_access_adapter()
     check_supabase_participant_access_bootstrap_bridge()
+    check_participant_access_app_entry_v2736d()
     check_project_continuity_control()
     check_git_diff_check()
     check_protected_core_files_v2356()
