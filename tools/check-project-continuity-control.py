@@ -6231,7 +6231,7 @@ V2736D_CLOSED_TASK_FIELDS = {
     "Titel": "Kein Task autorisiert",
     "Funktionaler Ausgangsstand": "v27.35g",
     "Letzter abgeschlossener Kontrollschritt": "v27.36d",
-    "Erlaubte Dateien": "KEINE",
+    "Erlaubte Implementierungsdateien": "KEINE",
     "Commit erlaubt": "NEIN",
     "Push erlaubt": "NEIN",
 }
@@ -6307,11 +6307,29 @@ V2736D_PERMANENT_MASTERLIST_MODE_MARKERS = (
 )
 V2736D_CLOSURE_MARKERS = (
     "v27.36d abgeschlossen.",
+    "window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER",
+    "Schnittstelle bleibt ausschließlich `resolveAccess()`.",
+    "Ohne Provider bleibt der lokale Standardbetrieb unverändert.",
+    "Lokale Auth-Guard-Testzustände behalten Vorrang.",
+    "Nur `allowed=true` zusammen mit `code=\"access_allowed\"` startet die lokale App.",
+    "Providerfehler und ungültige Ergebnisse bleiben fail-closed.",
+    "Nach einem erkannten Providerfehler gibt es keinen lokalen Fallback.",
+    "Ablehnungscodes werden auf die vorhandenen Zugangsansichten abgebildet.",
+    "Unbekannte und technische Fehler bleiben generisch fail-closed.",
+    "In app.js gibt es keine direkten Supabase- oder Datenbankabfragen.",
     "Der letzte abgeschlossene funktionale Stand bleibt v27.35g.",
     "Bestehender Bootstrap, zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben unverändert.",
+    "keine Browser-Verbindung zu den CommonJS-v27.36b/v27.36c-Modulen.",
     "Supabase bleibt NICHT LIVE.",
     "Keine echten Keys.",
     "Keine echten Teilnehmerdaten.",
+    "v27.36d-Checker: PASS (Positiv: 2; Negativ: 36; Manipulation: 10).",
+    "Kontinuitätschecker: PASS.",
+    "Preflight: PASS.",
+    "`git diff --check`: PASS.",
+    "Der allgemeine Protected-Core-Schutz bleibt aktiv.",
+    "v27.36d-Ausnahme war ausschließlich auf den autorisierten app.js-Scope begrenzt.",
+    "Keine generelle Freigabe von app.js oder anderen Protected-Core-Dateien.",
     "Kein Folgetask wurde ausgewählt oder autorisiert.",
     "vollständig BLOCKED, bis sie ausdrücklich autorisiert wird.",
     "Keine zukünftige CLOSURE-SHA wird hartcodiert.",
@@ -6434,7 +6452,26 @@ def validate_v2736d_permanent_masterlist_contract(text: str) -> None:
     require(exact_field(text, "Git Bash Arbeits-Laptop") == f"`{V2736C_VERIFIED_WORK_PATH_GIT_BASH}`", "PROJECT_MASTERLIST: verifizierter Git-Bash-Arbeits-Laptop-Pfad fehlt")
     require(text.count("### Arbeits-, Produkt- und Übergabemodus") == 1, "PROJECT_MASTERLIST: Arbeits-, Produkt- und Übergabemodus muss exakt einmal vorkommen")
     require(text.count("### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten") == 1, "PROJECT_MASTERLIST: Commit-/Push-Freigaberegel muss exakt einmal vorkommen")
-    validate_required_markers(text, V2736D_PERMANENT_MASTERLIST_MODE_MARKERS, "PROJECT_MASTERLIST / Commit-/Push-Regel")
+    permanent_section = section_between(
+        text,
+        "### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten",
+        "## 2. Cursor-Regel",
+        "PROJECT_MASTERLIST / Commit-/Push-Regel",
+    )
+    validate_required_markers(permanent_section, V2736D_PERMANENT_MASTERLIST_MODE_MARKERS, "PROJECT_MASTERLIST / Commit-/Push-Regel")
+
+
+def remove_v2736d_permanent_masterlist_marker(text: str, marker: str) -> str:
+    start_heading = "### Commit-/Push-Freigabe bei autorisierten Lifecycle-Schritten"
+    end_heading = "## 2. Cursor-Regel"
+    start = text.find(start_heading)
+    end = text.find(end_heading, start + len(start_heading))
+    require(start >= 0 and end > start, "Manipulationsmatrix kann permanenten v27.36d-Vertragsbereich nicht abgrenzen")
+    section = text[start:end]
+    require(marker in section, f"Manipulationsmatrix kann permanente Pflichtregel im Vertragsbereich nicht finden: {marker}")
+    manipulated_section = section.replace(marker, "")
+    require(marker not in manipulated_section, f"Manipulationsmatrix konnte permanente Pflichtregel im Vertragsbereich nicht vollständig entfernen: {marker}")
+    return text[:start] + manipulated_section + text[end:]
 
 
 def validate_v2736d_authorization_section(section: str, document_name: str, detailed_codes: bool = False) -> None:
@@ -6807,24 +6844,117 @@ def run_v2736d_manipulation_matrix(
         require(marker not in manipulated_section, f"Manipulationsmatrix konnte v27.36d-Pflichtaussage nicht vollständig entfernen: {name} / {marker}")
         return text[:start] + manipulated_section + text[end:]
 
+    current_task_state = detect_v2736d_task_state_text(task_text)
+    authorization_documents = (state_text, task_text, cursor_text, masterlist_text)
+    if current_task_state == V2736D_TASK_CLOSED:
+        require(current_history.gate_commits, "v27.36d-Closure benötigt einen historischen Autorisierungs-GATE")
+        authorization_revision = current_history.gate_commits[-1]
+        authorization_documents = (
+            read_v2735f_commit_document(authorization_revision, "docs/PROJECT_STATE_CURRENT.md"),
+            read_v2735f_commit_document(authorization_revision, V2735F_TASK_RELATIVE_PATH),
+            read_v2735f_commit_document(authorization_revision, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
+            read_v2735f_commit_document(authorization_revision, "docs/PROJECT_MASTERLIST.md"),
+        )
+    auth_state_text, auth_task_text, auth_cursor_text, auth_masterlist_text = authorization_documents
+
     for text, validator, fields, name in (
-        (state_text, validate_v2736d_state_text, V2736D_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736d_task_text, V2736D_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
+        (auth_state_text, validate_v2736d_state_text, V2736D_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+        (auth_task_text, validate_v2736d_task_text, V2736D_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
     ):
         for field, expected in fields.items():
             must_reject(validator, text.replace(f"{field}: {expected}", f"{field}: MANIPULIERT", 1), f"{name}: Feld {field}")
     for text, validator, name in (
-        (state_text, validate_v2736d_state_text, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736d_task_text, "CURRENT_TASK"),
-        (cursor_text, validate_v2736d_cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
-        (masterlist_text, validate_v2736d_masterlist_text, "PROJECT_MASTERLIST"),
+        (auth_state_text, validate_v2736d_state_text, "PROJECT_STATE_CURRENT"),
+        (auth_task_text, validate_v2736d_task_text, "CURRENT_TASK"),
+        (auth_cursor_text, validate_v2736d_cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (auth_masterlist_text, validate_v2736d_masterlist_text, "PROJECT_MASTERLIST"),
     ):
         for marker in V2736D_AUTHORIZATION_MARKERS:
             manipulated = remove_authorization_marker(text, marker, name)
             must_reject(validator, manipulated, f"{name}: Pflichtaussage {marker}")
     for marker in V2736D_PERMANENT_MASTERLIST_MODE_MARKERS:
-        require(marker in masterlist_text, f"Manipulationsmatrix kann permanente Pflichtregel nicht finden: {marker}")
-        must_reject(validate_v2736d_masterlist_text, masterlist_text.replace(marker, "", 1), f"PROJECT_MASTERLIST: permanente Regel {marker}")
+        require(marker in auth_masterlist_text, f"Manipulationsmatrix kann permanente Pflichtregel nicht finden: {marker}")
+        must_reject(
+            validate_v2736d_masterlist_text,
+            remove_v2736d_permanent_masterlist_marker(auth_masterlist_text, marker),
+            f"PROJECT_MASTERLIST: permanente Regel {marker}",
+        )
+
+    if current_task_state == V2736D_TASK_CLOSED:
+        require(current_history.implementation_commit is not None, "v27.36d-Closure-Manipulationsprüfung benötigt den Implementierungscommit")
+        closure_documents = (state_text, task_text, cursor_text, masterlist_text)
+        closure_names = (
+            "PROJECT_STATE_CURRENT",
+            "CURRENT_TASK",
+            "CURSOR_MASTER_CONTEXT_ACCAOUI",
+            "PROJECT_MASTERLIST",
+        )
+        closure_boundaries = {
+            "PROJECT_STATE_CURRENT": (
+                "## Abgeschlossener technischer Schritt v27.36d",
+                "## Abgeschlossener isolierter Technikschritt v27.36c",
+            ),
+            "CURRENT_TASK": (
+                "## Abgeschlossener technischer Schritt v27.36d",
+                "## Abgeschlossener isolierter Technikschritt v27.36c",
+            ),
+            "CURSOR_MASTER_CONTEXT_ACCAOUI": (
+                "## 14. Nächster sinnvoller Schritt",
+                "## 15. Wenn ein neuer Chat beginnt",
+            ),
+            "PROJECT_MASTERLIST": (
+                "## 14. Nächste sinnvolle Aufgaben",
+                "## 15. Start in neuem Chat",
+            ),
+        }
+
+        def validate_closed_variant(index: int, manipulated: str) -> None:
+            documents = list(closure_documents)
+            documents[index] = manipulated
+            validate_v2736d_closed_documents(
+                *documents,
+                current_history.implementation_commit,
+            )
+
+        def remove_closure_marker(text: str, marker: str, name: str) -> str:
+            start_marker, end_marker = closure_boundaries[name]
+            start = text.find(start_marker)
+            end = text.find(end_marker, start + len(start_marker))
+            require(start >= 0 and end > start, f"Manipulationsmatrix kann v27.36d-Closure-Bereich nicht abgrenzen: {name}")
+            section = text[start:end]
+            require(marker in section, f"Manipulationsmatrix kann v27.36d-Closure-Pflichtaussage nicht finden: {name} / {marker}")
+            manipulated_section = section.replace(marker, "")
+            require(marker not in manipulated_section, f"Manipulationsmatrix konnte v27.36d-Closure-Pflichtaussage nicht vollständig entfernen: {name} / {marker}")
+            return text[:start] + manipulated_section + text[end:]
+
+        for index, (text, fields, name) in enumerate((
+            (state_text, V2736D_CLOSED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+            (task_text, V2736D_CLOSED_TASK_FIELDS, "CURRENT_TASK"),
+        )):
+            for field, expected in fields.items():
+                marker = f"{field}: {expected}"
+                require(marker in text, f"Manipulationsmatrix kann geschlossenes v27.36d-Feld nicht finden: {name} / {field}")
+                must_reject(
+                    lambda manipulated, index=index: validate_closed_variant(index, manipulated),
+                    text.replace(marker, f"{field}: MANIPULIERT", 1),
+                    f"{name}: geschlossenes Feld {field}",
+                )
+        closure_commit_marker = f"Implementierungscommit: `{current_history.implementation_commit}`"
+        for index, (text, name) in enumerate(zip(closure_documents, closure_names)):
+            for marker in (*V2736D_CLOSURE_MARKERS, closure_commit_marker, *(f"`{path}`" for path in V2736D_IMPLEMENTATION_FILES)):
+                manipulated = remove_closure_marker(text, marker, name)
+                must_reject(
+                    lambda candidate, index=index: validate_closed_variant(index, candidate),
+                    manipulated,
+                    f"{name}: Closure-Pflichtaussage {marker}",
+                )
+        for marker in V2736D_PERMANENT_MASTERLIST_MODE_MARKERS:
+            require(marker in masterlist_text, f"Manipulationsmatrix kann permanente Closure-Pflichtregel nicht finden: {marker}")
+            must_reject(
+                lambda manipulated: validate_closed_variant(3, manipulated),
+                remove_v2736d_permanent_masterlist_marker(masterlist_text, marker),
+                f"PROJECT_MASTERLIST: permanente Closure-Regel {marker}",
+            )
 
     gate = V2736DCommitFact("1" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736D_TASK_AUTHORIZED)
     implementation = V2736DCommitFact("2" * 40, V2736D_IMPLEMENTATION_FILES, V2736D_TASK_AUTHORIZED)

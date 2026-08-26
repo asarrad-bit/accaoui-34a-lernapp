@@ -7,64 +7,58 @@ Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.36d
-Aktuelle Taskart: Teilnehmerzugangs-Entscheidung am App-Auth-Einstieg
-Aktueller Blocker: KEINER – v27.36d ist autorisiert; die Umsetzung ist noch nicht begonnen
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
 
-## Autorisierter Task v27.36d
+## Abgeschlossener technischer Schritt v27.36d
 
-v27.36c ist vollständig abgeschlossen. v27.36d ist der einzige autorisierte
-Task: **Teilnehmerzugangs-Entscheidung lokal an den bestehenden
-App-Auth-Einstieg anbinden**. Funktionale Grundlage ist v27.35g, technische
-Grundlage ist der abgeschlossene Stand v27.36c. Die stabile
-Autorisierungsbasis ist `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`.
+v27.36d abgeschlossen.
 
-Dieser GATE-Schritt autorisiert nur die spätere Umsetzung. Er nimmt keine
-Runtime-, App- oder UI-Änderung vor. Für die IMPLEMENTATION sind später exakt
-diese vier Dateien erlaubt:
+Implementierungscommit: `b375dd3fc5fb820174f34a92ebbea81970b3ae29`
+
+Umgesetzte Dateien:
 
 - `app.js`
 - `tools/check-participant-access-app-entry-v2736d.py`
 - `docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md`
 - `tools/preflight.py`
 
-Die spätere App-Anbindung darf ausschließlich den optional injizierten
-Provider `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER` verwenden und an ihm
-nur `resolveAccess()` aufrufen. Fehlt der Provider, bleibt der bestehende
-lokale Standardstart unverändert. Ist der Provider vorhanden, wird
-`resolveAccess()` je Auth-Entscheidung exakt einmal ausgeführt und sein Ergebnis
-validiert. Nur `allowed: true` zusammen mit `code: "access_allowed"` darf
-`startLocalApp()` exakt einmal starten.
+Ergebnis:
 
-Ablehnungen werden ausschließlich auf die bestehenden Ansichten abgebildet:
+- Optionaler App-Provider: `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER`.
+- Die Schnittstelle bleibt ausschließlich `resolveAccess()`.
+- Ohne Provider bleibt der lokale Standardbetrieb unverändert.
+- Lokale Auth-Guard-Testzustände behalten Vorrang.
+- Nur `allowed=true` zusammen mit `code="access_allowed"` startet die lokale App.
+- Providerfehler und ungültige Ergebnisse bleiben fail-closed.
+- Nach einem erkannten Providerfehler gibt es keinen lokalen Fallback.
+- Ablehnungscodes werden auf die vorhandenen Zugangsansichten abgebildet.
+- Unbekannte und technische Fehler bleiben generisch fail-closed.
+- In app.js gibt es keine direkten Supabase- oder Datenbankabfragen.
+- Bestehender Bootstrap, zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben unverändert.
+- Es besteht keine Browser-Verbindung zu den CommonJS-v27.36b/v27.36c-Modulen.
+- Supabase bleibt NICHT LIVE.
+- Keine echten Keys.
+- Keine echten Teilnehmerdaten.
 
-- `login_required`: `session_missing`, `session_invalid`,
-  `session_user_missing`, `session_user_id_invalid`
-- `blocked`: `participant_blocked`, `enrollment_blocked`
-- `expired`: `participant_expired`, `enrollment_expired`,
-  `enrollment_access_ended`, `course_ended`
-- `no_course`: `participant_completed`, `enrollment_missing`,
-  `enrollment_completed`, `enrollment_access_not_started`, `course_missing`,
-  `course_inactive`, `course_archived`, `course_not_started`
+Testergebnis:
 
-Alle technischen, ungültigen, mehrdeutigen, Query-, Dependency-, Bridge- und
-unbekannten Ergebnisse werden generisch fail-closed behandelt. Es gibt keine
-rohe interne Fehlerausgabe. Werfen, Reject oder ein ungültiges Ergebnis bleiben
-fail-closed; war ein Provider vorhanden, erfolgt niemals ein Rückfall auf den
-lokalen Zugriff. Bestehende lokale Auth-Guard-Testzustände bleiben verbindliche
-blockierende Testfälle.
+- v27.36d-Checker: PASS (Positiv: 2; Negativ: 36; Manipulation: 10).
+- Kontinuitätschecker: PASS.
+- Preflight: PASS.
+- `git diff --check`: PASS.
 
-Die App darf weder direkte Teilnehmer-, Enrollment-, Kurs- oder Auth-Abfragen
-noch Client-Erzeugung, Initialisierung, Config-, SDK-, frei injizierbare
-`userId`- oder duplizierte Domänenlogik ergänzen. Bestehender Bootstrap,
-zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben
-unverändert. Die v27.36b-/v27.36c-CommonJS-Module werden nicht im Browser
-geladen und nicht konvertiert. `index.html`, `style.css`, SQL, Migrationen und
-Config bleiben unverändert. Spätere Tests verwenden ausschließlich einen
-lokalen synthetischen Provider. Supabase bleibt NICHT LIVE. Keine echten Keys.
-Keine echten Teilnehmerdaten. Kein Folgetask nach v27.36d wurde ausgewählt oder
-autorisiert.
+Protected-Core:
+
+- Der allgemeine Protected-Core-Schutz bleibt aktiv.
+- Die v27.36d-Ausnahme war ausschließlich auf den autorisierten app.js-Scope begrenzt.
+- Keine generelle Freigabe von app.js oder anderen Protected-Core-Dateien.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Kein Folgetask wurde ausgewählt oder autorisiert. Die nächste Umsetzung bleibt
+vollständig BLOCKED, bis sie ausdrücklich autorisiert wird.
 
 ### Permanenter v27.36d-Lebenszyklus
 
@@ -78,9 +72,8 @@ GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
 IMPLEMENTATION enthält exakt die vier autorisierten Implementierungsdateien und
 ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig,
 enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` wieder auf
-`NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige GATE-, IMPLEMENTATION-
-oder CLOSURE-SHA wird hartcodiert. Nach der Closure bleibt jeder neue Task bis
-zu seiner ausdrücklichen fachlichen Autorisierung BLOCKED.
+`NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige CLOSURE-SHA wird hartcodiert.
+Rückkehr zu einem autorisierten v27.36d-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.
 
 ## Abgeschlossener isolierter Technikschritt v27.36c
 

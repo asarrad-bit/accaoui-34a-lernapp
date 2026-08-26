@@ -842,7 +842,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.36a | Supabase/Login-Bestandsaudit abgeschlossen: Audit-Commit `f545a6c2b14a64a5bcb7bf60a2932315e571ef01`, Audit-Datei `docs/SUPABASE_LOGIN_CURRENT_STATE_AUDIT_V2736A.md`; Supabase/Login umfangreich lokal vorbereitet, aber NICHT live; genau eine nicht autorisierende Empfehlung für eine lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit lokalem Fake-Client; funktionaler Stand bleibt v27.35g, kein Folgetask ausgewählt oder autorisiert – **erledigt** |
 | v27.36b | Lokale injizierbare Auth-/Teilnehmerzugangs-Komponente mit Fake-Client isoliert umgesetzt: Implementierungscommit `c551f1fb973240bfe2a73a26ff38d4e66d2ccff7`; explizit injizierter Client und UTC-Zeit, `session.user.id` als einzige Autorität, fail-closed, lokaler Fake-Client; 49 Mindestprüfungen plus 26 Manipulationsprüfungen = 75 PASS; keine App-Integration, Supabase NICHT LIVE, kein Folgetask – **erledigt** |
 | v27.36c | Lokale Teilnehmerzugangs-Brücke isoliert umgesetzt; Implementierungscommit `3b1190a21f1b23aa58a1d90c5b41fa4f7e8d93e6`; ausschließlich `bootstrap.getClient()`, injizierte v27.36b-Adapter-Factory und UTC-Zeitquelle, fail-closed, lokaler Fake-Bootstrap, keine duplizierte Fachlogik; 35 Mindestprüfungen und 20 Manipulationsprüfungen PASS; Bootstrap und v27.36b-Adapter unverändert, keine App-/UI-Integration, kein Netzwerk, kein SQL oder Migrationen, Supabase NICHT LIVE, keine echten Keys oder Teilnehmerdaten, kein Folgetask – **erledigt** |
-| v27.36d | Teilnehmerzugangs-Entscheidung lokal an den bestehenden App-Auth-Einstieg anbinden; funktionale Grundlage v27.35g, technische Grundlage v27.36c abgeschlossen, stabile Autorisierungsbasis `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`; optional injizierter App-Provider, lokaler Standardstart ohne Provider unverändert, Provider-Ergebnisse fail-closed auf bestehende Zugangsansichten abbilden; ausschließlich vier Implementierungsdateien, keine Bestandsmodul-, Live-Supabase-, Key- oder Teilnehmerdatenänderung, kein Folgetask – **autorisiert** |
+| v27.36d | Optionalen Teilnehmerzugangs-App-Provider an den bestehenden Auth-Einstieg angebunden; lokaler Standardbetrieb ohne Provider erhalten, Providerentscheidungen und Fehler fail-closed behandelt, Protected-Core-Ausnahme eng auf den autorisierten app.js-Scope begrenzt; Checker 2/36/10, Kontinuitätschecker, Preflight und `git diff --check` PASS; Implementierungscommit `b375dd3fc5fb820174f34a92ebbea81970b3ae29` – **erledigt** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -1469,49 +1469,53 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-### Autorisierter Task v27.36d
+### Abgeschlossener technischer Schritt v27.36d
 
-v27.36c ist vollständig abgeschlossen. v27.36d ist der einzige autorisierte
-Task: **Teilnehmerzugangs-Entscheidung lokal an den bestehenden
-App-Auth-Einstieg anbinden**. Funktionale Grundlage ist v27.35g, technische
-Grundlage ist der abgeschlossene Stand v27.36c. Die stabile
-Autorisierungsbasis ist `f2f40389a22ea4a40acd7ebdf7ca672add4baf8e`.
+v27.36d abgeschlossen.
 
-Dieser GATE-Schritt autorisiert nur die spätere Umsetzung. Er nimmt keine
-Runtime-, App- oder UI-Änderung vor. Für die IMPLEMENTATION sind später exakt
-diese vier Dateien erlaubt:
+Implementierungscommit: `b375dd3fc5fb820174f34a92ebbea81970b3ae29`
+
+Umgesetzte Dateien:
 
 - `app.js`
 - `tools/check-participant-access-app-entry-v2736d.py`
 - `docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md`
 - `tools/preflight.py`
 
-Die spätere App-Anbindung darf ausschließlich den optional injizierten
-Provider `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER` verwenden und an ihm
-nur `resolveAccess()` aufrufen. Fehlt der Provider, bleibt der bestehende
-lokale Standardstart unverändert. Ist der Provider vorhanden, wird
-`resolveAccess()` je Auth-Entscheidung exakt einmal ausgeführt und sein Ergebnis
-validiert. Nur `allowed: true` zusammen mit `code: "access_allowed"` darf
-`startLocalApp()` exakt einmal starten.
+Ergebnis:
 
-Die Ablehnungscodes werden auf `login_required`, `blocked`, `expired` oder
-`no_course` abgebildet. Alle technischen, ungültigen, mehrdeutigen, Query-,
-Dependency-, Bridge- und unbekannten Ergebnisse werden generisch fail-closed
-behandelt. Es gibt keine rohe interne Fehlerausgabe. Werfen, Reject oder ein
-ungültiges Ergebnis bleiben fail-closed; war ein Provider vorhanden, erfolgt
-niemals ein Rückfall auf den lokalen Zugriff. Bestehende lokale
-Auth-Guard-Testzustände bleiben verbindliche blockierende Testfälle.
+- Optionaler App-Provider: `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER`.
+- Die Schnittstelle bleibt ausschließlich `resolveAccess()`.
+- Ohne Provider bleibt der lokale Standardbetrieb unverändert.
+- Lokale Auth-Guard-Testzustände behalten Vorrang.
+- Nur `allowed=true` zusammen mit `code="access_allowed"` startet die lokale App.
+- Providerfehler und ungültige Ergebnisse bleiben fail-closed.
+- Nach einem erkannten Providerfehler gibt es keinen lokalen Fallback.
+- Ablehnungscodes werden auf die vorhandenen Zugangsansichten abgebildet.
+- Unbekannte und technische Fehler bleiben generisch fail-closed.
+- In app.js gibt es keine direkten Supabase- oder Datenbankabfragen.
+- Bestehender Bootstrap, zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben unverändert.
+- Es besteht keine Browser-Verbindung zu den CommonJS-v27.36b/v27.36c-Modulen.
+- Supabase bleibt NICHT LIVE.
+- Keine echten Keys.
+- Keine echten Teilnehmerdaten.
 
-Die App darf weder direkte Teilnehmer-, Enrollment-, Kurs- oder Auth-Abfragen
-noch Client-Erzeugung, Initialisierung, Config-, SDK-, frei injizierbare
-`userId`- oder duplizierte Domänenlogik ergänzen. Bestehender Bootstrap,
-zentraler Adapter, v27.36b-Teilnehmerzugangs-Adapter und v27.36c-Brücke bleiben
-unverändert. Die v27.36b-/v27.36c-CommonJS-Module werden nicht im Browser
-geladen und nicht konvertiert. `index.html`, `style.css`, SQL, Migrationen und
-Config bleiben unverändert. Spätere Tests verwenden ausschließlich einen
-lokalen synthetischen Provider. Supabase bleibt NICHT LIVE. Keine echten Keys.
-Keine echten Teilnehmerdaten. Kein Folgetask nach v27.36d wurde ausgewählt oder
-autorisiert.
+Testergebnis:
+
+- v27.36d-Checker: PASS (Positiv: 2; Negativ: 36; Manipulation: 10).
+- Kontinuitätschecker: PASS.
+- Preflight: PASS.
+- `git diff --check`: PASS.
+
+Protected-Core:
+
+- Der allgemeine Protected-Core-Schutz bleibt aktiv.
+- Die v27.36d-Ausnahme war ausschließlich auf den autorisierten app.js-Scope begrenzt.
+- Keine generelle Freigabe von app.js oder anderen Protected-Core-Dateien.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Kein Folgetask wurde ausgewählt oder autorisiert. Die nächste Umsetzung bleibt
+vollständig BLOCKED, bis sie ausdrücklich autorisiert wird.
 
 ### Permanenter v27.36d-Lebenszyklus
 
@@ -1525,9 +1529,8 @@ GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien.
 IMPLEMENTATION enthält exakt die vier autorisierten Implementierungsdateien und
 ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig,
 enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` wieder auf
-`NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige GATE-, IMPLEMENTATION-
-oder CLOSURE-SHA wird hartcodiert. Nach der Closure bleibt jeder neue Task bis
-zu seiner ausdrücklichen fachlichen Autorisierung BLOCKED.
+`NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige CLOSURE-SHA wird hartcodiert.
+Rückkehr zu einem autorisierten v27.36d-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.
 
 **Erledigt:** v24.5 (Teilpunkte); v24.6b (Wiederholung/offene Fragen); v24.6c (Pause/Fortsetzen); v24.6d/e (Mix Fragen/Antworten); v24.6f/x (Prüfungsanalyse UI); v24.6g (Fehlerübersicht UI); v25.9 (mündliche Prüfung Abschluss-Audit); v26.0a (schriftliche Prüfung Dokumentations-Audit); v26.0b (Live-Code-Audit); v26.0c (Browser-Endtest schriftliche Vollsimulation); v26.1c (Lernkarten pausieren/fortsetzen + Premium-Leiste); v26.1d (Masterliste aktualisiert); v26.2a (Masterliste-Altlasten bereinigt); v26.3a (Supabase Login-Plan); v26.3b (Masterliste Supabase/Login aktualisiert); v26.3c (Login-UI-Konzept); v26.3d (Masterliste Login-UI aktualisiert); v26.3e (Auth-Einstiegspunkt-Audit); v26.3f (Masterliste Auth-Audit aktualisiert); v26.4a (lokales Auth-Guard-Gerüst); v26.4b (Masterliste Auth-Guard aktualisiert); v26.4c (lokaler Auth-Guard-Testmodus); v26.4d (Masterliste Auth-Testmodus aktualisiert); v26.4e (Auth-Hinweisdesign); v26.4f (Masterliste Auth-Hinweisdesign aktualisiert); v26.5a (Supabase-Konfigurations- und Sicherheitsplan); v26.5b (Masterliste Supabase-Sicherheitsplan aktualisiert); v26.5c (Supabase-Config-Platzhalter); v26.5d (Masterliste Config-Platzhalter aktualisiert); v26.5e (Supabase-Config-Ladeweg-Audit); v26.5f (Masterliste Config-Ladeweg aktualisiert); v26.6a (Supabase-Config-State-Check); v26.6b (Masterliste Config-State aktualisiert); v26.6c (optionaler lokaler Config-Loader); v26.6d (Masterliste Config-Loader aktualisiert); v26.6e (lokaler Config-Loader-Test); v26.6f (Masterliste Config-Loader-Test aktualisiert); v26.7a (Supabase-Client-Adapter-Plan); v26.7b (Masterliste Client-Adapter aktualisiert); v26.7c (Supabase-Adapter-Gerüst ohne SDK); v26.7d (Masterliste Adapter-Gerüst aktualisiert); v26.7e (Supabase-Adapter-Test); v26.7f (Masterliste Adapter-Test aktualisiert); v26.8a (Supabase-SDK-Ladeweg-Plan); v26.8b (Masterliste SDK-Ladeweg aktualisiert); v26.8c (SDK-Status im Adapter); v26.8d (Masterliste SDK-Status aktualisiert); v26.8e (SDK-Status-Test); v26.8f (Masterliste SDK-Status-Test aktualisiert); v26.9a (Client-Readiness im Adapter); v26.9b (Masterliste Client-Readiness aktualisiert); v26.9c (Client-Readiness-Test); v26.9d (Masterliste Client-Readiness-Test aktualisiert); v26.10a (Auth-Readiness im Adapter); v26.10b (Masterliste Auth-Readiness aktualisiert); v26.10c (Auth-Readiness-Test); v26.10d (Masterliste Auth-Readiness-Test aktualisiert); v26.11a (Teilnehmerzugangs-Readiness im Adapter); v26.11b (Masterliste Teilnehmerzugangs-Readiness aktualisiert); v27.35d (Lernmodus/Lernkarten UX-Trennung mit gemeinsamen Führungshinweisen).
 
