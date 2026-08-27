@@ -7181,14 +7181,37 @@ V2736E_CLOSURE_MARKERS = (
     "v27.36e abgeschlossen.",
     "CommonJS-Kompatibilität der v27.36b-/v27.36c-Bestandsmodule bleibt erhalten.",
     "Kontrollierte Browser-Exports verbinden die bestehenden Factories.",
+    "Browser-Factory-Exports sind `window.ACCAOUI_PARTICIPANT_ACCESS_ADAPTER_FACTORY` und `window.ACCAOUI_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_FACTORY`.",
+    "Der Browser-App-Provider ist `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER`.",
     "Der Browser-Provider stellt ausschließlich `resolveAccess()` bereit.",
     "Keine Fachlogik wird dupliziert.",
+    "Fehlende oder ungültige Dependencies sowie Throw, Reject und ungültige Ergebnisse bleiben fail-closed.",
+    "Der Kollisionsschutz überschreibt keine inkompatiblen vorhandenen Globals.",
+    "Es gibt keine automatische Client-Erzeugung.",
+    "Es gibt keine direkten Supabase-, Auth- oder Tabellenabfragen im Provider.",
     "`index.html`, `app.js` und `style.css` bleiben unverändert.",
+    "Die Browser-Kette ist noch NICHT über `index.html` aktiviert.",
     "Der lokale App-Start bleibt unverändert.",
     "Supabase bleibt NICHT LIVE.",
     "Keine echten Keys.",
     "Keine echten Teilnehmerdaten.",
+    "v27.36e-Checker: PASS (Positiv: 22; Negativ: 31; Manipulation: 16).",
+    "v27.36b-Checker: PASS.",
+    "v27.36c-Checker: PASS.",
+    "v27.36d-Regressionsprofil: PASS.",
+    "Kontinuitätschecker: PASS.",
+    "Preflight: PASS.",
+    "`git diff --check`: PASS.",
     "Kein Folgetask wurde ausgewählt oder autorisiert.",
+    "### Permanenter v27.36e-Lebenszyklus",
+    "authorization_prepared",
+    "authorization_committed",
+    "implementation_prepared",
+    "implementation_committed",
+    "closure_prepared",
+    "closure_committed",
+    "Der Implementierungscommit ist historisch dokumentiert.",
+    "Die Closure wird weiterhin dynamisch aus Git-Historie, Dateiumfang und geschlossenem Taskzustand erkannt.",
     "Keine zukünftige CLOSURE-SHA wird hartcodiert.",
     "Rückkehr zu einem autorisierten v27.36e-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.",
 )
@@ -7626,17 +7649,31 @@ def run_v2736e_manipulation_matrix(state_text: str, task_text: str, cursor_text:
             return
         raise ValidationError(f"v27.36e-Manipulation wurde nicht blockiert: {label}")
 
+    current_task_state = detect_v2736e_task_state_text(task_text)
+    if current_task_state == V2736E_TASK_CLOSED:
+        require(current_history.gate_commits, "v27.36e-Closure benötigt einen historischen Autorisierungscommit")
+        authorization_revision = current_history.gate_commits[-1]
+        authorization_documents = (
+            read_v2735f_commit_document(authorization_revision, "docs/PROJECT_STATE_CURRENT.md"),
+            read_v2735f_commit_document(authorization_revision, V2735F_TASK_RELATIVE_PATH),
+            read_v2735f_commit_document(authorization_revision, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
+            read_v2735f_commit_document(authorization_revision, "docs/PROJECT_MASTERLIST.md"),
+        )
+    else:
+        authorization_documents = (state_text, task_text, cursor_text, masterlist_text)
+    authorization_state, authorization_task, authorization_cursor, authorization_masterlist = authorization_documents
+
     for text, validator, fields, name in (
-        (state_text, validate_v2736e_state_text, V2736E_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736e_task_text, V2736E_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
+        (authorization_state, validate_v2736e_state_text, V2736E_EXPECTED_STATE_FIELDS, "PROJECT_STATE_CURRENT"),
+        (authorization_task, validate_v2736e_task_text, V2736E_EXPECTED_TASK_FIELDS, "CURRENT_TASK"),
     ):
         for field, value in fields.items():
             rejected(validator, text.replace(f"{field}: {value}", f"{field}: MANIPULIERT", 1), f"{name}: Feld {field}")
     boundaries = (
-        (state_text, validate_v2736e_state_text, "PROJECT_STATE_CURRENT"),
-        (task_text, validate_v2736e_task_text, "CURRENT_TASK"),
-        (cursor_text, validate_v2736e_cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
-        (masterlist_text, validate_v2736e_masterlist_text, "PROJECT_MASTERLIST"),
+        (authorization_state, validate_v2736e_state_text, "PROJECT_STATE_CURRENT"),
+        (authorization_task, validate_v2736e_task_text, "CURRENT_TASK"),
+        (authorization_cursor, validate_v2736e_cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (authorization_masterlist, validate_v2736e_masterlist_text, "PROJECT_MASTERLIST"),
     )
     for text, validator, name in boundaries:
         section = extract_v2736e_authorization_section(text, name)
@@ -7650,6 +7687,49 @@ def run_v2736e_manipulation_matrix(state_text: str, task_text: str, cursor_text:
             validator,
             text.replace(section, manipulated_section, 1),
             f"{name}: unbekannte zukünftige v27.36e-SHA",
+        )
+    if current_task_state == V2736E_TASK_CLOSED:
+        require(current_history.implementation_commit is not None, "v27.36e-Closure-Manipulation benötigt den dynamischen Implementierungscommit")
+        closure_documents = (state_text, task_text, cursor_text, masterlist_text)
+        closure_names = ("PROJECT_STATE_CURRENT", "CURRENT_TASK", "CURSOR_MASTER_CONTEXT_ACCAOUI", "PROJECT_MASTERLIST")
+
+        def closure_validator(index: int) -> Callable[[str], None]:
+            def validate(manipulated: str) -> None:
+                documents = list(closure_documents)
+                documents[index] = manipulated
+                validate_v2736e_closed_documents(*documents, current_history.implementation_commit)
+
+            return validate
+
+        for index, fields in ((0, V2736E_CLOSED_STATE_FIELDS), (1, V2736E_CLOSED_TASK_FIELDS)):
+            text = closure_documents[index]
+            validator = closure_validator(index)
+            for field, value in fields.items():
+                rejected(validator, text.replace(f"{field}: {value}", f"{field}: MANIPULIERT", 1), f"{closure_names[index]}: Closure-Feld {field}")
+        for index, (text, name) in enumerate(zip(closure_documents, closure_names)):
+            validator = closure_validator(index)
+            section = extract_v2736e_closure_section(text, name)
+            for marker in V2736E_CLOSURE_MARKERS:
+                require(marker in section, f"Manipulationsmatrix kann v27.36e-Closure-Pflichtaussage nicht finden: {name} / {marker}")
+                changed_section = section.replace(marker, "")
+                rejected(validator, text.replace(section, changed_section, 1), f"{name}: Closure-Pflichtaussage {marker}")
+            for path in V2736E_IMPLEMENTATION_FILES:
+                changed_section = section.replace(f"`{path}`", "")
+                rejected(validator, text.replace(section, changed_section, 1), f"{name}: Closure-Implementierungsdatei {path}")
+            commit_marker = f"Implementierungscommit: `{current_history.implementation_commit}`"
+            changed_section = section.replace(commit_marker, "")
+            rejected(validator, text.replace(section, changed_section, 1), f"{name}: dynamischer Implementierungscommit")
+            manipulated_section = section + "\nZukünftiger v27.36e-Commit: `" + ("a" * 40) + "`\n"
+            rejected(validator, text.replace(section, manipulated_section, 1), f"{name}: unbekannte zukünftige v27.36e-Closure-SHA")
+        v2736e_rows = re.findall(r"(?m)^\| v27\.36e \|.*$", masterlist_text)
+        require(len(v2736e_rows) == 1, "Manipulationsmatrix benötigt exakt eine v27.36e-Masterlistenzeile")
+        v2736e_row = v2736e_rows[0]
+        manipulated_v2736e_row = v2736e_row.replace("**erledigt**", "**autorisiert**", 1)
+        require(manipulated_v2736e_row != v2736e_row, "Manipulationsmatrix konnte den v27.36e-Abschlussstatus nicht verändern")
+        rejected(
+            closure_validator(3),
+            masterlist_text.replace(v2736e_row, manipulated_v2736e_row, 1),
+            "PROJECT_MASTERLIST: v27.36e nach Closure wieder autorisiert",
         )
     gate = V2736ECommitFact("1" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736E_TASK_AUTHORIZED)
     implementation = V2736ECommitFact("2" * 40, V2736E_IMPLEMENTATION_FILES, V2736E_TASK_AUTHORIZED)
