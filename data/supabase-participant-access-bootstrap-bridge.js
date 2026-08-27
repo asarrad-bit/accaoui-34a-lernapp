@@ -6,6 +6,7 @@
 // die Zugangsentscheidung an die injizierte bestehende v27.36b-
 // "participant-access"-Adapter-Factory.
 
+(function exposeParticipantAccessBootstrapBridge(browserRoot, commonJsModule) {
 "use strict";
 
 const VERSION = "v27.36c";
@@ -169,7 +170,36 @@ function createParticipantAccessBootstrapBridge(dependencies) {
   });
 }
 
-module.exports = Object.freeze({
+// CommonJS-Vertrag: module.exports.
+const participantAccessBootstrapBridgeApi = Object.freeze({
   version: VERSION,
   createParticipantAccessBootstrapBridge
 });
+
+if (commonJsModule && typeof commonJsModule === "object") {
+  commonJsModule.exports = participantAccessBootstrapBridgeApi;
+}
+
+if (browserRoot) {
+  let existingFactory;
+
+  try {
+    existingFactory =
+      browserRoot.ACCAOUI_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_FACTORY;
+  } catch (_error) {
+    return;
+  }
+
+  if (existingFactory === undefined) {
+    try {
+      browserRoot.ACCAOUI_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_FACTORY =
+        createParticipantAccessBootstrapBridge;
+    } catch (_error) {
+      // Eine nicht beschreibbare bestehende Grenze wird nicht überschrieben.
+    }
+  }
+}
+})(
+  typeof self !== "undefined" ? self : null,
+  typeof module !== "undefined" ? module : null
+);

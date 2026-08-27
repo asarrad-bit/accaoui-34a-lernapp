@@ -5,6 +5,7 @@
 // Ein Supabase-kompatibler Client und eine UTC-Zeitquelle werden ausschließlich
 // über createParticipantAccessAdapter({ client, utcNow }) injiziert.
 
+(function exposeParticipantAccessAdapter(browserRoot, commonJsModule) {
 "use strict";
 
 const VERSION = "v27.36b";
@@ -385,7 +386,44 @@ function createParticipantAccessAdapter(dependencies) {
   });
 }
 
-module.exports = Object.freeze({
+// CommonJS-Vertrag: module.exports.
+const participantAccessAdapterApi = Object.freeze({
   version: VERSION,
   createParticipantAccessAdapter
 });
+
+if (commonJsModule && typeof commonJsModule === "object") {
+  commonJsModule.exports = participantAccessAdapterApi;
+}
+
+if (browserRoot) {
+  let existingFactory;
+
+  try {
+    existingFactory =
+      browserRoot.ACCAOUI_PARTICIPANT_ACCESS_ADAPTER_FACTORY;
+  } catch (_error) {
+    return;
+  }
+
+  if (existingFactory === undefined) {
+    try {
+      Object.defineProperty(
+        browserRoot,
+        "ACCAOUI_PARTICIPANT_ACCESS_ADAPTER_FACTORY",
+        {
+          value: createParticipantAccessAdapter,
+          enumerable: true,
+          configurable: false,
+          writable: false
+        }
+      );
+    } catch (_error) {
+      // Eine nicht beschreibbare bestehende Grenze wird nicht überschrieben.
+    }
+  }
+}
+})(
+  typeof window !== "undefined" ? window : null,
+  typeof module !== "undefined" ? module : null
+);

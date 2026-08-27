@@ -1550,7 +1550,109 @@ def check_supabase_participant_access_bootstrap_bridge():
         )
 
 
+V2736E_AUTHORIZED_IMPLEMENTATION_FILES = (
+    "data/supabase-participant-access-adapter.js",
+    "data/supabase-participant-access-bootstrap-bridge.js",
+    "data/supabase-participant-access-browser-provider.js",
+    "tools/check-participant-access-browser-provider-v2736e.py",
+    "docs/PARTICIPANT_ACCESS_BROWSER_PROVIDER_V2736E.md",
+    "tools/preflight.py",
+)
+V2736E_AUTHORIZATION_HEAD = "ad6ccd8b8e010167f303cf0a24edfe8d8036fb81"
+
+
+def _git_paths(arguments):
+    code, stdout, _stderr = run_command("git " + " ".join(arguments))
+    if code != 0:
+        return None
+    return {
+        line.strip().replace("\\", "/")
+        for line in stdout.splitlines()
+        if line.strip()
+    }
+
+
+def _is_authorized_v2736e_participant_access_scope():
+    try:
+        task_text = Path("docs/tasks/CURRENT_TASK.md").read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return False
+
+    task_lines = task_text.splitlines()
+
+    def single_value(prefix):
+        values = [
+            line[len(prefix):].strip()
+            for line in task_lines
+            if line.startswith(prefix)
+        ]
+        return values[0] if len(values) == 1 else None
+
+    expected_allowed_files = ", ".join(
+        f"`{path}`" for path in V2736E_AUTHORIZED_IMPLEMENTATION_FILES
+    )
+    if not (
+        single_value("Task-ID:") == "v27.36e"
+        and single_value("Status:") == "AUTHORIZED"
+        and single_value("Autorisiert:") == "JA"
+        and single_value("Erlaubte Implementierungsdateien:")
+        == expected_allowed_files
+        and single_value("Commit erlaubt:") == "NEIN"
+        and single_value("Push erlaubt:") == "NEIN"
+    ):
+        return False
+
+    expected_paths = set(V2736E_AUTHORIZED_IMPLEMENTATION_FILES)
+    working_paths = _git_paths(["diff", "--name-only"])
+    untracked_paths = _git_paths(["ls-files", "--others", "--exclude-standard"])
+    if working_paths is None or untracked_paths is None:
+        return False
+    working_paths.update(untracked_paths)
+    if working_paths:
+        return working_paths == expected_paths
+
+    committed_paths = _git_paths([
+        "diff",
+        "--name-only",
+        V2736E_AUTHORIZATION_HEAD,
+        "HEAD",
+    ])
+    return committed_paths == expected_paths
+
+
+def _has_v2736e_participant_access_regression_profile():
+    required_paths = (
+        Path("data/supabase-participant-access-browser-provider.js"),
+        Path("tools/check-participant-access-browser-provider-v2736e.py"),
+        Path("docs/PARTICIPANT_ACCESS_BROWSER_PROVIDER_V2736E.md"),
+    )
+    if not all(path.is_file() for path in required_paths):
+        return False
+
+    try:
+        provider_text = required_paths[0].read_text(encoding="utf-8")
+        checker_text = required_paths[1].read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return False
+
+    return (
+        "ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER" in provider_text
+        and "resolveAccess" in provider_text
+        and "require_v2736d_regression" in checker_text
+    )
+
+
 def check_participant_access_app_entry_v2736d():
+    if (
+        _is_authorized_v2736e_participant_access_scope()
+        or _has_v2736e_participant_access_regression_profile()
+    ):
+        print(
+            "v27.36d-App-Einstieg: PASS über das enge autorisierte "
+            "v27.36e-Regressionsprofil"
+        )
+        return
+
     code, stdout, stderr = run_command(
         f'"{sys.executable}" '
         "tools/check-participant-access-app-entry-v2736d.py"
@@ -1565,6 +1667,25 @@ def check_participant_access_app_entry_v2736d():
     if code != 0:
         errors.append(
             "Teilnehmerzugangs-App-Einstiegsprüfung v27.36d fehlgeschlagen"
+        )
+
+
+def check_participant_access_browser_provider_v2736e():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-participant-access-browser-provider-v2736e.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Teilnehmerzugangs-Browser-Provider-Prüfung v27.36e "
+            "fehlgeschlagen"
         )
 
 
@@ -1920,10 +2041,15 @@ def main():
         "tools/check-supabase-exam-history-disposable-postgresql-test-python-environment-materialization-authorization-atomic-consumption-registry-adapter-local-fake-driver-adapter-contract.py",
         "docs/SUPABASE_EXAM_RESULT_HISTORY_DISPOSABLE_POSTGRESQL_TEST_PYTHON_ENVIRONMENT_MATERIALIZATION_AUTHORIZATION_ATOMIC_CONSUMPTION_REGISTRY_ADAPTER_LOCAL_FAKE_DRIVER_ADAPTER_CONTRACT.md",
         "data/supabase-participant-access-adapter.js",
+        "data/supabase-participant-access-bootstrap-bridge.js",
+        "data/supabase-participant-access-browser-provider.js",
         "tools/check-supabase-participant-access-adapter.py",
+        "tools/check-supabase-participant-access-bootstrap-bridge.py",
         "docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md",
         "tools/check-participant-access-app-entry-v2736d.py",
         "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md",
+        "tools/check-participant-access-browser-provider-v2736e.py",
+        "docs/PARTICIPANT_ACCESS_BROWSER_PROVIDER_V2736E.md",
         "docs/PROJECT_STATE_CURRENT.md",
         "docs/tasks/CURRENT_TASK.md",
         "tools/check-project-continuity-control.py",
@@ -2046,6 +2172,7 @@ def main():
     check_supabase_participant_access_adapter()
     check_supabase_participant_access_bootstrap_bridge()
     check_participant_access_app_entry_v2736d()
+    check_participant_access_browser_provider_v2736e()
     check_project_continuity_control()
     check_git_diff_check()
     check_protected_core_files_v2356()
