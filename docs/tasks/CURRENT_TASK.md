@@ -1,14 +1,71 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
+Task-ID: v27.36e
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: Browser-Anbindungsweg für die bestehende Teilnehmerzugangskette lokal vorbereiten
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.36d
-Erlaubte Implementierungsdateien: KEINE
+Technischer Ausgangsstand: v27.36d vollständig abgeschlossen
+Stabile Autorisierungsbasis: `1f7d8b0bf6784227b7211d3fb56d714d73c58d4c`
+Erlaubte Implementierungsdateien: `data/supabase-participant-access-adapter.js`, `data/supabase-participant-access-bootstrap-bridge.js`, `data/supabase-participant-access-browser-provider.js`, `tools/check-participant-access-browser-provider-v2736e.py`, `docs/PARTICIPANT_ACCESS_BROWSER_PROVIDER_V2736E.md`, `tools/preflight.py`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Autorisierter Task v27.36e
+
+v27.36e ist der einzige autorisierte Task: Browser-Anbindungsweg für die bestehende Teilnehmerzugangskette lokal vorbereiten.
+Dieser GATE-Schritt autorisiert nur die spätere Umsetzung und verändert keine Runtime-, App- oder UI-Datei.
+
+Unverändert gilt „Funktionaler Ausgangsstand: v27.35g.“
+Unverändert gilt „Technischer Ausgangsstand: v27.36d vollständig abgeschlossen.“
+Unverändert gilt „Stabile Autorisierungsbasis: `1f7d8b0bf6784227b7211d3fb56d714d73c58d4c`.“
+
+Für die spätere IMPLEMENTATION sind exakt sechs Dateien erlaubt:
+
+- `data/supabase-participant-access-adapter.js`
+- `data/supabase-participant-access-bootstrap-bridge.js`
+- `data/supabase-participant-access-browser-provider.js`
+- `tools/check-participant-access-browser-provider-v2736e.py`
+- `docs/PARTICIPANT_ACCESS_BROWSER_PROVIDER_V2736E.md`
+- `tools/preflight.py`
+
+### Verbindliches Funktionsziel
+
+- App -> `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER` -> bestehende v27.36c-Brücke -> v27.36b-Adapter-Factory -> bestehender Supabase-Bootstrap.
+- Die CommonJS-Kompatibilität der bestehenden v27.36b- und v27.36c-Module bleibt erhalten; ergänzt werden darf nur eine kleine kontrollierte browserkompatible Exportoberfläche.
+- Die kontrollierten Browser-Exports heißen `window.ACCAOUI_PARTICIPANT_ACCESS_ADAPTER_FACTORY` und `window.ACCAOUI_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_FACTORY`.
+- Keine Fachlogik wird dupliziert. Teilnehmer-, Enrollment-, Kurs- und Zugangsentscheidung bleiben ausschließlich Verantwortung der bestehenden v27.36b-/v27.36c-Kette.
+- Der neue Browser-Provider stellt ausschließlich `resolveAccess()` bereit.
+- Die Komposition verbindet ausschließlich `window.ACCAOUI_SUPABASE_BOOTSTRAP`, die browserexportierte v27.36b-Factory, die browserexportierte v27.36c-Factory und eine lokale UTC-Zeitquelle.
+- `bootstrap.getClient()` wird ausschließlich durch die bestehende Brücke verwendet.
+- Der Vertrag behandelt fehlende oder ungültige externe/globale Abhängigkeiten, fehlenden externen Zugriff, Throw, Reject und ungültige Ergebnisse fail-closed; Zugriff wird nicht freigegeben und interne Rohfehler werden nicht ausgegeben. Ein lokaler Fallback und eine automatische Client-Erzeugung sind unzulässig.
+
+### Späterer lokaler Checker
+
+Der spätere Checker arbeitet ausschließlich lokal mit synthetischen Abhängigkeiten und prüft mindestens:
+
+- CommonJS-Kompatibilität der v27.36b-/v27.36c-Bestandsmodule;
+- kontrollierte Browser-Exports ohne Überschreiben inkompatibler vorhandener Werte;
+- Provider-Oberfläche ausschließlich `resolveAccess()`;
+- Komposition ausschließlich aus Bootstrap, v27.36b-Factory, v27.36c-Factory und lokaler UTC-Zeitquelle;
+- delegierte `access_allowed`- und blockierte Pfade;
+- fail-closed bei fehlenden oder ungültigen Abhängigkeiten, Throw, Reject und ungültigen Ergebnissen;
+- keine Fachlogik-Duplizierung und keine verbotenen direkten Aufrufe;
+- `index.html` und `app.js` unverändert;
+- kein externer Zugriff;
+- bestehende v27.36b-/v27.36c-Checker weiterhin PASS.
+
+### Ausdrücklich verboten
+
+Verboten sind `bootstrap.initializeClient()`, `bootstrap.getState()`, `supabase.createClient()`, direkte Auth-/Session-/Tabellenabfragen, frei injizierte `userId`, Netzwerk-, SQL-, Migrations-, RPC-, Config-, SDK-, Live-, Key-, Nutzer- und Teilnehmerdatenzugriffe. `index.html`, `app.js` und `style.css` bleiben unverändert und für v27.36e verboten. Der lokale App-Start bleibt unverändert. Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
+Kein anderer Task und kein Folgetask ist ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
+
+### Permanenter v27.36e-Lebenszyklus
+
+Der Lifecycle erkennt dynamisch genau die Phasen `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed`.
+
+GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien. IMPLEMENTATION enthält exakt die sechs autorisierten Implementierungsdateien und ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig, enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`. Keine zukünftige GATE-, IMPLEMENTATION- oder CLOSURE-SHA wird hartcodiert. Rückkehr zu einem autorisierten v27.36e-Zustand bleibt nach der Closure ohne neue ausdrückliche Autorisierung blockiert.
 
 ## Abgeschlossener technischer Schritt v27.36d
 
