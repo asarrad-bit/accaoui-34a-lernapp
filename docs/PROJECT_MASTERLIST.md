@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.36e
+Stand: v27.36f
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
@@ -844,6 +844,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.36c | Lokale Teilnehmerzugangs-Brücke isoliert umgesetzt; Implementierungscommit `3b1190a21f1b23aa58a1d90c5b41fa4f7e8d93e6`; ausschließlich `bootstrap.getClient()`, injizierte v27.36b-Adapter-Factory und UTC-Zeitquelle, fail-closed, lokaler Fake-Bootstrap, keine duplizierte Fachlogik; 35 Mindestprüfungen und 20 Manipulationsprüfungen PASS; Bootstrap und v27.36b-Adapter unverändert, keine App-/UI-Integration, kein Netzwerk, kein SQL oder Migrationen, Supabase NICHT LIVE, keine echten Keys oder Teilnehmerdaten, kein Folgetask – **erledigt** |
 | v27.36d | Optionalen Teilnehmerzugangs-App-Provider an den bestehenden Auth-Einstieg angebunden; lokaler Standardbetrieb ohne Provider erhalten, Providerentscheidungen und Fehler fail-closed behandelt, Protected-Core-Ausnahme eng auf den autorisierten app.js-Scope begrenzt; Checker 2/36/10, Kontinuitätschecker, Preflight und `git diff --check` PASS; Implementierungscommit `b375dd3fc5fb820174f34a92ebbea81970b3ae29` – **erledigt** |
 | v27.36e | Browser-Anbindungsweg der Teilnehmerzugangskette lokal vorbereitet; CommonJS-Kompatibilität von v27.36b/v27.36c erhalten, kontrollierte Browser-Factory-Exports und Browser-App-Provider mit ausschließlich `resolveAccess()`, fail-closed und Kollisionsschutz; Implementierungscommit `0c4d64aaa7da7e8dd38fff1d7bf72675cb689a6f`; Checker 22/31/16, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine HTML-Aktivierung, Supabase NICHT LIVE, kein Folgetask – **erledigt** |
+| v27.36f | Kontrollierten Browser-Aktivierungsweg hinter explizitem, standardmäßig deaktiviertem Schalter vorbereiten; spätere IMPLEMENTATION exakt auf Loader, `index.html`, `app.js`, Checker, Bericht und Preflight begrenzt; Supabase bleibt NICHT LIVE – **autorisiert** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -1469,6 +1470,55 @@ Installiert (Referenz):
 ---
 
 ## 14. Nächste sinnvolle Aufgaben
+
+### Autorisierter Task v27.36f
+
+v27.36f ist der einzige autorisierte Task.
+
+Kontrollierten Browser-Aktivierungsweg für den Teilnehmerzugang hinter explizitem Schalter vorbereiten.
+
+Dieser GATE-Schritt autorisiert nur die spätere Umsetzung; in diesem Schritt wird keine Implementierung vorgenommen.
+
+Die funktionale Grundlage bleibt v27.35g. Die technische Grundlage ist der vollständig abgeschlossene Stand v27.36e. Die stabile Autorisierungsbasis ist `dc0d3fc87bde407cfac94fd598601ce4e80dfad7`.
+
+Für die spätere IMPLEMENTATION sind exakt sechs Dateien erlaubt:
+
+- `index.html`
+- `app.js`
+- `data/supabase-participant-access-browser-loader.js`
+- `tools/check-participant-access-browser-loader-v2736f.py`
+- `docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md`
+- `tools/preflight.py`
+
+Verbindlicher Aktivierungsvertrag:
+
+- `index.html` erhält genau ein kleines Loader-Skript mit der stabilen ID `accaoui-participant-access-browser-loader` unmittelbar vor `app.js`; der finale Default lautet `data-enabled="false"`.
+- Ausschließlich der exakte Attributwert `"true"` fordert die Aktivierung an. Storage-, Query-, Cookie- oder frei steuerbare Nutzerwerte dürfen den Schalter nicht beeinflussen.
+- Bei `data-enabled="false"` werden weder Teilnehmerzugangskette noch Provider, Client, Auth-, Datenbank- oder Netzwerkzugriff gestartet; der lokale Standardbetrieb bleibt unverändert und nicht blockierend.
+- Bei `data-enabled="true"` lädt der Loader in fester Reihenfolge Adapter, Brücke und Browser-Provider und verwendet anschließend den bestehenden `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER`.
+- Die bevorzugte Readiness-Oberfläche ist `window.ACCAOUI_PARTICIPANT_ACCESS_BROWSER_LOADER_READY`; sie legt weder Client, `userId`, Session-, Teilnehmer-, Kurs-, Key- noch Configdaten offen.
+- `app.js` prüft ausschließlich die Loader-Readiness und verwendet danach unverändert den bestehenden v27.36d-Providervertrag mit `resolveAccess()`.
+- Ist Aktivierung angefordert, bleiben fehlender oder nicht ausgeführter Loader, Ladefehler, fehlende Dependencies und ungültige Readiness fail-closed; es gibt keinen lokalen Fallback, und die App zeigt ausschließlich den generischen Zustand `access_error` ohne interne Rohfehler.
+- `app.js` erkennt den Loader-Script-Tag mit `data-enabled="true"` auch dann als angeforderte Aktivierung, wenn das Loader-Skript fehlt oder nicht ausgeführt wurde.
+- Keine Fachlogik aus v27.36b, v27.36c, v27.36d oder v27.36e wird dupliziert.
+
+Sicherheitsgrenze:
+
+- Keine Live-Aktivierung, kein `bootstrap.initializeClient()`, kein `supabase.createClient()`, kein SDK- oder Config-Zugriff, keine direkten Auth- oder Tabellenabfragen, kein SQL und keine Migrationen.
+- Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+- Die vorhandenen v27.36b-/v27.36c-/v27.36d-/v27.36e-Module, Bootstrap, Config, SQL, Migrationen, `questions.json` und `style.css` bleiben unverändert.
+- Der spätere Checker arbeitet ausschließlich lokal mit synthetischen Browserzuständen und echten Manipulationsprüfungen; er prüft Default-off, exaktes `true`, Ladefolge, Readiness, fail-closed, Verbote, unveränderte Bestandsmodule und die Regressionen v27.36b/v27.36c/v27.36d/v27.36e.
+- Der spätere Bericht dokumentiert Architektur, Schalter, Ladefolge, Readiness, Fail-closed-Grenze, Tests und ausdrücklich `Supabase live: NEIN`, `echte Keys: NEIN` und `echte Teilnehmerdaten: NEIN`.
+
+Kein anderer Task und kein Folgetask ist ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
+
+### Permanenter v27.36f-Lebenszyklus
+
+Der Lifecycle erkennt dynamisch genau die Phasen `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed`.
+
+GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien. IMPLEMENTATION enthält exakt die sechs autorisierten Implementierungsdateien und ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig, enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
+
+Keine zukünftige GATE-, IMPLEMENTATION- oder CLOSURE-SHA wird hartcodiert. Die stabile Basis bleibt ausschließlich als historische Autorisierungsbasis zulässig. Rückkehr zu einem autorisierten v27.36f-Zustand bleibt nach der Closure ohne neue ausdrückliche Autorisierung blockiert.
 
 ### Abgeschlossener technischer Schritt v27.36e
 
