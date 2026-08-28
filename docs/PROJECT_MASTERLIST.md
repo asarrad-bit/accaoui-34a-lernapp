@@ -845,7 +845,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.36d | Optionalen Teilnehmerzugangs-App-Provider an den bestehenden Auth-Einstieg angebunden; lokaler Standardbetrieb ohne Provider erhalten, Providerentscheidungen und Fehler fail-closed behandelt, Protected-Core-Ausnahme eng auf den autorisierten app.js-Scope begrenzt; Checker 2/36/10, Kontinuitätschecker, Preflight und `git diff --check` PASS; Implementierungscommit `b375dd3fc5fb820174f34a92ebbea81970b3ae29` – **erledigt** |
 | v27.36e | Browser-Anbindungsweg der Teilnehmerzugangskette lokal vorbereitet; CommonJS-Kompatibilität von v27.36b/v27.36c erhalten, kontrollierte Browser-Factory-Exports und Browser-App-Provider mit ausschließlich `resolveAccess()`, fail-closed und Kollisionsschutz; Implementierungscommit `0c4d64aaa7da7e8dd38fff1d7bf72675cb689a6f`; Checker 22/31/16, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine HTML-Aktivierung, Supabase NICHT LIVE, kein Folgetask – **erledigt** |
 | v27.36f | Kontrollierter Browser-Aktivierungsweg implementiert; Implementierungscommit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`; sechs autorisierte Implementierungsdateien, Default `data-enabled=false`, fail-closed und Supabase NICHT LIVE; ursprüngliche Closure bleibt separat ausstehend – **Implementierung abgeschlossen; Closure ausstehend** |
-| v27.36f-REPAIR | Closure-Prüfpfad für v27.36f eng reparieren; technische Basis `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`; spätere REPAIR-IMPLEMENTATION exakt auf `tools/preflight.py` und `tools/check-participant-access-browser-loader-v2736f.py` begrenzt; keine App-, Loader- oder Supabase-Änderung – **autorisiert** |
+| v27.36f-REPAIR | Closure-Prüfpfad für v27.36f eng repariert; Repair-Implementierungscommit `b035c62100b033dbce03a4ab016e4471b4ab54d4`; Checker 41/27/46, Regressionen, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine App-, Loader- oder Supabase-Änderung; ursprüngliche v27.36f-Closure weiter ausstehend – **erledigt** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -1472,40 +1472,48 @@ Installiert (Referenz):
 
 ## 14. Nächste sinnvolle Aufgaben
 
-### Autorisierter Repair-Task v27.36f-REPAIR
+### Abgeschlossener Repair-Task v27.36f-REPAIR
 
-v27.36f-REPAIR ist der einzige autorisierte Task.
+v27.36f-REPAIR abgeschlossen.
 
-Closure-Prüfpfad für v27.36f eng reparieren.
+Repair-Implementierungscommit: `b035c62100b033dbce03a4ab016e4471b4ab54d4`
 
-Dieser GATE-Schritt autorisiert ausschließlich die spätere Repair-Implementierung; in diesem Schritt wird keine Implementierung vorgenommen.
-
-Die funktionale Grundlage bleibt v27.35g. Die v27.36f-Implementierung ist im Commit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa` abgeschlossen und bleibt unverändert. Der ursprüngliche v27.36f-Closure-Schritt bleibt separat abzuschließen. Die stabile Repair-Basis ist `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`.
-
-Für die spätere REPAIR-IMPLEMENTATION sind exakt zwei Dateien erlaubt:
+Umgesetzte Repair-Dateien:
 
 - `tools/preflight.py`
 - `tools/check-participant-access-browser-loader-v2736f.py`
 
-Verbindlicher Repair-Vertrag:
+Ergebnis:
 
-- `tools/preflight.py` darf das bestehende enge v27.36f-Regressionsprofil für v27.36e ausschließlich um die legitimen Zustände `closure_prepared` und `closure_committed` erweitern.
-- Closure darf nur erkannt werden, wenn der legitime v27.36f-Implementierungscommit vorhanden ist, die Implementierungsdateien unverändert sind, der Closure-Scope exakt fünf Gate-Dateien beziehungsweise exakt einen legitimen Closure-Commit umfasst, `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN` steht, kein neuer Task autorisiert ist, v27.36e-Provider, Adapter und Brücke unverändert sind und das funktionale `require_v2736e_regression`-Profil erhalten bleibt.
-- Es gibt kein pauschales PASS, und kein historischer Checker wird generell deaktiviert.
-- `tools/check-participant-access-browser-loader-v2736f.py` darf ausschließlich um die legitimen Zustände `closure_prepared` und `closure_committed` erweitert werden.
-- Der Checker prüft weiterhin Default `data-enabled=false`, ausschließlich exaktes `true`, Ladefolge, Readiness, fail-closed, `access_error`, keinen lokalen Fallback bei `requested=true`, lokale Standardfunktion bei `false`, die v27.36d-/v27.36e-Verträge, Frozen-Dateien, Supabase NICHT LIVE sowie keine echten Keys oder Teilnehmerdaten.
-- Closure wird nur akzeptiert, wenn sie exakt dem v27.36f-Lifecycle entspricht.
+- Die Root Cause betraf ausschließlich die Closure-Kompatibilität der Prüfpfade.
+- Der Kontinuitätschecker unterstützt den ursprünglichen v27.36f-Lifecycle weiterhin dynamisch für `closure_prepared` und `closure_committed`.
+- Das enge v27.36f-Regressionsprofil für v27.36e bleibt im Preflight auch während der Closure wirksam.
+- Die Repair-Phasen `repair_closure_prepared` und `repair_closure_committed` werden dynamisch erkannt.
+- Es gibt keinen pauschalen Bypass und keine Abschwächung der bestehenden v27.36b-/v27.36c-/v27.36d-/v27.36e-Sicherheitsverträge.
+- Die v27.36f-Implementierung bleibt unverändert.
+- Die ursprüngliche v27.36f-Implementierung bleibt der Commit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`.
+- Der ursprüngliche v27.36f-Closure-Schritt bleibt separat abzuschließen.
 
-Eingefrorene Sicherheitsgrenze:
+Testergebnis:
 
-- Kein App-Code und kein Loader-Code wird geändert. `index.html`, `app.js` und `data/supabase-participant-access-browser-loader.js` bleiben unverändert.
-- Kein Supabase-Modul wird geändert. Insbesondere bleiben `data/supabase-participant-access-adapter.js`, `data/supabase-participant-access-bootstrap-bridge.js`, `data/supabase-participant-access-browser-provider.js`, `data/supabase-client-bootstrap.js` und `data/supabase-client-adapter.js` unverändert.
-- Config-Dateien, SQL, Migrationen, `questions.json` und `style.css` bleiben unverändert.
-- Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten. Kein echter Login wird aktiviert.
-- Keine Live-Aktivierung, kein `initializeClient()`, kein `createClient()`, keine Auth-Abfrage, keine Tabellenabfrage und keine neue Produktfunktion.
-- Der Repair betrifft ausschließlich Prüf- und Lifecycle-Kompatibilität für die Closure.
+- v27.36f-Checker: PASS mit 41 Positivprüfungen, 27 Negativprüfungen und 46 Manipulationsprüfungen.
+- v27.36b-, v27.36c-, v27.36d- und v27.36e-Regressionen: PASS.
+- Kontinuitätschecker: PASS.
+- Preflight: PASS.
+- `git diff --check`: PASS.
 
-Kein anderer Task und kein Folgetask ist ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
+Sicherheitsgrenze:
+
+- Keine Produkt-, App- oder Loader-Funktion und keine Loader-Fachlogik wurde geändert.
+- Kein Supabase-Modul wurde geändert.
+- `index.html`, `app.js` und `data/supabase-participant-access-browser-loader.js` bleiben unverändert.
+- Der Default bleibt `data-enabled=false`.
+- Supabase bleibt NICHT LIVE.
+- Keine echten Keys.
+- Keine echten Teilnehmerdaten.
+- Kein echter Login wurde aktiviert.
+
+Kein Folgetask wurde ausgewählt oder autorisiert. Neue Implementierung bleibt bis zu einer ausdrücklichen Autorisierung blockiert.
 
 #### Permanenter v27.36f-REPAIR-Lebenszyklus
 
@@ -1513,7 +1521,7 @@ Der Lifecycle erkennt dynamisch genau die Phasen `repair_authorization_prepared`
 
 REPAIR-GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien. REPAIR-IMPLEMENTATION enthält exakt die zwei autorisierten Repair-Dateien und ist höchstens einmal zulässig. REPAIR-CLOSURE ist erst nach REPAIR-IMPLEMENTATION zulässig, enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
 
-Keine zukünftige Repair-GATE-, Repair-IMPLEMENTATION- oder Repair-CLOSURE-SHA wird hartcodiert. Die stabile Repair-Basis darf ausschließlich als historische technische Basis dokumentiert werden. Nach `repair_closure_committed` bleibt eine Rückkehr zu `v27.36f-REPAIR / AUTHORIZED` ohne neue ausdrückliche Autorisierung blockiert. Der ursprüngliche v27.36f-Closure-Schritt bleibt danach noch separat abzuschließen.
+Keine zukünftige Repair-CLOSURE-SHA wird hartcodiert. Rückkehr zu `v27.36f-REPAIR / AUTHORIZED` bleibt ohne neue ausdrückliche Autorisierung blockiert. Der ursprüngliche v27.36f-Closure-Lifecycle bleibt danach dynamisch erreichbar; keine zukünftige ursprüngliche v27.36f-CLOSURE-SHA wird hartcodiert.
 
 ### Abgeschlossener technischer Schritt v27.36e
 

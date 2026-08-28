@@ -8806,6 +8806,7 @@ V2736F_REPAIR_HISTORY_BEFORE_AUTHORIZATION = "repair_before_authorization_commit
 V2736F_REPAIR_HISTORY_AUTHORIZED = "repair_authorization_committed"
 V2736F_REPAIR_HISTORY_IMPLEMENTED = "repair_implementation_committed"
 V2736F_REPAIR_HISTORY_CLOSED = "repair_closure_committed"
+V2736F_REPAIR_HISTORY_ORIGINAL_CLOSED = "original_closure_committed"
 V2736F_REPAIR_PHASE_AUTHORIZATION_PREPARED = "repair_authorization_prepared"
 V2736F_REPAIR_PHASE_AUTHORIZATION_COMMITTED = "repair_authorization_committed"
 V2736F_REPAIR_PHASE_IMPLEMENTATION_PREPARED = "repair_implementation_prepared"
@@ -8815,6 +8816,9 @@ V2736F_REPAIR_PHASE_CLOSURE_COMMITTED = "repair_closure_committed"
 V2736F_REPAIR_ROLE_GATE = "REPAIR_GATE"
 V2736F_REPAIR_ROLE_IMPLEMENTATION = "REPAIR_IMPLEMENTATION"
 V2736F_REPAIR_ROLE_CLOSURE = "REPAIR_CLOSURE"
+V2736F_REPAIR_ROLE_ORIGINAL_CLOSURE = "ORIGINAL_CLOSURE"
+V2736F_REPAIR_CLOSURE_KIND_REPAIR = "repair"
+V2736F_REPAIR_CLOSURE_KIND_ORIGINAL = "original"
 
 
 @dataclass(frozen=True)
@@ -8822,6 +8826,7 @@ class V2736FRepairCommitFact:
     commit_sha: str
     changed_files: frozenset[str]
     task_state: str
+    closure_kind: str | None = None
 
 
 @dataclass(frozen=True)
@@ -8971,9 +8976,34 @@ def detect_v2736f_repair_task_state_text(text: str) -> str:
         validate_exact_fields(text, V2736F_REPAIR_EXPECTED_TASK_FIELDS)
         return V2736F_REPAIR_TASK_AUTHORIZED
     if task_id == "NONE":
-        validate_exact_fields(text, V2736F_REPAIR_CLOSED_TASK_FIELDS)
+        last_control_step = exact_field(text, "Letzter abgeschlossener Kontrollschritt")
+        if last_control_step == "v27.36f-REPAIR":
+            validate_exact_fields(text, V2736F_REPAIR_CLOSED_TASK_FIELDS)
+        elif last_control_step == "v27.36f":
+            validate_exact_fields(text, V2736F_CLOSED_TASK_FIELDS)
+        else:
+            raise ValidationError(
+                "Geschlossener v27.36f-REPAIR-Zustand benötigt v27.36f-REPAIR "
+                "oder v27.36f als letzten abgeschlossenen Kontrollschritt"
+            )
         return V2736F_REPAIR_TASK_CLOSED
     raise ValidationError(f"Unzulässiger v27.36f-REPAIR-Taskzustand: {task_id}")
+
+
+def detect_v2736f_repair_closure_kind_text(text: str) -> str:
+    repair_heading = "## Abgeschlossener Repair-Task v27.36f-REPAIR"
+    original_heading = "## Abgeschlossener technischer Schritt v27.36f"
+    repair_present = repair_heading in text
+    original_present = original_heading in text
+    require(
+        repair_present != original_present,
+        "Geschlossener v27.36f-Zustand muss exakt einen Repair- oder ursprünglichen Closure-Abschnitt enthalten",
+    )
+    return (
+        V2736F_REPAIR_CLOSURE_KIND_REPAIR
+        if repair_present
+        else V2736F_REPAIR_CLOSURE_KIND_ORIGINAL
+    )
 
 
 def validate_v2736f_repair_closed_documents(
@@ -9065,7 +9095,13 @@ def read_v2736f_repair_commit_facts(current_head: str) -> tuple[V2736FRepairComm
         )
         require(files, f"Leerer v27.36f-REPAIR-Commit unzulässig: {sha}")
         task_text = read_v2735f_commit_document(sha, V2735F_TASK_RELATIVE_PATH)
-        facts.append(V2736FRepairCommitFact(sha, files, detect_v2736f_repair_task_state_text(task_text)))
+        task_state = detect_v2736f_repair_task_state_text(task_text)
+        closure_kind = (
+            detect_v2736f_repair_closure_kind_text(task_text)
+            if task_state == V2736F_REPAIR_TASK_CLOSED
+            else None
+        )
+        facts.append(V2736FRepairCommitFact(sha, files, task_state, closure_kind))
         previous = sha
     return tuple(facts)
 
@@ -9077,31 +9113,44 @@ def validate_v2736f_repair_history_facts(
     roles: list[str] = []
     gate_commits: list[str] = []
     implementation_commit: str | None = None
-    closed = False
+    repair_closed = False
+    original_closed = False
     for fact in facts:
         files = fact.changed_files
         if files == V2736F_REPAIR_IMPLEMENTATION_FILES:
             require(gate_commits, "REPAIR-IMPLEMENTATION vor REPAIR-Autorisierungs-GATE unzulässig")
             require(implementation_commit is None, "Mehr als ein REPAIR-IMPLEMENTATION-Commit unzulässig")
-            require(not closed, "REPAIR-IMPLEMENTATION nach REPAIR-CLOSURE unzulässig")
+            require(not repair_closed and not original_closed, "REPAIR-IMPLEMENTATION nach REPAIR-CLOSURE unzulässig")
             require(fact.task_state == V2736F_REPAIR_TASK_AUTHORIZED, "REPAIR-IMPLEMENTATION benötigt v27.36f-REPAIR / AUTHORIZED")
             implementation_commit = fact.commit_sha
             roles.append(V2736F_REPAIR_ROLE_IMPLEMENTATION)
             continue
         require(files and files.issubset(gate_files), f"Fremde Datei in v27.36f-REPAIR-Commit {fact.commit_sha}: {sorted(files - gate_files)}")
         if fact.task_state == V2736F_REPAIR_TASK_AUTHORIZED:
-            require(not closed, "Rückkehr zu v27.36f-REPAIR / AUTHORIZED nach REPAIR-CLOSURE unzulässig")
+            require(not repair_closed and not original_closed, "Rückkehr zu v27.36f-REPAIR / AUTHORIZED nach REPAIR-CLOSURE unzulässig")
             gate_commits.append(fact.commit_sha)
             roles.append(V2736F_REPAIR_ROLE_GATE)
             continue
         require(implementation_commit is not None, "REPAIR-CLOSURE vor REPAIR-IMPLEMENTATION unzulässig")
-        require(not closed, "Mehr als ein REPAIR-CLOSURE-Commit unzulässig")
         require(files == gate_files, "REPAIR-CLOSURE muss exakt die fünf Gate-Dateien ändern")
-        closed = True
-        roles.append(V2736F_REPAIR_ROLE_CLOSURE)
+        if fact.closure_kind == V2736F_REPAIR_CLOSURE_KIND_REPAIR:
+            require(not repair_closed and not original_closed, "Mehr als ein REPAIR-CLOSURE-Commit unzulässig")
+            repair_closed = True
+            roles.append(V2736F_REPAIR_ROLE_CLOSURE)
+            continue
+        require(
+            fact.closure_kind == V2736F_REPAIR_CLOSURE_KIND_ORIGINAL,
+            "Geschlossener Gate-Commit benötigt einen eindeutig erkannten Closure-Vertrag",
+        )
+        require(repair_closed, "Ursprüngliche v27.36f-CLOSURE vor REPAIR-CLOSURE unzulässig")
+        require(not original_closed, "Mehr als ein ursprünglicher v27.36f-CLOSURE-Commit unzulässig")
+        original_closed = True
+        roles.append(V2736F_REPAIR_ROLE_ORIGINAL_CLOSURE)
     state = (
-        V2736F_REPAIR_HISTORY_CLOSED
-        if closed
+        V2736F_REPAIR_HISTORY_ORIGINAL_CLOSED
+        if original_closed
+        else V2736F_REPAIR_HISTORY_CLOSED
+        if repair_closed
         else V2736F_REPAIR_HISTORY_IMPLEMENTED
         if implementation_commit
         else V2736F_REPAIR_HISTORY_AUTHORIZED
@@ -9140,6 +9189,7 @@ def validate_v2736f_repair_lifecycle_working_tree(
     history: V2736FRepairHistoryState,
     task_state: str,
     fact: V2736FRepairWorkingTreeFact,
+    closure_kind: str | None = None,
 ) -> str:
     validate_v2736f_repair_working_tree_fact(fact)
     gate_files = frozenset(EXPECTED_CONTROL_FILES)
@@ -9170,20 +9220,31 @@ def validate_v2736f_repair_lifecycle_working_tree(
             require(fact.status_lines == frozenset(f" M {path}" for path in fact.diff_files), "Lokale Repair-Gate-Korrektur nach IMPLEMENTATION enthält fremden Status")
             return V2736F_REPAIR_PHASE_IMPLEMENTATION_COMMITTED
         require(task_state == V2736F_REPAIR_TASK_CLOSED, "repair_closure_prepared benötigt den geschlossenen Repair-Taskzustand")
+        require(closure_kind == V2736F_REPAIR_CLOSURE_KIND_REPAIR, "repair_closure_prepared benötigt den Repair-Closure-Vertrag")
         require(fact.diff_files == gate_files and not fact.untracked_files, "repair_closure_prepared muss exakt fünf Gate-Dateien ändern")
         require(fact.status_lines == frozenset(f" M {path}" for path in gate_files), "Working Tree entspricht nicht repair_closure_prepared")
         return V2736F_REPAIR_PHASE_CLOSURE_PREPARED
-    require(history.state == V2736F_REPAIR_HISTORY_CLOSED, "Unbekannter v27.36f-REPAIR-Historienzustand")
-    require(task_state == V2736F_REPAIR_TASK_CLOSED, "Nach REPAIR-CLOSURE darf keine Rückkehr zu v27.36f-REPAIR / AUTHORIZED erfolgen")
-    require(clean, "repair_closure_committed benötigt einen sauberen Working Tree")
-    return V2736F_REPAIR_PHASE_CLOSURE_COMMITTED
+    if history.state == V2736F_REPAIR_HISTORY_CLOSED:
+        require(task_state == V2736F_REPAIR_TASK_CLOSED, "Nach REPAIR-CLOSURE darf keine Rückkehr zu v27.36f-REPAIR / AUTHORIZED erfolgen")
+        if clean:
+            require(closure_kind == V2736F_REPAIR_CLOSURE_KIND_REPAIR, "repair_closure_committed benötigt den Repair-Closure-Vertrag")
+            return V2736F_REPAIR_PHASE_CLOSURE_COMMITTED
+        require(closure_kind == V2736F_REPAIR_CLOSURE_KIND_ORIGINAL, "Nach REPAIR-CLOSURE sind nur die ursprünglichen v27.36f-Closure-Dokumente zulässig")
+        require(fact.diff_files == gate_files and not fact.untracked_files, "closure_prepared muss nach Repair-Closure exakt fünf Gate-Dateien ändern")
+        require(fact.status_lines == frozenset(f" M {path}" for path in gate_files), "Working Tree entspricht nach Repair-Closure nicht closure_prepared")
+        return V2736F_PHASE_CLOSURE_PREPARED
+    require(history.state == V2736F_REPAIR_HISTORY_ORIGINAL_CLOSED, "Unbekannter v27.36f-REPAIR-Historienzustand")
+    require(task_state == V2736F_REPAIR_TASK_CLOSED, "Nach ursprünglicher v27.36f-CLOSURE darf keine Rückkehr zu AUTHORIZED erfolgen")
+    require(closure_kind == V2736F_REPAIR_CLOSURE_KIND_ORIGINAL, "closure_committed benötigt den ursprünglichen v27.36f-Closure-Vertrag")
+    require(clean, "closure_committed benötigt einen sauberen Working Tree")
+    return V2736F_PHASE_CLOSURE_COMMITTED
 
 
 def validate_v2736f_repair_committed_closure_documents(
     facts: tuple[V2736FRepairCommitFact, ...],
     history: V2736FRepairHistoryState,
 ) -> None:
-    if V2736F_REPAIR_ROLE_CLOSURE not in history.roles:
+    if not ({V2736F_REPAIR_ROLE_CLOSURE, V2736F_REPAIR_ROLE_ORIGINAL_CLOSURE} & set(history.roles)):
         return
     require(history.implementation_commit is not None, "REPAIR-CLOSURE benötigt einen dynamischen Repair-Implementierungscommit")
     for fact, role in zip(facts, history.roles):
@@ -9194,6 +9255,14 @@ def validate_v2736f_repair_committed_closure_documents(
                 read_v2735f_commit_document(fact.commit_sha, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
                 read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_MASTERLIST.md"),
                 history.implementation_commit,
+            )
+        elif role == V2736F_REPAIR_ROLE_ORIGINAL_CLOSURE:
+            validate_v2736f_closed_documents(
+                read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_STATE_CURRENT.md"),
+                read_v2735f_commit_document(fact.commit_sha, V2735F_TASK_RELATIVE_PATH),
+                read_v2735f_commit_document(fact.commit_sha, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
+                read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_MASTERLIST.md"),
+                V2736F_REPAIR_BASE_SHA,
             )
 
 
@@ -9211,6 +9280,11 @@ def validate_v2736f_repair_lifecycle(
     history = validate_v2736f_repair_history_facts(facts)
     validate_v2736f_repair_committed_closure_documents(facts, history)
     task_state = detect_v2736f_repair_task_state_text(task_text)
+    closure_kind = (
+        detect_v2736f_repair_closure_kind_text(task_text)
+        if task_state == V2736F_REPAIR_TASK_CLOSED
+        else None
+    )
     if task_state == V2736F_REPAIR_TASK_AUTHORIZED:
         validate_v2736f_repair_state_text(state_text)
         validate_v2736f_repair_task_text(task_text)
@@ -9218,8 +9292,13 @@ def validate_v2736f_repair_lifecycle(
         validate_v2736f_repair_masterlist_text(masterlist_text)
     else:
         require(history.implementation_commit is not None, "v27.36f-REPAIR-Abschluss vor REPAIR-IMPLEMENTATION unzulässig")
-        validate_v2736f_repair_closed_documents(state_text, task_text, cursor_text, masterlist_text, history.implementation_commit)
-    phase = validate_v2736f_repair_lifecycle_working_tree(history, task_state, fact)
+        if closure_kind == V2736F_REPAIR_CLOSURE_KIND_REPAIR:
+            require(history.state in {V2736F_REPAIR_HISTORY_IMPLEMENTED, V2736F_REPAIR_HISTORY_CLOSED}, "Repair-Closure-Dokumente sind in dieser Historienphase unzulässig")
+            validate_v2736f_repair_closed_documents(state_text, task_text, cursor_text, masterlist_text, history.implementation_commit)
+        else:
+            require(history.state in {V2736F_REPAIR_HISTORY_CLOSED, V2736F_REPAIR_HISTORY_ORIGINAL_CLOSED}, "Ursprüngliche v27.36f-Closure vor REPAIR-CLOSURE unzulässig")
+            validate_v2736f_closed_documents(state_text, task_text, cursor_text, masterlist_text, V2736F_REPAIR_BASE_SHA)
+    phase = validate_v2736f_repair_lifecycle_working_tree(history, task_state, fact, closure_kind)
     return phase, history, fact
 
 
@@ -9314,12 +9393,24 @@ def run_v2736f_repair_manipulation_matrix(
 
     gate = V2736FRepairCommitFact("1" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736F_REPAIR_TASK_AUTHORIZED)
     implementation = V2736FRepairCommitFact("2" * 40, V2736F_REPAIR_IMPLEMENTATION_FILES, V2736F_REPAIR_TASK_AUTHORIZED)
-    closure = V2736FRepairCommitFact("3" * 40, frozenset(EXPECTED_CONTROL_FILES), V2736F_REPAIR_TASK_CLOSED)
+    closure = V2736FRepairCommitFact(
+        "3" * 40,
+        frozenset(EXPECTED_CONTROL_FILES),
+        V2736F_REPAIR_TASK_CLOSED,
+        V2736F_REPAIR_CLOSURE_KIND_REPAIR,
+    )
+    original_closure = V2736FRepairCommitFact(
+        "4" * 40,
+        frozenset(EXPECTED_CONTROL_FILES),
+        V2736F_REPAIR_TASK_CLOSED,
+        V2736F_REPAIR_CLOSURE_KIND_ORIGINAL,
+    )
     histories = (
         validate_v2736f_repair_history_facts(tuple()),
         validate_v2736f_repair_history_facts((gate,)),
         validate_v2736f_repair_history_facts((gate, implementation)),
         validate_v2736f_repair_history_facts((gate, implementation, closure)),
+        validate_v2736f_repair_history_facts((gate, implementation, closure, original_closure)),
     )
     clean_fact = replace(
         current_fact,
@@ -9335,27 +9426,33 @@ def run_v2736f_repair_manipulation_matrix(
     gate_files = frozenset(EXPECTED_CONTROL_FILES)
     implementation_status = frozenset(f" M {path}" for path in V2736F_REPAIR_IMPLEMENTATION_FILES)
     phase_fixtures = (
-        (histories[0], V2736F_REPAIR_TASK_AUTHORIZED, replace(clean_fact, head=V2736F_REPAIR_BASE_SHA, diff_files=gate_files, status_lines=frozenset(f" M {path}" for path in gate_files)), V2736F_REPAIR_PHASE_AUTHORIZATION_PREPARED),
-        (histories[1], V2736F_REPAIR_TASK_AUTHORIZED, clean_fact, V2736F_REPAIR_PHASE_AUTHORIZATION_COMMITTED),
-        (histories[1], V2736F_REPAIR_TASK_AUTHORIZED, replace(clean_fact, diff_files=V2736F_REPAIR_IMPLEMENTATION_FILES, status_lines=implementation_status), V2736F_REPAIR_PHASE_IMPLEMENTATION_PREPARED),
-        (histories[2], V2736F_REPAIR_TASK_AUTHORIZED, clean_fact, V2736F_REPAIR_PHASE_IMPLEMENTATION_COMMITTED),
-        (histories[2], V2736F_REPAIR_TASK_CLOSED, replace(clean_fact, diff_files=gate_files, status_lines=frozenset(f" M {path}" for path in gate_files)), V2736F_REPAIR_PHASE_CLOSURE_PREPARED),
-        (histories[3], V2736F_REPAIR_TASK_CLOSED, clean_fact, V2736F_REPAIR_PHASE_CLOSURE_COMMITTED),
+        (histories[0], V2736F_REPAIR_TASK_AUTHORIZED, replace(clean_fact, head=V2736F_REPAIR_BASE_SHA, diff_files=gate_files, status_lines=frozenset(f" M {path}" for path in gate_files)), None, V2736F_REPAIR_PHASE_AUTHORIZATION_PREPARED),
+        (histories[1], V2736F_REPAIR_TASK_AUTHORIZED, clean_fact, None, V2736F_REPAIR_PHASE_AUTHORIZATION_COMMITTED),
+        (histories[1], V2736F_REPAIR_TASK_AUTHORIZED, replace(clean_fact, diff_files=V2736F_REPAIR_IMPLEMENTATION_FILES, status_lines=implementation_status), None, V2736F_REPAIR_PHASE_IMPLEMENTATION_PREPARED),
+        (histories[2], V2736F_REPAIR_TASK_AUTHORIZED, clean_fact, None, V2736F_REPAIR_PHASE_IMPLEMENTATION_COMMITTED),
+        (histories[2], V2736F_REPAIR_TASK_CLOSED, replace(clean_fact, diff_files=gate_files, status_lines=frozenset(f" M {path}" for path in gate_files)), V2736F_REPAIR_CLOSURE_KIND_REPAIR, V2736F_REPAIR_PHASE_CLOSURE_PREPARED),
+        (histories[3], V2736F_REPAIR_TASK_CLOSED, clean_fact, V2736F_REPAIR_CLOSURE_KIND_REPAIR, V2736F_REPAIR_PHASE_CLOSURE_COMMITTED),
+        (histories[3], V2736F_REPAIR_TASK_CLOSED, replace(clean_fact, diff_files=gate_files, status_lines=frozenset(f" M {path}" for path in gate_files)), V2736F_REPAIR_CLOSURE_KIND_ORIGINAL, V2736F_PHASE_CLOSURE_PREPARED),
+        (histories[4], V2736F_REPAIR_TASK_CLOSED, clean_fact, V2736F_REPAIR_CLOSURE_KIND_ORIGINAL, V2736F_PHASE_CLOSURE_COMMITTED),
     )
-    for history, task_state, fact, expected in phase_fixtures:
+    for history, task_state, fact, closure_kind, expected in phase_fixtures:
         require(
-            validate_v2736f_repair_lifecycle_working_tree(history, task_state, fact) == expected,
+            validate_v2736f_repair_lifecycle_working_tree(history, task_state, fact, closure_kind) == expected,
             f"v27.36f-REPAIR-Positivsimulation fehlgeschlagen: {expected}",
         )
     bad_histories = (
         ((implementation,), "Repair-Implementation vor Autorisierung"),
         ((gate, implementation, implementation), "zweite Repair-Implementation"),
         ((gate, closure), "Repair-Closure vor Repair-Implementation"),
+        ((gate, implementation, original_closure), "ursprüngliche Closure vor Repair-Closure"),
+        ((gate, implementation, closure, closure), "zweite Repair-Closure"),
+        ((gate, implementation, closure, original_closure, original_closure), "zweite ursprüngliche Closure"),
         ((gate, implementation, closure, gate), "Rückkehr nach Repair-Closure"),
-        ((gate, implementation, V2736FRepairCommitFact("4" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736F_REPAIR_TASK_CLOSED)), "partielle Repair-Closure"),
-        ((gate, V2736FRepairCommitFact("5" * 40, frozenset({"tools/preflight.py"}), V2736F_REPAIR_TASK_AUTHORIZED)), "partielle Repair-Implementation"),
-        ((gate, V2736FRepairCommitFact("6" * 40, V2736F_REPAIR_IMPLEMENTATION_FILES | {"app.js"}, V2736F_REPAIR_TASK_AUTHORIZED)), "Repair-Implementation mit app.js"),
-        ((V2736FRepairCommitFact("7" * 40, frozenset({"app.js"}), V2736F_REPAIR_TASK_AUTHORIZED),), "fremder Repair-Gate-Commit"),
+        ((gate, implementation, V2736FRepairCommitFact("5" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736F_REPAIR_TASK_CLOSED, V2736F_REPAIR_CLOSURE_KIND_REPAIR)), "partielle Repair-Closure"),
+        ((gate, implementation, closure, V2736FRepairCommitFact("6" * 40, frozenset({EXPECTED_CONTROL_FILES[0]}), V2736F_REPAIR_TASK_CLOSED, V2736F_REPAIR_CLOSURE_KIND_ORIGINAL)), "partielle ursprüngliche Closure"),
+        ((gate, V2736FRepairCommitFact("7" * 40, frozenset({"tools/preflight.py"}), V2736F_REPAIR_TASK_AUTHORIZED)), "partielle Repair-Implementation"),
+        ((gate, V2736FRepairCommitFact("8" * 40, V2736F_REPAIR_IMPLEMENTATION_FILES | {"app.js"}, V2736F_REPAIR_TASK_AUTHORIZED)), "Repair-Implementation mit app.js"),
+        ((V2736FRepairCommitFact("9" * 40, frozenset({"app.js"}), V2736F_REPAIR_TASK_AUTHORIZED),), "fremder Repair-Gate-Commit"),
     )
     for facts, label in bad_histories:
         try:
