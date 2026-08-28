@@ -1681,13 +1681,22 @@ def check_participant_access_browser_provider_v2736e():
     ):
         working_paths.update(staged_paths)
         working_paths.update(untracked_paths)
+        post_implementation_phase = (
+            _detect_v2736f_post_implementation_profile_phase(working_paths)
+        )
         if (
             _is_prepared_v2736f_browser_loader_scope(working_paths)
             or _is_committed_v2736f_browser_loader_scope(working_paths)
+            or post_implementation_phase is not None
         ):
             print(
                 "v27.36e-Browser-Provider: PASS über das enge autorisierte "
                 "v27.36f-Regressionsprofil"
+                + (
+                    f" ({post_implementation_phase})"
+                    if post_implementation_phase is not None
+                    else ""
+                )
             )
             return
 
@@ -1785,10 +1794,29 @@ V2736F_AUTHORIZED_IMPLEMENTATION_FILES = (
     "tools/preflight.py",
 )
 V2736F_AUTHORIZATION_HEAD = "88337d5951bffdb3b1591ea5d6d9e5741a4c7477"
+V2736F_IMPLEMENTATION_HEAD = "a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa"
+V2736F_GATE_FILES = {
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "tools/check-project-continuity-control.py",
+}
+V2736F_REPAIR_IMPLEMENTATION_FILES = {
+    "tools/preflight.py",
+    "tools/check-participant-access-browser-loader-v2736f.py",
+}
 V2736F_REGRESSION_FROZEN_FILES = (
     "data/supabase-participant-access-adapter.js",
     "data/supabase-participant-access-bootstrap-bridge.js",
     "data/supabase-participant-access-browser-provider.js",
+)
+V2736F_POST_IMPLEMENTATION_FROZEN_FILES = (
+    "index.html",
+    "app.js",
+    "data/supabase-participant-access-browser-loader.js",
+    "docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md",
+    *V2736F_REGRESSION_FROZEN_FILES,
 )
 
 
@@ -1876,6 +1904,7 @@ def _has_v2736f_v2736e_regression_profile():
         "def require_v2736e_regression()",
         "validate_v2736e_regression_sources",
         V2736F_AUTHORIZATION_HEAD,
+        V2736F_IMPLEMENTATION_HEAD,
         "baseline_bytes(relative_path)",
         "data/supabase-participant-access-adapter.js",
         "data/supabase-participant-access-bootstrap-bridge.js",
@@ -1980,6 +2009,340 @@ def _is_committed_v2736f_browser_loader_scope(working_paths):
     )
 
 
+def _read_v2736f_control_fields(text):
+    lines = text.splitlines()
+
+    def single_value(prefix):
+        values = [
+            line[len(prefix):].strip()
+            for line in lines
+            if line.startswith(prefix)
+        ]
+        return values[0] if len(values) == 1 else None
+
+    return {
+        "task_id": single_value("Task-ID:"),
+        "status": single_value("Status:"),
+        "authorized": single_value("Autorisiert:"),
+        "allowed": single_value("Erlaubte Implementierungsdateien:"),
+        "commit_allowed": single_value("Commit erlaubt:"),
+        "push_allowed": single_value("Push erlaubt:"),
+    }
+
+
+def _v2736f_task_kind_from_text(text):
+    fields = _read_v2736f_control_fields(text)
+    original_allowed = ", ".join(
+        f"`{path}`" for path in V2736F_AUTHORIZED_IMPLEMENTATION_FILES
+    )
+    repair_allowed = ", ".join(
+        f"`{path}`" for path in (
+            "tools/preflight.py",
+            "tools/check-participant-access-browser-loader-v2736f.py",
+        )
+    )
+    common_locked = (
+        fields["commit_allowed"] == "NEIN"
+        and fields["push_allowed"] == "NEIN"
+    )
+    if (
+        fields["task_id"] == "v27.36f"
+        and fields["status"] == "AUTHORIZED"
+        and fields["authorized"] == "JA"
+        and fields["allowed"] == original_allowed
+        and common_locked
+    ):
+        return "v2736f_authorized"
+    if (
+        fields["task_id"] == "v27.36f-REPAIR"
+        and fields["status"] == "AUTHORIZED"
+        and fields["authorized"] == "JA"
+        and fields["allowed"] == repair_allowed
+        and common_locked
+    ):
+        return "repair_authorized"
+    if (
+        fields["task_id"] == "NONE"
+        and fields["status"] == "BLOCKED"
+        and fields["authorized"] == "NEIN"
+        and fields["allowed"] == "KEINE"
+        and common_locked
+    ):
+        return "closed"
+    return "invalid"
+
+
+def _read_v2736f_current_task_kind():
+    try:
+        task_text = Path("docs/tasks/CURRENT_TASK.md").read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return "invalid"
+    return _v2736f_task_kind_from_text(task_text)
+
+
+def _read_git_text_at_revision(revision, relative_path):
+    code, stdout, _stderr = run_command(
+        f'git show "{revision}:{relative_path}"'
+    )
+    return stdout if code == 0 else None
+
+
+def _git_is_ancestor(ancestor, descendant):
+    code, _stdout, _stderr = run_command(
+        f"git merge-base --is-ancestor {ancestor} {descendant}"
+    )
+    return code == 0
+
+
+def _v2736f_closure_kind_from_state_text(state_text):
+    if (
+        "Abgeschlossener technischer Schritt v27.36f" in state_text
+        and "v27.36f abgeschlossen." in state_text
+    ):
+        return "original"
+    if (
+        "Abgeschlossener Repair-Task v27.36f-REPAIR" in state_text
+        and "v27.36f-REPAIR abgeschlossen." in state_text
+    ):
+        return "repair"
+    return None
+
+
+def _read_current_v2736f_closure_kind():
+    try:
+        state_text = Path("docs/PROJECT_STATE_CURRENT.md").read_text(
+            encoding="utf-8"
+        )
+    except (OSError, UnicodeError):
+        return None
+    return _v2736f_closure_kind_from_state_text(state_text)
+
+
+def _read_v2736f_post_implementation_history():
+    code, stdout, _stderr = run_command(
+        "git rev-list --reverse " + V2736F_IMPLEMENTATION_HEAD + "..HEAD"
+    )
+    if code != 0:
+        return None
+    commits = [line.strip() for line in stdout.splitlines() if line.strip()]
+    previous = V2736F_IMPLEMENTATION_HEAD
+    roles = []
+    repair_gate_seen = False
+    repair_implementation_seen = False
+    repair_implementation_parent_is_authorization = False
+    repair_closure_seen = False
+    original_closure_seen = False
+    for commit in commits:
+        code, lineage_text, _stderr = run_command(
+            "git rev-list --parents -n 1 " + commit
+        )
+        lineage = lineage_text.split() if code == 0 else []
+        if len(lineage) != 2 or lineage[1] != previous:
+            return None
+        files = _git_paths(["diff", "--name-only", previous, commit])
+        task_text = _read_git_text_at_revision(
+            commit, "docs/tasks/CURRENT_TASK.md"
+        )
+        if not files or task_text is None:
+            return None
+        task_kind = _v2736f_task_kind_from_text(task_text)
+        if (
+            task_kind == "repair_authorized"
+            and files.issubset(V2736F_GATE_FILES)
+        ):
+            if repair_closure_seen or original_closure_seen:
+                return None
+            repair_gate_seen = True
+            roles.append("repair_gate")
+        elif (
+            task_kind == "repair_authorized"
+            and files == V2736F_REPAIR_IMPLEMENTATION_FILES
+        ):
+            if (
+                not repair_gate_seen
+                or repair_implementation_seen
+                or repair_closure_seen
+                or original_closure_seen
+            ):
+                return None
+            repair_implementation_parent_is_authorization = (
+                bool(roles) and roles[-1] == "repair_gate"
+            )
+            if not repair_implementation_parent_is_authorization:
+                return None
+            repair_implementation_seen = True
+            roles.append("repair_implementation")
+        elif task_kind == "closed" and files == V2736F_GATE_FILES:
+            state_text = _read_git_text_at_revision(
+                commit, "docs/PROJECT_STATE_CURRENT.md"
+            )
+            if state_text is None:
+                return None
+            closure_kind = _v2736f_closure_kind_from_state_text(state_text)
+            if closure_kind == "repair":
+                if (
+                    not repair_implementation_seen
+                    or repair_closure_seen
+                    or original_closure_seen
+                ):
+                    return None
+                repair_closure_seen = True
+                roles.append("repair_closure")
+            elif closure_kind == "original":
+                if original_closure_seen or (
+                    repair_gate_seen and not repair_closure_seen
+                ):
+                    return None
+                original_closure_seen = True
+                roles.append("original_closure")
+            else:
+                return None
+        else:
+            return None
+        previous = commit
+    return {
+        "valid": True,
+        "roles": tuple(roles),
+        "last_role": roles[-1] if roles else None,
+        "repair_gate_seen": repair_gate_seen,
+        "repair_implementation_seen": repair_implementation_seen,
+        "repair_implementation_parent_is_authorization": (
+            repair_implementation_parent_is_authorization
+        ),
+        "repair_closure_seen": repair_closure_seen,
+        "original_closure_seen": original_closure_seen,
+    }
+
+
+def _v2736f_post_implementation_files_unchanged():
+    if not _git_is_ancestor(V2736F_IMPLEMENTATION_HEAD, "HEAD"):
+        return False
+    changed = _git_paths([
+        "diff",
+        "--name-only",
+        V2736F_IMPLEMENTATION_HEAD,
+        "--",
+        *V2736F_POST_IMPLEMENTATION_FROZEN_FILES,
+    ])
+    return changed == set()
+
+
+def _v2736f_post_implementation_scope_facts_are_valid(
+    *,
+    phase,
+    task_kind,
+    working_paths,
+    history,
+    closure_kind,
+    implementation_is_ancestor,
+    frozen_files_unchanged,
+    profile_available,
+):
+    if not (
+        isinstance(history, dict)
+        and history.get("valid") is True
+        and implementation_is_ancestor
+        and frozen_files_unchanged
+        and profile_available
+    ):
+        return False
+    last_role = history.get("last_role")
+    if phase == "repair_authorization_committed":
+        return (
+            task_kind == "repair_authorized"
+            and not working_paths
+            and history.get("repair_gate_seen") is True
+            and history.get("repair_implementation_seen") is False
+            and last_role == "repair_gate"
+        )
+    if phase == "repair_implementation_prepared":
+        return (
+            task_kind == "repair_authorized"
+            and working_paths == V2736F_REPAIR_IMPLEMENTATION_FILES
+            and history.get("repair_gate_seen") is True
+            and history.get("repair_implementation_seen") is False
+            and last_role == "repair_gate"
+        )
+    if phase == "repair_implementation_committed":
+        return (
+            task_kind == "repair_authorized"
+            and not working_paths
+            and history.get("repair_implementation_seen") is True
+            and history.get("repair_implementation_parent_is_authorization") is True
+            and last_role == "repair_implementation"
+        )
+    if phase == "repair_closure_prepared":
+        return (
+            task_kind == "closed"
+            and working_paths == V2736F_GATE_FILES
+            and closure_kind == "repair"
+            and history.get("repair_implementation_seen") is True
+            and history.get("repair_closure_seen") is False
+            and last_role == "repair_implementation"
+        )
+    if phase == "repair_closure_committed":
+        return (
+            task_kind == "closed"
+            and not working_paths
+            and history.get("repair_closure_seen") is True
+            and last_role == "repair_closure"
+        )
+    if phase == "closure_prepared":
+        repair_path_complete = (
+            history.get("repair_gate_seen") is False
+            or history.get("repair_closure_seen") is True
+        )
+        return (
+            task_kind == "closed"
+            and working_paths == V2736F_GATE_FILES
+            and closure_kind == "original"
+            and history.get("original_closure_seen") is False
+            and repair_path_complete
+            and last_role in {None, "repair_closure"}
+        )
+    if phase == "closure_committed":
+        return (
+            task_kind == "closed"
+            and not working_paths
+            and history.get("original_closure_seen") is True
+            and last_role == "original_closure"
+        )
+    return False
+
+
+def _detect_v2736f_post_implementation_profile_phase(working_paths):
+    history = _read_v2736f_post_implementation_history()
+    task_kind = _read_v2736f_current_task_kind()
+    closure_kind = _read_current_v2736f_closure_kind()
+    shared = {
+        "task_kind": task_kind,
+        "working_paths": working_paths,
+        "history": history,
+        "closure_kind": closure_kind,
+        "implementation_is_ancestor": _git_is_ancestor(
+            V2736F_IMPLEMENTATION_HEAD, "HEAD"
+        ),
+        "frozen_files_unchanged": (
+            _v2736f_post_implementation_files_unchanged()
+        ),
+        "profile_available": _has_v2736f_v2736e_regression_profile(),
+    }
+    for phase in (
+        "repair_authorization_committed",
+        "repair_implementation_prepared",
+        "repair_implementation_committed",
+        "repair_closure_prepared",
+        "repair_closure_committed",
+        "closure_prepared",
+        "closure_committed",
+    ):
+        if _v2736f_post_implementation_scope_facts_are_valid(
+            phase=phase, **shared
+        ):
+            return phase
+    return None
+
+
 def check_v2736f_regression_profile_scope_logic():
     expected = set(V2736F_AUTHORIZED_IMPLEMENTATION_FILES)
     extra = expected | {"style.css"}
@@ -2017,6 +2380,76 @@ def check_v2736f_regression_profile_scope_logic():
         if actual != expected_result:
             errors.append(
                 "v27.36f-Regressionsprofil-Scope-Selbstprüfung "
+                f"fehlgeschlagen: {phase}"
+            )
+            return
+
+    empty_history = {
+        "valid": True,
+        "last_role": None,
+        "repair_gate_seen": False,
+        "repair_implementation_seen": False,
+        "repair_implementation_parent_is_authorization": False,
+        "repair_closure_seen": False,
+        "original_closure_seen": False,
+    }
+    repair_authorized_history = {
+        **empty_history,
+        "last_role": "repair_gate",
+        "repair_gate_seen": True,
+    }
+    repair_implemented_history = {
+        **repair_authorized_history,
+        "last_role": "repair_implementation",
+        "repair_implementation_seen": True,
+        "repair_implementation_parent_is_authorization": True,
+    }
+    repair_closed_history = {
+        **repair_implemented_history,
+        "last_role": "repair_closure",
+        "repair_closure_seen": True,
+    }
+    original_closed_history = {
+        **repair_closed_history,
+        "last_role": "original_closure",
+        "original_closure_seen": True,
+    }
+    post_cases = (
+        ("repair_authorization_committed", "repair_authorized", set(), repair_authorized_history, None, True),
+        ("repair_implementation_prepared", "repair_authorized", V2736F_REPAIR_IMPLEMENTATION_FILES, repair_authorized_history, None, True),
+        ("repair_implementation_committed", "repair_authorized", set(), repair_implemented_history, None, True),
+        ("repair_closure_prepared", "closed", V2736F_GATE_FILES, repair_implemented_history, "repair", True),
+        ("repair_closure_committed", "closed", set(), repair_closed_history, "repair", True),
+        ("closure_prepared", "closed", V2736F_GATE_FILES, repair_closed_history, "original", True),
+        ("closure_committed", "closed", set(), original_closed_history, "original", True),
+        ("closure_prepared", "closed", V2736F_GATE_FILES | {"style.css"}, repair_closed_history, "original", False),
+        ("closure_prepared", "closed", V2736F_GATE_FILES - {"tools/check-project-continuity-control.py"}, repair_closed_history, "original", False),
+        ("closure_prepared", "invalid", V2736F_GATE_FILES, repair_closed_history, "original", False),
+        ("closure_prepared", "repair_authorized", V2736F_GATE_FILES, repair_closed_history, "original", False),
+        ("repair_implementation_prepared", "repair_authorized", V2736F_REPAIR_IMPLEMENTATION_FILES | {"app.js"}, repair_authorized_history, None, False),
+        ("repair_implementation_committed", "repair_authorized", set(), {**repair_implemented_history, "repair_implementation_parent_is_authorization": False}, None, False),
+        ("repair_closure_prepared", "closed", V2736F_GATE_FILES - {"docs/PROJECT_STATE_CURRENT.md"}, repair_implemented_history, "repair", False),
+        ("closure_prepared", "closed", V2736F_GATE_FILES, repair_closed_history, "original", False, False, True),
+        ("closure_prepared", "closed", V2736F_GATE_FILES, repair_closed_history, "original", False, True, False),
+        ("closure_prepared", "closed", V2736F_GATE_FILES, {**repair_closed_history, "valid": False}, "original", False),
+    )
+    for case in post_cases:
+        phase, task_kind, working_paths, history, closure_kind, expected_result, *overrides = case
+        frozen_files_unchanged = overrides[0] if len(overrides) >= 1 else True
+        profile_available = overrides[1] if len(overrides) >= 2 else True
+        actual = _v2736f_post_implementation_scope_facts_are_valid(
+            phase=phase,
+            task_kind=task_kind,
+            working_paths=working_paths,
+            history=history,
+            closure_kind=closure_kind,
+            implementation_is_ancestor=True,
+            frozen_files_unchanged=frozen_files_unchanged,
+            profile_available=profile_available,
+        )
+        if actual != expected_result:
+            errors.append(
+                "v27.36f-Post-Implementation-Scope-Selbstprüfung "
                 f"fehlgeschlagen: {phase}"
             )
             return

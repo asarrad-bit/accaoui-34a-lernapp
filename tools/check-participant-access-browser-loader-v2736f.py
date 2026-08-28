@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_HEAD = "88337d5951bffdb3b1591ea5d6d9e5741a4c7477"
+IMPLEMENTATION_HEAD = "a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa"
 LOADER_ID = "accaoui-participant-access-browser-loader"
 READY_NAME = "ACCAOUI_PARTICIPANT_ACCESS_BROWSER_LOADER_READY"
 
@@ -32,6 +33,26 @@ AUTHORIZED_FILES = {
     "docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md",
     "tools/preflight.py",
 }
+GATE_FILES = {
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "tools/check-project-continuity-control.py",
+}
+REPAIR_FILES = {
+    "tools/preflight.py",
+    "tools/check-participant-access-browser-loader-v2736f.py",
+}
+POST_IMPLEMENTATION_FROZEN_FILES = (
+    "index.html",
+    "app.js",
+    "data/supabase-participant-access-browser-loader.js",
+    "docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md",
+    "data/supabase-participant-access-adapter.js",
+    "data/supabase-participant-access-bootstrap-bridge.js",
+    "data/supabase-participant-access-browser-provider.js",
+)
 
 FROZEN_FILES = (
     "data/supabase-client-adapter.js",
@@ -89,6 +110,17 @@ def baseline_bytes(relative_path: str) -> bytes:
     return result.stdout
 
 
+def implementation_bytes(relative_path: str) -> bytes:
+    result = subprocess.run(
+        ["git", "show", f"{IMPLEMENTATION_HEAD}:{relative_path}"],
+        cwd=ROOT,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        stop(f"Implementierungsbasis kann nicht gelesen werden: {relative_path}")
+    return result.stdout
+
+
 def changed_paths() -> set[str]:
     paths = {
         line.strip().replace("\\", "/")
@@ -128,6 +160,439 @@ def task_authorizes_v2736f() -> bool:
         and single_value("Commit erlaubt:") == "NEIN"
         and single_value("Push erlaubt:") == "NEIN"
     )
+
+
+def working_paths() -> set[str]:
+    paths = {
+        line.strip().replace("\\", "/")
+        for line in run_git(["diff", "--name-only"]).splitlines()
+        if line.strip()
+    }
+    paths.update(
+        line.strip().replace("\\", "/")
+        for line in run_git(["diff", "--cached", "--name-only"]).splitlines()
+        if line.strip()
+    )
+    paths.update(
+        line.strip().replace("\\", "/")
+        for line in run_git(["ls-files", "--others", "--exclude-standard"]).splitlines()
+        if line.strip()
+    )
+    return paths
+
+
+def parse_task_kind(text: str) -> str:
+    lines = text.splitlines()
+
+    def single_value(prefix: str) -> str | None:
+        values = [line[len(prefix):].strip() for line in lines if line.startswith(prefix)]
+        return values[0] if len(values) == 1 else None
+
+    original_allowed = ", ".join(f"`{path}`" for path in (
+        "index.html",
+        "app.js",
+        "data/supabase-participant-access-browser-loader.js",
+        "tools/check-participant-access-browser-loader-v2736f.py",
+        "docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md",
+        "tools/preflight.py",
+    ))
+    repair_allowed = ", ".join(f"`{path}`" for path in (
+        "tools/preflight.py",
+        "tools/check-participant-access-browser-loader-v2736f.py",
+    ))
+    common_locked = (
+        single_value("Commit erlaubt:") == "NEIN"
+        and single_value("Push erlaubt:") == "NEIN"
+    )
+    if (
+        single_value("Task-ID:") == "v27.36f"
+        and single_value("Status:") == "AUTHORIZED"
+        and single_value("Autorisiert:") == "JA"
+        and single_value("Erlaubte Implementierungsdateien:") == original_allowed
+        and common_locked
+    ):
+        return "v2736f_authorized"
+    if (
+        single_value("Task-ID:") == "v27.36f-REPAIR"
+        and single_value("Status:") == "AUTHORIZED"
+        and single_value("Autorisiert:") == "JA"
+        and single_value("Erlaubte Implementierungsdateien:") == repair_allowed
+        and common_locked
+    ):
+        return "repair_authorized"
+    if (
+        single_value("Task-ID:") == "NONE"
+        and single_value("Status:") == "BLOCKED"
+        and single_value("Autorisiert:") == "NEIN"
+        and single_value("Erlaubte Implementierungsdateien:") == "KEINE"
+        and common_locked
+    ):
+        return "closed"
+    return "invalid"
+
+
+def git_text_at_revision(revision: str, relative_path: str) -> str | None:
+    result = run(["git", "show", f"{revision}:{relative_path}"])
+    return result.stdout if result.returncode == 0 else None
+
+
+def git_paths_between(left: str, right: str) -> set[str] | None:
+    result = run(["git", "diff", "--name-only", left, right])
+    if result.returncode != 0:
+        return None
+    return {
+        line.strip().replace("\\", "/")
+        for line in result.stdout.splitlines()
+        if line.strip()
+    }
+
+
+def git_is_ancestor(ancestor: str, descendant: str) -> bool:
+    return run(["git", "merge-base", "--is-ancestor", ancestor, descendant]).returncode == 0
+
+
+def closure_kind_from_state_text(state_text: str) -> str | None:
+    if (
+        "Abgeschlossener technischer Schritt v27.36f" in state_text
+        and "v27.36f abgeschlossen." in state_text
+    ):
+        return "original"
+    if (
+        "Abgeschlossener Repair-Task v27.36f-REPAIR" in state_text
+        and "v27.36f-REPAIR abgeschlossen." in state_text
+    ):
+        return "repair"
+    return None
+
+
+def read_post_implementation_history() -> dict[str, object] | None:
+    result = run(["git", "rev-list", "--reverse", f"{IMPLEMENTATION_HEAD}..HEAD"])
+    if result.returncode != 0:
+        return None
+    commits = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    previous = IMPLEMENTATION_HEAD
+    roles: list[str] = []
+    repair_gate_seen = False
+    repair_implementation_seen = False
+    repair_implementation_parent_is_authorization = False
+    repair_closure_seen = False
+    original_closure_seen = False
+    for commit in commits:
+        lineage_result = run(["git", "rev-list", "--parents", "-n", "1", commit])
+        lineage = lineage_result.stdout.split() if lineage_result.returncode == 0 else []
+        if len(lineage) != 2 or lineage[1] != previous:
+            return None
+        files = git_paths_between(previous, commit)
+        task_text = git_text_at_revision(commit, "docs/tasks/CURRENT_TASK.md")
+        if not files or task_text is None:
+            return None
+        task_kind = parse_task_kind(task_text)
+        if task_kind == "repair_authorized" and files.issubset(GATE_FILES):
+            if repair_closure_seen or original_closure_seen:
+                return None
+            repair_gate_seen = True
+            roles.append("repair_gate")
+        elif task_kind == "repair_authorized" and files == REPAIR_FILES:
+            if (
+                not repair_gate_seen
+                or repair_implementation_seen
+                or repair_closure_seen
+                or original_closure_seen
+            ):
+                return None
+            repair_implementation_parent_is_authorization = (
+                bool(roles) and roles[-1] == "repair_gate"
+            )
+            if not repair_implementation_parent_is_authorization:
+                return None
+            repair_implementation_seen = True
+            roles.append("repair_implementation")
+        elif task_kind == "closed" and files == GATE_FILES:
+            state_text = git_text_at_revision(commit, "docs/PROJECT_STATE_CURRENT.md")
+            if state_text is None:
+                return None
+            closure_kind = closure_kind_from_state_text(state_text)
+            if closure_kind == "repair":
+                if (
+                    not repair_implementation_seen
+                    or repair_closure_seen
+                    or original_closure_seen
+                ):
+                    return None
+                repair_closure_seen = True
+                roles.append("repair_closure")
+            elif closure_kind == "original":
+                if original_closure_seen or (
+                    repair_gate_seen and not repair_closure_seen
+                ):
+                    return None
+                original_closure_seen = True
+                roles.append("original_closure")
+            else:
+                return None
+        else:
+            return None
+        previous = commit
+    return {
+        "valid": True,
+        "roles": tuple(roles),
+        "last_role": roles[-1] if roles else None,
+        "repair_gate_seen": repair_gate_seen,
+        "repair_implementation_seen": repair_implementation_seen,
+        "repair_implementation_parent_is_authorization": repair_implementation_parent_is_authorization,
+        "repair_closure_seen": repair_closure_seen,
+        "original_closure_seen": original_closure_seen,
+    }
+
+
+def post_implementation_frozen_files_unchanged() -> bool:
+    if not git_is_ancestor(IMPLEMENTATION_HEAD, "HEAD"):
+        return False
+    return all(
+        (ROOT / relative_path).read_bytes() == implementation_bytes(relative_path)
+        for relative_path in POST_IMPLEMENTATION_FROZEN_FILES
+    )
+
+
+def lifecycle_scope_facts_are_valid(
+    *,
+    phase: str,
+    task_kind: str,
+    current_working_paths: set[str],
+    history: dict[str, object] | None,
+    closure_kind: str | None,
+    implementation_is_ancestor: bool,
+    frozen_files_unchanged: bool,
+    regression_profile_available: bool,
+) -> bool:
+    if not (
+        isinstance(history, dict)
+        and history.get("valid") is True
+        and implementation_is_ancestor
+        and frozen_files_unchanged
+        and regression_profile_available
+    ):
+        return False
+    last_role = history.get("last_role")
+    if phase == "repair_authorization_committed":
+        return (
+            task_kind == "repair_authorized"
+            and not current_working_paths
+            and history.get("repair_gate_seen") is True
+            and history.get("repair_implementation_seen") is False
+            and last_role == "repair_gate"
+        )
+    if phase == "repair_implementation_prepared":
+        return (
+            task_kind == "repair_authorized"
+            and current_working_paths == REPAIR_FILES
+            and history.get("repair_gate_seen") is True
+            and history.get("repair_implementation_seen") is False
+            and last_role == "repair_gate"
+        )
+    if phase == "repair_implementation_committed":
+        return (
+            task_kind == "repair_authorized"
+            and not current_working_paths
+            and history.get("repair_implementation_seen") is True
+            and history.get("repair_implementation_parent_is_authorization") is True
+            and last_role == "repair_implementation"
+        )
+    if phase == "repair_closure_prepared":
+        return (
+            task_kind == "closed"
+            and current_working_paths == GATE_FILES
+            and closure_kind == "repair"
+            and history.get("repair_implementation_seen") is True
+            and history.get("repair_closure_seen") is False
+            and last_role == "repair_implementation"
+        )
+    if phase == "repair_closure_committed":
+        return (
+            task_kind == "closed"
+            and not current_working_paths
+            and history.get("repair_closure_seen") is True
+            and last_role == "repair_closure"
+        )
+    if phase == "closure_prepared":
+        repair_path_complete = (
+            history.get("repair_gate_seen") is False
+            or history.get("repair_closure_seen") is True
+        )
+        return (
+            task_kind == "closed"
+            and current_working_paths == GATE_FILES
+            and closure_kind == "original"
+            and history.get("original_closure_seen") is False
+            and repair_path_complete
+            and last_role in {None, "repair_closure"}
+        )
+    if phase == "closure_committed":
+        return (
+            task_kind == "closed"
+            and not current_working_paths
+            and history.get("original_closure_seen") is True
+            and last_role == "original_closure"
+        )
+    return False
+
+
+def regression_profile_available() -> bool:
+    try:
+        checker_text = Path(__file__).read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return False
+    return all(marker in checker_text for marker in (
+        "def require_v2736e_regression()",
+        "validate_v2736e_regression_sources",
+        "manipulations += require_v2736e_regression()",
+    ))
+
+
+def detect_supported_lifecycle_phase() -> str | None:
+    current_working_paths = working_paths()
+    current_task_text = (ROOT / "docs/tasks/CURRENT_TASK.md").read_text(encoding="utf-8")
+    task_kind = parse_task_kind(current_task_text)
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    if task_kind == "v2736f_authorized":
+        if (
+            head == BASE_HEAD
+            and current_working_paths == AUTHORIZED_FILES
+            and changed_paths() == AUTHORIZED_FILES
+        ):
+            return "implementation_prepared"
+        if (
+            head == IMPLEMENTATION_HEAD
+            and not current_working_paths
+            and changed_paths() == AUTHORIZED_FILES
+            and git_paths_between(BASE_HEAD, IMPLEMENTATION_HEAD) == AUTHORIZED_FILES
+        ):
+            return "implementation_committed"
+    try:
+        state_text = (ROOT / "docs/PROJECT_STATE_CURRENT.md").read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+    closure_kind = closure_kind_from_state_text(state_text)
+    history = read_post_implementation_history()
+    shared = {
+        "task_kind": task_kind,
+        "current_working_paths": current_working_paths,
+        "history": history,
+        "closure_kind": closure_kind,
+        "implementation_is_ancestor": git_is_ancestor(IMPLEMENTATION_HEAD, "HEAD"),
+        "frozen_files_unchanged": post_implementation_frozen_files_unchanged(),
+        "regression_profile_available": regression_profile_available(),
+    }
+    for phase in (
+        "repair_authorization_committed",
+        "repair_implementation_prepared",
+        "repair_implementation_committed",
+        "repair_closure_prepared",
+        "repair_closure_committed",
+        "closure_prepared",
+        "closure_committed",
+    ):
+        if lifecycle_scope_facts_are_valid(phase=phase, **shared):
+            return phase
+    return None
+
+
+def require_lifecycle_scope_manipulations() -> int:
+    empty_history = {
+        "valid": True,
+        "last_role": None,
+        "repair_gate_seen": False,
+        "repair_implementation_seen": False,
+        "repair_implementation_parent_is_authorization": False,
+        "repair_closure_seen": False,
+        "original_closure_seen": False,
+    }
+    repair_authorized_history = {
+        **empty_history,
+        "last_role": "repair_gate",
+        "repair_gate_seen": True,
+    }
+    repair_implemented_history = {
+        **repair_authorized_history,
+        "last_role": "repair_implementation",
+        "repair_implementation_seen": True,
+        "repair_implementation_parent_is_authorization": True,
+    }
+    repair_closed_history = {
+        **repair_implemented_history,
+        "last_role": "repair_closure",
+        "repair_closure_seen": True,
+    }
+    original_closed_history = {
+        **repair_closed_history,
+        "last_role": "original_closure",
+        "original_closure_seen": True,
+    }
+    positive_cases = (
+        ("repair_authorization_committed", "repair_authorized", set(), repair_authorized_history, None),
+        ("repair_implementation_prepared", "repair_authorized", REPAIR_FILES, repair_authorized_history, None),
+        ("repair_implementation_committed", "repair_authorized", set(), repair_implemented_history, None),
+        ("repair_closure_prepared", "closed", GATE_FILES, repair_implemented_history, "repair"),
+        ("repair_closure_committed", "closed", set(), repair_closed_history, "repair"),
+        ("closure_prepared", "closed", GATE_FILES, repair_closed_history, "original"),
+        ("closure_committed", "closed", set(), original_closed_history, "original"),
+    )
+    for phase, task_kind, current_working_paths, history, closure_kind in positive_cases:
+        require(
+            lifecycle_scope_facts_are_valid(
+                phase=phase,
+                task_kind=task_kind,
+                current_working_paths=current_working_paths,
+                history=history,
+                closure_kind=closure_kind,
+                implementation_is_ancestor=True,
+                frozen_files_unchanged=True,
+                regression_profile_available=True,
+            ),
+            f"Legitime Lifecycle-Simulation wurde blockiert: {phase}",
+        )
+
+    negative_cases = (
+        ("closure_prepared", "closed", GATE_FILES | {"style.css"}, repair_closed_history, "original", True, True, True, "Closure mit sechster Datei"),
+        ("closure_prepared", "closed", GATE_FILES - {"tools/check-project-continuity-control.py"}, repair_closed_history, "original", True, True, True, "Closure mit fehlender Gate-Datei"),
+        ("closure_prepared", "invalid", GATE_FILES, repair_closed_history, "original", True, True, True, "CURRENT_TASK NONE mit Autorisiert JA"),
+        ("closure_prepared", "repair_authorized", GATE_FILES, repair_closed_history, "original", True, True, True, "AUTHORIZED während Closure"),
+        ("closure_prepared", "closed", GATE_FILES, repair_closed_history, "original", True, False, True, "App-Datei nach Implementierung verändert"),
+        ("closure_prepared", "closed", GATE_FILES, repair_closed_history, "original", True, False, True, "Loader-Datei nach Implementierung verändert"),
+        ("closure_prepared", "closed", GATE_FILES, repair_closed_history, "original", True, False, True, "Provider nach Implementierung verändert"),
+        ("repair_implementation_prepared", "repair_authorized", REPAIR_FILES | {"app.js"}, repair_authorized_history, None, True, True, True, "Repair-Scope mit dritter Datei"),
+        ("repair_implementation_committed", "repair_authorized", set(), {**repair_implemented_history, "repair_implementation_parent_is_authorization": False}, None, True, True, True, "Repair-Commit mit falschem Parent"),
+        ("repair_closure_prepared", "closed", GATE_FILES - {"docs/PROJECT_STATE_CURRENT.md"}, repair_implemented_history, "repair", True, True, True, "Repair-Closure mit falschem Scope"),
+        ("closure_prepared", "invalid", GATE_FILES, repair_closed_history, "original", True, True, True, "neuer Folgetask autorisiert"),
+        ("closure_prepared", "closed", GATE_FILES, repair_closed_history, "original", True, True, False, "require_v2736e_regression entfernt"),
+        ("closure_prepared", "closed", GATE_FILES, {**repair_closed_history, "valid": False}, "original", True, True, True, "pauschale historische Checker-Umgehung"),
+        ("closure_committed", "closed", set(), repair_closed_history, "original", True, True, True, "ursprünglicher Closure-Commit fehlt"),
+    )
+    blocked = 0
+    for (
+        phase,
+        task_kind,
+        current_working_paths,
+        history,
+        closure_kind,
+        implementation_is_ancestor,
+        frozen_files_unchanged,
+        regression_profile_available,
+        label,
+    ) in negative_cases:
+        if lifecycle_scope_facts_are_valid(
+            phase=phase,
+            task_kind=task_kind,
+            current_working_paths=current_working_paths,
+            history=history,
+            closure_kind=closure_kind,
+            implementation_is_ancestor=implementation_is_ancestor,
+            frozen_files_unchanged=frozen_files_unchanged,
+            regression_profile_available=regression_profile_available,
+        ):
+            stop(f"Lifecycle-Manipulation wurde nicht blockiert: {label}")
+        blocked += 1
+    return blocked
 
 
 def validate_source_contract(
@@ -384,10 +849,9 @@ for required_path in required_paths:
     if not required_path.is_file():
         stop(f"Pflichtdatei fehlt: {required_path.relative_to(ROOT)}")
 
-if not task_authorizes_v2736f():
-    stop("CURRENT_TASK autorisiert v27.36f nicht exakt")
-if changed_paths() != AUTHORIZED_FILES:
-    stop("Working-Tree-Dateimenge ist nicht exakt der autorisierte v27.36f-Scope")
+lifecycle_phase = detect_supported_lifecycle_phase()
+if lifecycle_phase is None:
+    stop("CURRENT_TASK, Git-Historie oder Dateimenge entsprechen keiner legitimen v27.36f-/REPAIR-Phase")
 
 for relative_path in FROZEN_FILES:
     if (ROOT / relative_path).read_bytes() != baseline_bytes(relative_path):
@@ -891,6 +1355,7 @@ for args in source_mutations:
         continue
     stop(f"Quellmanipulation wurde nicht blockiert: {args[-1]}")
 
+manipulations += require_lifecycle_scope_manipulations()
 require_regression("tools/check-supabase-participant-access-adapter.py")
 require_regression("tools/check-supabase-participant-access-bootstrap-bridge.py")
 manipulations += require_v2736e_regression()
@@ -903,6 +1368,7 @@ print("v27.36b-Checker: PASS")
 print("v27.36c-Checker: PASS")
 print("v27.36d-Checker: PASS (enges v27.36e/v27.36f-Regressionsprofil)")
 print("v27.36e-Checker: PASS (enges v27.36f-Regressionsprofil)")
+print(f"Lifecycle-Phase: {lifecycle_phase}")
 print("Default data-enabled=false und ausschließlich exaktes true: PASS")
 print("Feste Ladefolge und Readiness-Grenze: PASS")
 print("Angeforderte Aktivierung fail-closed; kein Fallback: PASS")
