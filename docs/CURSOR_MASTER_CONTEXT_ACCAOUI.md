@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.36f
+Stand: v27.36f-REPAIR
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -466,54 +466,48 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-### Autorisierter Task v27.36f
+### Autorisierter Repair-Task v27.36f-REPAIR
 
-v27.36f ist der einzige autorisierte Task.
+v27.36f-REPAIR ist der einzige autorisierte Task.
 
-Kontrollierten Browser-Aktivierungsweg für den Teilnehmerzugang hinter explizitem Schalter vorbereiten.
+Closure-Prüfpfad für v27.36f eng reparieren.
 
-Dieser GATE-Schritt autorisiert nur die spätere Umsetzung; in diesem Schritt wird keine Implementierung vorgenommen.
+Dieser GATE-Schritt autorisiert ausschließlich die spätere Repair-Implementierung; in diesem Schritt wird keine Implementierung vorgenommen.
 
-Die funktionale Grundlage bleibt v27.35g. Die technische Grundlage ist der vollständig abgeschlossene Stand v27.36e. Die stabile Autorisierungsbasis ist `dc0d3fc87bde407cfac94fd598601ce4e80dfad7`.
+Die funktionale Grundlage bleibt v27.35g. Die v27.36f-Implementierung ist im Commit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa` abgeschlossen und bleibt unverändert. Der ursprüngliche v27.36f-Closure-Schritt bleibt separat abzuschließen. Die stabile Repair-Basis ist `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`.
 
-Für die spätere IMPLEMENTATION sind exakt sechs Dateien erlaubt:
+Für die spätere REPAIR-IMPLEMENTATION sind exakt zwei Dateien erlaubt:
 
-- `index.html`
-- `app.js`
-- `data/supabase-participant-access-browser-loader.js`
-- `tools/check-participant-access-browser-loader-v2736f.py`
-- `docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md`
 - `tools/preflight.py`
+- `tools/check-participant-access-browser-loader-v2736f.py`
 
-Verbindlicher Aktivierungsvertrag:
+Verbindlicher Repair-Vertrag:
 
-- `index.html` erhält genau ein kleines Loader-Skript mit der stabilen ID `accaoui-participant-access-browser-loader` unmittelbar vor `app.js`; der finale Default lautet `data-enabled="false"`.
-- Ausschließlich der exakte Attributwert `"true"` fordert die Aktivierung an. Storage-, Query-, Cookie- oder frei steuerbare Nutzerwerte dürfen den Schalter nicht beeinflussen.
-- Bei `data-enabled="false"` werden weder Teilnehmerzugangskette noch Provider, Client, Auth-, Datenbank- oder Netzwerkzugriff gestartet; der lokale Standardbetrieb bleibt unverändert und nicht blockierend.
-- Bei `data-enabled="true"` lädt der Loader in fester Reihenfolge Adapter, Brücke und Browser-Provider und verwendet anschließend den bestehenden `window.ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER`.
-- Die bevorzugte Readiness-Oberfläche ist `window.ACCAOUI_PARTICIPANT_ACCESS_BROWSER_LOADER_READY`; sie legt weder Client, `userId`, Session-, Teilnehmer-, Kurs-, Key- noch Configdaten offen.
-- `app.js` prüft ausschließlich die Loader-Readiness und verwendet danach unverändert den bestehenden v27.36d-Providervertrag mit `resolveAccess()`.
-- Ist Aktivierung angefordert, bleiben fehlender oder nicht ausgeführter Loader, Ladefehler, fehlende Dependencies und ungültige Readiness fail-closed; es gibt keinen lokalen Fallback, und die App zeigt ausschließlich den generischen Zustand `access_error` ohne interne Rohfehler.
-- `app.js` erkennt den Loader-Script-Tag mit `data-enabled="true"` auch dann als angeforderte Aktivierung, wenn das Loader-Skript fehlt oder nicht ausgeführt wurde.
-- Keine Fachlogik aus v27.36b, v27.36c, v27.36d oder v27.36e wird dupliziert.
+- `tools/preflight.py` darf das bestehende enge v27.36f-Regressionsprofil für v27.36e ausschließlich um die legitimen Zustände `closure_prepared` und `closure_committed` erweitern.
+- Closure darf nur erkannt werden, wenn der legitime v27.36f-Implementierungscommit vorhanden ist, die Implementierungsdateien unverändert sind, der Closure-Scope exakt fünf Gate-Dateien beziehungsweise exakt einen legitimen Closure-Commit umfasst, `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN` steht, kein neuer Task autorisiert ist, v27.36e-Provider, Adapter und Brücke unverändert sind und das funktionale `require_v2736e_regression`-Profil erhalten bleibt.
+- Es gibt kein pauschales PASS, und kein historischer Checker wird generell deaktiviert.
+- `tools/check-participant-access-browser-loader-v2736f.py` darf ausschließlich um die legitimen Zustände `closure_prepared` und `closure_committed` erweitert werden.
+- Der Checker prüft weiterhin Default `data-enabled=false`, ausschließlich exaktes `true`, Ladefolge, Readiness, fail-closed, `access_error`, keinen lokalen Fallback bei `requested=true`, lokale Standardfunktion bei `false`, die v27.36d-/v27.36e-Verträge, Frozen-Dateien, Supabase NICHT LIVE sowie keine echten Keys oder Teilnehmerdaten.
+- Closure wird nur akzeptiert, wenn sie exakt dem v27.36f-Lifecycle entspricht.
 
-Sicherheitsgrenze:
+Eingefrorene Sicherheitsgrenze:
 
-- Keine Live-Aktivierung, kein `bootstrap.initializeClient()`, kein `supabase.createClient()`, kein SDK- oder Config-Zugriff, keine direkten Auth- oder Tabellenabfragen, kein SQL und keine Migrationen.
-- Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
-- Die vorhandenen v27.36b-/v27.36c-/v27.36d-/v27.36e-Module, Bootstrap, Config, SQL, Migrationen, `questions.json` und `style.css` bleiben unverändert.
-- Der spätere Checker arbeitet ausschließlich lokal mit synthetischen Browserzuständen und echten Manipulationsprüfungen; er prüft Default-off, exaktes `true`, Ladefolge, Readiness, fail-closed, Verbote, unveränderte Bestandsmodule und die Regressionen v27.36b/v27.36c/v27.36d/v27.36e.
-- Der spätere Bericht dokumentiert Architektur, Schalter, Ladefolge, Readiness, Fail-closed-Grenze, Tests und ausdrücklich `Supabase live: NEIN`, `echte Keys: NEIN` und `echte Teilnehmerdaten: NEIN`.
+- Kein App-Code und kein Loader-Code wird geändert. `index.html`, `app.js` und `data/supabase-participant-access-browser-loader.js` bleiben unverändert.
+- Kein Supabase-Modul wird geändert. Insbesondere bleiben `data/supabase-participant-access-adapter.js`, `data/supabase-participant-access-bootstrap-bridge.js`, `data/supabase-participant-access-browser-provider.js`, `data/supabase-client-bootstrap.js` und `data/supabase-client-adapter.js` unverändert.
+- Config-Dateien, SQL, Migrationen, `questions.json` und `style.css` bleiben unverändert.
+- Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten. Kein echter Login wird aktiviert.
+- Keine Live-Aktivierung, kein `initializeClient()`, kein `createClient()`, keine Auth-Abfrage, keine Tabellenabfrage und keine neue Produktfunktion.
+- Der Repair betrifft ausschließlich Prüf- und Lifecycle-Kompatibilität für die Closure.
 
 Kein anderer Task und kein Folgetask ist ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
 
-### Permanenter v27.36f-Lebenszyklus
+#### Permanenter v27.36f-REPAIR-Lebenszyklus
 
-Der Lifecycle erkennt dynamisch genau die Phasen `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed`.
+Der Lifecycle erkennt dynamisch genau die Phasen `repair_authorization_prepared`, `repair_authorization_committed`, `repair_implementation_prepared`, `repair_implementation_committed`, `repair_closure_prepared` und `repair_closure_committed`.
 
-GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien. IMPLEMENTATION enthält exakt die sechs autorisierten Implementierungsdateien und ist höchstens einmal zulässig. CLOSURE ist erst nach IMPLEMENTATION zulässig, enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
+REPAIR-GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien. REPAIR-IMPLEMENTATION enthält exakt die zwei autorisierten Repair-Dateien und ist höchstens einmal zulässig. REPAIR-CLOSURE ist erst nach REPAIR-IMPLEMENTATION zulässig, enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
 
-Keine zukünftige GATE-, IMPLEMENTATION- oder CLOSURE-SHA wird hartcodiert. Die stabile Basis bleibt ausschließlich als historische Autorisierungsbasis zulässig. Rückkehr zu einem autorisierten v27.36f-Zustand bleibt nach der Closure ohne neue ausdrückliche Autorisierung blockiert.
+Keine zukünftige Repair-GATE-, Repair-IMPLEMENTATION- oder Repair-CLOSURE-SHA wird hartcodiert. Die stabile Repair-Basis darf ausschließlich als historische technische Basis dokumentiert werden. Nach `repair_closure_committed` bleibt eine Rückkehr zu `v27.36f-REPAIR / AUTHORIZED` ohne neue ausdrückliche Autorisierung blockiert. Der ursprüngliche v27.36f-Closure-Schritt bleibt danach noch separat abzuschließen.
 
 ### Abgeschlossener technischer Schritt v27.36e
 
