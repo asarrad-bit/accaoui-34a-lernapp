@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.36f-REPAIR
+Stand: v27.36f
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -466,56 +466,88 @@ Codex darf insbesondere nicht:
 
 ## 14. Nächster sinnvoller Schritt
 
-### Abgeschlossener Repair-Task v27.36f-REPAIR
+### Abgeschlossener technischer Schritt v27.36f
 
-v27.36f-REPAIR abgeschlossen.
+v27.36f abgeschlossen.
+
+Der technische Stand ist v27.36f vollständig abgeschlossen. Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+
+Implementierungscommit: `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`
+
+Zusätzlicher enger Prüfpfad-Repair: v27.36f-REPAIR.
 
 Repair-Implementierungscommit: `b035c62100b033dbce03a4ab016e4471b4ab54d4`
 
-Umgesetzte Repair-Dateien:
+Repair-Closure: `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712`
 
-- `tools/preflight.py`
+v27.36f-REPAIR vollständig abgeschlossen.
+
+Umgesetzte Dateien:
+
+- `index.html`
+- `app.js`
+- `data/supabase-participant-access-browser-loader.js`
 - `tools/check-participant-access-browser-loader-v2736f.py`
+- `docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md`
+- `tools/preflight.py`
 
 Ergebnis:
 
-- Die Root Cause betraf ausschließlich die Closure-Kompatibilität der Prüfpfade.
-- Der Kontinuitätschecker unterstützt den ursprünglichen v27.36f-Lifecycle weiterhin dynamisch für `closure_prepared` und `closure_committed`.
-- Das enge v27.36f-Regressionsprofil für v27.36e bleibt im Preflight auch während der Closure wirksam.
-- Die Repair-Phasen `repair_closure_prepared` und `repair_closure_committed` werden dynamisch erkannt.
-- Es gibt keinen pauschalen Bypass und keine Abschwächung der bestehenden v27.36b-/v27.36c-/v27.36d-/v27.36e-Sicherheitsverträge.
-- Die v27.36f-Implementierung bleibt unverändert.
-- Die ursprüngliche v27.36f-Implementierung bleibt der Commit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`.
-- Der ursprüngliche v27.36f-Closure-Schritt bleibt separat abzuschließen.
+- Loader-ID: `accaoui-participant-access-browser-loader`.
+- Der finale Default bleibt `data-enabled="false"`.
+- Nur der exakte Attributwert `"true"` fordert die Aktivierung an.
+- Bei deaktiviertem Schalter bleibt der lokale Standardbetrieb unverändert und nicht blockierend.
+- Bei angeforderter Aktivierung werden Adapter, Brücke und Browser-Provider in fester Reihenfolge geladen.
+- Die Readiness-Oberfläche ist `window.ACCAOUI_PARTICIPANT_ACCESS_BROWSER_LOADER_READY`.
+- `app.js` verwendet weiterhin den v27.36d-Providervertrag mit `resolveAccess()`.
+- Fehler bei angeforderter Aktivierung bleiben fail-closed ohne lokalen Fallback.
+- Der generische Fehlerzustand ist `access_error`; interne Rohfehler werden nicht ausgegeben.
+- Keine Fachlogik wurde dupliziert.
+
+Repair-Abschluss:
+
+- `closure_prepared` wird korrekt geprüft.
+- `closure_committed` wird dynamisch geprüft.
+- Die v27.36e-Regression bleibt über das enge v27.36f-Profil geschützt.
+- Der Repair-Lifecycle ist vollständig geschlossen.
+- Es gibt keinen pauschalen Bypass.
+- Keine zukünftige Closure-SHA wird hartcodiert.
 
 Testergebnis:
 
-- v27.36f-Checker: PASS mit 41 Positivprüfungen, 27 Negativprüfungen und 46 Manipulationsprüfungen.
-- v27.36b-, v27.36c-, v27.36d- und v27.36e-Regressionen: PASS.
+- v27.36f-Checker: PASS.
+- Positivprüfungen: 41 PASS.
+- Negativprüfungen: 27 PASS.
+- Manipulationsprüfungen: 46 PASS.
+- v27.36b-/v27.36c-/v27.36d-/v27.36e-Regressionen: PASS.
 - Kontinuitätschecker: PASS.
 - Preflight: PASS.
 - `git diff --check`: PASS.
 
 Sicherheitsgrenze:
 
-- Keine Produkt-, App- oder Loader-Funktion und keine Loader-Fachlogik wurde geändert.
-- Kein Supabase-Modul wurde geändert.
-- `index.html`, `app.js` und `data/supabase-participant-access-browser-loader.js` bleiben unverändert.
-- Der Default bleibt `data-enabled=false`.
 - Supabase bleibt NICHT LIVE.
 - Keine echten Keys.
 - Keine echten Teilnehmerdaten.
-- Kein echter Login wurde aktiviert.
+- Kein echter Login ist produktiv aktiviert.
+- Keine Live-Aktivierung.
+- Kein `initializeClient()`.
+- Kein `createClient()`.
+- Keine direkte Auth-Abfrage.
+- Keine Tabellenabfrage.
+- Kein SQL.
+- Keine Migration.
+- Der Loader-Schalter bleibt standardmäßig `false`.
 
-Kein Folgetask wurde ausgewählt oder autorisiert. Neue Implementierung bleibt bis zu einer ausdrücklichen Autorisierung blockiert.
+Kein Folgetask wurde ausgewählt oder autorisiert. Kein neuer Task und keine implizite Autorisierung bestehen.
 
-#### Permanenter v27.36f-REPAIR-Lebenszyklus
+#### Permanenter v27.36f-Lebenszyklus
 
-Der Lifecycle erkennt dynamisch genau die Phasen `repair_authorization_prepared`, `repair_authorization_committed`, `repair_implementation_prepared`, `repair_implementation_committed`, `repair_closure_prepared` und `repair_closure_committed`.
+Der Lifecycle erkennt dynamisch die Phasen `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed` und berücksichtigt den vollständig geschlossenen v27.36f-REPAIR-Verlauf.
 
-REPAIR-GATE enthält ausschließlich eine nichtleere Teilmenge der fünf Gate-Dateien. REPAIR-IMPLEMENTATION enthält exakt die zwei autorisierten Repair-Dateien und ist höchstens einmal zulässig. REPAIR-CLOSURE ist erst nach REPAIR-IMPLEMENTATION zulässig, enthält exakt die fünf Gate-Dateien und setzt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
+Die ursprüngliche CLOSURE ist erst nach IMPLEMENTATION und vollständig geschlossenem Repair-Verlauf zulässig, enthält exakt die fünf Gate-Dateien und setzt beziehungsweise belässt `CURRENT_TASK` auf `NONE / BLOCKED / Autorisiert NEIN`.
 
-Keine zukünftige Repair-CLOSURE-SHA wird hartcodiert. Rückkehr zu `v27.36f-REPAIR / AUTHORIZED` bleibt ohne neue ausdrückliche Autorisierung blockiert. Der ursprüngliche v27.36f-Closure-Lifecycle bleibt danach dynamisch erreichbar; keine zukünftige ursprüngliche v27.36f-CLOSURE-SHA wird hartcodiert.
+Keine zukünftige CLOSURE-SHA wird hartcodiert. Rückkehr zu einem autorisierten v27.36f-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert. Rückkehr zu `v27.36f-REPAIR / AUTHORIZED` bleibt ohne neue ausdrückliche Autorisierung blockiert. Eine erneute v27.36f-IMPLEMENTATION ist nach `closure_committed` unzulässig.
 
 ### Abgeschlossener technischer Schritt v27.36e
 

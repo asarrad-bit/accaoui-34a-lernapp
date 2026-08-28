@@ -7987,6 +7987,18 @@ V2736F_CLOSURE_MARKERS = (
     "Keine zukünftige CLOSURE-SHA wird hartcodiert.",
     "Rückkehr zu einem autorisierten v27.36f-Zustand bleibt ohne neue ausdrückliche Autorisierung blockiert.",
 )
+V2736F_POST_REPAIR_CLOSURE_MARKERS = (
+    "Der technische Stand ist v27.36f vollständig abgeschlossen.",
+    "Zusätzlicher enger Prüfpfad-Repair: v27.36f-REPAIR.",
+    "v27.36f-REPAIR vollständig abgeschlossen.",
+    "`closure_prepared` wird korrekt geprüft.",
+    "`closure_committed` wird dynamisch geprüft.",
+    "Die v27.36e-Regression bleibt über das enge v27.36f-Profil geschützt.",
+    "Der Repair-Lifecycle ist vollständig geschlossen.",
+    "Es gibt keinen pauschalen Bypass.",
+    "Rückkehr zu `v27.36f-REPAIR / AUTHORIZED` bleibt ohne neue ausdrückliche Autorisierung blockiert.",
+    "Eine erneute v27.36f-IMPLEMENTATION ist nach `closure_committed` unzulässig.",
+)
 V2736F_TASK_AUTHORIZED = "authorized"
 V2736F_TASK_CLOSED = "closed"
 V2736F_HISTORY_BEFORE_AUTHORIZATION = "before_authorization_commit"
@@ -8219,7 +8231,14 @@ def detect_v2736f_task_state_text(text: str) -> str:
     raise ValidationError(f"Unzulässiger v27.36f-Taskzustand: {task_id}")
 
 
-def validate_v2736f_closed_documents(state_text: str, task_text: str, cursor_text: str, masterlist_text: str, implementation_commit: str) -> None:
+def validate_v2736f_closed_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    implementation_commit: str,
+    additional_allowed_shas: frozenset[str] = frozenset(),
+) -> None:
     require(re.fullmatch(r"[0-9a-f]{40}", implementation_commit) is not None, "v27.36f-Closure benötigt einen dynamisch erkannten Implementierungscommit")
     validate_exact_fields(state_text, V2736F_CLOSED_STATE_FIELDS)
     validate_exact_fields(task_text, V2736F_CLOSED_TASK_FIELDS)
@@ -8233,7 +8252,12 @@ def validate_v2736f_closed_documents(state_text: str, task_text: str, cursor_tex
         section = extract_v2736f_closure_section(text, name)
         validate_required_markers(section, V2736F_CLOSURE_MARKERS, f"{name} / v27.36f-Closure")
         require(section.count(f"Implementierungscommit: `{implementation_commit}`") == 1, f"{name}: dynamischer v27.36f-Implementierungscommit fehlt oder ist doppelt")
-        validate_no_future_v2736f_sha(section, frozenset({V2736F_AUTHORIZATION_BASE_SHA, implementation_commit}), f"{name} / v27.36f-Closure")
+        validate_no_future_v2736f_sha(
+            section,
+            frozenset({V2736F_AUTHORIZATION_BASE_SHA, implementation_commit})
+            | additional_allowed_shas,
+            f"{name} / v27.36f-Closure",
+        )
         validate_v2736f_implementation_file_list(section, name, "Umgesetzte Dateien:", "Ergebnis:")
     rows = re.findall(r"(?m)^\| v27\.36f \|.*$", masterlist_text)
     require(len(rows) == 1 and "**erledigt**" in rows[0] and implementation_commit in rows[0], "PROJECT_MASTERLIST muss v27.36f nach Closure exakt einmal als erledigt führen")
@@ -9160,6 +9184,78 @@ def validate_v2736f_repair_history_facts(
     return V2736FRepairHistoryState(state, implementation_commit, tuple(roles), tuple(gate_commits))
 
 
+def recognized_v2736f_repair_completion_commits(
+    facts: tuple[V2736FRepairCommitFact, ...],
+    history: V2736FRepairHistoryState,
+) -> tuple[str, str]:
+    require(
+        history.implementation_commit is not None,
+        "Ursprüngliche v27.36f-Closure benötigt den dynamisch erkannten Repair-Implementierungscommit",
+    )
+    repair_closure_commits = tuple(
+        fact.commit_sha
+        for fact, role in zip(facts, history.roles)
+        if role == V2736F_REPAIR_ROLE_CLOSURE
+    )
+    require(
+        len(repair_closure_commits) == 1,
+        "Ursprüngliche v27.36f-Closure benötigt exakt einen dynamisch erkannten Repair-Closure-Commit",
+    )
+    return history.implementation_commit, repair_closure_commits[0]
+
+
+def validate_v2736f_original_after_repair_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    facts: tuple[V2736FRepairCommitFact, ...],
+    history: V2736FRepairHistoryState,
+) -> None:
+    repair_implementation_commit, repair_closure_commit = (
+        recognized_v2736f_repair_completion_commits(facts, history)
+    )
+    validate_v2736f_closed_documents(
+        state_text,
+        task_text,
+        cursor_text,
+        masterlist_text,
+        V2736F_REPAIR_BASE_SHA,
+        frozenset({repair_implementation_commit, repair_closure_commit}),
+    )
+    documents = (state_text, task_text, cursor_text, masterlist_text)
+    names = (
+        "PROJECT_STATE_CURRENT",
+        "CURRENT_TASK",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        "PROJECT_MASTERLIST",
+    )
+    dynamic_markers = (
+        f"Repair-Implementierungscommit: `{repair_implementation_commit}`",
+        f"Repair-Closure: `{repair_closure_commit}`",
+    )
+    for text, name in zip(documents, names):
+        section = extract_v2736f_closure_section(text, name)
+        validate_required_markers(
+            section,
+            V2736F_POST_REPAIR_CLOSURE_MARKERS + dynamic_markers,
+            f"{name} / v27.36f-Closure nach Repair",
+        )
+        require(
+            section.count(dynamic_markers[0]) == 1
+            and section.count(dynamic_markers[1]) == 1,
+            f"{name}: Repair-Implementierungscommit oder Repair-Closure fehlt oder ist doppelt",
+        )
+    repair_rows = re.findall(r"(?m)^\| v27\.36f-REPAIR \|.*$", masterlist_text)
+    require(
+        len(repair_rows) == 1
+        and "**erledigt**" in repair_rows[0]
+        and repair_implementation_commit in repair_rows[0]
+        and repair_closure_commit in repair_rows[0],
+        "PROJECT_MASTERLIST muss den vollständig abgeschlossenen Repair-Verlauf erhalten",
+    )
+
+
 def read_v2736f_repair_working_tree_fact() -> V2736FRepairWorkingTreeFact:
     head = run_git(["rev-parse", "HEAD"]).strip()
     origin_main = run_git(["rev-parse", "origin/main"]).strip()
@@ -9257,12 +9353,13 @@ def validate_v2736f_repair_committed_closure_documents(
                 history.implementation_commit,
             )
         elif role == V2736F_REPAIR_ROLE_ORIGINAL_CLOSURE:
-            validate_v2736f_closed_documents(
+            validate_v2736f_original_after_repair_documents(
                 read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_STATE_CURRENT.md"),
                 read_v2735f_commit_document(fact.commit_sha, V2735F_TASK_RELATIVE_PATH),
                 read_v2735f_commit_document(fact.commit_sha, "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"),
                 read_v2735f_commit_document(fact.commit_sha, "docs/PROJECT_MASTERLIST.md"),
-                V2736F_REPAIR_BASE_SHA,
+                facts,
+                history,
             )
 
 
@@ -9297,7 +9394,14 @@ def validate_v2736f_repair_lifecycle(
             validate_v2736f_repair_closed_documents(state_text, task_text, cursor_text, masterlist_text, history.implementation_commit)
         else:
             require(history.state in {V2736F_REPAIR_HISTORY_CLOSED, V2736F_REPAIR_HISTORY_ORIGINAL_CLOSED}, "Ursprüngliche v27.36f-Closure vor REPAIR-CLOSURE unzulässig")
-            validate_v2736f_closed_documents(state_text, task_text, cursor_text, masterlist_text, V2736F_REPAIR_BASE_SHA)
+            validate_v2736f_original_after_repair_documents(
+                state_text,
+                task_text,
+                cursor_text,
+                masterlist_text,
+                facts,
+                history,
+            )
     phase = validate_v2736f_repair_lifecycle_working_tree(history, task_state, fact, closure_kind)
     return phase, history, fact
 
