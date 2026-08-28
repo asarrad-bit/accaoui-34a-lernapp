@@ -1671,6 +1671,26 @@ def check_participant_access_app_entry_v2736d():
 
 
 def check_participant_access_browser_provider_v2736e():
+    working_paths = _git_paths(["diff", "--name-only"])
+    staged_paths = _git_paths(["diff", "--cached", "--name-only"])
+    untracked_paths = _git_paths(["ls-files", "--others", "--exclude-standard"])
+    if (
+        working_paths is not None
+        and staged_paths is not None
+        and untracked_paths is not None
+    ):
+        working_paths.update(staged_paths)
+        working_paths.update(untracked_paths)
+        if (
+            _is_prepared_v2736f_browser_loader_scope(working_paths)
+            or _is_committed_v2736f_browser_loader_scope(working_paths)
+        ):
+            print(
+                "v27.36e-Browser-Provider: PASS über das enge autorisierte "
+                "v27.36f-Regressionsprofil"
+            )
+            return
+
     code, stdout, stderr = run_command(
         f'"{sys.executable}" '
         "tools/check-participant-access-browser-provider-v2736e.py"
@@ -1685,6 +1705,25 @@ def check_participant_access_browser_provider_v2736e():
     if code != 0:
         errors.append(
             "Teilnehmerzugangs-Browser-Provider-Prüfung v27.36e "
+            "fehlgeschlagen"
+        )
+
+
+def check_participant_access_browser_loader_v2736f():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-participant-access-browser-loader-v2736f.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Teilnehmerzugangs-Browser-Loader-Prüfung v27.36f "
             "fehlgeschlagen"
         )
 
@@ -1737,6 +1776,21 @@ V2736D_AUTHORIZED_IMPLEMENTATION_FILES = (
     "tools/preflight.py",
 )
 
+V2736F_AUTHORIZED_IMPLEMENTATION_FILES = (
+    "index.html",
+    "app.js",
+    "data/supabase-participant-access-browser-loader.js",
+    "tools/check-participant-access-browser-loader-v2736f.py",
+    "docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md",
+    "tools/preflight.py",
+)
+V2736F_AUTHORIZATION_HEAD = "88337d5951bffdb3b1591ea5d6d9e5741a4c7477"
+V2736F_REGRESSION_FROZEN_FILES = (
+    "data/supabase-participant-access-adapter.js",
+    "data/supabase-participant-access-bootstrap-bridge.js",
+    "data/supabase-participant-access-browser-provider.js",
+)
+
 
 def _is_authorized_v2736d_app_scope(changed_paths):
     expected_paths = set(V2736D_AUTHORIZED_IMPLEMENTATION_FILES)
@@ -1770,6 +1824,202 @@ def _is_authorized_v2736d_app_scope(changed_paths):
         and single_value("Commit erlaubt:") == "NEIN"
         and single_value("Push erlaubt:") == "NEIN"
     )
+
+
+def _is_authorized_v2736f_browser_loader_scope(changed_paths):
+    expected_paths = set(V2736F_AUTHORIZED_IMPLEMENTATION_FILES)
+    if changed_paths != expected_paths:
+        return False
+
+    try:
+        task_text = Path("docs/tasks/CURRENT_TASK.md").read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return False
+
+    task_lines = task_text.splitlines()
+
+    def single_value(prefix):
+        values = [
+            line[len(prefix):].strip()
+            for line in task_lines
+            if line.startswith(prefix)
+        ]
+        return values[0] if len(values) == 1 else None
+
+    expected_allowed_files = ", ".join(
+        f"`{path}`" for path in V2736F_AUTHORIZED_IMPLEMENTATION_FILES
+    )
+    return (
+        single_value("Task-ID:") == "v27.36f"
+        and single_value("Status:") == "AUTHORIZED"
+        and single_value("Autorisiert:") == "JA"
+        and single_value("Erlaubte Implementierungsdateien:")
+        == expected_allowed_files
+        and single_value("Commit erlaubt:") == "NEIN"
+        and single_value("Push erlaubt:") == "NEIN"
+    )
+
+
+def _has_v2736f_v2736e_regression_profile():
+    checker_path = Path(
+        "tools/check-participant-access-browser-loader-v2736f.py"
+    )
+    if not checker_path.is_file():
+        return False
+
+    try:
+        checker_text = checker_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return False
+
+    required_contract = (
+        "def require_v2736e_regression()",
+        "validate_v2736e_regression_sources",
+        V2736F_AUTHORIZATION_HEAD,
+        "baseline_bytes(relative_path)",
+        "data/supabase-participant-access-adapter.js",
+        "data/supabase-participant-access-bootstrap-bridge.js",
+        "data/supabase-participant-access-browser-provider.js",
+        "resolveAccess entfernt",
+        "Überschreibschutz entfernt",
+        "fail-closed zu allow",
+        "initializeClient eingeschleust",
+        "createClient eingeschleust",
+        "Auth-Abfrage eingeschleust",
+        "Tabellenabfrage eingeschleust",
+        "manipulations += require_v2736e_regression()",
+    )
+    return all(marker in checker_text for marker in required_contract)
+
+
+def _v2736f_regression_scope_facts_are_valid(
+    *,
+    phase,
+    task_authorized,
+    working_paths,
+    committed_paths,
+    boundary_matches,
+    frozen_modules_unchanged,
+    profile_available,
+):
+    expected_paths = set(V2736F_AUTHORIZED_IMPLEMENTATION_FILES)
+    if not (
+        task_authorized
+        and boundary_matches
+        and frozen_modules_unchanged
+        and profile_available
+    ):
+        return False
+    if phase == "implementation_prepared":
+        return working_paths == expected_paths and committed_paths is None
+    if phase == "implementation_committed":
+        return not working_paths and committed_paths == expected_paths
+    return False
+
+
+def _read_v2736f_head_and_parent():
+    code, stdout, _stderr = run_command("git rev-list --parents -n 1 HEAD")
+    if code != 0:
+        return None
+    lineage = stdout.split()
+    if len(lineage) != 2:
+        return None
+    return lineage[0], lineage[1]
+
+
+def _v2736f_frozen_modules_unchanged(revision):
+    changed = _git_paths([
+        "diff",
+        "--name-only",
+        V2736F_AUTHORIZATION_HEAD,
+        revision,
+        "--",
+        *V2736F_REGRESSION_FROZEN_FILES,
+    ])
+    return changed == set()
+
+
+def _is_prepared_v2736f_browser_loader_scope(working_paths):
+    lineage = _read_v2736f_head_and_parent()
+    if lineage is None:
+        return False
+    head, _parent = lineage
+    return _v2736f_regression_scope_facts_are_valid(
+        phase="implementation_prepared",
+        task_authorized=_is_authorized_v2736f_browser_loader_scope(
+            working_paths
+        ),
+        working_paths=working_paths,
+        committed_paths=None,
+        boundary_matches=head == V2736F_AUTHORIZATION_HEAD,
+        frozen_modules_unchanged=_v2736f_frozen_modules_unchanged(head),
+        profile_available=_has_v2736f_v2736e_regression_profile(),
+    )
+
+
+def _is_committed_v2736f_browser_loader_scope(working_paths):
+    if working_paths:
+        return False
+    lineage = _read_v2736f_head_and_parent()
+    if lineage is None:
+        return False
+    head, parent = lineage
+    committed_paths = _git_paths(["diff", "--name-only", parent, head])
+    if committed_paths is None:
+        return False
+    return _v2736f_regression_scope_facts_are_valid(
+        phase="implementation_committed",
+        task_authorized=_is_authorized_v2736f_browser_loader_scope(
+            committed_paths
+        ),
+        working_paths=working_paths,
+        committed_paths=committed_paths,
+        boundary_matches=parent == V2736F_AUTHORIZATION_HEAD,
+        frozen_modules_unchanged=_v2736f_frozen_modules_unchanged(head),
+        profile_available=_has_v2736f_v2736e_regression_profile(),
+    )
+
+
+def check_v2736f_regression_profile_scope_logic():
+    expected = set(V2736F_AUTHORIZED_IMPLEMENTATION_FILES)
+    extra = expected | {"style.css"}
+    missing = expected - {"tools/preflight.py"}
+    cases = (
+        ("implementation_prepared", True, expected, None, True, True, True, True),
+        ("implementation_committed", True, set(), expected, True, True, True, True),
+        ("implementation_committed", True, set(), extra, True, True, True, False),
+        ("implementation_committed", True, set(), missing, True, True, True, False),
+        ("implementation_committed", True, set(), expected, False, True, True, False),
+        ("implementation_committed", True, {"tools/preflight.py"}, expected, True, True, True, False),
+        ("implementation_committed", False, set(), expected, True, True, True, False),
+        ("implementation_committed", True, set(), expected, True, False, True, False),
+        ("implementation_committed", True, set(), expected, True, True, False, False),
+    )
+    for (
+        phase,
+        task_authorized,
+        working_paths,
+        committed_paths,
+        boundary_matches,
+        frozen_modules_unchanged,
+        profile_available,
+        expected_result,
+    ) in cases:
+        actual = _v2736f_regression_scope_facts_are_valid(
+            phase=phase,
+            task_authorized=task_authorized,
+            working_paths=working_paths,
+            committed_paths=committed_paths,
+            boundary_matches=boundary_matches,
+            frozen_modules_unchanged=frozen_modules_unchanged,
+            profile_available=profile_available,
+        )
+        if actual != expected_result:
+            errors.append(
+                "v27.36f-Regressionsprofil-Scope-Selbstprüfung "
+                f"fehlgeschlagen: {phase}"
+            )
+            return
 
 def _parse_allowed_protected_v2356():
     raw = os.environ.get("ACCAOUI_ALLOW_PROTECTED", "").strip()
@@ -1819,11 +2069,19 @@ def check_protected_core_files_v2356():
     authorized_v2736d_app_scope = _is_authorized_v2736d_app_scope(
         changed_paths
     )
+    authorized_v2736f_browser_loader_scope = (
+        _is_authorized_v2736f_browser_loader_scope(changed_paths)
+    )
 
     for protected in sorted(changed_protected):
         if protected in allowed_protected:
             continue
         if protected == "app.js" and authorized_v2736d_app_scope:
+            continue
+        if (
+            protected in {"app.js", "index.html"}
+            and authorized_v2736f_browser_loader_scope
+        ):
             continue
         errors.append(
             "KRITISCH: Geschützte Datei geändert: " + protected + "\n"
@@ -2050,6 +2308,9 @@ def main():
         "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md",
         "tools/check-participant-access-browser-provider-v2736e.py",
         "docs/PARTICIPANT_ACCESS_BROWSER_PROVIDER_V2736E.md",
+        "data/supabase-participant-access-browser-loader.js",
+        "tools/check-participant-access-browser-loader-v2736f.py",
+        "docs/PARTICIPANT_ACCESS_BROWSER_LOADER_V2736F.md",
         "docs/PROJECT_STATE_CURRENT.md",
         "docs/tasks/CURRENT_TASK.md",
         "tools/check-project-continuity-control.py",
@@ -2172,7 +2433,9 @@ def main():
     check_supabase_participant_access_adapter()
     check_supabase_participant_access_bootstrap_bridge()
     check_participant_access_app_entry_v2736d()
+    check_v2736f_regression_profile_scope_logic()
     check_participant_access_browser_provider_v2736e()
+    check_participant_access_browser_loader_v2736f()
     check_project_continuity_control()
     check_git_diff_check()
     check_protected_core_files_v2356()

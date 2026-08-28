@@ -48,6 +48,10 @@ let currentTrainingTitle = "";
 const APP_VERSION = "v26.12c-access-health-flow";
 const AUTH_GUARD_TEST_STATE_KEY = "accaoui_auth_guard_test_state";
 const SUPABASE_LOCAL_CONFIG_PATH = "data/supabase-config.local.js";
+const PARTICIPANT_ACCESS_BROWSER_LOADER_ID_V2736F =
+  "accaoui-participant-access-browser-loader";
+const PARTICIPANT_ACCESS_BROWSER_LOADER_READY_V2736F =
+  "ACCAOUI_PARTICIPANT_ACCESS_BROWSER_LOADER_READY";
 
 const AUTH_ACCESS_NOTICE_STATES_V2736D = Object.freeze({
   login_required: Object.freeze({
@@ -325,9 +329,29 @@ async function initAuthFlow() {
     return;
   }
 
+  const loaderRequested = isParticipantAccessBrowserLoaderRequestedV2736F();
+
+  if (loaderRequested) {
+    const loaderReady = await awaitParticipantAccessBrowserLoaderV2736F();
+
+    if (!loaderReady) {
+      renderLoginOrAccessNotice(
+        createParticipantAccessNoticeStateV2736D("access_error")
+      );
+      return;
+    }
+  }
+
   const providerAccessState = await resolveParticipantAccessAppProviderV2736D();
 
   if (providerAccessState.isProviderAbsent) {
+    if (loaderRequested) {
+      renderLoginOrAccessNotice(
+        createParticipantAccessNoticeStateV2736D("access_error")
+      );
+      return;
+    }
+
     startLocalApp();
     return;
   }
@@ -338,6 +362,93 @@ async function initAuthFlow() {
   }
 
   renderLoginOrAccessNotice(providerAccessState);
+}
+
+function isParticipantAccessBrowserLoaderRequestedV2736F() {
+  let loaderElement;
+
+  try {
+    loaderElement = document.getElementById(
+      PARTICIPANT_ACCESS_BROWSER_LOADER_ID_V2736F
+    );
+  } catch (_error) {
+    return false;
+  }
+
+  if (!loaderElement) {
+    return false;
+  }
+
+  try {
+    return loaderElement.getAttribute("data-enabled") === "true";
+  } catch (_error) {
+    return false;
+  }
+}
+
+async function awaitParticipantAccessBrowserLoaderV2736F() {
+  let readiness;
+
+  try {
+    readiness = window[PARTICIPANT_ACCESS_BROWSER_LOADER_READY_V2736F];
+  } catch (_error) {
+    return false;
+  }
+
+  if (
+    readiness === null ||
+    (typeof readiness !== "object" && typeof readiness !== "function")
+  ) {
+    return false;
+  }
+
+  let readinessThen;
+
+  try {
+    readinessThen = readiness.then;
+  } catch (_error) {
+    return false;
+  }
+
+  if (typeof readinessThen !== "function") {
+    return false;
+  }
+
+  let state;
+
+  try {
+    state = await readiness;
+  } catch (_error) {
+    return false;
+  }
+
+  if (state === null || typeof state !== "object" || Array.isArray(state)) {
+    return false;
+  }
+
+  let keys;
+  let requested;
+  let ready;
+  let status;
+
+  try {
+    keys = Object.keys(state).sort();
+    requested = state.requested;
+    ready = state.ready;
+    status = state.status;
+  } catch (_error) {
+    return false;
+  }
+
+  return (
+    keys.length === 3 &&
+    keys[0] === "ready" &&
+    keys[1] === "requested" &&
+    keys[2] === "status" &&
+    requested === true &&
+    ready === true &&
+    status === "ready"
+  );
 }
 
 function createParticipantAccessNoticeStateV2736D(status) {
