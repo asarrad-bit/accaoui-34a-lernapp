@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.36f
+Stand: v27.37a-GATE-REPAIR
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
@@ -846,6 +846,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.36e | Browser-Anbindungsweg der Teilnehmerzugangskette lokal vorbereitet; CommonJS-Kompatibilität von v27.36b/v27.36c erhalten, kontrollierte Browser-Factory-Exports und Browser-App-Provider mit ausschließlich `resolveAccess()`, fail-closed und Kollisionsschutz; Implementierungscommit `0c4d64aaa7da7e8dd38fff1d7bf72675cb689a6f`; Checker 22/31/16, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine HTML-Aktivierung, Supabase NICHT LIVE, kein Folgetask – **erledigt** |
 | v27.36f | Kontrollierter Browser-Aktivierungsweg vollständig abgeschlossen; Implementierungscommit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`; zusätzlicher enger Prüfpfad-Repair v27.36f-REPAIR mit Repair-Implementierungscommit `b035c62100b033dbce03a4ab016e4471b4ab54d4` und Repair-Closure `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712`; Default `data-enabled=false`, fail-closed, Checker 41/27/46 PASS, Supabase NICHT LIVE – **erledigt** |
 | v27.36f-REPAIR | Closure-Prüfpfad für v27.36f eng repariert; Repair-Implementierungscommit `b035c62100b033dbce03a4ab016e4471b4ab54d4`; Repair-Closure `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712`; Checker 41/27/46, Regressionen, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine App-, Loader- oder Supabase-Änderung – **erledigt** |
+| v27.37a-GATE-REPAIR | Einmaliger atomarer Bootstrap des engen Preflight-Nachfolgeprofils nach vollständig abgeschlossenem v27.36f; ausschließlich vier Steuerdokumente, Kontinuitätschecker und Preflight; keine Produktänderung, Supabase NICHT LIVE – **erledigt** |
 
 ### Historisch: Projektkontinuität und verbindliche Task-Steuerung v27.34c
 
@@ -1471,6 +1472,39 @@ Installiert (Referenz):
 ---
 
 ## 14. Nächste sinnvolle Aufgaben
+
+### Abgeschlossener atomarer Bootstrap-Repair v27.37a-GATE-REPAIR
+
+v27.37a-GATE-REPAIR abgeschlossen.
+
+Titel: Enges Preflight-Nachfolgeprofil nach abgeschlossenem v27.36f bootstrapen.
+
+Stabile Ausgangsbasis: `ac997149fe9600d735dcc237b0a30232d279cc52`.
+
+Historische v27.36f-Grenzen bleiben `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa` für die Implementierung, `b035c62100b033dbce03a4ab016e4471b4ab54d4` für die Repair-Implementierung, `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712` für die Repair-Closure und `ac997149fe9600d735dcc237b0a30232d279cc52` für die endgültige v27.36f-Closure.
+
+Der ursprüngliche v27.37a-Gate-Versuch konnte den unveränderten Preflight nicht legitim bestehen, weil dessen bisheriges Profil ausschließlich die abgeschlossenen v27.36f-/REPAIR-Lifecyclezustände kannte und bei einem Nachfolgetask auf historische Standalone-Checker zurückfiel. Die v27.36e-/v27.36f-Produktverträge waren dabei unverändert intakt. Ein normaler separater Repair-Gate-Commit hätte deshalb wissentlich keinen verpflichtenden Preflight-PASS erreicht.
+
+Der ausdrücklich freigegebene einmalige atomare Bootstrap-Repair umfasst exakt:
+
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Das neue enge Preflight-Nachfolgeprofil akzeptiert nur den aktuellen atomaren Repair, dessen direkt folgenden committeten Zustand und später ausdrücklich autorisierte v27.37a-Gate-, Implementierungs- oder Closurezustände, sofern deren eigener Kontinuitätsvertrag passt. Unbekannte zukünftige Tasks werden nicht pauschal zugelassen. Es gibt keinen allgemeinen Bypass.
+
+`index.html`, `app.js`, `data/supabase-participant-access-adapter.js`, `data/supabase-participant-access-bootstrap-bridge.js`, `data/supabase-participant-access-browser-provider.js` und `data/supabase-participant-access-browser-loader.js` bleiben gegenüber der endgültigen v27.36f-Closure unverändert und werden zusätzlich fachlich gegen die v27.36e-/v27.36f-Sicherheitsverträge geprüft.
+
+Die lokale Sicherung `.git/v2737a-gate-preflight-blocked.patch` bleibt ausschließlich lokal, wird nicht verändert, nicht angewendet und nicht committet.
+
+Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten. Keine automatische Client-Erzeugung. Keine direkten Auth- oder Tabellenabfragen werden freigegeben.
+
+Nach dem Repair ist v27.37a weder ausgewählt noch autorisiert. `CURRENT_TASK` bleibt `NONE / BLOCKED / Autorisiert NEIN`; Commit und Push bleiben `NEIN`.
+
+Der Lifecycle erkennt dynamisch `v2737a_gate_repair_atomic_prepared` und nach einem späteren direkten Sechs-Dateien-Commit `v2737a_gate_repair_atomic_committed`. Keine zukünftige Repair-, v27.37a-IMPLEMENTATION- oder v27.37a-CLOSURE-SHA wird hartcodiert.
 
 ### Abgeschlossener technischer Schritt v27.36f
 

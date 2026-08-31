@@ -1681,6 +1681,16 @@ def check_participant_access_browser_provider_v2736e():
     ):
         working_paths.update(staged_paths)
         working_paths.update(untracked_paths)
+        successor_phase = _detect_v2737a_successor_profile_phase(
+            working_paths
+        )
+        if successor_phase is not None:
+            print(
+                "v27.36e-Browser-Provider: PASS über das enge "
+                "v27.37a-Nachfolge-Regressionsprofil "
+                f"({successor_phase})"
+            )
+            return
         post_implementation_phase = (
             _detect_v2736f_post_implementation_profile_phase(working_paths)
         )
@@ -1719,6 +1729,27 @@ def check_participant_access_browser_provider_v2736e():
 
 
 def check_participant_access_browser_loader_v2736f():
+    working_paths = _git_paths(["diff", "--name-only"])
+    staged_paths = _git_paths(["diff", "--cached", "--name-only"])
+    untracked_paths = _git_paths(["ls-files", "--others", "--exclude-standard"])
+    if (
+        working_paths is not None
+        and staged_paths is not None
+        and untracked_paths is not None
+    ):
+        working_paths.update(staged_paths)
+        working_paths.update(untracked_paths)
+        successor_phase = _detect_v2737a_successor_profile_phase(
+            working_paths
+        )
+        if successor_phase is not None:
+            print(
+                "v27.36f-Browser-Loader: PASS über das enge "
+                "v27.37a-Nachfolge-Regressionsprofil "
+                f"({successor_phase})"
+            )
+            return
+
     code, stdout, stderr = run_command(
         f'"{sys.executable}" '
         "tools/check-participant-access-browser-loader-v2736f.py"
@@ -2343,6 +2374,788 @@ def _detect_v2736f_post_implementation_profile_phase(working_paths):
     return None
 
 
+V2737A_GATE_REPAIR_BASE_SHA = "ac997149fe9600d735dcc237b0a30232d279cc52"
+V2737A_GATE_REPAIR_FILES = {
+    *V2736F_GATE_FILES,
+    "tools/preflight.py",
+}
+V2737A_AUTHORIZED_IMPLEMENTATION_FILES = (
+    "data/supabase-participant-auth-session-adapter.js",
+    "tools/check-supabase-participant-auth-session-adapter.py",
+    "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_ADAPTER_V2737A.md",
+    "tools/preflight.py",
+)
+V2737A_FROZEN_PRODUCT_FILES = (
+    "index.html",
+    "app.js",
+    "data/supabase-participant-access-adapter.js",
+    "data/supabase-participant-access-bootstrap-bridge.js",
+    "data/supabase-participant-access-browser-provider.js",
+    "data/supabase-participant-access-browser-loader.js",
+)
+V2737A_HISTORY_ATOMIC_REPAIR = ("atomic_repair",)
+V2737A_HISTORY_AUTHORIZED = (
+    "atomic_repair",
+    "v2737a_gate",
+)
+V2737A_HISTORY_IMPLEMENTED = (
+    "atomic_repair",
+    "v2737a_gate",
+    "v2737a_implementation",
+)
+V2737A_HISTORY_CLOSED = (
+    "atomic_repair",
+    "v2737a_gate",
+    "v2737a_implementation",
+    "v2737a_closure",
+)
+
+
+def _v2737a_task_kind_from_text(text):
+    fields = _read_v2736f_control_fields(text)
+    lines = text.splitlines()
+
+    def single_value(prefix):
+        values = [
+            line[len(prefix):].strip()
+            for line in lines
+            if line.startswith(prefix)
+        ]
+        return values[0] if len(values) == 1 else None
+
+    locked = (
+        fields["commit_allowed"] == "NEIN"
+        and fields["push_allowed"] == "NEIN"
+    )
+    if (
+        fields["task_id"] == "NONE"
+        and fields["status"] == "BLOCKED"
+        and fields["authorized"] == "NEIN"
+        and fields["allowed"] == "KEINE"
+        and locked
+    ):
+        last_step = single_value("Letzter abgeschlossener Kontrollschritt:")
+        if last_step == "v27.37a-GATE-REPAIR":
+            return "repair_closed"
+        if last_step == "v27.37a":
+            return "v2737a_closed"
+        return "other_closed"
+    expected_allowed = ", ".join(
+        f"`{path}`" for path in V2737A_AUTHORIZED_IMPLEMENTATION_FILES
+    )
+    if (
+        fields["task_id"] == "v27.37a"
+        and fields["status"] == "AUTHORIZED"
+        and fields["authorized"] == "JA"
+        and fields["allowed"] == expected_allowed
+        and locked
+    ):
+        return "v2737a_authorized"
+    return "invalid"
+
+
+def _read_v2737a_current_task_kind():
+    try:
+        text = Path("docs/tasks/CURRENT_TASK.md").read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return "invalid"
+    return _v2737a_task_kind_from_text(text)
+
+
+def _v2737a_gate_repair_document_contract_is_valid(text):
+    return all(marker in text for marker in (
+        "Abgeschlossener atomarer Bootstrap-Repair v27.37a-GATE-REPAIR",
+        "v27.37a-GATE-REPAIR abgeschlossen.",
+        "Unbekannte zukünftige Tasks werden nicht pauschal zugelassen.",
+        "Supabase bleibt NICHT LIVE.",
+        "Keine echten Keys.",
+        "Keine echten Teilnehmerdaten.",
+        "v2737a_gate_repair_atomic_prepared",
+        "v2737a_gate_repair_atomic_committed",
+    ))
+
+
+def _v2737a_product_texts():
+    texts = {}
+    try:
+        for relative_path in V2737A_FROZEN_PRODUCT_FILES:
+            texts[relative_path] = Path(relative_path).read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+    return texts
+
+
+def _read_v2737a_git_blob_utf8(revision, relative_path):
+    try:
+        result = subprocess.run(
+            [
+                "git",
+                "show",
+                f"{revision}:{relative_path}",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=False,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    try:
+        return result.stdout.decode("utf-8")
+    except UnicodeDecodeError:
+        return None
+
+
+def _v2737a_git_blob_reader_selftest():
+    index_text = _read_v2737a_git_blob_utf8(
+        V2737A_GATE_REPAIR_BASE_SHA,
+        "index.html",
+    )
+    if (
+        not isinstance(index_text, str)
+        or "🏠" not in index_text
+        or "\ufffd" in index_text
+    ):
+        return False
+    if _read_v2737a_git_blob_utf8("0" * 40, "index.html") is not None:
+        return False
+    return _read_v2737a_git_blob_utf8(
+        V2737A_GATE_REPAIR_BASE_SHA,
+        "missing/v2737a-frozen-product.js",
+    ) is None
+
+
+def _v2737a_baseline_product_texts():
+    texts = {}
+    for relative_path in V2737A_FROZEN_PRODUCT_FILES:
+        text = _read_v2737a_git_blob_utf8(
+            V2737A_GATE_REPAIR_BASE_SHA,
+            relative_path,
+        )
+        if text is None:
+            return None
+        texts[relative_path] = text
+    return texts
+
+
+def _v2737a_product_semantic_contract_is_valid(texts):
+    if not isinstance(texts, dict) or set(texts) != set(V2737A_FROZEN_PRODUCT_FILES):
+        return False
+    index_text = texts["index.html"]
+    app_text = texts["app.js"]
+    adapter_text = texts["data/supabase-participant-access-adapter.js"]
+    bridge_text = texts["data/supabase-participant-access-bootstrap-bridge.js"]
+    provider_text = texts["data/supabase-participant-access-browser-provider.js"]
+    loader_text = texts["data/supabase-participant-access-browser-loader.js"]
+    loader_tag = (
+        '<script id="accaoui-participant-access-browser-loader" '
+        'src="data/supabase-participant-access-browser-loader.js" '
+        'data-enabled="false"></script>'
+    )
+    if index_text.count(loader_tag) != 1 or 'data-enabled="true"' in index_text:
+        return False
+    if index_text.index(loader_tag) > index_text.index('<script src="app.js?v=24.8"></script>'):
+        return False
+    required_by_source = {
+        "app": (
+            "isParticipantAccessBrowserLoaderRequestedV2736F",
+            "awaitParticipantAccessBrowserLoaderV2736F",
+            'createParticipantAccessNoticeStateV2736D("access_error")',
+            "ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER",
+            "provider.resolveAccess",
+        ),
+        "adapter": (
+            "createParticipantAccessAdapter",
+            "ACCAOUI_PARTICIPANT_ACCESS_ADAPTER_FACTORY",
+            "async function resolveAccess()",
+        ),
+        "bridge": (
+            "createParticipantAccessBootstrapBridge",
+            "bootstrap.getClient",
+            "createParticipantAccessAdapter",
+            "async function resolveAccess()",
+        ),
+        "provider": (
+            "ACCAOUI_PARTICIPANT_ACCESS_ADAPTER_FACTORY",
+            "ACCAOUI_PARTICIPANT_ACCESS_BOOTSTRAP_BRIDGE_FACTORY",
+            "ACCAOUI_PARTICIPANT_ACCESS_APP_PROVIDER",
+            "async function resolveAccess()",
+        ),
+        "loader": (
+            'enabled !== "true"',
+            "ACCAOUI_PARTICIPANT_ACCESS_BROWSER_LOADER_READY",
+            'status: "ready"',
+            'status: "error"',
+            "provider.resolveAccess",
+        ),
+    }
+    sources = {
+        "app": app_text,
+        "adapter": adapter_text,
+        "bridge": bridge_text,
+        "provider": provider_text,
+        "loader": loader_text,
+    }
+    if any(
+        marker not in sources[name]
+        for name, markers in required_by_source.items()
+        for marker in markers
+    ):
+        return False
+    forbidden_composition_tokens = (
+        "supabase.createClient",
+        "initializeClient()",
+        "client.auth.getSession",
+        "client.from(",
+    )
+    if any(token in provider_text or token in loader_text for token in forbidden_composition_tokens):
+        return False
+    forbidden_app_tokens = (
+        "client.auth.getSession()",
+        "client.from(",
+        "bootstrap.initializeClient()",
+        "supabase.createClient()",
+    )
+    return not any(token in app_text for token in forbidden_app_tokens)
+
+
+def _v2737a_frozen_product_contract_is_valid(
+    baseline_texts,
+    candidate_texts,
+):
+    expected_paths = set(V2737A_FROZEN_PRODUCT_FILES)
+    if not isinstance(baseline_texts, dict) or set(baseline_texts) != expected_paths:
+        return False
+    if not isinstance(candidate_texts, dict) or set(candidate_texts) != expected_paths:
+        return False
+    if any(
+        not isinstance(baseline_texts[path], str)
+        or not isinstance(candidate_texts[path], str)
+        or candidate_texts[path] != baseline_texts[path]
+        for path in V2737A_FROZEN_PRODUCT_FILES
+    ):
+        return False
+    return _v2737a_product_semantic_contract_is_valid(candidate_texts)
+
+
+def _v2737a_frozen_products_unchanged():
+    if not _git_is_ancestor(V2737A_GATE_REPAIR_BASE_SHA, "HEAD"):
+        return False
+    return _v2737a_frozen_product_contract_is_valid(
+        _v2737a_baseline_product_texts(),
+        _v2737a_product_texts(),
+    )
+
+
+def _read_v2737a_successor_history():
+    code, stdout, _stderr = run_command(
+        "git rev-list --reverse " + V2737A_GATE_REPAIR_BASE_SHA + "..HEAD"
+    )
+    if code != 0:
+        return None
+    commits = [line.strip() for line in stdout.splitlines() if line.strip()]
+    previous = V2737A_GATE_REPAIR_BASE_SHA
+    roles = []
+    gate_seen = False
+    implementation_seen = False
+    closure_seen = False
+    for index, commit in enumerate(commits):
+        code, lineage_text, _stderr = run_command(
+            "git rev-list --parents -n 1 " + commit
+        )
+        lineage = lineage_text.split() if code == 0 else []
+        if len(lineage) != 2 or lineage[1] != previous:
+            return None
+        files = _git_paths(["diff", "--name-only", previous, commit])
+        task_text = _read_git_text_at_revision(
+            commit, "docs/tasks/CURRENT_TASK.md"
+        )
+        if not files or task_text is None:
+            return None
+        task_kind = _v2737a_task_kind_from_text(task_text)
+        if index == 0:
+            state_text = _read_git_text_at_revision(
+                commit, "docs/PROJECT_STATE_CURRENT.md"
+            )
+            if not (
+                files == V2737A_GATE_REPAIR_FILES
+                and task_kind == "repair_closed"
+                and state_text is not None
+                and _v2737a_gate_repair_document_contract_is_valid(state_text)
+            ):
+                return None
+            roles.append("atomic_repair")
+        elif task_kind == "v2737a_authorized" and files == V2736F_GATE_FILES:
+            if implementation_seen or closure_seen:
+                return None
+            gate_seen = True
+            roles.append("v2737a_gate")
+        elif (
+            task_kind == "v2737a_authorized"
+            and files == set(V2737A_AUTHORIZED_IMPLEMENTATION_FILES)
+        ):
+            if not gate_seen or implementation_seen or closure_seen:
+                return None
+            implementation_seen = True
+            roles.append("v2737a_implementation")
+        elif task_kind == "v2737a_closed" and files == V2736F_GATE_FILES:
+            if not implementation_seen or closure_seen:
+                return None
+            closure_seen = True
+            roles.append("v2737a_closure")
+        else:
+            return None
+        previous = commit
+    return {
+        "valid": True,
+        "roles": tuple(roles),
+        "last_role": roles[-1] if roles else None,
+        "repair_seen": bool(roles) and roles[0] == "atomic_repair",
+        "gate_seen": gate_seen,
+        "implementation_seen": implementation_seen,
+        "closure_seen": closure_seen,
+    }
+
+
+def _v2737a_successor_scope_facts_are_valid(
+    *,
+    phase,
+    task_kind,
+    working_paths,
+    history,
+    products_unchanged,
+    repair_documented,
+):
+    if not (
+        isinstance(history, dict)
+        and history.get("valid") is True
+        and products_unchanged
+        and repair_documented
+    ):
+        return False
+    last_role = history.get("last_role")
+    implementation_files = set(V2737A_AUTHORIZED_IMPLEMENTATION_FILES)
+    if phase == "v2737a_gate_repair_atomic_committed":
+        return (
+            task_kind == "repair_closed"
+            and not working_paths
+            and history.get("roles") == V2737A_HISTORY_ATOMIC_REPAIR
+            and history.get("gate_seen") is False
+            and history.get("implementation_seen") is False
+            and history.get("closure_seen") is False
+        )
+    if phase == "v2737a_authorization_prepared":
+        return (
+            task_kind == "v2737a_authorized"
+            and working_paths == V2736F_GATE_FILES
+            and history.get("roles") == V2737A_HISTORY_ATOMIC_REPAIR
+            and history.get("gate_seen") is False
+            and history.get("implementation_seen") is False
+            and history.get("closure_seen") is False
+        )
+    if phase == "v2737a_authorization_committed":
+        return (
+            task_kind == "v2737a_authorized"
+            and not working_paths
+            and history.get("roles") == V2737A_HISTORY_AUTHORIZED
+            and history.get("gate_seen") is True
+            and history.get("implementation_seen") is False
+            and history.get("closure_seen") is False
+            and last_role == "v2737a_gate"
+        )
+    if phase == "v2737a_implementation_prepared":
+        return (
+            task_kind == "v2737a_authorized"
+            and working_paths == implementation_files
+            and history.get("roles") == V2737A_HISTORY_AUTHORIZED
+            and history.get("gate_seen") is True
+            and history.get("implementation_seen") is False
+            and history.get("closure_seen") is False
+            and last_role == "v2737a_gate"
+        )
+    if phase == "v2737a_implementation_committed":
+        return (
+            task_kind == "v2737a_authorized"
+            and not working_paths
+            and history.get("roles") == V2737A_HISTORY_IMPLEMENTED
+            and history.get("gate_seen") is True
+            and history.get("implementation_seen") is True
+            and history.get("closure_seen") is False
+            and last_role == "v2737a_implementation"
+        )
+    if phase == "v2737a_closure_prepared":
+        return (
+            task_kind == "v2737a_closed"
+            and working_paths == V2736F_GATE_FILES
+            and history.get("roles") == V2737A_HISTORY_IMPLEMENTED
+            and history.get("gate_seen") is True
+            and history.get("implementation_seen") is True
+            and history.get("closure_seen") is False
+            and last_role == "v2737a_implementation"
+        )
+    if phase == "v2737a_closure_committed":
+        return (
+            task_kind == "v2737a_closed"
+            and not working_paths
+            and history.get("roles") == V2737A_HISTORY_CLOSED
+            and history.get("gate_seen") is True
+            and history.get("implementation_seen") is True
+            and history.get("closure_seen") is True
+            and last_role == "v2737a_closure"
+        )
+    return False
+
+
+def _v2737a_atomic_prepared_scope_facts_are_valid(
+    *,
+    head_is_base,
+    task_kind,
+    working_paths,
+    products_unchanged,
+    repair_documented,
+):
+    return (
+        head_is_base
+        and task_kind == "repair_closed"
+        and working_paths == V2737A_GATE_REPAIR_FILES
+        and products_unchanged
+        and repair_documented
+    )
+
+
+def _detect_v2737a_successor_profile_phase(working_paths):
+    task_kind = _read_v2737a_current_task_kind()
+    products_unchanged = _v2737a_frozen_products_unchanged()
+    try:
+        state_text = Path("docs/PROJECT_STATE_CURRENT.md").read_text(
+            encoding="utf-8"
+        )
+    except (OSError, UnicodeError):
+        return None
+    repair_documented = _v2737a_gate_repair_document_contract_is_valid(
+        state_text
+    )
+    code, head, _stderr = run_command("git rev-parse HEAD")
+    if code != 0:
+        return None
+    head = head.strip()
+    if head == V2737A_GATE_REPAIR_BASE_SHA:
+        if _v2737a_atomic_prepared_scope_facts_are_valid(
+            head_is_base=True,
+            task_kind=task_kind,
+            working_paths=working_paths,
+            products_unchanged=products_unchanged,
+            repair_documented=repair_documented,
+        ):
+            return "v2737a_gate_repair_atomic_prepared"
+        return None
+    history = _read_v2737a_successor_history()
+    shared = {
+        "task_kind": task_kind,
+        "working_paths": working_paths,
+        "history": history,
+        "products_unchanged": products_unchanged,
+        "repair_documented": repair_documented,
+    }
+    for phase in (
+        "v2737a_gate_repair_atomic_committed",
+        "v2737a_authorization_prepared",
+        "v2737a_authorization_committed",
+        "v2737a_implementation_prepared",
+        "v2737a_implementation_committed",
+        "v2737a_closure_prepared",
+        "v2737a_closure_committed",
+    ):
+        if _v2737a_successor_scope_facts_are_valid(phase=phase, **shared):
+            return phase
+    return None
+
+
+def check_v2737a_successor_profile_scope_logic():
+    if not _v2737a_git_blob_reader_selftest():
+        errors.append(
+            "v27.37a-Git-UTF-8-Baseline-Selbstprüfung fehlgeschlagen"
+        )
+        return
+    print("v27.37a-Git-UTF-8-Baseline-Selbstprüfung: PASS")
+    base_history = {
+        "valid": True,
+        "roles": V2737A_HISTORY_ATOMIC_REPAIR,
+        "last_role": "atomic_repair",
+        "repair_seen": True,
+        "gate_seen": False,
+        "implementation_seen": False,
+        "closure_seen": False,
+    }
+    gate_history = {
+        **base_history,
+        "roles": V2737A_HISTORY_AUTHORIZED,
+        "last_role": "v2737a_gate",
+        "gate_seen": True,
+    }
+    implementation_history = {
+        **gate_history,
+        "roles": V2737A_HISTORY_IMPLEMENTED,
+        "last_role": "v2737a_implementation",
+        "implementation_seen": True,
+    }
+    closure_history = {
+        **implementation_history,
+        "roles": V2737A_HISTORY_CLOSED,
+        "last_role": "v2737a_closure",
+        "closure_seen": True,
+    }
+    if not _v2737a_atomic_prepared_scope_facts_are_valid(
+        head_is_base=True,
+        task_kind="repair_closed",
+        working_paths=V2737A_GATE_REPAIR_FILES,
+        products_unchanged=True,
+        repair_documented=True,
+    ):
+        errors.append(
+            "v27.37a-Nachfolgeprofil-Positivprüfung fehlgeschlagen: "
+            "v2737a_gate_repair_atomic_prepared"
+        )
+        return
+    positive_cases = (
+        ("v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history),
+        ("v2737a_authorization_prepared", "v2737a_authorized", V2736F_GATE_FILES, base_history),
+        ("v2737a_authorization_committed", "v2737a_authorized", set(), gate_history),
+        ("v2737a_implementation_prepared", "v2737a_authorized", set(V2737A_AUTHORIZED_IMPLEMENTATION_FILES), gate_history),
+        ("v2737a_implementation_committed", "v2737a_authorized", set(), implementation_history),
+        ("v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, implementation_history),
+        ("v2737a_closure_committed", "v2737a_closed", set(), closure_history),
+    )
+    for phase, task_kind, working_paths, history in positive_cases:
+        if not _v2737a_successor_scope_facts_are_valid(
+            phase=phase,
+            task_kind=task_kind,
+            working_paths=working_paths,
+            history=history,
+            products_unchanged=True,
+            repair_documented=True,
+        ):
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Positivprüfung fehlgeschlagen: "
+                + phase
+            )
+            return
+    implementation_files = set(V2737A_AUTHORIZED_IMPLEMENTATION_FILES)
+    authorization_missing_gate = V2736F_GATE_FILES - {
+        "docs/PROJECT_STATE_CURRENT.md"
+    }
+    authorization_extra_file = V2736F_GATE_FILES | {"app.js"}
+    implementation_extra_file = implementation_files | {"index.html"}
+    implementation_missing_file = implementation_files - {"tools/preflight.py"}
+    authorization_prepared_wrong_history = (
+        "unexpected",
+        "atomic_repair",
+    )
+    authorization_committed_extra_history = (
+        "atomic_repair",
+        "extra_gate",
+        "v2737a_gate",
+    )
+    authorization_committed_duplicate_gate = (
+        "atomic_repair",
+        "v2737a_gate",
+        "v2737a_gate",
+    )
+    implementation_prepared_extra_history = (
+        "atomic_repair",
+        "unexpected",
+        "v2737a_gate",
+    )
+    implementation_prepared_wrong_order = (
+        "v2737a_gate",
+        "atomic_repair",
+    )
+    implementation_committed_extra_history = (
+        "atomic_repair",
+        "unexpected",
+        "v2737a_gate",
+        "v2737a_implementation",
+    )
+    implementation_committed_gate_after = (
+        *V2737A_HISTORY_IMPLEMENTED,
+        "v2737a_gate",
+    )
+    closure_prepared_extra_history = (
+        "atomic_repair",
+        "v2737a_gate",
+        "unexpected",
+        "v2737a_implementation",
+    )
+    closure_prepared_already_closed = V2737A_HISTORY_CLOSED
+    closure_committed_extra_history = (
+        "atomic_repair",
+        "unexpected",
+        "v2737a_gate",
+        "v2737a_implementation",
+        "v2737a_closure",
+    )
+    closure_committed_implementation_after = (
+        *V2737A_HISTORY_CLOSED,
+        "v2737a_implementation",
+    )
+    changed_mutations = (
+        ("authorization_prepared_missing_gate_file", V2736F_GATE_FILES, authorization_missing_gate),
+        ("authorization_prepared_extra_file", V2736F_GATE_FILES, authorization_extra_file),
+        ("implementation_prepared_extra_file", implementation_files, implementation_extra_file),
+        ("implementation_prepared_missing_file", implementation_files, implementation_missing_file),
+        ("authorization_prepared_wrong_history", V2737A_HISTORY_ATOMIC_REPAIR, authorization_prepared_wrong_history),
+        ("authorization_committed_extra_history", V2737A_HISTORY_AUTHORIZED, authorization_committed_extra_history),
+        ("authorization_committed_duplicate_gate", V2737A_HISTORY_AUTHORIZED, authorization_committed_duplicate_gate),
+        ("implementation_prepared_extra_history", V2737A_HISTORY_AUTHORIZED, implementation_prepared_extra_history),
+        ("implementation_prepared_wrong_order", V2737A_HISTORY_AUTHORIZED, implementation_prepared_wrong_order),
+        ("implementation_committed_extra_history", V2737A_HISTORY_IMPLEMENTED, implementation_committed_extra_history),
+        ("implementation_committed_gate_after", V2737A_HISTORY_IMPLEMENTED, implementation_committed_gate_after),
+        ("closure_prepared_extra_history", V2737A_HISTORY_IMPLEMENTED, closure_prepared_extra_history),
+        ("closure_prepared_already_closed", V2737A_HISTORY_IMPLEMENTED, closure_prepared_already_closed),
+        ("closure_committed_extra_history", V2737A_HISTORY_CLOSED, closure_committed_extra_history),
+        ("closure_committed_implementation_after", V2737A_HISTORY_CLOSED, closure_committed_implementation_after),
+    )
+    for label, baseline, mutated in changed_mutations:
+        if mutated == baseline:
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Selbsttest ist wirkungslos: " + label
+            )
+            return
+
+    def with_roles(history, roles):
+        return {**history, "roles": roles}
+
+    negative_cases = (
+        ("authorization_prepared_wrong_task", "v2737a_authorization_prepared", "invalid", V2736F_GATE_FILES, base_history, True, True),
+        ("authorization_prepared_extra_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_extra_file, base_history, True, True),
+        ("authorization_prepared_missing_gate_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_missing_gate, base_history, True, True),
+        ("authorization_prepared_wrong_history", "v2737a_authorization_prepared", "v2737a_authorized", V2736F_GATE_FILES, with_roles(base_history, authorization_prepared_wrong_history), True, True),
+        ("authorization_committed_extra_history", "v2737a_authorization_committed", "v2737a_authorized", set(), with_roles(gate_history, authorization_committed_extra_history), True, True),
+        ("authorization_committed_duplicate_gate", "v2737a_authorization_committed", "v2737a_authorized", set(), with_roles(gate_history, authorization_committed_duplicate_gate), True, True),
+        ("implementation_prepared_extra_file", "v2737a_implementation_prepared", "v2737a_authorized", implementation_extra_file, gate_history, True, True),
+        ("implementation_prepared_missing_file", "v2737a_implementation_prepared", "v2737a_authorized", implementation_missing_file, gate_history, True, True),
+        ("implementation_prepared_extra_history", "v2737a_implementation_prepared", "v2737a_authorized", implementation_files, with_roles(gate_history, implementation_prepared_extra_history), True, True),
+        ("implementation_prepared_wrong_order", "v2737a_implementation_prepared", "v2737a_authorized", implementation_files, with_roles(gate_history, implementation_prepared_wrong_order), True, True),
+        ("implementation_committed_extra_history", "v2737a_implementation_committed", "v2737a_authorized", set(), with_roles(implementation_history, implementation_committed_extra_history), True, True),
+        ("implementation_committed_gate_after", "v2737a_implementation_committed", "v2737a_authorized", set(), with_roles(implementation_history, implementation_committed_gate_after), True, True),
+        ("closure_prepared_wrong_history", "v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, gate_history, True, True),
+        ("closure_prepared_wrong_task", "v2737a_closure_prepared", "v2737a_authorized", V2736F_GATE_FILES, implementation_history, True, True),
+        ("closure_prepared_extra_history", "v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, with_roles(implementation_history, closure_prepared_extra_history), True, True),
+        ("closure_prepared_already_closed", "v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, with_roles(implementation_history, closure_prepared_already_closed), True, True),
+        ("closure_committed_missing_closure", "v2737a_closure_committed", "v2737a_closed", set(), implementation_history, True, True),
+        ("closure_committed_extra_history", "v2737a_closure_committed", "v2737a_closed", set(), with_roles(closure_history, closure_committed_extra_history), True, True),
+        ("closure_committed_implementation_after", "v2737a_closure_committed", "v2737a_closed", set(), with_roles(closure_history, closure_committed_implementation_after), True, True),
+        ("atomic_repair_products_changed", "v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history, False, True),
+        ("atomic_repair_document_missing", "v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history, True, False),
+        ("unknown_future_task", "unknown_future_task", "v2737a_authorized", set(), base_history, True, True),
+        ("authorization_committed_wrong_task", "v2737a_authorization_committed", "other_closed", set(), gate_history, True, True),
+    )
+    for label, phase, task_kind, working_paths, history, products_unchanged, repair_documented in negative_cases:
+        if _v2737a_successor_scope_facts_are_valid(
+            phase=phase,
+            task_kind=task_kind,
+            working_paths=working_paths,
+            history=history,
+            products_unchanged=products_unchanged,
+            repair_documented=repair_documented,
+        ):
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Manipulation nicht blockiert: "
+                + label
+            )
+            return
+    baseline_texts = _v2737a_baseline_product_texts()
+    candidate_texts = dict(baseline_texts) if baseline_texts is not None else None
+    if not _v2737a_frozen_product_contract_is_valid(
+        baseline_texts,
+        candidate_texts,
+    ):
+        errors.append("v27.37a-Nachfolgeprofil erkennt den gültigen Frozen-Produktvertrag nicht")
+        return
+    frozen_content_mutations = (
+        ("app_access_error_single", "app.js", 'createParticipantAccessNoticeStateV2736D("access_error")', 'createParticipantAccessNoticeStateV2736D("blocked")'),
+        ("index_marker_neutral", "index.html", "</body>", "<!-- v2737a mutation --></body>"),
+        ("app_marker_neutral", "app.js", "async function initAuthFlow()", "async function initAuthFlow() /* v2737a mutation */"),
+        ("adapter_marker_neutral", "data/supabase-participant-access-adapter.js", '"use strict";', '"use strict"; /* v2737a mutation */'),
+        ("bridge_marker_neutral", "data/supabase-participant-access-bootstrap-bridge.js", '"use strict";', '"use strict"; /* v2737a mutation */'),
+        ("provider_marker_neutral", "data/supabase-participant-access-browser-provider.js", '"use strict";', '"use strict"; /* v2737a mutation */'),
+        ("loader_marker_neutral", "data/supabase-participant-access-browser-loader.js", '"use strict";', '"use strict"; /* v2737a mutation */'),
+        ("adapter_factory_suffix", "data/supabase-participant-access-adapter.js", "createParticipantAccessAdapter", "createParticipantAccessAdapterRemoved"),
+        ("bridge_get_client_suffix", "data/supabase-participant-access-bootstrap-bridge.js", "bootstrap.getClient", "bootstrap.getClientRemoved"),
+        ("loader_resolve_access_suffix", "data/supabase-participant-access-browser-loader.js", "provider.resolveAccess", "provider.resolveAccessRemoved"),
+        ("provider_resolve_access_removed", "data/supabase-participant-access-browser-provider.js", "async function resolveAccess()", "async function resolveAccessRemoved()"),
+        ("data_enabled_true", "index.html", 'data-enabled="false"', 'data-enabled="true"'),
+        ("create_client_injected", "data/supabase-participant-access-browser-provider.js", '"use strict";', '"use strict"; supabase.createClient();'),
+        ("initialize_client_injected", "data/supabase-participant-access-browser-provider.js", '"use strict";', '"use strict"; bootstrap.initializeClient();'),
+        ("auth_query_injected", "app.js", "async function initAuthFlow()", "async function initAuthFlow(){ client.auth.getSession(); }"),
+        ("table_query_injected", "data/supabase-participant-access-browser-loader.js", '"use strict";', '"use strict"; client.from("participants");'),
+    )
+    for label, relative_path, needle, replacement in frozen_content_mutations:
+        baseline_value = baseline_texts[relative_path]
+        if needle not in baseline_value:
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Selbstprüfung benötigt Quellmarker: "
+                + label
+            )
+            return
+        mutated = dict(baseline_texts)
+        mutated[relative_path] = baseline_value.replace(needle, replacement, 1)
+        if (
+            mutated == baseline_texts
+            or mutated[relative_path] == baseline_texts[relative_path]
+        ):
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Produktmanipulation ist wirkungslos: "
+                + label
+            )
+            return
+        if _v2737a_frozen_product_contract_is_valid(
+            baseline_texts,
+            mutated,
+        ):
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Produktmanipulation nicht blockiert: "
+                + label
+            )
+            return
+    missing_file = dict(baseline_texts)
+    missing_file.pop("app.js")
+    extra_file = {**baseline_texts, "unexpected.js": "synthetic"}
+    wrong_filename = dict(baseline_texts)
+    wrong_filename["wrong-index.html"] = wrong_filename.pop("index.html")
+    frozen_map_mutations = (
+        ("frozen_file_missing", baseline_texts, missing_file),
+        ("seventh_file_added", baseline_texts, extra_file),
+        ("wrong_filename", baseline_texts, wrong_filename),
+        ("empty_candidate", baseline_texts, {}),
+        ("empty_baseline", {}, baseline_texts),
+    )
+    for label, manipulated_baseline, manipulated_candidate in frozen_map_mutations:
+        if manipulated_baseline == manipulated_candidate:
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Dateimengenmanipulation ist wirkungslos: "
+                + label
+            )
+            return
+        if _v2737a_frozen_product_contract_is_valid(
+            manipulated_baseline,
+            manipulated_candidate,
+        ):
+            errors.append(
+                "v27.37a-Nachfolgeprofil-Dateimengenmanipulation nicht blockiert: "
+                + label
+            )
+            return
+    print(
+        "v27.37a-Nachfolgeprofil-Selbstprüfung: "
+        f"{len(positive_cases) + 1} Positiv-, {len(negative_cases)} Scope- und "
+        f"{len(frozen_content_mutations) + len(frozen_map_mutations)} "
+        "Produktmanipulationsfälle PASS"
+    )
+
+
 def check_v2736f_regression_profile_scope_logic():
     expected = set(V2736F_AUTHORIZED_IMPLEMENTATION_FILES)
     extra = expected | {"style.css"}
@@ -2867,6 +3680,7 @@ def main():
     check_supabase_participant_access_bootstrap_bridge()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
+    check_v2737a_successor_profile_scope_logic()
     check_participant_access_browser_provider_v2736e()
     check_participant_access_browser_loader_v2736f()
     check_project_continuity_control()
