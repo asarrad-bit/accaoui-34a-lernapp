@@ -1550,6 +1550,25 @@ def check_supabase_participant_access_bootstrap_bridge():
         )
 
 
+def check_supabase_participant_auth_session_adapter_v2737a():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-participant-auth-session-adapter.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Teilnehmer-Auth-/Session-Adapterprüfung v27.37a "
+            "fehlgeschlagen"
+        )
+
+
 V2736E_AUTHORIZED_IMPLEMENTATION_FILES = (
     "data/supabase-participant-access-adapter.js",
     "data/supabase-participant-access-bootstrap-bridge.js",
@@ -3677,9 +3696,12 @@ def main():
         "data/supabase-participant-access-adapter.js",
         "data/supabase-participant-access-bootstrap-bridge.js",
         "data/supabase-participant-access-browser-provider.js",
+        "data/supabase-participant-auth-session-adapter.js",
         "tools/check-supabase-participant-access-adapter.py",
         "tools/check-supabase-participant-access-bootstrap-bridge.py",
+        "tools/check-supabase-participant-auth-session-adapter.py",
         "docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md",
+        "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_ADAPTER_V2737A.md",
         "tools/check-participant-access-app-entry-v2736d.py",
         "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md",
         "tools/check-participant-access-browser-provider-v2736e.py",
@@ -3808,6 +3830,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_adapter_contract()
     check_supabase_participant_access_adapter()
     check_supabase_participant_access_bootstrap_bridge()
+    check_supabase_participant_auth_session_adapter_v2737a()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()
