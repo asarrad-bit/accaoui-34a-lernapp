@@ -1,12 +1,90 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37a-GATE-REPAIR-FOLLOWUP
+Stand: v27.37a
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Autorisierter Task v27.37a
+
+v27.37a ist ausdrücklich autorisiert.
+
+Der Titel lautet: Isolierten Teilnehmer-Auth-/Session-Adapter mit synthetischem Fake-Auth-Vertrag implementieren.
+
+Technische v27.37a-Basis: `2da93d2931178fb225b41a301d21658b40729857`.
+
+Der v27.37a-GATE-REPAIR und der v27.37a-GATE-REPAIR-FOLLOWUP bleiben vollständig abgeschlossen. Die FOLLOWUP-Grenze `2da93d2931178fb225b41a301d21658b40729857` wird nicht erneut geöffnet oder wiederholt. Die aktuelle Autorisierung beginnt einen neuen eigenständigen v27.37a-Lifecycle ab dieser Grenze.
+
+Die spätere Implementierung umfasst exakt vier Dateien:
+
+- `data/supabase-participant-auth-session-adapter.js`
+- `tools/check-supabase-participant-auth-session-adapter.py`
+- `docs/SUPABASE_PARTICIPANT_AUTH_SESSION_ADAPTER_V2737A.md`
+- `tools/preflight.py`
+
+Keine fünfte Implementierungsdatei ist erlaubt.
+
+### Öffentlicher Vertrag
+
+Das neue isolierte Modul ist `data/supabase-participant-auth-session-adapter.js`. Die Factory lautet exakt `createParticipantAuthSessionAdapter({ auth })`.
+
+Die öffentliche Oberfläche enthält exakt:
+
+- `resolveSession()`
+- `signIn({ email, password })`
+- `signOut()`
+
+Eine vierte öffentliche Methode ist verboten. Die einzige injizierte Dependency ist `auth`. Ausschließlich `auth.getSession()`, `auth.signInWithPassword(...)` und `auth.signOut()` dürfen verwendet werden.
+
+Jede öffentliche Rückgabe ist ein gefrorenes Plain Object mit exakt den zwei Properties `{ ok: boolean, code: string }`.
+
+- `resolveSession()` gibt ausschließlich `session_available`, `session_missing`, `session_invalid` oder `auth_error` zurück.
+- `signIn({ email, password })` gibt ausschließlich `signed_in`, `credentials_invalid`, `sign_in_failed` oder `auth_error` zurück.
+- `signOut()` gibt ausschließlich `signed_out`, `sign_out_failed` oder `auth_error` zurück.
+
+Session, User, `user.id`, E-Mail, Passwort, Token, `access_token`, `refresh_token`, Auth-Response, Config, Key, Error-Objekt und Error-Message dürfen niemals öffentlich zurückgegeben werden. Rohfehler bleiben ausgeschlossen.
+
+### Sicherheitsgrenze
+
+v27.37a darf `app.js`, `index.html`, den Browser-Loader oder bestehende Supabase-Produktmodule nicht ändern. `window`, `document`, DOM, `localStorage`, `sessionStorage`, Cookies sowie das Speichern von Passwörtern oder Tokens sind verboten. Client-Erzeugung, `createClient()`, `initializeClient()`, Config-Lesen, `fetch`, `XMLHttpRequest`, `WebSocket`, `.from(...)`, Teilnehmer-, Enrollment- oder Kursabfragen, SQL, Migrationen, eine frei übergebene `userId` und jede Live-Schaltung von Supabase sind verboten.
+
+Die bestehende Teilnehmer-Fachautorität bleibt ausschließlich `session.user.id` im vorhandenen v27.36b-Teilnehmerzugangs-Adapter. Keine Fachlogik daraus darf dupliziert werden. Der Browser-Loader bleibt unverändert bei `data-enabled="false"`. Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
+Mindestens diese Produktdateien bleiben gegenüber der technischen Basis unverändert:
+
+- `index.html`
+- `app.js`
+- `data/supabase-client-bootstrap.js`
+- `data/supabase-client-adapter.js`
+- `data/supabase-participant-access-adapter.js`
+- `data/supabase-participant-access-bootstrap-bridge.js`
+- `data/supabase-participant-access-browser-provider.js`
+- `data/supabase-participant-access-browser-loader.js`
+- `questions.json`
+- `style.css`
+
+### Späterer Testvertrag
+
+Getestet wird ausschließlich lokal mit einem synthetischen In-Memory Fake Auth. `resolveSession()` prüft gültige, fehlende und ungültige Sessions, fehlenden oder ungültigen User beziehungsweise `user.id`, Response-Error, Throw und Reject. `signIn()` prüft Erfolg, ungültige Eingaben, Response-Error, Throw und Reject. `signOut()` prüft Erfolg, Response-Error, Throw und Reject.
+
+Zusätzlich werden exakt zwei Ergebnisproperties, `Object.freeze`, das Ausbleiben von Passwort-, Session-, User-, Token- und Rohfehler-Leaks, die einzige Dependency, die Storage-, Netzwerk-, Tabellen- und Client-Erzeugungssperren sowie die synthetische Integration geprüft: `signIn` führt über den bestehenden v27.36b-Teilnehmerzugangs-Adapter zu `access_allowed`; `signOut` führt über denselben unveränderten Adapter zu `session_missing`.
+
+### Permanenter v27.37a-Lifecycle
+
+Die technische Basis ist `2da93d2931178fb225b41a301d21658b40729857`. Der Lifecycle erkennt dynamisch exakt `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed`.
+
+`authorization_prepared` verlangt HEAD auf der technischen Basis, eine nichtleere Teilmenge ausschließlich der fünf Gate-Dateien im Working Tree und den autorisierten v27.37a-Task ohne Implementierungsdatei. `authorization_committed` verlangt einen sauberen Working Tree und genau einen legitimen Gate-Commit direkt nach der Basis, der ausschließlich Gate-Dateien enthält.
+
+`implementation_prepared` verlangt den legitimen Gate-Commit und exakt die vier Implementierungsdateien im Working Tree. `implementation_committed` verlangt einen sauberen Working Tree und einen direkten Implementierungscommit mit exakt diesen vier Dateien.
+
+`closure_prepared` verlangt die legitim committete Implementierung, exakt die fünf Gate-Dateien im Working Tree und `CURRENT_TASK` geschlossen als `NONE / BLOCKED / Autorisiert NEIN`. `closure_committed` verlangt einen sauberen Working Tree, einen direkten Closure-Commit mit exakt den fünf Gate-Dateien und den weiterhin geschlossenen Taskzustand.
+
+Ein zweites Gate, eine zweite Implementierung, ein Gate nach der Implementierung, eine Closure vor der Implementierung, eine Implementierung nach der Closure, unbekannte History-Rollen und spätere unbekannte Tasks werden blockiert. Keine zukünftige Gate-, Implementierungs- oder Closure-SHA wird hartcodiert.
+
+Dieser Gate-Schritt autorisiert keine Produktimplementierung. Commit und Push bleiben NEIN.
 
 ## Abgeschlossener atomarer Follow-up-Repair v27.37a-GATE-REPAIR-FOLLOWUP
 
@@ -878,6 +956,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.36e | Browser-Anbindungsweg der Teilnehmerzugangskette lokal vorbereitet; CommonJS-Kompatibilität von v27.36b/v27.36c erhalten, kontrollierte Browser-Factory-Exports und Browser-App-Provider mit ausschließlich `resolveAccess()`, fail-closed und Kollisionsschutz; Implementierungscommit `0c4d64aaa7da7e8dd38fff1d7bf72675cb689a6f`; Checker 22/31/16, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine HTML-Aktivierung, Supabase NICHT LIVE, kein Folgetask – **erledigt** |
 | v27.36f | Kontrollierter Browser-Aktivierungsweg vollständig abgeschlossen; Implementierungscommit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`; zusätzlicher enger Prüfpfad-Repair v27.36f-REPAIR mit Repair-Implementierungscommit `b035c62100b033dbce03a4ab016e4471b4ab54d4` und Repair-Closure `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712`; Default `data-enabled=false`, fail-closed, Checker 41/27/46 PASS, Supabase NICHT LIVE – **erledigt** |
 | v27.36f-REPAIR | Closure-Prüfpfad für v27.36f eng repariert; Repair-Implementierungscommit `b035c62100b033dbce03a4ab016e4471b4ab54d4`; Repair-Closure `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712`; Checker 41/27/46, Regressionen, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine App-, Loader- oder Supabase-Änderung – **erledigt** |
+| v27.37a | Isolierter Teilnehmer-Auth-/Session-Adapter mit synthetischem Fake-Auth-Vertrag; technische Basis `2da93d2931178fb225b41a301d21658b40729857`; ausschließlich vier Implementierungsdateien, fail-closed, keine Produktintegration, Supabase NICHT LIVE – **autorisiert** |
 | v27.37a-GATE-REPAIR-FOLLOWUP | Einmaliger atomarer Follow-up-Repair für striktes UTF-8-Historienlesen und nichtleere Gate-Dateiteilmengen; ausschließlich vier Steuerdokumente, Kontinuitätschecker und Preflight; keine Produktänderung, Supabase NICHT LIVE – **erledigt** |
 | v27.37a-GATE-REPAIR | Einmaliger atomarer Bootstrap des engen Preflight-Nachfolgeprofils nach vollständig abgeschlossenem v27.36f; ausschließlich vier Steuerdokumente, Kontinuitätschecker und Preflight; keine Produktänderung, Supabase NICHT LIVE – **erledigt** |
 

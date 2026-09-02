@@ -9588,6 +9588,8 @@ def run_v2736f_repair_manipulation_matrix(
 
 V2737A_GATE_REPAIR_BASE_SHA = "ac997149fe9600d735dcc237b0a30232d279cc52"
 V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA = "ec8f20216d8dcb13417cca27699febc998d6dcd9"
+V2737A_AUTHORIZATION_BASE_SHA = "2da93d2931178fb225b41a301d21658b40729857"
+V2737A_TITLE = "Isolierten Teilnehmer-Auth-/Session-Adapter mit synthetischem Fake-Auth-Vertrag implementieren"
 V2737A_GATE_REPAIR_HISTORICAL_SHAS = frozenset({
     "a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa",
     "b035c62100b033dbce03a4ab016e4471b4ab54d4",
@@ -9626,6 +9628,76 @@ V2737A_IMPLEMENTATION_FILES = frozenset({
     "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_ADAPTER_V2737A.md",
     "tools/preflight.py",
 })
+V2737A_IMPLEMENTATION_FILE_ORDER = (
+    "data/supabase-participant-auth-session-adapter.js",
+    "tools/check-supabase-participant-auth-session-adapter.py",
+    "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_ADAPTER_V2737A.md",
+    "tools/preflight.py",
+)
+V2737A_ALLOWED_FILES_VALUE = ", ".join(
+    f"`{path}`" for path in V2737A_IMPLEMENTATION_FILE_ORDER
+)
+V2737A_PUBLIC_API_LINES = (
+    "- `resolveSession()`",
+    "- `signIn({ email, password })`",
+    "- `signOut()`",
+)
+V2737A_AUTHORIZATION_SECTION_MARKERS = (
+    "v27.37a ist ausdrücklich autorisiert.",
+    f"Der Titel lautet: {V2737A_TITLE}.",
+    f"Technische v27.37a-Basis: `{V2737A_AUTHORIZATION_BASE_SHA}`.",
+    "Der v27.37a-GATE-REPAIR und der v27.37a-GATE-REPAIR-FOLLOWUP bleiben vollständig abgeschlossen.",
+    "Die spätere Implementierung umfasst exakt vier Dateien:",
+    "Keine fünfte Implementierungsdatei ist erlaubt.",
+    "createParticipantAuthSessionAdapter({ auth })",
+    "Die öffentliche Oberfläche enthält exakt:",
+    "Eine vierte öffentliche Methode ist verboten.",
+    "Die einzige injizierte Dependency ist `auth`.",
+    "auth.getSession()",
+    "auth.signInWithPassword(...)",
+    "auth.signOut()",
+    "gefrorenes Plain Object mit exakt den zwei Properties `{ ok: boolean, code: string }`",
+    "session_available",
+    "session_missing",
+    "session_invalid",
+    "credentials_invalid",
+    "signed_in",
+    "sign_in_failed",
+    "signed_out",
+    "sign_out_failed",
+    "auth_error",
+    "Rohfehler bleiben ausgeschlossen.",
+    "### Sicherheitsgrenze",
+    "`window`, `document`, DOM, `localStorage`, `sessionStorage`, Cookies",
+    "`createClient()`",
+    "`initializeClient()`",
+    "`fetch`, `XMLHttpRequest`, `WebSocket`, `.from(...)`",
+    "eine frei übergebene `userId`",
+    "`session.user.id`",
+    "Keine Fachlogik daraus darf dupliziert werden.",
+    "data-enabled=\"false\"",
+    "Supabase bleibt NICHT LIVE.",
+    "Keine echten Keys.",
+    "Keine echten Teilnehmerdaten.",
+    "Mindestens diese Produktdateien bleiben gegenüber der technischen Basis unverändert:",
+    "synthetischen In-Memory Fake Auth",
+    "`Object.freeze`",
+    "`signIn` führt über den bestehenden v27.36b-Teilnehmerzugangs-Adapter zu `access_allowed`",
+    "`signOut` führt über denselben unveränderten Adapter zu `session_missing`",
+    "### Permanenter v27.37a-Lifecycle",
+    "`authorization_prepared`",
+    "`authorization_committed`",
+    "`implementation_prepared`",
+    "`implementation_committed`",
+    "`closure_prepared`",
+    "`closure_committed`",
+    "eine nichtleere Teilmenge ausschließlich der fünf Gate-Dateien",
+    "Ein zweites Gate, eine zweite Implementierung",
+    "unbekannte History-Rollen und spätere unbekannte Tasks werden blockiert.",
+    "Keine zukünftige Gate-, Implementierungs- oder Closure-SHA wird hartcodiert.",
+    "Dieser Gate-Schritt autorisiert keine Produktimplementierung.",
+    "Commit und Push bleiben NEIN.",
+)
 V2737A_ALLOWED_STATE_CONTRACTS = frozenset({
     (
         V2737A_GATE_REPAIR_PHASE_PREPARED,
@@ -9802,6 +9874,158 @@ def extract_v2737a_gate_repair_followup_section(text: str, document_name: str) -
     next_heading = re.search(r"(?m)^#{1,6} ", tail)
     body = tail[:next_heading.start()] if next_heading else tail
     return start_marker + body
+
+
+def extract_v2737a_authorization_section(text: str, document_name: str) -> str:
+    start_marker = "## Autorisierter Task v27.37a"
+    require(
+        text.count(start_marker) == 1,
+        f"{document_name}: v27.37a-Autorisierungsabschnitt fehlt oder ist doppelt",
+    )
+    tail = text.split(start_marker, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    body = tail[:next_heading.start()] if next_heading else tail
+    return start_marker + body
+
+
+def validate_v2737a_authorization_section(section: str, document_name: str) -> None:
+    validate_required_markers(
+        section,
+        V2737A_AUTHORIZATION_SECTION_MARKERS,
+        f"{document_name} / v27.37a-Autorisierung",
+    )
+    implementation_start = "Die spätere Implementierung umfasst exakt vier Dateien:"
+    implementation_end = "Keine fünfte Implementierungsdatei ist erlaubt."
+    require(
+        section.count(implementation_start) == 1
+        and section.count(implementation_end) == 1,
+        f"{document_name}: v27.37a-Implementierungsdateiliste ist nicht eindeutig abgegrenzt",
+    )
+    implementation_list = section.split(implementation_start, 1)[1].split(
+        implementation_end,
+        1,
+    )[0].strip()
+    require(
+        implementation_list
+        == "\n".join(f"- `{path}`" for path in V2737A_IMPLEMENTATION_FILE_ORDER),
+        f"{document_name}: v27.37a muss exakt vier kanonische Implementierungsdateien autorisieren",
+    )
+    api_start = "Die öffentliche Oberfläche enthält exakt:"
+    api_end = "Eine vierte öffentliche Methode ist verboten."
+    require(
+        section.count(api_start) == 1 and section.count(api_end) == 1,
+        f"{document_name}: v27.37a-API-Vertrag ist nicht eindeutig abgegrenzt",
+    )
+    api_list = section.split(api_start, 1)[1].split(api_end, 1)[0].strip()
+    require(
+        api_list == "\n".join(V2737A_PUBLIC_API_LINES),
+        f"{document_name}: v27.37a-API muss exakt resolveSession(), signIn() und signOut() enthalten",
+    )
+    frozen_start = "Mindestens diese Produktdateien bleiben gegenüber der technischen Basis unverändert:"
+    frozen_end = "### Späterer Testvertrag"
+    require(
+        section.count(frozen_start) == 1 and section.count(frozen_end) == 1,
+        f"{document_name}: v27.37a-Frozen-Product-Liste ist nicht eindeutig abgegrenzt",
+    )
+    frozen_list = section.split(frozen_start, 1)[1].split(frozen_end, 1)[0].strip()
+    require(
+        frozen_list
+        == "\n".join(
+            f"- `{path}`" for path in V2737A_GATE_REPAIR_FROZEN_PRODUCT_FILES
+        ),
+        f"{document_name}: v27.37a-Frozen-Product-Liste muss exakt zehn Dateien enthalten",
+    )
+    shas = frozenset(re.findall(r"\b[0-9a-f]{40}\b", section))
+    require(
+        shas == frozenset({V2737A_AUTHORIZATION_BASE_SHA}),
+        f"{document_name}: technische v27.37a-Basis fehlt oder zukünftige SHA ist hartcodiert",
+    )
+
+
+def validate_v2737a_authorization_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+) -> None:
+    validate_exact_fields(
+        state_text,
+        {
+            "Stand": "v27.37a",
+            "Weiterer funktionaler Schritt autorisiert": "JA",
+            "Aktuell autorisierter Task": "v27.37a",
+            "Aktuelle Taskart": V2737A_TITLE,
+        },
+    )
+    validate_exact_fields(
+        task_text,
+        {
+            "Task-ID": "v27.37a",
+            "Status": "AUTHORIZED",
+            "Autorisiert": "JA",
+            "Titel": V2737A_TITLE,
+            "Funktionaler Ausgangsstand": "v27.35g",
+            "Letzter abgeschlossener Kontrollschritt": "v27.37a-GATE-REPAIR-FOLLOWUP",
+            "Erlaubte Implementierungsdateien": V2737A_ALLOWED_FILES_VALUE,
+            "Commit erlaubt": "NEIN",
+            "Push erlaubt": "NEIN",
+        },
+    )
+    require(
+        exact_field(cursor_text, "Stand") == "v27.37a",
+        "CURSOR-Kontext muss auf v27.37a stehen",
+    )
+    require(
+        exact_field(masterlist_text, "Stand") == "v27.37a",
+        "PROJECT_MASTERLIST muss auf v27.37a stehen",
+    )
+    validate_project_paths(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    documents = (state_text, task_text, cursor_text, masterlist_text)
+    names = (
+        "PROJECT_STATE_CURRENT",
+        "CURRENT_TASK",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        "PROJECT_MASTERLIST",
+    )
+    for text, name in zip(documents, names):
+        validate_v2737a_authorization_section(
+            extract_v2737a_authorization_section(text, name),
+            name,
+        )
+    rows = re.findall(r"(?m)^\| v27\.37a \|.*$", masterlist_text)
+    require(
+        len(rows) == 1
+        and "**autorisiert**" in rows[0]
+        and "Supabase NICHT LIVE" in rows[0]
+        and V2737A_AUTHORIZATION_BASE_SHA in rows[0],
+        "PROJECT_MASTERLIST muss v27.37a exakt einmal als autorisiert führen",
+    )
+
+
+def v2737a_current_task_state(task_text: str) -> str:
+    if (
+        exact_field(task_text, "Task-ID") == "v27.37a"
+        and exact_field(task_text, "Status") == "AUTHORIZED"
+        and exact_field(task_text, "Autorisiert") == "JA"
+        and exact_field(task_text, "Titel") == V2737A_TITLE
+        and exact_field(task_text, "Erlaubte Implementierungsdateien")
+        == V2737A_ALLOWED_FILES_VALUE
+        and exact_field(task_text, "Commit erlaubt") == "NEIN"
+        and exact_field(task_text, "Push erlaubt") == "NEIN"
+    ):
+        return "v2737a_authorized"
+    if (
+        exact_field(task_text, "Task-ID") == "NONE"
+        and exact_field(task_text, "Status") == "BLOCKED"
+        and exact_field(task_text, "Autorisiert") == "NEIN"
+        and exact_field(task_text, "Erlaubte Implementierungsdateien") == "KEINE"
+        and exact_field(task_text, "Commit erlaubt") == "NEIN"
+        and exact_field(task_text, "Push erlaubt") == "NEIN"
+        and exact_field(task_text, "Letzter abgeschlossener Kontrollschritt")
+        == "v27.37a"
+    ):
+        return "v2737a_closed"
+    return "invalid"
 
 
 def v2737a_allowed_state_facts_are_valid(
@@ -10125,20 +10349,155 @@ def validate_v2736f_closed_at_v2737a_gate_repair_base(
     return phase, history, fact, documents
 
 
+def extract_v2737a_completion_section(text: str, document_name: str) -> str:
+    start_marker = "## Abgeschlossener technischer Schritt v27.37a"
+    require(
+        text.count(start_marker) == 1,
+        f"{document_name}: v27.37a-Abschlussabschnitt fehlt oder ist doppelt",
+    )
+    tail = text.split(start_marker, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    body = tail[:next_heading.start()] if next_heading else tail
+    return start_marker + body
+
+
+def validate_v2737a_completion_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    implementation_commit: str,
+) -> None:
+    validate_exact_fields(
+        state_text,
+        {
+            "Stand": "v27.37a",
+            "Weiterer funktionaler Schritt autorisiert": "NEIN",
+            "Aktuell autorisierter Task": "NONE",
+            "Aktuelle Taskart": "Kein Task autorisiert",
+        },
+    )
+    validate_exact_fields(
+        task_text,
+        {
+            "Task-ID": "NONE",
+            "Status": "BLOCKED",
+            "Autorisiert": "NEIN",
+            "Titel": "Kein Task autorisiert",
+            "Funktionaler Ausgangsstand": "v27.35g",
+            "Letzter abgeschlossener Kontrollschritt": "v27.37a",
+            "Erlaubte Implementierungsdateien": "KEINE",
+            "Commit erlaubt": "NEIN",
+            "Push erlaubt": "NEIN",
+        },
+    )
+    require(exact_field(cursor_text, "Stand") == "v27.37a", "CURSOR-Kontext muss auf v27.37a stehen")
+    require(exact_field(masterlist_text, "Stand") == "v27.37a", "PROJECT_MASTERLIST muss auf v27.37a stehen")
+    validate_project_paths(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    documents = (state_text, task_text, cursor_text, masterlist_text)
+    names = (
+        "PROJECT_STATE_CURRENT",
+        "CURRENT_TASK",
+        "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        "PROJECT_MASTERLIST",
+    )
+    for text, name in zip(documents, names):
+        section = extract_v2737a_completion_section(text, name)
+        validate_required_markers(
+            section,
+            (
+                "v27.37a abgeschlossen.",
+                f"Implementierungscommit: `{implementation_commit}`",
+                "createParticipantAuthSessionAdapter({ auth })",
+                "resolveSession()",
+                "signIn({ email, password })",
+                "signOut()",
+                "Supabase bleibt NICHT LIVE.",
+                "Keine zukünftige Closure-SHA wird hartcodiert.",
+            ),
+            f"{name} / v27.37a-Abschluss",
+        )
+    rows = re.findall(r"(?m)^\| v27\.37a \|.*$", masterlist_text)
+    require(
+        len(rows) == 1
+        and "**erledigt**" in rows[0]
+        and implementation_commit in rows[0]
+        and "Supabase NICHT LIVE" in rows[0],
+        "PROJECT_MASTERLIST muss v27.37a exakt einmal als erledigt führen",
+    )
+
+
+def read_v2737a_history(head: str) -> tuple[tuple[str, ...], str | None]:
+    commits = tuple(
+        line.strip()
+        for line in run_git([
+            "rev-list",
+            "--reverse",
+            f"{V2737A_AUTHORIZATION_BASE_SHA}..{head}",
+        ]).splitlines()
+        if line.strip()
+    )
+    previous = V2737A_AUTHORIZATION_BASE_SHA
+    roles: list[str] = []
+    implementation_commit: str | None = None
+    for commit in commits:
+        lineage = run_git(["rev-list", "--parents", "-n", "1", commit]).split()
+        require(
+            len(lineage) == 2 and lineage[1] == previous,
+            "v27.37a-Historie muss linear, mergefrei und lückenlos sein",
+        )
+        files = frozenset(
+            line.strip().replace("\\", "/")
+            for line in run_git(["diff", "--name-only", previous, commit]).splitlines()
+            if line.strip()
+        )
+        commit_task_text = read_v2735f_commit_document(
+            commit,
+            "docs/tasks/CURRENT_TASK.md",
+        )
+        task_state = v2737a_current_task_state(commit_task_text)
+        if (
+            task_state == "v2737a_authorized"
+            and files == V2737A_GATE_FILES
+            and not roles
+        ):
+            roles.append("v2737a_gate")
+        elif (
+            task_state == "v2737a_authorized"
+            and files == V2737A_IMPLEMENTATION_FILES
+            and roles == ["v2737a_gate"]
+        ):
+            roles.append("v2737a_implementation")
+            implementation_commit = commit
+        elif (
+            task_state == "v2737a_closed"
+            and files == V2737A_GATE_FILES
+            and roles == ["v2737a_gate", "v2737a_implementation"]
+        ):
+            roles.append("v2737a_closure")
+        else:
+            raise ValidationError(
+                f"Unbekannter, wiederholter oder falsch geordneter v27.37a-Commit: {commit}"
+            )
+        previous = commit
+    return tuple(roles), implementation_commit
+
+
 def validate_v2737a_gate_repair_lifecycle(
     state_text: str,
     task_text: str,
     cursor_text: str,
     masterlist_text: str,
 ) -> str:
+    control_paths = (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    )
     initial_repair_documents = tuple(
         read_v2735f_commit_document(V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA, path)
-        for path in (
-            "docs/PROJECT_STATE_CURRENT.md",
-            "docs/tasks/CURRENT_TASK.md",
-            "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
-            "docs/PROJECT_MASTERLIST.md",
-        )
+        for path in control_paths
     )
     validate_v2737a_gate_repair_documents(*initial_repair_documents)
     repair_lineage = run_git([
@@ -10167,79 +10526,153 @@ def validate_v2737a_gate_repair_lifecycle(
         repair_files == V2737A_GATE_REPAIR_FILES,
         "Erster v27.37a-GATE-REPAIR muss exakt sechs Repair-Dateien umfassen",
     )
-    validate_v2737a_gate_repair_followup_documents(
-        state_text,
-        task_text,
-        cursor_text,
-        masterlist_text,
+    followup_documents = tuple(
+        read_v2735f_commit_document(V2737A_AUTHORIZATION_BASE_SHA, path)
+        for path in control_paths
+    )
+    validate_v2737a_gate_repair_followup_documents(*followup_documents)
+    followup_lineage = run_git([
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        V2737A_AUTHORIZATION_BASE_SHA,
+    ]).split()
+    require(
+        len(followup_lineage) == 2
+        and followup_lineage[1] == V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA,
+        "v27.37a-GATE-REPAIR-FOLLOWUP muss direkt und mergefrei auf dem ersten Repair liegen",
+    )
+    followup_files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git([
+            "diff",
+            "--name-only",
+            V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA,
+            V2737A_AUTHORIZATION_BASE_SHA,
+        ]).splitlines()
+        if line.strip()
+    )
+    require(
+        followup_files == V2737A_GATE_REPAIR_FILES,
+        "v27.37a-GATE-REPAIR-FOLLOWUP muss exakt sechs Repair-Dateien umfassen",
     )
     validate_v2737a_gate_repair_products_unchanged()
     validate_v2737a_gate_repair_followup_products_unchanged()
+    for relative_path in V2737A_GATE_REPAIR_FROZEN_PRODUCT_FILES:
+        baseline = run_git_bytes([
+            "show",
+            f"{V2737A_AUTHORIZATION_BASE_SHA}:{relative_path}",
+        ])
+        require(
+            (ROOT / relative_path).read_bytes() == baseline,
+            f"v27.37a-Frozen-Product-Datei verändert: {relative_path}",
+        )
     branch = run_git(["branch", "--show-current"]).strip()
     head = run_git(["rev-parse", "HEAD"]).strip()
     origin_main = run_git(["rev-parse", "origin/main"]).strip()
-    require(origin_main in {V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA, head}, "origin/main liegt außerhalb der engen atomaren FOLLOWUP-Grenze")
-    require(git_is_ancestor(V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA, head), "Stabile v27.37a-GATE-REPAIR-FOLLOWUP-Basis ist kein Vorfahr von HEAD")
-    diff_files = frozenset(line.strip().replace("\\", "/") for line in run_git(["diff", "--name-only"]).splitlines() if line.strip())
-    staged_files = frozenset(line.strip().replace("\\", "/") for line in run_git(["diff", "--cached", "--name-only"]).splitlines() if line.strip())
-    untracked_files = frozenset(line.strip().replace("\\", "/") for line in run_git(["ls-files", "--others", "--exclude-standard"]).splitlines() if line.strip())
-    status_lines = frozenset(line.replace("\\", "/") for line in run_git(["status", "--porcelain=v1", "--untracked-files=all"]).splitlines() if line)
-    if head == V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA:
-        phase = V2737A_GATE_REPAIR_FOLLOWUP_PHASE_PREPARED
-        require(
-            status_lines == frozenset(f" M {path}" for path in V2737A_GATE_REPAIR_FILES),
-            "Atomarer FOLLOWUP-Repair muss im Working Tree exakt sechs ungestagte Dateien ändern",
+    require(branch == "main", "v27.37a ist ausschließlich auf Branch main zulässig")
+    require(
+        git_is_ancestor(V2737A_AUTHORIZATION_BASE_SHA, head),
+        "Technische v27.37a-Basis ist kein Vorfahr von HEAD",
+    )
+    require(
+        git_is_ancestor(V2737A_AUTHORIZATION_BASE_SHA, origin_main)
+        and git_is_ancestor(origin_main, head),
+        "origin/main liegt außerhalb der linearen v27.37a-Grenze",
+    )
+    diff_files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git(["diff", "--name-only"]).splitlines()
+        if line.strip()
+    )
+    staged_files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git(["diff", "--cached", "--name-only"]).splitlines()
+        if line.strip()
+    )
+    untracked_files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git(["ls-files", "--others", "--exclude-standard"]).splitlines()
+        if line.strip()
+    )
+    require(not staged_files, "v27.37a-Working-Tree darf keine staged Dateien enthalten")
+    working_files = diff_files | untracked_files
+    roles, implementation_commit = read_v2737a_history(head)
+    task_state = v2737a_current_task_state(task_text)
+    if not roles and head == V2737A_AUTHORIZATION_BASE_SHA:
+        if task_state == "v2737a_authorized" and working_files:
+            phase = "v2737a_authorization_prepared"
+        elif task_state == "invalid" and not working_files:
+            phase = V2737A_GATE_REPAIR_FOLLOWUP_PHASE_COMMITTED
+        else:
+            raise ValidationError("Ungültiger Zustand an der abgeschlossenen FOLLOWUP-Grenze")
+    elif roles == ("v2737a_gate",):
+        phase = (
+            "v2737a_authorization_committed"
+            if not working_files
+            else "v2737a_implementation_prepared"
         )
-        committed_files = None
-        parent_is_base = False
+    elif roles == ("v2737a_gate", "v2737a_implementation"):
+        phase = (
+            "v2737a_implementation_committed"
+            if not working_files
+            else "v2737a_closure_prepared"
+        )
+    elif roles == ("v2737a_gate", "v2737a_implementation", "v2737a_closure"):
+        require(not working_files, "Nach der v27.37a-Closure muss der Working Tree sauber sein")
+        phase = "v2737a_closure_committed"
     else:
-        phase = V2737A_GATE_REPAIR_FOLLOWUP_PHASE_COMMITTED
-        lineage = run_git(["rev-list", "--parents", "-n", "1", head]).split()
-        require(len(lineage) == 2, "Atomarer FOLLOWUP-Repair-Commit muss linear und mergefrei sein")
-        parent = lineage[1]
-        parent_is_base = parent == V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA
-        committed_files = frozenset(line.strip().replace("\\", "/") for line in run_git(["diff", "--name-only", parent, head]).splitlines() if line.strip())
-        require(not status_lines, "Atomarer FOLLOWUP-Repair-Commit benötigt einen sauberen Working Tree")
-    history_roles = (
-        ("atomic_repair",)
-        if phase == V2737A_GATE_REPAIR_FOLLOWUP_PHASE_PREPARED
-        else ("atomic_repair", "atomic_followup")
-    )
-    parent_relation = (
-        "head_is_atomic_repair"
-        if phase == V2737A_GATE_REPAIR_FOLLOWUP_PHASE_PREPARED
-        else "followup_parent_is_atomic_repair"
-    )
+        raise ValidationError("v27.37a-Historie oder Working-Tree-Zustand ist unzulässig")
+    if phase == V2737A_GATE_REPAIR_FOLLOWUP_PHASE_COMMITTED:
+        validate_v2737a_gate_repair_followup_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            masterlist_text,
+        )
+        return phase
+    if task_state == "v2737a_authorized":
+        validate_v2737a_authorization_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            masterlist_text,
+        )
+        allowed_files = V2737A_IMPLEMENTATION_FILES
+    elif task_state == "v2737a_closed" and implementation_commit:
+        validate_v2737a_completion_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            masterlist_text,
+            implementation_commit,
+        )
+        allowed_files = frozenset()
+    else:
+        raise ValidationError("CURRENT_TASK entspricht keinem zulässigen v27.37a-Zustand")
+    history_roles = ("atomic_repair", "atomic_followup", *roles)
+    parent_relation = {
+        "v2737a_authorization_prepared": "head_is_atomic_followup",
+        "v2737a_authorization_committed": "gate_parent_is_atomic_followup",
+        "v2737a_implementation_prepared": "head_is_v2737a_gate",
+        "v2737a_implementation_committed": "implementation_parent_is_gate",
+        "v2737a_closure_prepared": "head_is_v2737a_implementation",
+        "v2737a_closure_committed": "closure_parent_is_implementation",
+    }[phase]
     require(
         v2737a_allowed_state_facts_are_valid(
             phase=phase,
             task_id=exact_field(task_text, "Task-ID") or "",
             status=exact_field(task_text, "Status") or "",
             authorized=exact_field(task_text, "Autorisiert") or "",
-            allowed_implementation_files=frozenset(),
-            working_files=diff_files,
+            allowed_implementation_files=allowed_files,
+            working_files=working_files,
             history_roles=history_roles,
             parent_relation=parent_relation,
-            current_task_state="followup_closed",
+            current_task_state=task_state,
         ),
         "Aktueller Zustand liegt außerhalb der positiven v27.37a-Task-/Scope-/Phasen-Allowlist",
-    )
-    require(
-        v2737a_gate_repair_followup_scope_facts_are_valid(
-            phase=phase,
-            branch=branch,
-            head_is_base=head == V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA,
-            parent_is_base=parent_is_base,
-            task_closed=True,
-            working_files=diff_files,
-            committed_files=committed_files,
-            staged_files=staged_files,
-            untracked_files=untracked_files,
-            products_unchanged=True,
-            documents_valid=True,
-            initial_repair_committed=True,
-        ),
-        "Working Tree oder Commit entspricht nicht dem engen atomaren v27.37a-GATE-REPAIR-FOLLOWUP",
     )
     return phase
 
@@ -10660,6 +11093,145 @@ def run_v2737a_gate_repair_followup_manipulation_matrix(
     return document_manipulations, 2, len(negative_cases)
 
 
+def run_v2737a_authorization_manipulation_matrix(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+) -> tuple[int, int, int]:
+    validate_v2737a_authorization_documents(
+        state_text,
+        task_text,
+        cursor_text,
+        masterlist_text,
+    )
+    sections = (
+        (extract_v2737a_authorization_section(state_text, "PROJECT_STATE_CURRENT"), "PROJECT_STATE_CURRENT"),
+        (extract_v2737a_authorization_section(task_text, "CURRENT_TASK"), "CURRENT_TASK"),
+        (extract_v2737a_authorization_section(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"), "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (extract_v2737a_authorization_section(masterlist_text, "PROJECT_MASTERLIST"), "PROJECT_MASTERLIST"),
+    )
+    checks = 0
+    unique_markers = (
+        "v27.37a ist ausdrücklich autorisiert.",
+        f"Der Titel lautet: {V2737A_TITLE}.",
+        "Eine vierte öffentliche Methode ist verboten.",
+        "Jede öffentliche Rückgabe ist ein gefrorenes Plain Object mit exakt den zwei Properties `{ ok: boolean, code: string }`.",
+        "Rohfehler bleiben ausgeschlossen.",
+        "Keine Fachlogik daraus darf dupliziert werden.",
+        "Supabase bleibt NICHT LIVE.",
+        "Keine zukünftige Gate-, Implementierungs- oder Closure-SHA wird hartcodiert.",
+        "Dieser Gate-Schritt autorisiert keine Produktimplementierung.",
+    )
+    for section, name in sections:
+        for marker in unique_markers:
+            require(
+                section.count(marker) == 1,
+                f"{name}: v27.37a-Manipulation benötigt eindeutigen Marker: {marker}",
+            )
+            mutated = section.replace(marker, "", 1)
+            try:
+                validate_v2737a_authorization_section(mutated, name)
+            except ValidationError:
+                checks += 1
+                continue
+            raise ValidationError(
+                f"v27.37a-Autorisierungsmanipulation wurde nicht blockiert: {name} / {marker}"
+            )
+    canonical_section, canonical_name = sections[0]
+    for lines, label in (
+        (
+            tuple(f"- `{path}`" for path in V2737A_IMPLEMENTATION_FILE_ORDER),
+            "Implementierungsdatei",
+        ),
+        (V2737A_PUBLIC_API_LINES, "öffentliche API"),
+        (
+            tuple(
+                f"- `{path}`" for path in V2737A_GATE_REPAIR_FROZEN_PRODUCT_FILES
+            ),
+            "Frozen Product",
+        ),
+    ):
+        for line in lines:
+            needle = line + "\n"
+            require(
+                canonical_section.count(needle) == 1,
+                f"v27.37a-Manipulation benötigt eindeutige {label}-Zeile: {line}",
+            )
+            mutated = canonical_section.replace(needle, "", 1)
+            try:
+                validate_v2737a_authorization_section(mutated, canonical_name)
+            except ValidationError:
+                checks += 1
+                continue
+            raise ValidationError(
+                f"v27.37a-{label}-Manipulation wurde nicht blockiert: {line}"
+            )
+    future_sha = "\nZukünftige v27.37a-SHA: `" + ("a" * 40) + "`\n"
+    try:
+        validate_v2737a_authorization_section(
+            canonical_section + future_sha,
+            canonical_name,
+        )
+    except ValidationError:
+        checks += 1
+    else:
+        raise ValidationError(
+            "v27.37a-Autorisierungsmanipulation wurde nicht blockiert: zukünftige SHA"
+        )
+    task_mutations = (
+        ("Task-ID: v27.37a", "Task-ID: NONE"),
+        ("Status: AUTHORIZED", "Status: BLOCKED"),
+        ("Autorisiert: JA", "Autorisiert: NEIN"),
+        (
+            f"Erlaubte Implementierungsdateien: {V2737A_ALLOWED_FILES_VALUE}",
+            "Erlaubte Implementierungsdateien: `app.js`",
+        ),
+        ("Commit erlaubt: NEIN", "Commit erlaubt: JA"),
+        ("Push erlaubt: NEIN", "Push erlaubt: JA"),
+    )
+    for needle, replacement in task_mutations:
+        require(
+            task_text.count(needle) == 1,
+            f"CURRENT_TASK-Manipulation benötigt eindeutiges Steuerfeld: {needle}",
+        )
+        mutated_task = task_text.replace(needle, replacement, 1)
+        try:
+            validate_v2737a_authorization_documents(
+                state_text,
+                mutated_task,
+                cursor_text,
+                masterlist_text,
+            )
+        except ValidationError:
+            checks += 1
+            continue
+        raise ValidationError(
+            f"v27.37a-CURRENT_TASK-Manipulation wurde nicht blockiert: {needle}"
+        )
+    row = re.findall(r"(?m)^\| v27\.37a \|.*$", masterlist_text)
+    require(len(row) == 1, "v27.37a-Masterlistenzeile muss für Manipulation eindeutig sein")
+    mutated_masterlist = masterlist_text.replace(
+        row[0],
+        row[0].replace("**autorisiert**", "**erledigt**"),
+        1,
+    )
+    try:
+        validate_v2737a_authorization_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            mutated_masterlist,
+        )
+    except ValidationError:
+        checks += 1
+    else:
+        raise ValidationError(
+            "v27.37a-Masterlistenmanipulation wurde nicht blockiert"
+        )
+    return checks, 1, len(unique_markers) * len(sections) + 25
+
+
 def main() -> int:
     try:
         state_text = read_required_text(STATE_PATH)
@@ -10840,13 +11412,27 @@ def main() -> int:
             masterlist_text,
         )
         manipulation_checks += v2737a_gate_repair_followup_manipulation_checks
+        (
+            v2737a_authorization_manipulation_checks,
+            v2737a_authorization_positive_tests,
+            v2737a_authorization_negative_tests,
+        ) = run_v2737a_authorization_manipulation_matrix(
+            state_text,
+            task_text,
+            cursor_context_text,
+            masterlist_text,
+        )
+        manipulation_checks += v2737a_authorization_manipulation_checks
     except ValidationError as exc:
         print(f"FEHLER: {exc}")
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
         return 1
 
-    print("Projektkontinuität, abgeschlossener v27.36f-Verlauf und v27.37a-GATE-REPAIR-FOLLOWUP: OK")
-    task_summary = "NONE / BLOCKED / Autorisiert NEIN"
+    print("Projektkontinuität, abgeschlossene v27.37a-Repairs und frischer v27.37a-Lifecycle: OK")
+    task_summary = (
+        f"{exact_field(task_text, 'Task-ID')} / {exact_field(task_text, 'Status')} / "
+        f"Autorisiert {exact_field(task_text, 'Autorisiert')}"
+    )
     print(
         "PROJECT_STATE_CURRENT: letzter funktionaler Stand v27.35g / "
         f"CURRENT_TASK {task_summary}"
@@ -10969,7 +11555,8 @@ def main() -> int:
     )
     print("Abgeschlossene v27.36f-Implementierungsphase an der Repair-Basis: implementation_committed")
     print(f"Aktuelle v27.36f-REPAIR-Phase: {v2736f_repair_phase}")
-    print(f"Aktuelle v27.37a-GATE-REPAIR-FOLLOWUP-Phase: {v2737a_gate_repair_phase}")
+    v2737a_phase_display = v2737a_gate_repair_phase.removeprefix("v2737a_")
+    print(f"Aktuelle v27.37a-Phase: {v2737a_phase_display}")
     print(
         "v27.36f-REPAIR-Synchronisation: lokaler HEAD "
         f"{v2736f_repair_working_tree.head}; origin/main "
@@ -11034,6 +11621,11 @@ def main() -> int:
         f"{v2737a_gate_repair_followup_negative_tests} / vollständig blockiert"
     )
     print(
+        "v27.37a-Autorisierungsvertrag: "
+        f"{v2737a_authorization_positive_tests} / PASS; Negativtests: "
+        f"{v2737a_authorization_negative_tests} / vollständig blockiert"
+    )
+    print(
         f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt "
         f"(davon v27.36a: {v2736a_manipulation_checks}; "
         f"v27.36b: {v2736b_manipulation_checks}; "
@@ -11044,7 +11636,8 @@ def main() -> int:
         f"v27.36f-REPAIR: {v2736f_repair_manipulation_checks}; "
         f"v27.37a-GATE-REPAIR: {v2737a_gate_repair_manipulation_checks}; "
         "v27.37a-GATE-REPAIR-FOLLOWUP: "
-        f"{v2737a_gate_repair_followup_manipulation_checks})"
+        f"{v2737a_gate_repair_followup_manipulation_checks}; "
+        f"v27.37a-Autorisierung: {v2737a_authorization_manipulation_checks})"
     )
     return 0
 
