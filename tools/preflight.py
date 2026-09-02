@@ -2375,8 +2375,10 @@ def _detect_v2736f_post_implementation_profile_phase(working_paths):
 
 
 V2737A_GATE_REPAIR_BASE_SHA = "ac997149fe9600d735dcc237b0a30232d279cc52"
+V2737A_GATE_REPAIR_FOLLOWUP_BASE_SHA = "ec8f20216d8dcb13417cca27699febc998d6dcd9"
+V2737A_GATE_FILES = set(V2736F_GATE_FILES)
 V2737A_GATE_REPAIR_FILES = {
-    *V2736F_GATE_FILES,
+    *V2737A_GATE_FILES,
     "tools/preflight.py",
 }
 V2737A_AUTHORIZED_IMPLEMENTATION_FILES = (
@@ -2388,23 +2390,34 @@ V2737A_AUTHORIZED_IMPLEMENTATION_FILES = (
 V2737A_FROZEN_PRODUCT_FILES = (
     "index.html",
     "app.js",
+    "style.css",
+    "questions.json",
+    "data/supabase-client-adapter.js",
+    "data/supabase-client-bootstrap.js",
     "data/supabase-participant-access-adapter.js",
     "data/supabase-participant-access-bootstrap-bridge.js",
     "data/supabase-participant-access-browser-provider.js",
     "data/supabase-participant-access-browser-loader.js",
 )
 V2737A_HISTORY_ATOMIC_REPAIR = ("atomic_repair",)
+V2737A_HISTORY_ATOMIC_FOLLOWUP = (
+    "atomic_repair",
+    "atomic_followup",
+)
 V2737A_HISTORY_AUTHORIZED = (
     "atomic_repair",
+    "atomic_followup",
     "v2737a_gate",
 )
 V2737A_HISTORY_IMPLEMENTED = (
     "atomic_repair",
+    "atomic_followup",
     "v2737a_gate",
     "v2737a_implementation",
 )
 V2737A_HISTORY_CLOSED = (
     "atomic_repair",
+    "atomic_followup",
     "v2737a_gate",
     "v2737a_implementation",
     "v2737a_closure",
@@ -2437,6 +2450,8 @@ def _v2737a_task_kind_from_text(text):
         last_step = single_value("Letzter abgeschlossener Kontrollschritt:")
         if last_step == "v27.37a-GATE-REPAIR":
             return "repair_closed"
+        if last_step == "v27.37a-GATE-REPAIR-FOLLOWUP":
+            return "followup_closed"
         if last_step == "v27.37a":
             return "v2737a_closed"
         return "other_closed"
@@ -2472,6 +2487,18 @@ def _v2737a_gate_repair_document_contract_is_valid(text):
         "Keine echten Teilnehmerdaten.",
         "v2737a_gate_repair_atomic_prepared",
         "v2737a_gate_repair_atomic_committed",
+    ))
+
+
+def _v2737a_gate_repair_followup_document_contract_is_valid(text):
+    return all(marker in text for marker in (
+        "Abgeschlossener atomarer Follow-up-Repair v27.37a-GATE-REPAIR-FOLLOWUP",
+        "v27.37a-GATE-REPAIR-FOLLOWUP abgeschlossen.",
+        "v2737a_gate_repair_followup_atomic_prepared",
+        "v2737a_gate_repair_followup_atomic_committed",
+        "Supabase bleibt NICHT LIVE.",
+        "Keine echten Keys.",
+        "Keine echten Teilnehmerdaten.",
     ))
 
 
@@ -2658,6 +2685,7 @@ def _read_v2737a_successor_history():
     commits = [line.strip() for line in stdout.splitlines() if line.strip()]
     previous = V2737A_GATE_REPAIR_BASE_SHA
     roles = []
+    followup_seen = False
     gate_seen = False
     implementation_seen = False
     closure_seen = False
@@ -2669,14 +2697,14 @@ def _read_v2737a_successor_history():
         if len(lineage) != 2 or lineage[1] != previous:
             return None
         files = _git_paths(["diff", "--name-only", previous, commit])
-        task_text = _read_git_text_at_revision(
+        task_text = _read_v2737a_git_blob_utf8(
             commit, "docs/tasks/CURRENT_TASK.md"
         )
         if not files or task_text is None:
             return None
         task_kind = _v2737a_task_kind_from_text(task_text)
         if index == 0:
-            state_text = _read_git_text_at_revision(
+            state_text = _read_v2737a_git_blob_utf8(
                 commit, "docs/PROJECT_STATE_CURRENT.md"
             )
             if not (
@@ -2687,8 +2715,31 @@ def _read_v2737a_successor_history():
             ):
                 return None
             roles.append("atomic_repair")
-        elif task_kind == "v2737a_authorized" and files == V2736F_GATE_FILES:
-            if implementation_seen or closure_seen:
+        elif (
+            task_kind == "followup_closed"
+            and files == V2737A_GATE_REPAIR_FILES
+        ):
+            state_text = _read_v2737a_git_blob_utf8(
+                commit, "docs/PROJECT_STATE_CURRENT.md"
+            )
+            if not (
+                roles == list(V2737A_HISTORY_ATOMIC_REPAIR)
+                and not followup_seen
+                and state_text is not None
+                and _v2737a_gate_repair_followup_document_contract_is_valid(
+                    state_text
+                )
+            ):
+                return None
+            followup_seen = True
+            roles.append("atomic_followup")
+        elif task_kind == "v2737a_authorized" and files == V2737A_GATE_FILES:
+            if (
+                roles != list(V2737A_HISTORY_ATOMIC_FOLLOWUP)
+                or gate_seen
+                or implementation_seen
+                or closure_seen
+            ):
                 return None
             gate_seen = True
             roles.append("v2737a_gate")
@@ -2700,7 +2751,7 @@ def _read_v2737a_successor_history():
                 return None
             implementation_seen = True
             roles.append("v2737a_implementation")
-        elif task_kind == "v2737a_closed" and files == V2736F_GATE_FILES:
+        elif task_kind == "v2737a_closed" and files == V2737A_GATE_FILES:
             if not implementation_seen or closure_seen:
                 return None
             closure_seen = True
@@ -2713,6 +2764,7 @@ def _read_v2737a_successor_history():
         "roles": tuple(roles),
         "last_role": roles[-1] if roles else None,
         "repair_seen": bool(roles) and roles[0] == "atomic_repair",
+        "followup_seen": followup_seen,
         "gate_seen": gate_seen,
         "implementation_seen": implementation_seen,
         "closure_seen": closure_seen,
@@ -2727,6 +2779,7 @@ def _v2737a_successor_scope_facts_are_valid(
     history,
     products_unchanged,
     repair_documented,
+    followup_documented,
 ):
     if not (
         isinstance(history, dict)
@@ -2742,68 +2795,105 @@ def _v2737a_successor_scope_facts_are_valid(
             task_kind == "repair_closed"
             and not working_paths
             and history.get("roles") == V2737A_HISTORY_ATOMIC_REPAIR
+            and history.get("followup_seen") is False
             and history.get("gate_seen") is False
             and history.get("implementation_seen") is False
             and history.get("closure_seen") is False
         )
-    if phase == "v2737a_authorization_prepared":
+    if phase == "v2737a_gate_repair_followup_atomic_prepared":
         return (
-            task_kind == "v2737a_authorized"
-            and working_paths == V2736F_GATE_FILES
+            task_kind == "followup_closed"
+            and working_paths == V2737A_GATE_REPAIR_FILES
             and history.get("roles") == V2737A_HISTORY_ATOMIC_REPAIR
+            and history.get("followup_seen") is False
             and history.get("gate_seen") is False
             and history.get("implementation_seen") is False
             and history.get("closure_seen") is False
+            and followup_documented
+        )
+    if phase == "v2737a_gate_repair_followup_atomic_committed":
+        return (
+            task_kind == "followup_closed"
+            and not working_paths
+            and history.get("roles") == V2737A_HISTORY_ATOMIC_FOLLOWUP
+            and history.get("followup_seen") is True
+            and history.get("gate_seen") is False
+            and history.get("implementation_seen") is False
+            and history.get("closure_seen") is False
+            and last_role == "atomic_followup"
+            and followup_documented
+        )
+    if phase == "v2737a_authorization_prepared":
+        return (
+            task_kind == "v2737a_authorized"
+            and bool(working_paths)
+            and working_paths <= V2737A_GATE_FILES
+            and history.get("roles") == V2737A_HISTORY_ATOMIC_FOLLOWUP
+            and history.get("followup_seen") is True
+            and history.get("gate_seen") is False
+            and history.get("implementation_seen") is False
+            and history.get("closure_seen") is False
+            and followup_documented
         )
     if phase == "v2737a_authorization_committed":
         return (
             task_kind == "v2737a_authorized"
             and not working_paths
             and history.get("roles") == V2737A_HISTORY_AUTHORIZED
+            and history.get("followup_seen") is True
             and history.get("gate_seen") is True
             and history.get("implementation_seen") is False
             and history.get("closure_seen") is False
             and last_role == "v2737a_gate"
+            and followup_documented
         )
     if phase == "v2737a_implementation_prepared":
         return (
             task_kind == "v2737a_authorized"
             and working_paths == implementation_files
             and history.get("roles") == V2737A_HISTORY_AUTHORIZED
+            and history.get("followup_seen") is True
             and history.get("gate_seen") is True
             and history.get("implementation_seen") is False
             and history.get("closure_seen") is False
             and last_role == "v2737a_gate"
+            and followup_documented
         )
     if phase == "v2737a_implementation_committed":
         return (
             task_kind == "v2737a_authorized"
             and not working_paths
             and history.get("roles") == V2737A_HISTORY_IMPLEMENTED
+            and history.get("followup_seen") is True
             and history.get("gate_seen") is True
             and history.get("implementation_seen") is True
             and history.get("closure_seen") is False
             and last_role == "v2737a_implementation"
+            and followup_documented
         )
     if phase == "v2737a_closure_prepared":
         return (
             task_kind == "v2737a_closed"
-            and working_paths == V2736F_GATE_FILES
+            and working_paths == V2737A_GATE_FILES
             and history.get("roles") == V2737A_HISTORY_IMPLEMENTED
+            and history.get("followup_seen") is True
             and history.get("gate_seen") is True
             and history.get("implementation_seen") is True
             and history.get("closure_seen") is False
             and last_role == "v2737a_implementation"
+            and followup_documented
         )
     if phase == "v2737a_closure_committed":
         return (
             task_kind == "v2737a_closed"
             and not working_paths
             and history.get("roles") == V2737A_HISTORY_CLOSED
+            and history.get("followup_seen") is True
             and history.get("gate_seen") is True
             and history.get("implementation_seen") is True
             and history.get("closure_seen") is True
             and last_role == "v2737a_closure"
+            and followup_documented
         )
     return False
 
@@ -2837,6 +2927,9 @@ def _detect_v2737a_successor_profile_phase(working_paths):
     repair_documented = _v2737a_gate_repair_document_contract_is_valid(
         state_text
     )
+    followup_documented = (
+        _v2737a_gate_repair_followup_document_contract_is_valid(state_text)
+    )
     code, head, _stderr = run_command("git rev-parse HEAD")
     if code != 0:
         return None
@@ -2858,9 +2951,12 @@ def _detect_v2737a_successor_profile_phase(working_paths):
         "history": history,
         "products_unchanged": products_unchanged,
         "repair_documented": repair_documented,
+        "followup_documented": followup_documented,
     }
     for phase in (
         "v2737a_gate_repair_atomic_committed",
+        "v2737a_gate_repair_followup_atomic_prepared",
+        "v2737a_gate_repair_followup_atomic_committed",
         "v2737a_authorization_prepared",
         "v2737a_authorization_committed",
         "v2737a_implementation_prepared",
@@ -2885,12 +2981,19 @@ def check_v2737a_successor_profile_scope_logic():
         "roles": V2737A_HISTORY_ATOMIC_REPAIR,
         "last_role": "atomic_repair",
         "repair_seen": True,
+        "followup_seen": False,
         "gate_seen": False,
         "implementation_seen": False,
         "closure_seen": False,
     }
-    gate_history = {
+    followup_history = {
         **base_history,
+        "roles": V2737A_HISTORY_ATOMIC_FOLLOWUP,
+        "last_role": "atomic_followup",
+        "followup_seen": True,
+    }
+    gate_history = {
+        **followup_history,
         "roles": V2737A_HISTORY_AUTHORIZED,
         "last_role": "v2737a_gate",
         "gate_seen": True,
@@ -2919,16 +3022,26 @@ def check_v2737a_successor_profile_scope_logic():
             "v2737a_gate_repair_atomic_prepared"
         )
         return
-    positive_cases = (
-        ("v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history),
-        ("v2737a_authorization_prepared", "v2737a_authorized", V2736F_GATE_FILES, base_history),
-        ("v2737a_authorization_committed", "v2737a_authorized", set(), gate_history),
-        ("v2737a_implementation_prepared", "v2737a_authorized", set(V2737A_AUTHORIZED_IMPLEMENTATION_FILES), gate_history),
-        ("v2737a_implementation_committed", "v2737a_authorized", set(), implementation_history),
-        ("v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, implementation_history),
-        ("v2737a_closure_committed", "v2737a_closed", set(), closure_history),
+    gate_paths = tuple(sorted(V2737A_GATE_FILES))
+    authorization_subsets = (
+        {"docs/tasks/CURRENT_TASK.md"},
+        {"docs/PROJECT_STATE_CURRENT.md"},
+        set(gate_paths[:2]),
+        set(gate_paths[:4]),
+        set(gate_paths),
     )
-    for phase, task_kind, working_paths, history in positive_cases:
+    positive_cases = (
+        ("v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history, False),
+        ("v2737a_gate_repair_followup_atomic_prepared", "followup_closed", V2737A_GATE_REPAIR_FILES, base_history, True),
+        ("v2737a_gate_repair_followup_atomic_committed", "followup_closed", set(), followup_history, True),
+        *(("v2737a_authorization_prepared", "v2737a_authorized", subset, followup_history, True) for subset in authorization_subsets),
+        ("v2737a_authorization_committed", "v2737a_authorized", set(), gate_history, True),
+        ("v2737a_implementation_prepared", "v2737a_authorized", set(V2737A_AUTHORIZED_IMPLEMENTATION_FILES), gate_history, True),
+        ("v2737a_implementation_committed", "v2737a_authorized", set(), implementation_history, True),
+        ("v2737a_closure_prepared", "v2737a_closed", V2737A_GATE_FILES, implementation_history, True),
+        ("v2737a_closure_committed", "v2737a_closed", set(), closure_history, True),
+    )
+    for phase, task_kind, working_paths, history, followup_documented in positive_cases:
         if not _v2737a_successor_scope_facts_are_valid(
             phase=phase,
             task_kind=task_kind,
@@ -2936,6 +3049,7 @@ def check_v2737a_successor_profile_scope_logic():
             history=history,
             products_unchanged=True,
             repair_documented=True,
+            followup_documented=followup_documented,
         ):
             errors.append(
                 "v27.37a-Nachfolgeprofil-Positivprüfung fehlgeschlagen: "
@@ -2943,69 +3057,69 @@ def check_v2737a_successor_profile_scope_logic():
             )
             return
     implementation_files = set(V2737A_AUTHORIZED_IMPLEMENTATION_FILES)
-    authorization_missing_gate = V2736F_GATE_FILES - {
-        "docs/PROJECT_STATE_CURRENT.md"
+    authorization_empty = set()
+    authorization_implementation_file = {"data/supabase-participant-auth-session-adapter.js"}
+    authorization_preflight_file = {"tools/preflight.py"}
+    authorization_app_file = {"app.js"}
+    authorization_unknown_file = {"unknown/future-task.txt"}
+    authorization_gate_plus_product = {
+        "docs/tasks/CURRENT_TASK.md",
+        "index.html",
     }
-    authorization_extra_file = V2736F_GATE_FILES | {"app.js"}
     implementation_extra_file = implementation_files | {"index.html"}
     implementation_missing_file = implementation_files - {"tools/preflight.py"}
     authorization_prepared_wrong_history = (
-        "unexpected",
         "atomic_repair",
+        "unexpected",
     )
     authorization_committed_extra_history = (
-        "atomic_repair",
+        *V2737A_HISTORY_ATOMIC_FOLLOWUP,
         "extra_gate",
-        "v2737a_gate",
     )
     authorization_committed_duplicate_gate = (
-        "atomic_repair",
-        "v2737a_gate",
+        *V2737A_HISTORY_AUTHORIZED,
         "v2737a_gate",
     )
     implementation_prepared_extra_history = (
-        "atomic_repair",
+        *V2737A_HISTORY_ATOMIC_FOLLOWUP,
         "unexpected",
-        "v2737a_gate",
     )
     implementation_prepared_wrong_order = (
         "v2737a_gate",
         "atomic_repair",
+        "atomic_followup",
     )
     implementation_committed_extra_history = (
-        "atomic_repair",
+        *V2737A_HISTORY_AUTHORIZED,
         "unexpected",
-        "v2737a_gate",
-        "v2737a_implementation",
     )
     implementation_committed_gate_after = (
         *V2737A_HISTORY_IMPLEMENTED,
         "v2737a_gate",
     )
     closure_prepared_extra_history = (
-        "atomic_repair",
-        "v2737a_gate",
+        *V2737A_HISTORY_AUTHORIZED,
         "unexpected",
-        "v2737a_implementation",
     )
     closure_prepared_already_closed = V2737A_HISTORY_CLOSED
     closure_committed_extra_history = (
-        "atomic_repair",
+        *V2737A_HISTORY_IMPLEMENTED,
         "unexpected",
-        "v2737a_gate",
-        "v2737a_implementation",
-        "v2737a_closure",
     )
     closure_committed_implementation_after = (
         *V2737A_HISTORY_CLOSED,
         "v2737a_implementation",
     )
     changed_mutations = (
-        ("authorization_prepared_missing_gate_file", V2736F_GATE_FILES, authorization_missing_gate),
-        ("authorization_prepared_extra_file", V2736F_GATE_FILES, authorization_extra_file),
+        ("authorization_prepared_empty", {"docs/tasks/CURRENT_TASK.md"}, authorization_empty),
+        ("authorization_prepared_implementation_file", {"docs/tasks/CURRENT_TASK.md"}, authorization_implementation_file),
+        ("authorization_prepared_preflight_file", {"docs/tasks/CURRENT_TASK.md"}, authorization_preflight_file),
+        ("authorization_prepared_app_file", {"docs/tasks/CURRENT_TASK.md"}, authorization_app_file),
+        ("authorization_prepared_unknown_file", {"docs/tasks/CURRENT_TASK.md"}, authorization_unknown_file),
+        ("authorization_prepared_gate_plus_product", {"docs/tasks/CURRENT_TASK.md"}, authorization_gate_plus_product),
         ("implementation_prepared_extra_file", implementation_files, implementation_extra_file),
         ("implementation_prepared_missing_file", implementation_files, implementation_missing_file),
-        ("authorization_prepared_wrong_history", V2737A_HISTORY_ATOMIC_REPAIR, authorization_prepared_wrong_history),
+        ("authorization_prepared_wrong_history", V2737A_HISTORY_ATOMIC_FOLLOWUP, authorization_prepared_wrong_history),
         ("authorization_committed_extra_history", V2737A_HISTORY_AUTHORIZED, authorization_committed_extra_history),
         ("authorization_committed_duplicate_gate", V2737A_HISTORY_AUTHORIZED, authorization_committed_duplicate_gate),
         ("implementation_prepared_extra_history", V2737A_HISTORY_AUTHORIZED, implementation_prepared_extra_history),
@@ -3028,31 +3142,42 @@ def check_v2737a_successor_profile_scope_logic():
         return {**history, "roles": roles}
 
     negative_cases = (
-        ("authorization_prepared_wrong_task", "v2737a_authorization_prepared", "invalid", V2736F_GATE_FILES, base_history, True, True),
-        ("authorization_prepared_extra_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_extra_file, base_history, True, True),
-        ("authorization_prepared_missing_gate_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_missing_gate, base_history, True, True),
-        ("authorization_prepared_wrong_history", "v2737a_authorization_prepared", "v2737a_authorized", V2736F_GATE_FILES, with_roles(base_history, authorization_prepared_wrong_history), True, True),
-        ("authorization_committed_extra_history", "v2737a_authorization_committed", "v2737a_authorized", set(), with_roles(gate_history, authorization_committed_extra_history), True, True),
-        ("authorization_committed_duplicate_gate", "v2737a_authorization_committed", "v2737a_authorized", set(), with_roles(gate_history, authorization_committed_duplicate_gate), True, True),
-        ("implementation_prepared_extra_file", "v2737a_implementation_prepared", "v2737a_authorized", implementation_extra_file, gate_history, True, True),
-        ("implementation_prepared_missing_file", "v2737a_implementation_prepared", "v2737a_authorized", implementation_missing_file, gate_history, True, True),
-        ("implementation_prepared_extra_history", "v2737a_implementation_prepared", "v2737a_authorized", implementation_files, with_roles(gate_history, implementation_prepared_extra_history), True, True),
-        ("implementation_prepared_wrong_order", "v2737a_implementation_prepared", "v2737a_authorized", implementation_files, with_roles(gate_history, implementation_prepared_wrong_order), True, True),
-        ("implementation_committed_extra_history", "v2737a_implementation_committed", "v2737a_authorized", set(), with_roles(implementation_history, implementation_committed_extra_history), True, True),
-        ("implementation_committed_gate_after", "v2737a_implementation_committed", "v2737a_authorized", set(), with_roles(implementation_history, implementation_committed_gate_after), True, True),
-        ("closure_prepared_wrong_history", "v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, gate_history, True, True),
-        ("closure_prepared_wrong_task", "v2737a_closure_prepared", "v2737a_authorized", V2736F_GATE_FILES, implementation_history, True, True),
-        ("closure_prepared_extra_history", "v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, with_roles(implementation_history, closure_prepared_extra_history), True, True),
-        ("closure_prepared_already_closed", "v2737a_closure_prepared", "v2737a_closed", V2736F_GATE_FILES, with_roles(implementation_history, closure_prepared_already_closed), True, True),
-        ("closure_committed_missing_closure", "v2737a_closure_committed", "v2737a_closed", set(), implementation_history, True, True),
-        ("closure_committed_extra_history", "v2737a_closure_committed", "v2737a_closed", set(), with_roles(closure_history, closure_committed_extra_history), True, True),
-        ("closure_committed_implementation_after", "v2737a_closure_committed", "v2737a_closed", set(), with_roles(closure_history, closure_committed_implementation_after), True, True),
-        ("atomic_repair_products_changed", "v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history, False, True),
-        ("atomic_repair_document_missing", "v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history, True, False),
-        ("unknown_future_task", "unknown_future_task", "v2737a_authorized", set(), base_history, True, True),
-        ("authorization_committed_wrong_task", "v2737a_authorization_committed", "other_closed", set(), gate_history, True, True),
+        ("followup_prepared_wrong_scope", "v2737a_gate_repair_followup_atomic_prepared", "followup_closed", V2737A_GATE_REPAIR_FILES | {"app.js"}, base_history, True, True, True),
+        ("followup_prepared_repeat", "v2737a_gate_repair_followup_atomic_prepared", "followup_closed", V2737A_GATE_REPAIR_FILES, followup_history, True, True, True),
+        ("followup_prepared_products_changed", "v2737a_gate_repair_followup_atomic_prepared", "followup_closed", V2737A_GATE_REPAIR_FILES, base_history, False, True, True),
+        ("followup_prepared_document_missing", "v2737a_gate_repair_followup_atomic_prepared", "followup_closed", V2737A_GATE_REPAIR_FILES, base_history, True, True, False),
+        ("followup_committed_missing_followup", "v2737a_gate_repair_followup_atomic_committed", "followup_closed", set(), base_history, True, True, True),
+        ("authorization_prepared_empty", "v2737a_authorization_prepared", "v2737a_authorized", authorization_empty, followup_history, True, True, True),
+        ("authorization_prepared_implementation_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_implementation_file, followup_history, True, True, True),
+        ("authorization_prepared_preflight_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_preflight_file, followup_history, True, True, True),
+        ("authorization_prepared_app_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_app_file, followup_history, True, True, True),
+        ("authorization_prepared_unknown_file", "v2737a_authorization_prepared", "v2737a_authorized", authorization_unknown_file, followup_history, True, True, True),
+        ("authorization_prepared_gate_plus_product", "v2737a_authorization_prepared", "v2737a_authorized", authorization_gate_plus_product, followup_history, True, True, True),
+        ("authorization_prepared_wrong_task_id", "v2737a_authorization_prepared", "invalid", {"docs/tasks/CURRENT_TASK.md"}, followup_history, True, True, True),
+        ("authorization_prepared_wrong_status", "v2737a_authorization_prepared", "invalid", {"docs/tasks/CURRENT_TASK.md"}, followup_history, True, True, True),
+        ("authorization_prepared_not_authorized", "v2737a_authorization_prepared", "invalid", {"docs/tasks/CURRENT_TASK.md"}, followup_history, True, True, True),
+        ("authorization_prepared_wrong_history", "v2737a_authorization_prepared", "v2737a_authorized", {"docs/tasks/CURRENT_TASK.md"}, with_roles(followup_history, authorization_prepared_wrong_history), True, True, True),
+        ("authorization_committed_extra_history", "v2737a_authorization_committed", "v2737a_authorized", set(), with_roles(gate_history, authorization_committed_extra_history), True, True, True),
+        ("authorization_committed_duplicate_gate", "v2737a_authorization_committed", "v2737a_authorized", set(), with_roles(gate_history, authorization_committed_duplicate_gate), True, True, True),
+        ("implementation_prepared_extra_file", "v2737a_implementation_prepared", "v2737a_authorized", implementation_extra_file, gate_history, True, True, True),
+        ("implementation_prepared_missing_file", "v2737a_implementation_prepared", "v2737a_authorized", implementation_missing_file, gate_history, True, True, True),
+        ("implementation_prepared_extra_history", "v2737a_implementation_prepared", "v2737a_authorized", implementation_files, with_roles(gate_history, implementation_prepared_extra_history), True, True, True),
+        ("implementation_prepared_wrong_order", "v2737a_implementation_prepared", "v2737a_authorized", implementation_files, with_roles(gate_history, implementation_prepared_wrong_order), True, True, True),
+        ("implementation_committed_extra_history", "v2737a_implementation_committed", "v2737a_authorized", set(), with_roles(implementation_history, implementation_committed_extra_history), True, True, True),
+        ("implementation_committed_gate_after", "v2737a_implementation_committed", "v2737a_authorized", set(), with_roles(implementation_history, implementation_committed_gate_after), True, True, True),
+        ("closure_prepared_wrong_history", "v2737a_closure_prepared", "v2737a_closed", V2737A_GATE_FILES, gate_history, True, True, True),
+        ("closure_prepared_wrong_task", "v2737a_closure_prepared", "v2737a_authorized", V2737A_GATE_FILES, implementation_history, True, True, True),
+        ("closure_prepared_extra_history", "v2737a_closure_prepared", "v2737a_closed", V2737A_GATE_FILES, with_roles(implementation_history, closure_prepared_extra_history), True, True, True),
+        ("closure_prepared_already_closed", "v2737a_closure_prepared", "v2737a_closed", V2737A_GATE_FILES, with_roles(implementation_history, closure_prepared_already_closed), True, True, True),
+        ("closure_committed_missing_closure", "v2737a_closure_committed", "v2737a_closed", set(), implementation_history, True, True, True),
+        ("closure_committed_extra_history", "v2737a_closure_committed", "v2737a_closed", set(), with_roles(closure_history, closure_committed_extra_history), True, True, True),
+        ("closure_committed_implementation_after", "v2737a_closure_committed", "v2737a_closed", set(), with_roles(closure_history, closure_committed_implementation_after), True, True, True),
+        ("atomic_repair_products_changed", "v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history, False, True, False),
+        ("atomic_repair_document_missing", "v2737a_gate_repair_atomic_committed", "repair_closed", set(), base_history, True, False, False),
+        ("unknown_future_task", "unknown_future_task", "v2737a_authorized", set(), followup_history, True, True, True),
+        ("authorization_committed_wrong_task", "v2737a_authorization_committed", "other_closed", set(), gate_history, True, True, True),
     )
-    for label, phase, task_kind, working_paths, history, products_unchanged, repair_documented in negative_cases:
+    for label, phase, task_kind, working_paths, history, products_unchanged, repair_documented, followup_documented in negative_cases:
         if _v2737a_successor_scope_facts_are_valid(
             phase=phase,
             task_kind=task_kind,
@@ -3060,6 +3185,7 @@ def check_v2737a_successor_profile_scope_logic():
             history=history,
             products_unchanged=products_unchanged,
             repair_documented=repair_documented,
+            followup_documented=followup_documented,
         ):
             errors.append(
                 "v27.37a-Nachfolgeprofil-Manipulation nicht blockiert: "
@@ -3078,6 +3204,10 @@ def check_v2737a_successor_profile_scope_logic():
         ("app_access_error_single", "app.js", 'createParticipantAccessNoticeStateV2736D("access_error")', 'createParticipantAccessNoticeStateV2736D("blocked")'),
         ("index_marker_neutral", "index.html", "</body>", "<!-- v2737a mutation --></body>"),
         ("app_marker_neutral", "app.js", "async function initAuthFlow()", "async function initAuthFlow() /* v2737a mutation */"),
+        ("style_marker_neutral", "style.css", "ACCAOUI §34a LERN-APP", "ACCAOUI §34a LERN-APP MUTATED"),
+        ("questions_marker_neutral", "questions.json", '"id": "roso_001"', '"id": "roso_001_mutated"'),
+        ("client_adapter_marker_neutral", "data/supabase-client-adapter.js", "Supabase Client Adapter", "Supabase Client Adapter Mutated"),
+        ("client_bootstrap_marker_neutral", "data/supabase-client-bootstrap.js", "Supabase Client Bootstrap", "Supabase Client Bootstrap Mutated"),
         ("adapter_marker_neutral", "data/supabase-participant-access-adapter.js", '"use strict";', '"use strict"; /* v2737a mutation */'),
         ("bridge_marker_neutral", "data/supabase-participant-access-bootstrap-bridge.js", '"use strict";', '"use strict"; /* v2737a mutation */'),
         ("provider_marker_neutral", "data/supabase-participant-access-browser-provider.js", '"use strict";', '"use strict"; /* v2737a mutation */'),
