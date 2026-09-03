@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -1700,6 +1701,16 @@ def check_participant_access_browser_provider_v2736e():
     ):
         working_paths.update(staged_paths)
         working_paths.update(untracked_paths)
+        v2737b_phase = _detect_v2737b_successor_profile_phase(
+            working_paths
+        )
+        if v2737b_phase is not None:
+            print(
+                "v27.36e-Browser-Provider: PASS über das enge "
+                "v27.37b-Nachfolge-Regressionsprofil "
+                f"({v2737b_phase})"
+            )
+            return
         successor_phase = _detect_v2737a_successor_profile_phase(
             working_paths
         )
@@ -1758,6 +1769,16 @@ def check_participant_access_browser_loader_v2736f():
     ):
         working_paths.update(staged_paths)
         working_paths.update(untracked_paths)
+        v2737b_phase = _detect_v2737b_successor_profile_phase(
+            working_paths
+        )
+        if v2737b_phase is not None:
+            print(
+                "v27.36f-Browser-Loader: PASS über das enge "
+                "v27.37b-Nachfolge-Regressionsprofil "
+                f"({v2737b_phase})"
+            )
+            return
         successor_phase = _detect_v2737a_successor_profile_phase(
             working_paths
         )
@@ -3305,6 +3326,816 @@ def check_v2737a_successor_profile_scope_logic():
     )
 
 
+V2737B_GATE_BOOTSTRAP_BASE_SHA = "b5d676d226891b4f53e9e614e015c433c2616ad1"
+V2737B_TITLE = "v27.37b – Isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke"
+V2737B_GATE_FILES = set(V2737A_GATE_FILES)
+V2737B_BOOTSTRAP_FILE_ORDER = (
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "tools/check-project-continuity-control.py",
+    "tools/preflight.py",
+)
+V2737B_BOOTSTRAP_FILES = set(V2737B_BOOTSTRAP_FILE_ORDER)
+V2737B_IMPLEMENTATION_FILES = (
+    "data/supabase-participant-auth-session-bootstrap-bridge.js",
+    "tools/check-supabase-participant-auth-session-bootstrap-bridge.py",
+    "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_V2737B.md",
+    "tools/preflight.py",
+)
+V2737B_ALLOWED_FILES_VALUE = ", ".join(
+    f"`{path}`" for path in V2737B_IMPLEMENTATION_FILES
+)
+V2737B_FROZEN_PRODUCT_FILES = (
+    *V2737A_FROZEN_PRODUCT_FILES,
+    "data/supabase-participant-auth-session-adapter.js",
+)
+V2737B_BOOTSTRAP_SECTION_HEADING = (
+    "## v27.37b-GATE-BOOTSTRAP – Kontrollinfrastruktur"
+)
+V2737B_CANONICAL_CONTRACT_FACTS = (
+    "v27.37b-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.",
+    f"Stabile Bootstrap-Basis: `{V2737B_GATE_BOOTSTRAP_BASE_SHA}`.",
+    "Keine siebte Datei und keine Produktdatei sind zulässig.",
+    "v27.37a bleibt vollständig abgeschlossen und wird nicht wieder geöffnet.",
+    f"Der spätere Task heißt exakt `{V2737B_TITLE}`",
+    "ist nach diesem Bootstrap aber NICHT autorisiert.",
+    "`CURRENT_TASK` bleibt `NONE / BLOCKED / Autorisiert NEIN`.",
+    "separates ausdrückliches v27.37b-Autorisierungs-Gate",
+    "createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })",
+    "Die Dependencies sind exakt `bootstrap` und `createParticipantAuthSessionAdapter`; eine dritte Dependency ist ausgeschlossen.",
+    "Ihre öffentliche Oberfläche enthält exakt `resolveSession()`, `signIn({ email, password })` und `signOut()`.",
+    "`resolveSession()`",
+    "`signIn({ email, password })`",
+    "`signOut()`",
+    "Eine vierte öffentliche Methode ist ausgeschlossen.",
+    "Pro öffentlicher Operation wird `bootstrap.getClient` sicher genau einmal gelesen",
+    "`getClient()` genau einmal aufgerufen",
+    "der Client wird nicht dauerhaft gecacht.",
+    "Ausschließlich `client.auth` wird als exakt `{ auth }` an `createParticipantAuthSessionAdapter({ auth })` weitergegeben.",
+    "Object.freeze({ ok: false, code: \"auth_error\" })",
+    "Session-, User-, ID-, E-Mail-, Passwort-, Token-, Config- und Rohfehlerdaten bleiben ausgeschlossen.",
+    "Verboten bleiben `initializeClient()`, `getState()`, `createClient()`",
+    "Browser-Globals, `window`, `document`, DOM, `localStorage`, `sessionStorage`, Cookies, IndexedDB, Config-Lesen, eigener Netzwerkcode, `.from(...)`, Teilnehmer-, Enrollment- oder Kurslogik, SQL und Migrationen.",
+    "`initializeClient()`",
+    "`getState()`",
+    "`createClient()`",
+    "Browser-Globals",
+    "`window`",
+    "`document`",
+    "DOM",
+    "`localStorage`",
+    "`sessionStorage`",
+    "Cookies",
+    "IndexedDB",
+    "Config-Lesen",
+    "eigener Netzwerkcode",
+    "`.from(...)`",
+    "Teilnehmer-, Enrollment- oder Kurslogik",
+    "SQL und Migrationen",
+    "Bestehende Produktdateien bleiben frozen.",
+    "`v2737b_gate_bootstrap_prepared`",
+    "`v2737b_gate_bootstrap_committed`",
+    "`authorization_prepared`",
+    "`authorization_committed`",
+    "`implementation_prepared`",
+    "`implementation_committed`",
+    "`closure_prepared`",
+    "`closure_committed`",
+    "Keine zukünftige Bootstrap-, Gate-, Implementierungs- oder Closure-SHA wird hartcodiert",
+    "eine Wiederholung und eine allgemeine zukünftige Taskfreigabe bleiben blockiert.",
+    "Kein Produktcode wurde geändert.",
+    "Supabase bleibt NICHT LIVE.",
+    "Keine echten Keys.",
+    "Keine echten Teilnehmerdaten.",
+)
+V2737B_BOOTSTRAP_REQUIRED_MARKERS = V2737B_CANONICAL_CONTRACT_FACTS
+V2737B_FACTORY_CONTRACT = (
+    "Die spätere Factory ist "
+    "`createParticipantAuthSessionBootstrapBridge({ bootstrap, "
+    "createParticipantAuthSessionAdapter })`. Die Dependencies sind exakt "
+    "`bootstrap` und `createParticipantAuthSessionAdapter`; eine dritte "
+    "Dependency ist ausgeschlossen. Ihre öffentliche Oberfläche enthält "
+    "exakt `resolveSession()`, `signIn({ email, password })` und `signOut()`. "
+    "Eine vierte öffentliche Methode ist ausgeschlossen. Pro öffentlicher "
+    "Operation wird `bootstrap.getClient` sicher genau einmal gelesen und "
+    "`getClient()` genau einmal aufgerufen; der Client wird nicht dauerhaft "
+    "gecacht. Ausschließlich `client.auth` wird als exakt `{ auth }` an "
+    "`createParticipantAuthSessionAdapter({ auth })` weitergegeben."
+)
+V2737B_CANONICAL_CONTRACT_MUTATIONS = (
+    (
+        "falscher v27.37b-Titel",
+        V2737B_TITLE,
+        "v27.37b – Manipulierter Titel",
+    ),
+    (
+        "getClient-Vertrag",
+        "Pro öffentlicher Operation wird `bootstrap.getClient` sicher genau einmal gelesen",
+        "Pro öffentlicher Operation darf `bootstrap.getClient` mehrfach gelesen werden",
+    ),
+    (
+        "client.auth-Vertrag",
+        "Ausschließlich `client.auth` wird als exakt `{ auth }` an `createParticipantAuthSessionAdapter({ auth })` weitergegeben.",
+        "Der gesamte Client wird an die Adapter-Factory weitergegeben.",
+    ),
+    (
+        "auth_error-Vertrag",
+        "Object.freeze({ ok: false, code: \"auth_error\" })",
+        "Object.freeze({ ok: false, code: \"other_error\" })",
+    ),
+    ("Browser-Wiring", "Browser-Globals", "Browser-Wiring erlaubt"),
+    ("initializeClient", "`initializeClient()`", "`initializeClientAllowed()`"),
+    ("createClient", "`createClient()`", "`createClientAllowed()`"),
+    ("getState", "`getState()`", "`getStateAllowed()`"),
+    ("Tabellenzugriff", "`.from(...)`", "`.from(\"participants\")` erlaubt"),
+    (
+        "Domainlogik",
+        "Teilnehmer-, Enrollment- oder Kurslogik",
+        "Teilnehmer-, Enrollment- und Kurslogik erlaubt",
+    ),
+    (
+        "Live-Supabase",
+        "Supabase bleibt NICHT LIVE.",
+        "Supabase ist LIVE.",
+    ),
+)
+V2737B_CANONICAL_ADDITIVE_MUTATIONS = (
+    (
+        "dritte Dependency",
+        "Die spätere Factory ist `createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })`.",
+        " Zusätzliche Dependency: `thirdDependency`.",
+    ),
+    (
+        "vierte öffentliche Methode",
+        "Eine vierte öffentliche Methode ist ausgeschlossen.",
+        " Zusätzliche öffentliche Methode: `debug()`.",
+    ),
+)
+V2737B_BASE_TASK_FIELDS = {
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.37a",
+    "Erlaubte Implementierungsdateien": "KEINE",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+V2737B_AUTHORIZED_TASK_FIELDS = {
+    "Task-ID": "v27.37b",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": V2737B_TITLE,
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.37b-GATE-BOOTSTRAP",
+    "Erlaubte Implementierungsdateien": V2737B_ALLOWED_FILES_VALUE,
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+V2737B_CLOSED_TASK_FIELDS = {
+    **V2737B_BASE_TASK_FIELDS,
+    "Letzter abgeschlossener Kontrollschritt": "v27.37b",
+}
+
+
+def _v2737b_current_task_header_fields(text):
+    heading = "# Verbindlicher aktueller Task"
+    if text.count(heading) != 1:
+        return None
+    tail = text.split(heading, 1)[1]
+    match = re.search(r"(?m)^## ", tail)
+    header = tail[:match.start()] if match else tail
+    fields = {}
+    for name in V2737B_BASE_TASK_FIELDS:
+        prefix = name + ":"
+        values = [
+            line[len(prefix):].strip()
+            for line in header.splitlines()
+            if line.startswith(prefix)
+        ]
+        if len(values) != 1:
+            return None
+        fields[name] = values[0]
+    return fields
+
+
+def _v2737b_replace_in_current_task_header(text, needle, replacement):
+    heading = "# Verbindlicher aktueller Task"
+    if text.count(heading) != 1:
+        return None
+    prefix, tail = text.split(heading, 1)
+    match = re.search(r"(?m)^## ", tail)
+    header = tail[:match.start()] if match else tail
+    suffix = tail[match.start():] if match else ""
+    mutated_header = _v2737b_replace_exact_once(
+        header, needle, replacement
+    )
+    if mutated_header is None:
+        return None
+    return prefix + heading + mutated_header + suffix
+
+
+def _v2737b_task_kind_from_text(text):
+    fields = _v2737b_current_task_header_fields(text)
+    if fields == V2737B_BASE_TASK_FIELDS:
+        return "v2737a_closed"
+    if fields == V2737B_AUTHORIZED_TASK_FIELDS:
+        return "v2737b_authorized"
+    if fields == V2737B_CLOSED_TASK_FIELDS:
+        return "v2737b_closed"
+    return "invalid"
+
+
+def _v2737b_replace_exact_once(text, needle, replacement):
+    if text.count(needle) != 1:
+        return None
+    mutated = text.replace(needle, replacement, 1)
+    if mutated == text or needle in mutated:
+        return None
+    return mutated
+
+
+def _v2737b_insert_after_exact_once(text, anchor, addition):
+    if text.count(anchor) != 1 or not addition or addition in text:
+        return None
+    mutated = text.replace(anchor, anchor + addition, 1)
+    if (
+        mutated == text
+        or mutated.count(anchor) != 1
+        or mutated.count(addition) != 1
+    ):
+        return None
+    return mutated
+
+
+def _v2737b_replace_in_delimited_block(
+    text, block_start, block_end, needle, replacement
+):
+    if text.count(block_start) != 1 or text.count(block_end) != 1:
+        return None
+    prefix, tail = text.split(block_start, 1)
+    block, suffix = tail.split(block_end, 1)
+    mutated_block = _v2737b_replace_exact_once(block, needle, replacement)
+    if mutated_block is None:
+        return None
+    return prefix + block_start + mutated_block + block_end + suffix
+
+
+def _v2737b_insert_after_in_delimited_block(
+    text, block_start, block_end, anchor, addition
+):
+    if text.count(block_start) != 1 or text.count(block_end) != 1:
+        return None
+    prefix, tail = text.split(block_start, 1)
+    block, suffix = tail.split(block_end, 1)
+    mutated_block = _v2737b_insert_after_exact_once(block, anchor, addition)
+    if mutated_block is None:
+        return None
+    return prefix + block_start + mutated_block + block_end + suffix
+
+
+def _v2737b_bootstrap_section(text):
+    if text.count(V2737B_BOOTSTRAP_SECTION_HEADING) != 1:
+        return None
+    tail = text.split(V2737B_BOOTSTRAP_SECTION_HEADING, 1)[1]
+    match = re.search(r"(?m)^## ", tail)
+    return tail[:match.start()] if match else tail
+
+
+def _v2737b_bootstrap_section_is_valid(section):
+    if not isinstance(section, str) or not all(
+        marker in section for marker in V2737B_BOOTSTRAP_REQUIRED_MARKERS
+    ):
+        return False
+    bootstrap_start = "Der einmalige atomare Bootstrap umfasst exakt:"
+    bootstrap_end = "Keine siebte Datei und keine Produktdatei sind zulässig."
+    implementation_start = "Der spätere Implementierungsscope umfasst exakt:"
+    implementation_end = "Die spätere Factory ist"
+    if not (
+        section.count(bootstrap_start) == 1
+        and section.count(bootstrap_end) == 1
+        and section.count(implementation_start) == 1
+        and section.count(implementation_end) == 1
+    ):
+        return False
+    bootstrap_list = section.split(bootstrap_start, 1)[1].split(
+        bootstrap_end, 1
+    )[0].strip()
+    implementation_list = section.split(implementation_start, 1)[1].split(
+        implementation_end, 1
+    )[0].strip()
+    if bootstrap_list != "\n".join(
+        f"- `{path}`" for path in V2737B_BOOTSTRAP_FILE_ORDER
+    ):
+        return False
+    if implementation_list != "\n".join(
+        f"- `{path}`" for path in V2737B_IMPLEMENTATION_FILES
+    ):
+        return False
+    factory_contract_end = "Gültige methodenspezifische v27.37a-Ergebnisse"
+    if section.count(factory_contract_end) != 1:
+        return False
+    factory_contract = (
+        implementation_end
+        + section.split(implementation_end, 1)[1].split(
+            factory_contract_end, 1
+        )[0]
+    ).strip()
+    if factory_contract != V2737B_FACTORY_CONTRACT:
+        return False
+    shas = set(re.findall(r"\b[0-9a-f]{40}\b", section))
+    return shas == {V2737B_GATE_BOOTSTRAP_BASE_SHA}
+
+
+def _v2737b_bootstrap_document_is_valid(text):
+    return _v2737b_bootstrap_section_is_valid(
+        _v2737b_bootstrap_section(text)
+    )
+
+
+def _v2737b_current_documents_are_valid():
+    paths = (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    )
+    try:
+        return all(
+            _v2737b_bootstrap_document_is_valid(
+                Path(path).read_text(encoding="utf-8")
+            )
+            for path in paths
+        )
+    except (OSError, UnicodeError):
+        return False
+
+
+def _v2737b_commit_documents_are_valid(commit):
+    paths = (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    )
+    texts = [
+        _read_v2737a_git_blob_utf8(commit, path)
+        for path in paths
+    ]
+    return all(
+        isinstance(text, str) and _v2737b_bootstrap_document_is_valid(text)
+        for text in texts
+    )
+
+
+def _v2737b_product_texts_at(revision=None):
+    texts = {}
+    try:
+        for path in V2737B_FROZEN_PRODUCT_FILES:
+            text = (
+                _read_v2737a_git_blob_utf8(revision, path)
+                if revision is not None
+                else Path(path).read_text(encoding="utf-8")
+            )
+            if not isinstance(text, str):
+                return None
+            texts[path] = text
+    except (OSError, UnicodeError):
+        return None
+    return texts
+
+
+def _v2737b_frozen_product_contract_is_valid(baseline, candidate):
+    expected = set(V2737B_FROZEN_PRODUCT_FILES)
+    if not isinstance(baseline, dict) or set(baseline) != expected:
+        return False
+    if not isinstance(candidate, dict) or set(candidate) != expected:
+        return False
+    if any(candidate[path] != baseline[path] for path in expected):
+        return False
+    v2737a_baseline = {
+        path: baseline[path] for path in V2737A_FROZEN_PRODUCT_FILES
+    }
+    v2737a_candidate = {
+        path: candidate[path] for path in V2737A_FROZEN_PRODUCT_FILES
+    }
+    return _v2737a_frozen_product_contract_is_valid(
+        v2737a_baseline,
+        v2737a_candidate,
+    )
+
+
+def _v2737b_frozen_products_unchanged():
+    if not _git_is_ancestor(V2737B_GATE_BOOTSTRAP_BASE_SHA, "HEAD"):
+        return False
+    return _v2737b_frozen_product_contract_is_valid(
+        _v2737b_product_texts_at(V2737B_GATE_BOOTSTRAP_BASE_SHA),
+        _v2737b_product_texts_at(),
+    )
+
+
+def _read_v2737b_history():
+    code, stdout, _stderr = run_command(
+        "git rev-list --reverse "
+        + V2737B_GATE_BOOTSTRAP_BASE_SHA
+        + "..HEAD"
+    )
+    if code != 0:
+        return None
+    previous = V2737B_GATE_BOOTSTRAP_BASE_SHA
+    roles = []
+    for commit in (line.strip() for line in stdout.splitlines() if line.strip()):
+        code, lineage_text, _stderr = run_command(
+            "git rev-list --parents -n 1 " + commit
+        )
+        lineage = lineage_text.split() if code == 0 else []
+        if len(lineage) != 2 or lineage[1] != previous:
+            return None
+        files = _git_paths(["diff", "--name-only", previous, commit])
+        task_text = _read_v2737a_git_blob_utf8(
+            commit, "docs/tasks/CURRENT_TASK.md"
+        )
+        if files is None or task_text is None:
+            return None
+        task_kind = _v2737b_task_kind_from_text(task_text)
+        if (
+            not roles
+            and files == V2737B_BOOTSTRAP_FILES
+            and task_kind == "v2737a_closed"
+            and _v2737b_commit_documents_are_valid(commit)
+        ):
+            roles.append("v2737b_bootstrap")
+        elif (
+            roles == ["v2737b_bootstrap"]
+            and files == V2737B_GATE_FILES
+            and task_kind == "v2737b_authorized"
+        ):
+            roles.append("v2737b_gate")
+        elif (
+            roles == ["v2737b_bootstrap", "v2737b_gate"]
+            and files == set(V2737B_IMPLEMENTATION_FILES)
+            and task_kind == "v2737b_authorized"
+        ):
+            roles.append("v2737b_implementation")
+        elif (
+            roles
+            == ["v2737b_bootstrap", "v2737b_gate", "v2737b_implementation"]
+            and files == V2737B_GATE_FILES
+            and task_kind == "v2737b_closed"
+        ):
+            roles.append("v2737b_closure")
+        else:
+            return None
+        previous = commit
+    return tuple(roles)
+
+
+def _v2737b_scope_facts_are_valid(
+    *, phase, task_kind, working_paths, history_roles,
+    products_unchanged
+):
+    if not products_unchanged:
+        return False
+    implementation_files = set(V2737B_IMPLEMENTATION_FILES)
+    exact = {
+        "v2737b_gate_bootstrap_prepared": (
+            "v2737a_closed", V2737B_BOOTSTRAP_FILES, (),
+        ),
+        "v2737b_gate_bootstrap_committed": (
+            "v2737a_closed", set(), ("v2737b_bootstrap",),
+        ),
+        "v2737b_authorization_committed": (
+            "v2737b_authorized", set(),
+            ("v2737b_bootstrap", "v2737b_gate"),
+        ),
+        "v2737b_implementation_prepared": (
+            "v2737b_authorized", implementation_files,
+            ("v2737b_bootstrap", "v2737b_gate"),
+        ),
+        "v2737b_implementation_committed": (
+            "v2737b_authorized", set(),
+            ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation"),
+        ),
+        "v2737b_closure_prepared": (
+            "v2737b_closed", V2737B_GATE_FILES,
+            ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation"),
+        ),
+        "v2737b_closure_committed": (
+            "v2737b_closed", set(),
+            (
+                "v2737b_bootstrap", "v2737b_gate",
+                "v2737b_implementation", "v2737b_closure",
+            ),
+        ),
+    }
+    if phase == "v2737b_authorization_prepared":
+        return (
+            task_kind == "v2737b_authorized"
+            and bool(working_paths)
+            and working_paths <= V2737B_GATE_FILES
+            and history_roles == ("v2737b_bootstrap",)
+        )
+    return exact.get(phase) == (task_kind, working_paths, history_roles)
+
+
+def _detect_v2737b_successor_profile_phase(working_paths):
+    if not (
+        _v2737b_current_documents_are_valid()
+        and _v2737b_frozen_products_unchanged()
+    ):
+        return None
+    try:
+        task_text = Path("docs/tasks/CURRENT_TASK.md").read_text(
+            encoding="utf-8"
+        )
+    except (OSError, UnicodeError):
+        return None
+    task_kind = _v2737b_task_kind_from_text(task_text)
+    code, head, _stderr = run_command("git rev-parse HEAD")
+    if code != 0:
+        return None
+    history_roles = _read_v2737b_history()
+    if history_roles is None:
+        return None
+    head = head.strip()
+    candidates = (
+        "v2737b_gate_bootstrap_prepared",
+        "v2737b_gate_bootstrap_committed",
+        "v2737b_authorization_prepared",
+        "v2737b_authorization_committed",
+        "v2737b_implementation_prepared",
+        "v2737b_implementation_committed",
+        "v2737b_closure_prepared",
+        "v2737b_closure_committed",
+    )
+    if head == V2737B_GATE_BOOTSTRAP_BASE_SHA and history_roles:
+        return None
+    for phase in candidates:
+        if _v2737b_scope_facts_are_valid(
+            phase=phase,
+            task_kind=task_kind,
+            working_paths=working_paths,
+            history_roles=history_roles,
+            products_unchanged=True,
+        ):
+            return phase
+    return None
+
+
+def check_v2737b_successor_profile_scope_logic():
+    positive_cases = (
+        ("v2737b_gate_bootstrap_prepared", "v2737a_closed", V2737B_BOOTSTRAP_FILES, ()),
+        ("v2737b_gate_bootstrap_committed", "v2737a_closed", set(), ("v2737b_bootstrap",)),
+        ("v2737b_authorization_prepared", "v2737b_authorized", {"docs/tasks/CURRENT_TASK.md"}, ("v2737b_bootstrap",)),
+        ("v2737b_authorization_committed", "v2737b_authorized", set(), ("v2737b_bootstrap", "v2737b_gate")),
+        ("v2737b_implementation_prepared", "v2737b_authorized", set(V2737B_IMPLEMENTATION_FILES), ("v2737b_bootstrap", "v2737b_gate")),
+        ("v2737b_implementation_committed", "v2737b_authorized", set(), ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation")),
+        ("v2737b_closure_prepared", "v2737b_closed", V2737B_GATE_FILES, ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation")),
+        ("v2737b_closure_committed", "v2737b_closed", set(), ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation", "v2737b_closure")),
+    )
+    for phase, task_kind, working_paths, history_roles in positive_cases:
+        if not _v2737b_scope_facts_are_valid(
+            phase=phase,
+            task_kind=task_kind,
+            working_paths=set(working_paths),
+            history_roles=history_roles,
+            products_unchanged=True,
+        ):
+            errors.append(
+                "v27.37b-Nachfolgeprofil-Positivprüfung fehlgeschlagen: " + phase
+            )
+            return
+    negative_cases = (
+        ("unknown_future_task", "v2737b_authorized", set(), ("v2737b_bootstrap",)),
+        ("v2737b_gate_bootstrap_prepared", "v2737a_closed", V2737B_BOOTSTRAP_FILES | {"app.js"}, ()),
+        ("v2737b_gate_bootstrap_prepared", "v2737a_closed", V2737B_BOOTSTRAP_FILES - {"tools/preflight.py"}, ()),
+        ("v2737b_gate_bootstrap_prepared", "v2737b_authorized", V2737B_BOOTSTRAP_FILES, ()),
+        ("v2737b_gate_bootstrap_committed", "v2737a_closed", set(), ("v2737b_bootstrap", "v2737b_bootstrap")),
+        ("v2737b_authorization_prepared", "v2737b_authorized", set(), ("v2737b_bootstrap",)),
+        ("v2737b_authorization_prepared", "v2737b_authorized", {"app.js"}, ("v2737b_bootstrap",)),
+        ("v2737b_authorization_prepared", "invalid", {"docs/tasks/CURRENT_TASK.md"}, ("v2737b_bootstrap",)),
+        ("v2737b_implementation_prepared", "v2737b_authorized", set(V2737B_IMPLEMENTATION_FILES) | {"index.html"}, ("v2737b_bootstrap", "v2737b_gate")),
+        ("v2737b_implementation_prepared", "v2737b_authorized", set(V2737B_IMPLEMENTATION_FILES) - {"tools/preflight.py"}, ("v2737b_bootstrap", "v2737b_gate")),
+        ("v2737b_closure_prepared", "v2737b_closed", V2737B_GATE_FILES | {"app.js"}, ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation")),
+        ("v2737b_closure_committed", "v2737b_closed", set(), ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation")),
+    )
+    for phase, task_kind, working_paths, history_roles in negative_cases:
+        if _v2737b_scope_facts_are_valid(
+            phase=phase,
+            task_kind=task_kind,
+            working_paths=set(working_paths),
+            history_roles=history_roles,
+            products_unchanged=True,
+        ):
+            errors.append(
+                "v27.37b-Nachfolgeprofil-Manipulation nicht blockiert: " + phase
+            )
+            return
+    document_paths = (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    )
+    try:
+        document_texts = {
+            path: Path(path).read_text(encoding="utf-8")
+            for path in document_paths
+        }
+    except (OSError, UnicodeError) as exc:
+        errors.append(f"v27.37b-Dokumentprüfung nicht lesbar: {exc}")
+        return
+    document_sections = {}
+    for path, text in document_texts.items():
+        section = _v2737b_bootstrap_section(text)
+        if not _v2737b_bootstrap_section_is_valid(section):
+            errors.append(
+                "v27.37b-Nachfolgeprofil-Dokumentvertrag ungültig: " + path
+            )
+            return
+        document_sections[path] = section
+    document_mutations = 0
+    for path, section in document_sections.items():
+        for fact in V2737B_CANONICAL_CONTRACT_FACTS:
+            mutated = _v2737b_replace_exact_once(section, fact, "")
+            if mutated is None or fact in mutated:
+                errors.append(
+                    "v27.37b-Dokumentmutation hat kein exaktes Ziel: "
+                    + path
+                    + " / "
+                    + fact
+                )
+                return
+            if _v2737b_bootstrap_section_is_valid(mutated):
+                errors.append(
+                    "v27.37b-Dokumentmutation nicht blockiert: "
+                    + path
+                    + " / "
+                    + fact
+                )
+                return
+            document_mutations += 1
+    canonical_section = document_sections["docs/PROJECT_STATE_CURRENT.md"]
+    bootstrap_start = "Der einmalige atomare Bootstrap umfasst exakt:"
+    bootstrap_end = "Keine siebte Datei und keine Produktdatei sind zulässig."
+    implementation_start = "Der spätere Implementierungsscope umfasst exakt:"
+    implementation_end = "Die spätere Factory ist"
+    for label, paths, block_start, block_end in (
+        (
+            "Bootstrap",
+            V2737B_BOOTSTRAP_FILE_ORDER,
+            bootstrap_start,
+            bootstrap_end,
+        ),
+        (
+            "Implementierung",
+            V2737B_IMPLEMENTATION_FILES,
+            implementation_start,
+            implementation_end,
+        ),
+    ):
+        for path in paths:
+            needle = f"- `{path}`\n"
+            mutated = _v2737b_replace_in_delimited_block(
+                canonical_section, block_start, block_end, needle, ""
+            )
+            if mutated is None:
+                errors.append(
+                    f"v27.37b-{label}smutation hat kein exaktes Dateiziel: {path}"
+                )
+                return
+            if _v2737b_bootstrap_section_is_valid(mutated):
+                errors.append(
+                    f"v27.37b-{label}smutation nicht blockiert: {path}"
+                )
+                return
+            document_mutations += 1
+    added_file_anchor = f"- `{V2737B_IMPLEMENTATION_FILES[0]}`\n"
+    added_file_addition = "- `app.js`\n"
+    added_file = _v2737b_insert_after_in_delimited_block(
+        canonical_section,
+        implementation_start,
+        implementation_end,
+        added_file_anchor,
+        added_file_addition,
+    )
+    if (
+        added_file is None
+        or added_file.count(added_file_anchor) != 1
+        or added_file.count(added_file_addition) != 1
+        or _v2737b_bootstrap_section_is_valid(added_file)
+    ):
+        errors.append(
+            "v27.37b-zusätzliche Implementierungsdatei nicht blockiert"
+        )
+        return
+    document_mutations += 1
+    for label, needle, replacement in V2737B_CANONICAL_CONTRACT_MUTATIONS:
+        mutated = _v2737b_replace_exact_once(
+            canonical_section, needle, replacement
+        )
+        if mutated is None or needle in mutated:
+            errors.append(
+                "v27.37b-Vertragsmutation hat kein exaktes Ziel: " + label
+            )
+            return
+        if _v2737b_bootstrap_section_is_valid(mutated):
+            errors.append(
+                "v27.37b-Vertragsmutation nicht blockiert: " + label
+            )
+            return
+        document_mutations += 1
+    for label, anchor, addition in V2737B_CANONICAL_ADDITIVE_MUTATIONS:
+        mutated = _v2737b_insert_after_exact_once(
+            canonical_section, anchor, addition
+        )
+        if (
+            mutated is None
+            or mutated.count(anchor) != 1
+            or mutated.count(addition) != 1
+        ):
+            errors.append(
+                "v27.37b-additive Vertragsmutation hat kein exaktes Ziel: "
+                + label
+            )
+            return
+        if _v2737b_bootstrap_section_is_valid(mutated):
+            errors.append(
+                "v27.37b-additive Vertragsmutation nicht blockiert: " + label
+            )
+            return
+        document_mutations += 1
+    future_sha_anchor = "Keine echten Teilnehmerdaten."
+    future_sha_addition = "\nZukünftige SHA: `" + ("a" * 40) + "`"
+    future_sha_section = _v2737b_insert_after_exact_once(
+        canonical_section, future_sha_anchor, future_sha_addition
+    )
+    if (
+        future_sha_section is None
+        or future_sha_section.count(future_sha_anchor) != 1
+        or future_sha_section.count(future_sha_addition) != 1
+        or _v2737b_bootstrap_section_is_valid(future_sha_section)
+    ):
+        errors.append("v27.37b-zukünftige-SHA-Mutation nicht blockiert")
+        return
+    document_mutations += 1
+    task_text = document_texts["docs/tasks/CURRENT_TASK.md"]
+    mutated_task = _v2737b_replace_in_current_task_header(
+        task_text, "Task-ID: NONE", "Task-ID: v27.37b"
+    )
+    if (
+        mutated_task is None
+        or _v2737b_task_kind_from_text(mutated_task) != "invalid"
+    ):
+        errors.append("v27.37b-CURRENT_TASK-Kopfmutation nicht blockiert")
+        return
+    document_mutations += 1
+    authorized_task = "# Verbindlicher aktueller Task\n\n" + "\n".join(
+        f"{field}: {value}"
+        for field, value in V2737B_AUTHORIZED_TASK_FIELDS.items()
+    )
+    if _v2737b_task_kind_from_text(authorized_task) != "v2737b_authorized":
+        errors.append("v27.37b-autorisierter CURRENT_TASK-Positivvertrag fehlt")
+        return
+    wrong_title_task = _v2737b_replace_in_current_task_header(
+        authorized_task,
+        f"Titel: {V2737B_TITLE}",
+        "Titel: v27.37b – Manipulierter Titel",
+    )
+    if (
+        wrong_title_task is None
+        or _v2737b_task_kind_from_text(wrong_title_task) != "invalid"
+    ):
+        errors.append("v27.37b-falscher CURRENT_TASK-Titel nicht blockiert")
+        return
+    document_mutations += 1
+    baseline = _v2737b_product_texts_at(V2737B_GATE_BOOTSTRAP_BASE_SHA)
+    candidate = dict(baseline) if isinstance(baseline, dict) else None
+    if not _v2737b_frozen_product_contract_is_valid(baseline, candidate):
+        errors.append("v27.37b-Nachfolgeprofil erkennt Frozen-Produkte nicht")
+        return
+    product_mutations = 0
+    for path in V2737B_FROZEN_PRODUCT_FILES:
+        mutated = dict(baseline)
+        mutated[path] = baseline[path] + "\n/* v2737b mutation */\n"
+        if _v2737b_frozen_product_contract_is_valid(baseline, mutated):
+            errors.append(
+                "v27.37b-Nachfolgeprofil-Produktmanipulation nicht blockiert: "
+                + path
+            )
+            return
+        product_mutations += 1
+    print(
+        "v27.37b-Nachfolgeprofil-Selbstprüfung: "
+        f"{len(positive_cases)} Positiv-, {len(negative_cases)} Scope- und "
+        f"{document_mutations} Vertrags-/Dokument- sowie "
+        f"{product_mutations} Produktmanipulationsfälle PASS"
+    )
+
+
 def check_v2736f_regression_profile_scope_logic():
     expected = set(V2736F_AUTHORIZED_IMPLEMENTATION_FILES)
     extra = expected | {"style.css"}
@@ -3834,6 +4665,7 @@ def main():
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()
+    check_v2737b_successor_profile_scope_logic()
     check_participant_access_browser_provider_v2736e()
     check_participant_access_browser_loader_v2736f()
     check_project_continuity_control()

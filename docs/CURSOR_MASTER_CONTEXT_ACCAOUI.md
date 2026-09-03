@@ -9,6 +9,42 @@ Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 
+## v27.37b-GATE-BOOTSTRAP – Kontrollinfrastruktur
+
+v27.37b-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.
+
+Stabile Bootstrap-Basis: `b5d676d226891b4f53e9e614e015c433c2616ad1`.
+
+Der einmalige atomare Bootstrap umfasst exakt:
+
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Keine siebte Datei und keine Produktdatei sind zulässig. v27.37a bleibt vollständig abgeschlossen und wird nicht wieder geöffnet.
+
+Der spätere Task heißt exakt `v27.37b – Isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke`, ist nach diesem Bootstrap aber NICHT autorisiert. `CURRENT_TASK` bleibt `NONE / BLOCKED / Autorisiert NEIN`. Der nächste zulässige Schritt nach einem erfolgreichen Bootstrap-Commit ist ein separates ausdrückliches v27.37b-Autorisierungs-Gate.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `data/supabase-participant-auth-session-bootstrap-bridge.js`
+- `tools/check-supabase-participant-auth-session-bootstrap-bridge.py`
+- `docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_V2737B.md`
+- `tools/preflight.py`
+
+Die spätere Factory ist `createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })`. Die Dependencies sind exakt `bootstrap` und `createParticipantAuthSessionAdapter`; eine dritte Dependency ist ausgeschlossen. Ihre öffentliche Oberfläche enthält exakt `resolveSession()`, `signIn({ email, password })` und `signOut()`. Eine vierte öffentliche Methode ist ausgeschlossen. Pro öffentlicher Operation wird `bootstrap.getClient` sicher genau einmal gelesen und `getClient()` genau einmal aufgerufen; der Client wird nicht dauerhaft gecacht. Ausschließlich `client.auth` wird als exakt `{ auth }` an `createParticipantAuthSessionAdapter({ auth })` weitergegeben.
+
+Gültige methodenspezifische v27.37a-Ergebnisse werden unverändert delegiert. Jeder Brückenfehler liefert ausschließlich das eingefrorene Plain Object `Object.freeze({ ok: false, code: "auth_error" })`; Session-, User-, ID-, E-Mail-, Passwort-, Token-, Config- und Rohfehlerdaten bleiben ausgeschlossen.
+
+Verboten bleiben `initializeClient()`, `getState()`, `createClient()`, Browser-Globals, `window`, `document`, DOM, `localStorage`, `sessionStorage`, Cookies, IndexedDB, Config-Lesen, eigener Netzwerkcode, `.from(...)`, Teilnehmer-, Enrollment- oder Kurslogik, SQL und Migrationen. Bestehende Produktdateien bleiben frozen.
+
+Der Lifecycle erkennt den aktuellen einmaligen Schritt dynamisch als `v2737b_gate_bootstrap_prepared` und nach einem direkten Sechs-Dateien-Commit als `v2737b_gate_bootstrap_committed`. Danach sind ausschließlich die v27.37b-Phasen `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed` zulässig. Keine zukünftige Bootstrap-, Gate-, Implementierungs- oder Closure-SHA wird hartcodiert; eine Wiederholung und eine allgemeine zukünftige Taskfreigabe bleiben blockiert.
+
+Kein Produktcode wurde geändert. Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
 ## Abgeschlossener technischer Schritt v27.37a
 
 v27.37a abgeschlossen.
