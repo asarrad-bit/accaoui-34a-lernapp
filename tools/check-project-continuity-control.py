@@ -9698,6 +9698,78 @@ V2737A_AUTHORIZATION_SECTION_MARKERS = (
     "Dieser Gate-Schritt autorisiert keine Produktimplementierung.",
     "Commit und Push bleiben NEIN.",
 )
+V2737A_COMPLETION_REQUIRED_FACTS = (
+    "v27.37a abgeschlossen.",
+    "Ergebnis:",
+    "Der isolierte CommonJS Teilnehmer-Auth-/Session-Adapter ist implementiert.",
+    "createParticipantAuthSessionAdapter({ auth })",
+    "Die öffentliche Oberfläche enthält exakt:",
+    "resolveSession()",
+    "signIn({ email, password })",
+    "signOut()",
+    "Die einzige Dependency ist `auth`.",
+    "Alle Ergebnisse sind gefrorene Plain Objects mit exakt `{ ok, code }`.",
+    "Sensitive Daten, Sessions, Nutzer, Passwörter, Token und Rohfehler werden nicht nach außen gegeben.",
+    "Es gibt kein Browser-Wiring und keinen Storage-Zugriff.",
+    "Es gibt keinen eigenen Netzwerkcode, keinen Client, kein `createClient()` und kein `initializeClient()`.",
+    "Es gibt keine Tabellenlogik und keine Duplizierung der v27.36b-Fachlogik.",
+    "Supabase bleibt NICHT LIVE.",
+    "Testergebnis:",
+    "Positiv: 7 PASS.",
+    "Negativ: 57 PASS.",
+    "Manipulation: 20 PASS.",
+    "Shared-Fake signIn -> access_allowed: PASS.",
+    "Shared-Fake signOut -> session_missing: PASS.",
+    "Continuity: PASS.",
+    "Preflight: PASS.",
+    "v27.36b: PASS.",
+    "v27.36c: PASS.",
+    "v27.36d Regression: PASS.",
+    "v27.36e Regression: PASS.",
+    "v27.36f Regression: PASS.",
+    "v27.37a Nachfolgeprofil: PASS.",
+    "`git diff --check`: PASS.",
+    "### Permanenter v27.37a-Lifecycle",
+    "`closure_prepared`",
+    "`closure_committed`",
+    "Keine zukünftige Closure-SHA wird hartcodiert.",
+    "Eine zweite Implementierung, eine Implementierung nach der Closure und eine implizite Autorisierung werden blockiert.",
+    "Kein Folgetask wurde ausgewählt oder autorisiert.",
+)
+V2737A_CURRENT_TASK_HEADER_MARKER = "# Verbindlicher aktueller Task"
+V2737A_CURRENT_TASK_FIELD_NAMES = (
+    "Task-ID",
+    "Status",
+    "Autorisiert",
+    "Titel",
+    "Funktionaler Ausgangsstand",
+    "Letzter abgeschlossener Kontrollschritt",
+    "Erlaubte Implementierungsdateien",
+    "Commit erlaubt",
+    "Push erlaubt",
+)
+V2737A_AUTHORIZED_TASK_FIELDS = {
+    "Task-ID": "v27.37a",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": V2737A_TITLE,
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.37a-GATE-REPAIR-FOLLOWUP",
+    "Erlaubte Implementierungsdateien": V2737A_ALLOWED_FILES_VALUE,
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+V2737A_CLOSED_TASK_FIELDS = {
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.37a",
+    "Erlaubte Implementierungsdateien": "KEINE",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
 V2737A_ALLOWED_STATE_CONTRACTS = frozenset({
     (
         V2737A_GATE_REPAIR_PHASE_PREPARED,
@@ -9942,6 +10014,56 @@ def validate_v2737a_authorization_section(section: str, document_name: str) -> N
     )
 
 
+def extract_v2737a_current_task_header(task_text: str) -> str:
+    require(
+        task_text.count(V2737A_CURRENT_TASK_HEADER_MARKER) == 1
+        and task_text.startswith(V2737A_CURRENT_TASK_HEADER_MARKER + "\n"),
+        "CURRENT_TASK: kanonischer aktueller Task-Kopf fehlt oder ist doppelt",
+    )
+    tail = task_text.split(V2737A_CURRENT_TASK_HEADER_MARKER, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    require(
+        next_heading is not None,
+        "CURRENT_TASK: Ende des kanonischen aktuellen Task-Kopfs fehlt",
+    )
+    return V2737A_CURRENT_TASK_HEADER_MARKER + tail[:next_heading.start()]
+
+
+def v2737a_current_task_header_fields(task_text: str) -> dict[str, str]:
+    header = extract_v2737a_current_task_header(task_text)
+    fields: dict[str, str] = {}
+    for field_name in V2737A_CURRENT_TASK_FIELD_NAMES:
+        matches = re.findall(
+            rf"(?m)^{re.escape(field_name)}: ([^\r\n]+)$",
+            header,
+        )
+        require(
+            len(matches) == 1,
+            f"CURRENT_TASK-Kopf: Feld muss exakt einmal vorhanden sein: {field_name}",
+        )
+        fields[field_name] = matches[0]
+    return fields
+
+
+def validate_v2737a_current_task_header_fields(
+    task_text: str,
+    expected_fields: dict[str, str],
+) -> None:
+    actual_fields = v2737a_current_task_header_fields(task_text)
+    require(
+        set(actual_fields) == set(expected_fields),
+        "CURRENT_TASK-Kopf: kanonische Feldmenge ist unvollständig oder erweitert",
+    )
+    for field_name, expected_value in expected_fields.items():
+        require(
+            actual_fields[field_name] == expected_value,
+            (
+                f"CURRENT_TASK-Kopf: Feldwert abweichend: {field_name}; "
+                f"erwartet {expected_value!r}, erhalten {actual_fields[field_name]!r}"
+            ),
+        )
+
+
 def validate_v2737a_authorization_documents(
     state_text: str,
     task_text: str,
@@ -9957,19 +10079,9 @@ def validate_v2737a_authorization_documents(
             "Aktuelle Taskart": V2737A_TITLE,
         },
     )
-    validate_exact_fields(
+    validate_v2737a_current_task_header_fields(
         task_text,
-        {
-            "Task-ID": "v27.37a",
-            "Status": "AUTHORIZED",
-            "Autorisiert": "JA",
-            "Titel": V2737A_TITLE,
-            "Funktionaler Ausgangsstand": "v27.35g",
-            "Letzter abgeschlossener Kontrollschritt": "v27.37a-GATE-REPAIR-FOLLOWUP",
-            "Erlaubte Implementierungsdateien": V2737A_ALLOWED_FILES_VALUE,
-            "Commit erlaubt": "NEIN",
-            "Push erlaubt": "NEIN",
-        },
+        V2737A_AUTHORIZED_TASK_FIELDS,
     )
     require(
         exact_field(cursor_text, "Stand") == "v27.37a",
@@ -10003,27 +10115,10 @@ def validate_v2737a_authorization_documents(
 
 
 def v2737a_current_task_state(task_text: str) -> str:
-    if (
-        exact_field(task_text, "Task-ID") == "v27.37a"
-        and exact_field(task_text, "Status") == "AUTHORIZED"
-        and exact_field(task_text, "Autorisiert") == "JA"
-        and exact_field(task_text, "Titel") == V2737A_TITLE
-        and exact_field(task_text, "Erlaubte Implementierungsdateien")
-        == V2737A_ALLOWED_FILES_VALUE
-        and exact_field(task_text, "Commit erlaubt") == "NEIN"
-        and exact_field(task_text, "Push erlaubt") == "NEIN"
-    ):
+    fields = v2737a_current_task_header_fields(task_text)
+    if fields == V2737A_AUTHORIZED_TASK_FIELDS:
         return "v2737a_authorized"
-    if (
-        exact_field(task_text, "Task-ID") == "NONE"
-        and exact_field(task_text, "Status") == "BLOCKED"
-        and exact_field(task_text, "Autorisiert") == "NEIN"
-        and exact_field(task_text, "Erlaubte Implementierungsdateien") == "KEINE"
-        and exact_field(task_text, "Commit erlaubt") == "NEIN"
-        and exact_field(task_text, "Push erlaubt") == "NEIN"
-        and exact_field(task_text, "Letzter abgeschlossener Kontrollschritt")
-        == "v27.37a"
-    ):
+    if fields == V2737A_CLOSED_TASK_FIELDS:
         return "v2737a_closed"
     return "invalid"
 
@@ -10361,6 +10456,27 @@ def extract_v2737a_completion_section(text: str, document_name: str) -> str:
     return start_marker + body
 
 
+def validate_v2737a_completion_section(
+    section: str,
+    document_name: str,
+    implementation_commit: str,
+) -> None:
+    required_facts = (
+        *V2737A_COMPLETION_REQUIRED_FACTS,
+        f"Implementierungscommit: `{implementation_commit}`",
+    )
+    validate_required_markers(
+        section,
+        required_facts,
+        f"{document_name} / v27.37a-Abschluss",
+    )
+    shas = frozenset(re.findall(r"\b[0-9a-f]{40}\b", section))
+    require(
+        shas == frozenset({implementation_commit}),
+        f"{document_name}: v27.37a-Implementierungscommit fehlt oder zukünftige Closure-SHA ist hartcodiert",
+    )
+
+
 def validate_v2737a_completion_documents(
     state_text: str,
     task_text: str,
@@ -10377,19 +10493,9 @@ def validate_v2737a_completion_documents(
             "Aktuelle Taskart": "Kein Task autorisiert",
         },
     )
-    validate_exact_fields(
+    validate_v2737a_current_task_header_fields(
         task_text,
-        {
-            "Task-ID": "NONE",
-            "Status": "BLOCKED",
-            "Autorisiert": "NEIN",
-            "Titel": "Kein Task autorisiert",
-            "Funktionaler Ausgangsstand": "v27.35g",
-            "Letzter abgeschlossener Kontrollschritt": "v27.37a",
-            "Erlaubte Implementierungsdateien": "KEINE",
-            "Commit erlaubt": "NEIN",
-            "Push erlaubt": "NEIN",
-        },
+        V2737A_CLOSED_TASK_FIELDS,
     )
     require(exact_field(cursor_text, "Stand") == "v27.37a", "CURSOR-Kontext muss auf v27.37a stehen")
     require(exact_field(masterlist_text, "Stand") == "v27.37a", "PROJECT_MASTERLIST muss auf v27.37a stehen")
@@ -10403,19 +10509,10 @@ def validate_v2737a_completion_documents(
     )
     for text, name in zip(documents, names):
         section = extract_v2737a_completion_section(text, name)
-        validate_required_markers(
+        validate_v2737a_completion_section(
             section,
-            (
-                "v27.37a abgeschlossen.",
-                f"Implementierungscommit: `{implementation_commit}`",
-                "createParticipantAuthSessionAdapter({ auth })",
-                "resolveSession()",
-                "signIn({ email, password })",
-                "signOut()",
-                "Supabase bleibt NICHT LIVE.",
-                "Keine zukünftige Closure-SHA wird hartcodiert.",
-            ),
-            f"{name} / v27.37a-Abschluss",
+            name,
+            implementation_commit,
         )
     rows = re.findall(r"(?m)^\| v27\.37a \|.*$", masterlist_text)
     require(
@@ -10599,6 +10696,7 @@ def validate_v2737a_gate_repair_lifecycle(
     require(not staged_files, "v27.37a-Working-Tree darf keine staged Dateien enthalten")
     working_files = diff_files | untracked_files
     roles, implementation_commit = read_v2737a_history(head)
+    task_header_fields = v2737a_current_task_header_fields(task_text)
     task_state = v2737a_current_task_state(task_text)
     if not roles and head == V2737A_AUTHORIZATION_BASE_SHA:
         if task_state == "v2737a_authorized" and working_files:
@@ -10663,9 +10761,9 @@ def validate_v2737a_gate_repair_lifecycle(
     require(
         v2737a_allowed_state_facts_are_valid(
             phase=phase,
-            task_id=exact_field(task_text, "Task-ID") or "",
-            status=exact_field(task_text, "Status") or "",
-            authorized=exact_field(task_text, "Autorisiert") or "",
+            task_id=task_header_fields["Task-ID"],
+            status=task_header_fields["Status"],
+            authorized=task_header_fields["Autorisiert"],
             allowed_implementation_files=allowed_files,
             working_files=working_files,
             history_roles=history_roles,
@@ -11232,6 +11330,211 @@ def run_v2737a_authorization_manipulation_matrix(
     return checks, 1, len(unique_markers) * len(sections) + 25
 
 
+def run_v2737a_completion_manipulation_matrix(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    implementation_commit: str,
+) -> tuple[int, int, int]:
+    validate_v2737a_completion_documents(
+        state_text,
+        task_text,
+        cursor_text,
+        masterlist_text,
+        implementation_commit,
+    )
+    sections = (
+        (extract_v2737a_completion_section(state_text, "PROJECT_STATE_CURRENT"), "PROJECT_STATE_CURRENT"),
+        (extract_v2737a_completion_section(task_text, "CURRENT_TASK"), "CURRENT_TASK"),
+        (extract_v2737a_completion_section(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"), "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (extract_v2737a_completion_section(masterlist_text, "PROJECT_MASTERLIST"), "PROJECT_MASTERLIST"),
+    )
+    checks = 0
+    required_facts = (
+        *V2737A_COMPLETION_REQUIRED_FACTS,
+        f"Implementierungscommit: `{implementation_commit}`",
+    )
+    manipulation_facts = required_facts
+    require(
+        all(fact in required_facts for fact in manipulation_facts),
+        "v27.37a-Completion-Manipulationsfakt fehlt im positiven Abschlussvertrag",
+    )
+    for section, name in sections:
+        for marker in manipulation_facts:
+            require(
+                section.count(marker) >= 1,
+                f"{name}: v27.37a-Abschlussmanipulation benötigt den kanonischen Fakt: {marker}",
+            )
+            mutated = section.replace(marker, "")
+            require(
+                mutated != section and marker not in mutated,
+                f"{name}: v27.37a-Abschlussmanipulation hat den kanonischen Fakt nicht entfernt: {marker}",
+            )
+            try:
+                validate_v2737a_completion_section(
+                    mutated,
+                    name,
+                    implementation_commit,
+                )
+            except ValidationError:
+                checks += 1
+                continue
+            raise ValidationError(
+                f"v27.37a-Abschlussmanipulation wurde nicht blockiert: {name} / {marker}"
+            )
+    canonical_section, canonical_name = sections[0]
+    future_sha = "\nZukünftige v27.37a-Closure-SHA: `" + ("a" * 40) + "`\n"
+    try:
+        validate_v2737a_completion_section(
+            canonical_section + future_sha,
+            canonical_name,
+            implementation_commit,
+        )
+    except ValidationError:
+        checks += 1
+    else:
+        raise ValidationError(
+            "v27.37a-Abschlussmanipulation wurde nicht blockiert: zukünftige Closure-SHA"
+        )
+    task_header = extract_v2737a_current_task_header(task_text)
+    task_mutations = (
+        ("Task-ID", "v27.37a"),
+        ("Status", "AUTHORIZED"),
+        ("Autorisiert", "JA"),
+        ("Titel", V2737A_TITLE),
+        ("Funktionaler Ausgangsstand", "v27.37a"),
+        ("Letzter abgeschlossener Kontrollschritt", "v27.36f"),
+        ("Erlaubte Implementierungsdateien", V2737A_ALLOWED_FILES_VALUE),
+        ("Commit erlaubt", "JA"),
+        ("Push erlaubt", "JA"),
+    )
+    for field_name, replacement_value in task_mutations:
+        canonical_line = f"{field_name}: {V2737A_CLOSED_TASK_FIELDS[field_name]}"
+        require(
+            task_header.count(canonical_line) == 1,
+            f"CURRENT_TASK-Kopfmanipulation benötigt eindeutiges Steuerfeld: {field_name}",
+        )
+        header_mutations = (
+            ("Wert verändert", task_header.replace(
+                canonical_line,
+                f"{field_name}: {replacement_value}",
+                1,
+            )),
+            ("Feld entfernt", task_header.replace(canonical_line + "\n", "", 1)),
+            ("Feld doppelt", task_header.replace(
+                canonical_line + "\n",
+                canonical_line + "\n" + canonical_line + "\n",
+                1,
+            )),
+        )
+        for label, mutated_header in header_mutations:
+            require(
+                mutated_header != task_header,
+                f"CURRENT_TASK-Kopfmanipulation ist wirkungslos: {field_name} / {label}",
+            )
+            mutated_task = task_text.replace(task_header, mutated_header, 1)
+            require(
+                mutated_task != task_text,
+                f"CURRENT_TASK-Dokumentmanipulation ist wirkungslos: {field_name} / {label}",
+            )
+            try:
+                validate_v2737a_completion_documents(
+                    state_text,
+                    mutated_task,
+                    cursor_text,
+                    masterlist_text,
+                    implementation_commit,
+                )
+            except ValidationError:
+                checks += 1
+                continue
+            raise ValidationError(
+                "v27.37a-CURRENT_TASK-Kopfmanipulation wurde nicht blockiert: "
+                f"{field_name} / {label}"
+            )
+    invalid_title_header = task_header.replace(
+        "Titel: Kein Task autorisiert",
+        f"Titel: {V2737A_TITLE}",
+        1,
+    )
+    historical_valid_fields = "\n".join(
+        f"{field_name}: {field_value}"
+        for field_name, field_value in V2737A_CLOSED_TASK_FIELDS.items()
+    )
+    invalid_header_with_historical_rescue = (
+        task_text.replace(task_header, invalid_title_header, 1)
+        + "\n## Synthetischer historischer Taskzustand\n\n"
+        + historical_valid_fields
+        + "\n"
+    )
+    require(
+        invalid_header_with_historical_rescue != task_text,
+        "v27.37a-historische CURRENT_TASK-Rettungsmanipulation ist wirkungslos",
+    )
+    try:
+        validate_v2737a_completion_documents(
+            state_text,
+            invalid_header_with_historical_rescue,
+            cursor_text,
+            masterlist_text,
+            implementation_commit,
+        )
+    except ValidationError:
+        checks += 1
+    else:
+        raise ValidationError(
+            "Historischer gültiger Tasktext rettet einen ungültigen CURRENT_TASK-Kopf"
+        )
+    valid_header_with_historical_repetitions = (
+        task_text
+        + "\n## Synthetische historische Wiederholung\n\n"
+        + historical_valid_fields
+        + "\n"
+    )
+    validate_v2737a_completion_documents(
+        state_text,
+        valid_header_with_historical_repetitions,
+        cursor_text,
+        masterlist_text,
+        implementation_commit,
+    )
+    rows = re.findall(r"(?m)^\| v27\.37a \|.*$", masterlist_text)
+    require(
+        len(rows) == 1,
+        "v27.37a-Abschlusszeile muss für Manipulation eindeutig sein",
+    )
+    mutated_masterlist = masterlist_text.replace(
+        rows[0],
+        rows[0].replace("**erledigt**", "**autorisiert**"),
+        1,
+    )
+    try:
+        validate_v2737a_completion_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            mutated_masterlist,
+            implementation_commit,
+        )
+    except ValidationError:
+        checks += 1
+    else:
+        raise ValidationError(
+            "v27.37a-Masterlisten-Abschlussmanipulation wurde nicht blockiert"
+        )
+    expected_negative_tests = (
+        len(manipulation_facts) * len(sections)
+        + len(task_mutations) * 3
+        + 3
+    )
+    require(
+        checks == expected_negative_tests,
+        "v27.37a-Abschlussmanipulationszählung ist inkonsistent",
+    )
+    return checks, 2, expected_negative_tests
+
+
 def main() -> int:
     try:
         state_text = read_required_text(STATE_PATH)
@@ -11412,16 +11715,38 @@ def main() -> int:
             masterlist_text,
         )
         manipulation_checks += v2737a_gate_repair_followup_manipulation_checks
-        (
-            v2737a_authorization_manipulation_checks,
-            v2737a_authorization_positive_tests,
-            v2737a_authorization_negative_tests,
-        ) = run_v2737a_authorization_manipulation_matrix(
-            state_text,
-            task_text,
-            cursor_context_text,
-            masterlist_text,
-        )
+        if v2737a_current_task_state(task_text) == "v2737a_closed":
+            _, v2737a_implementation_commit = read_v2737a_history(
+                run_git(["rev-parse", "HEAD"]).strip()
+            )
+            require(
+                v2737a_implementation_commit is not None,
+                "v27.37a-Abschlussmanipulation benötigt den legitimen Implementierungscommit",
+            )
+            (
+                v2737a_authorization_manipulation_checks,
+                v2737a_authorization_positive_tests,
+                v2737a_authorization_negative_tests,
+            ) = run_v2737a_completion_manipulation_matrix(
+                state_text,
+                task_text,
+                cursor_context_text,
+                masterlist_text,
+                v2737a_implementation_commit,
+            )
+            v2737a_contract_label = "Abschlussvertrag"
+        else:
+            (
+                v2737a_authorization_manipulation_checks,
+                v2737a_authorization_positive_tests,
+                v2737a_authorization_negative_tests,
+            ) = run_v2737a_authorization_manipulation_matrix(
+                state_text,
+                task_text,
+                cursor_context_text,
+                masterlist_text,
+            )
+            v2737a_contract_label = "Autorisierungsvertrag"
         manipulation_checks += v2737a_authorization_manipulation_checks
     except ValidationError as exc:
         print(f"FEHLER: {exc}")
@@ -11429,9 +11754,11 @@ def main() -> int:
         return 1
 
     print("Projektkontinuität, abgeschlossene v27.37a-Repairs und frischer v27.37a-Lifecycle: OK")
+    current_task_header_fields = v2737a_current_task_header_fields(task_text)
     task_summary = (
-        f"{exact_field(task_text, 'Task-ID')} / {exact_field(task_text, 'Status')} / "
-        f"Autorisiert {exact_field(task_text, 'Autorisiert')}"
+        f"{current_task_header_fields['Task-ID']} / "
+        f"{current_task_header_fields['Status']} / "
+        f"Autorisiert {current_task_header_fields['Autorisiert']}"
     )
     print(
         "PROJECT_STATE_CURRENT: letzter funktionaler Stand v27.35g / "
@@ -11621,7 +11948,7 @@ def main() -> int:
         f"{v2737a_gate_repair_followup_negative_tests} / vollständig blockiert"
     )
     print(
-        "v27.37a-Autorisierungsvertrag: "
+        f"v27.37a-{v2737a_contract_label}: "
         f"{v2737a_authorization_positive_tests} / PASS; Negativtests: "
         f"{v2737a_authorization_negative_tests} / vollständig blockiert"
     )

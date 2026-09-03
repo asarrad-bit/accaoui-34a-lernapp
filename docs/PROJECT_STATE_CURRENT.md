@@ -7,88 +7,59 @@ Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37a
-Aktuelle Taskart: Isolierten Teilnehmer-Auth-/Session-Adapter mit synthetischem Fake-Auth-Vertrag implementieren
-Aktueller Blocker: Keine Umsetzung außerhalb der vier ausdrücklich autorisierten Implementierungsdateien
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Implementierung bleibt bis zu einer ausdrücklichen Autorisierung blockiert
 
-## Autorisierter Task v27.37a
+## Abgeschlossener technischer Schritt v27.37a
 
-v27.37a ist ausdrücklich autorisiert.
+v27.37a abgeschlossen.
 
-Der Titel lautet: Isolierten Teilnehmer-Auth-/Session-Adapter mit synthetischem Fake-Auth-Vertrag implementieren.
+Implementierungscommit: `54f6425fac70da134e3c6f39b376f66fa75063cb`
 
-Technische v27.37a-Basis: `2da93d2931178fb225b41a301d21658b40729857`.
+Ergebnis:
 
-Der v27.37a-GATE-REPAIR und der v27.37a-GATE-REPAIR-FOLLOWUP bleiben vollständig abgeschlossen. Die FOLLOWUP-Grenze `2da93d2931178fb225b41a301d21658b40729857` wird nicht erneut geöffnet oder wiederholt. Die aktuelle Autorisierung beginnt einen neuen eigenständigen v27.37a-Lifecycle ab dieser Grenze.
+- Der isolierte CommonJS Teilnehmer-Auth-/Session-Adapter ist implementiert.
+- Die Factory ist `createParticipantAuthSessionAdapter({ auth })`.
+- Die öffentliche Oberfläche enthält exakt:
+  - `resolveSession()`
+  - `signIn({ email, password })`
+  - `signOut()`
+- Die einzige Dependency ist `auth`.
+- Alle Ergebnisse sind gefrorene Plain Objects mit exakt `{ ok, code }`.
+- Sensitive Daten, Sessions, Nutzer, Passwörter, Token und Rohfehler werden nicht nach außen gegeben.
+- Es gibt kein Browser-Wiring und keinen Storage-Zugriff.
+- Es gibt keinen eigenen Netzwerkcode, keinen Client, kein `createClient()` und kein `initializeClient()`.
+- Es gibt keine Tabellenlogik und keine Duplizierung der v27.36b-Fachlogik.
+- Supabase bleibt NICHT LIVE.
 
-Die spätere Implementierung umfasst exakt vier Dateien:
+Testergebnis:
 
-- `data/supabase-participant-auth-session-adapter.js`
-- `tools/check-supabase-participant-auth-session-adapter.py`
-- `docs/SUPABASE_PARTICIPANT_AUTH_SESSION_ADAPTER_V2737A.md`
-- `tools/preflight.py`
-
-Keine fünfte Implementierungsdatei ist erlaubt.
-
-### Öffentlicher Vertrag
-
-Das neue isolierte Modul ist `data/supabase-participant-auth-session-adapter.js`. Die Factory lautet exakt `createParticipantAuthSessionAdapter({ auth })`.
-
-Die öffentliche Oberfläche enthält exakt:
-
-- `resolveSession()`
-- `signIn({ email, password })`
-- `signOut()`
-
-Eine vierte öffentliche Methode ist verboten. Die einzige injizierte Dependency ist `auth`. Ausschließlich `auth.getSession()`, `auth.signInWithPassword(...)` und `auth.signOut()` dürfen verwendet werden.
-
-Jede öffentliche Rückgabe ist ein gefrorenes Plain Object mit exakt den zwei Properties `{ ok: boolean, code: string }`.
-
-- `resolveSession()` gibt ausschließlich `session_available`, `session_missing`, `session_invalid` oder `auth_error` zurück.
-- `signIn({ email, password })` gibt ausschließlich `signed_in`, `credentials_invalid`, `sign_in_failed` oder `auth_error` zurück.
-- `signOut()` gibt ausschließlich `signed_out`, `sign_out_failed` oder `auth_error` zurück.
-
-Session, User, `user.id`, E-Mail, Passwort, Token, `access_token`, `refresh_token`, Auth-Response, Config, Key, Error-Objekt und Error-Message dürfen niemals öffentlich zurückgegeben werden. Rohfehler bleiben ausgeschlossen.
-
-### Sicherheitsgrenze
-
-v27.37a darf `app.js`, `index.html`, den Browser-Loader oder bestehende Supabase-Produktmodule nicht ändern. `window`, `document`, DOM, `localStorage`, `sessionStorage`, Cookies sowie das Speichern von Passwörtern oder Tokens sind verboten. Client-Erzeugung, `createClient()`, `initializeClient()`, Config-Lesen, `fetch`, `XMLHttpRequest`, `WebSocket`, `.from(...)`, Teilnehmer-, Enrollment- oder Kursabfragen, SQL, Migrationen, eine frei übergebene `userId` und jede Live-Schaltung von Supabase sind verboten.
-
-Die bestehende Teilnehmer-Fachautorität bleibt ausschließlich `session.user.id` im vorhandenen v27.36b-Teilnehmerzugangs-Adapter. Keine Fachlogik daraus darf dupliziert werden. Der Browser-Loader bleibt unverändert bei `data-enabled="false"`. Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
-
-Mindestens diese Produktdateien bleiben gegenüber der technischen Basis unverändert:
-
-- `index.html`
-- `app.js`
-- `data/supabase-client-bootstrap.js`
-- `data/supabase-client-adapter.js`
-- `data/supabase-participant-access-adapter.js`
-- `data/supabase-participant-access-bootstrap-bridge.js`
-- `data/supabase-participant-access-browser-provider.js`
-- `data/supabase-participant-access-browser-loader.js`
-- `questions.json`
-- `style.css`
-
-### Späterer Testvertrag
-
-Getestet wird ausschließlich lokal mit einem synthetischen In-Memory Fake Auth. `resolveSession()` prüft gültige, fehlende und ungültige Sessions, fehlenden oder ungültigen User beziehungsweise `user.id`, Response-Error, Throw und Reject. `signIn()` prüft Erfolg, ungültige Eingaben, Response-Error, Throw und Reject. `signOut()` prüft Erfolg, Response-Error, Throw und Reject.
-
-Zusätzlich werden exakt zwei Ergebnisproperties, `Object.freeze`, das Ausbleiben von Passwort-, Session-, User-, Token- und Rohfehler-Leaks, die einzige Dependency, die Storage-, Netzwerk-, Tabellen- und Client-Erzeugungssperren sowie die synthetische Integration geprüft: `signIn` führt über den bestehenden v27.36b-Teilnehmerzugangs-Adapter zu `access_allowed`; `signOut` führt über denselben unveränderten Adapter zu `session_missing`.
+- Positiv: 7 PASS.
+- Negativ: 57 PASS.
+- Manipulation: 20 PASS.
+- Shared-Fake signIn -> access_allowed: PASS.
+- Shared-Fake signOut -> session_missing: PASS.
+- Continuity: PASS.
+- Preflight: PASS.
+- v27.36b: PASS.
+- v27.36c: PASS.
+- v27.36d Regression: PASS.
+- v27.36e Regression: PASS.
+- v27.36f Regression: PASS.
+- v27.37a Nachfolgeprofil: PASS.
+- `git diff --check`: PASS.
 
 ### Permanenter v27.37a-Lifecycle
 
-Die technische Basis ist `2da93d2931178fb225b41a301d21658b40729857`. Der Lifecycle erkennt dynamisch exakt `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed`.
+Der Lifecycle erkennt weiterhin dynamisch `authorization_prepared`, `authorization_committed`, `implementation_prepared`, `implementation_committed`, `closure_prepared` und `closure_committed`.
 
-`authorization_prepared` verlangt HEAD auf der technischen Basis, eine nichtleere Teilmenge ausschließlich der fünf Gate-Dateien im Working Tree und den autorisierten v27.37a-Task ohne Implementierungsdatei. `authorization_committed` verlangt einen sauberen Working Tree und genau einen legitimen Gate-Commit direkt nach der Basis, der ausschließlich Gate-Dateien enthält.
+`closure_prepared` verlangt den Implementierungscommit, exakt die fünf Gate-Dateien im Working Tree, `CURRENT_TASK` als `NONE / BLOCKED / Autorisiert NEIN` und unveränderte Produktdateien. `closure_committed` verlangt danach einen direkten Closure-Commit mit exakt diesen fünf Gate-Dateien und einen sauberen Working Tree.
 
-`implementation_prepared` verlangt den legitimen Gate-Commit und exakt die vier Implementierungsdateien im Working Tree. `implementation_committed` verlangt einen sauberen Working Tree und einen direkten Implementierungscommit mit exakt diesen vier Dateien.
+Keine zukünftige Closure-SHA wird hartcodiert.
 
-`closure_prepared` verlangt die legitim committete Implementierung, exakt die fünf Gate-Dateien im Working Tree und `CURRENT_TASK` geschlossen als `NONE / BLOCKED / Autorisiert NEIN`. `closure_committed` verlangt einen sauberen Working Tree, einen direkten Closure-Commit mit exakt den fünf Gate-Dateien und den weiterhin geschlossenen Taskzustand.
-
-Ein zweites Gate, eine zweite Implementierung, ein Gate nach der Implementierung, eine Closure vor der Implementierung, eine Implementierung nach der Closure, unbekannte History-Rollen und spätere unbekannte Tasks werden blockiert. Keine zukünftige Gate-, Implementierungs- oder Closure-SHA wird hartcodiert.
-
-Dieser Gate-Schritt autorisiert keine Produktimplementierung. Commit und Push bleiben NEIN.
+Eine zweite Implementierung, eine Implementierung nach der Closure und eine implizite Autorisierung werden blockiert. Kein Folgetask wurde ausgewählt oder autorisiert.
 
 ## Abgeschlossener atomarer Follow-up-Repair v27.37a-GATE-REPAIR-FOLLOWUP
 
