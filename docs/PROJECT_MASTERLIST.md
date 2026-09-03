@@ -8,6 +8,40 @@ Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 
+## v27.37b-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur
+
+v27.37b-GATE-BOOTSTRAP-REPAIR korrigiert ausschließlich den phasenfesten und strukturellen CURRENT_TASK-Vertrag in Continuity und Preflight.
+
+Repair-Basis: `b83581612fa25b73f62c4b146e8df782d67c869c`.
+
+Der einmalige atomare Repair umfasst exakt:
+
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Keine siebte Datei und keine Produktdatei sind zulässig.
+
+Der Bootstrap-Commit `b83581612fa25b73f62c4b146e8df782d67c869c` bleibt korrekt. Der Repair behebt ausschließlich phasenfremde reale Manipulationsbaselines, unvollständige Kopfstrukturprüfungen und fehlende CURRENT_TASK-Negativtests.
+
+Der kanonische CURRENT_TASK-Kopf reicht exakt von `# Verbindlicher aktueller Task` bis unmittelbar vor dem verpflichtenden ersten `## `-Abschnitt. Er enthält exakt die neun bekannten Felder in definierter Reihenfolge; fehlende, doppelte, unbekannte oder ungeordnete Kopffelder bleiben blockiert. Historische Abschnitte dürfen einen ungültigen aktuellen Kopf weder retten noch einen gültigen Kopf beschädigen.
+
+Die drei kanonischen Taskzustände bleiben BASE_CLOSED, AUTHORIZED und CLOSED. Bootstrap-Phasen verwenden BASE_CLOSED; Authorization- und Implementation-Phasen verwenden AUTHORIZED; Closure-Phasen verwenden CLOSED. Synthetische Manipulationstests verwenden ausschließlich vollständige phasenspezifische CURRENT_TASK-Dokumente und niemals den realen CURRENT_TASK als Test-Baseline.
+
+Der spätere Produktvertrag für `v27.37b – Isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke` bleibt unverändert: exakt zwei Dependencies, exakt drei öffentliche Methoden, `getClient()` exakt einmal pro Operation, kein Client-Cache, ausschließlich `client.auth` als `{ auth }` und für Brückenfehler `Object.freeze({ ok: false, code: "auth_error" })`.
+
+Der vorbereitete Zustand ist `v2737b_gate_bootstrap_repair_prepared`. Nach einem späteren direkten Repair-Commit ist er dynamisch `v2737b_gate_bootstrap_repair_committed`. Keine zukünftige Repair-Commit-SHA wird hartcodiert; der Repair darf nur einmal vorkommen.
+
+`CURRENT_TASK` bleibt `NONE / BLOCKED / Autorisiert NEIN`; v27.37b wird durch diesen Repair NICHT autorisiert. Erst nach dem Repair-Commit ist ein frisches separates v27.37b-Autorisierungs-Gate zulässig.
+
+Der lokale Sicherungspatch `.git/v2737b-authorization-preflight-blocked.patch` wird nicht angewendet, nicht verändert und nicht als Implementierungsquelle verwendet.
+
+Kein Produktcode wird geändert. Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
+
 ## v27.37b-GATE-BOOTSTRAP – Kontrollinfrastruktur
 
 v27.37b-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.
