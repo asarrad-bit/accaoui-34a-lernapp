@@ -1,16 +1,72 @@
 # Aktueller Projektzustand
 
-Stand: v27.37b-AUTORISIERUNG
+Stand: v27.37b
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37b
-Aktuelle Taskart: v27.37b – Isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke
-Aktueller Blocker: Umsetzung bleibt bis zum Commit dieses Autorisierungs-Gates blockiert
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Implementierung bleibt bis zu einer ausdrücklichen Autorisierung blockiert
+
+## Abgeschlossener technischer Schritt v27.37b
+
+v27.37b abgeschlossen.
+
+Implementierungscommit: `dfa54c5327fb411d2624b05c064a214da18f3b54`
+
+Ergebnis:
+
+- Die isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke ist implementiert und CommonJS-only.
+- Die Factory ist `createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })`.
+- Die Dependencies sind exakt `bootstrap` und `createParticipantAuthSessionAdapter`.
+- Die öffentliche Oberfläche enthält exakt `resolveSession()`, `signIn(credentials)` und `signOut()` und ist eingefroren.
+- `require()` und Factory-Erzeugung verursachen keine Side Effects.
+- Pro öffentlicher Operation wird `getClient()` exakt einmal aufgerufen; der Client wird nicht gecacht.
+- Ausschließlich `client.auth` wird als exakt `{ auth }` an die Adapterfactory weitergegeben.
+- Der Adapter wird pro Operation frisch erzeugt; nur die passende Methode wird genau einmal aufgerufen.
+- Credentials werden unverändert weitergegeben; gültige v27.37a-Ergebnisse werden unverändert und identisch delegiert.
+- Brückenfehler liefern exakt `Object.freeze({ ok: false, code: "auth_error" })`.
+- Sensitive Daten, Session-, User-, Passwort-, Token-, Client-, Auth-, Config- und Rohfehlerwerte werden nicht ausgegeben.
+- Es gibt keine Browser-, Storage-, Netzwerk- oder eigene Domainlogik.
+- Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
+Bestätigte Testergebnisse der Implementation:
+
+- Positiv: 40 PASS.
+- Negativ: 397 PASS.
+- Manipulation: 49 PASS.
+- Shared-Fake signIn -> access_allowed: PASS.
+- Shared-Fake signOut -> session_missing: PASS.
+- Continuity: PASS.
+- Preflight: PASS.
+- v27.36b: PASS.
+- v27.36c: PASS.
+- v27.36d Regression: PASS.
+- v27.36e Regression: PASS.
+- v27.36f Regression: PASS.
+- v27.37a Regression: PASS.
+- v27.37b Nachfolgeprofil: PASS.
+- `git diff --check`: PASS.
+
+### Permanenter v27.37b-Lifecycle
+
+Die legitime Historie enthält genau einmal und in dieser Reihenfolge `v2737b_bootstrap`, `v2737b_bootstrap_repair`, `v2737b_gate` und `v2737b_implementation`.
+
+`v2737b_closure_prepared` verlangt die abgeschlossene Implementation, exakt die fünf Closure-Dateien im Working Tree und den kanonischen CLOSED-Kopf: `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`, `Titel: Kein Task autorisiert`, `Funktionaler Ausgangsstand: v27.35g`, `Letzter abgeschlossener Kontrollschritt: v27.37b`, `Erlaubte Implementierungsdateien: KEINE`, `Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
+
+Die fünf Closure-Dateien sind ausschließlich `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/PROJECT_MASTERLIST.md`, `docs/PROJECT_STATE_CURRENT.md`, `docs/tasks/CURRENT_TASK.md` und `tools/check-project-continuity-control.py`. Produkt- und Implementierungsdateien sowie `tools/preflight.py` bleiben unverändert.
+
+Ein späterer legitimer direkter Closure-Commit wird dynamisch als `v2737b_closure_committed` erkannt. Keine zukünftige Closure-SHA wird hartcodiert. Eine zweite Implementation, eine zweite Closure, eine Rückkehr zur Autorisierung und unbekannte Folgetasks bleiben blockiert.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g. Der letzte abgeschlossene Kontrollschritt ist v27.37b.
+
+Kein Folgetask wurde ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
+
+Die folgenden Autorisierungs-, Bootstrap- und Repair-Abschnitte dokumentieren unverändert die historische Freigabe und Kontrollinfrastruktur; sie erteilen keine aktuelle Implementierungs- oder Folgetaskfreigabe.
 
 ## Autorisierter Task v27.37b
 

@@ -1,12 +1,68 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37b-AUTORISIERUNG
+Stand: v27.37b
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Abgeschlossener technischer Schritt v27.37b
+
+v27.37b abgeschlossen.
+
+Implementierungscommit: `dfa54c5327fb411d2624b05c064a214da18f3b54`
+
+Ergebnis:
+
+- Die isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke ist implementiert und CommonJS-only.
+- Die Factory ist `createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })`.
+- Die Dependencies sind exakt `bootstrap` und `createParticipantAuthSessionAdapter`.
+- Die öffentliche Oberfläche enthält exakt `resolveSession()`, `signIn(credentials)` und `signOut()` und ist eingefroren.
+- `require()` und Factory-Erzeugung verursachen keine Side Effects.
+- Pro öffentlicher Operation wird `getClient()` exakt einmal aufgerufen; der Client wird nicht gecacht.
+- Ausschließlich `client.auth` wird als exakt `{ auth }` an die Adapterfactory weitergegeben.
+- Der Adapter wird pro Operation frisch erzeugt; nur die passende Methode wird genau einmal aufgerufen.
+- Credentials werden unverändert weitergegeben; gültige v27.37a-Ergebnisse werden unverändert und identisch delegiert.
+- Brückenfehler liefern exakt `Object.freeze({ ok: false, code: "auth_error" })`.
+- Sensitive Daten, Session-, User-, Passwort-, Token-, Client-, Auth-, Config- und Rohfehlerwerte werden nicht ausgegeben.
+- Es gibt keine Browser-, Storage-, Netzwerk- oder eigene Domainlogik.
+- Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.
+
+Bestätigte Testergebnisse der Implementation:
+
+- Positiv: 40 PASS.
+- Negativ: 397 PASS.
+- Manipulation: 49 PASS.
+- Shared-Fake signIn -> access_allowed: PASS.
+- Shared-Fake signOut -> session_missing: PASS.
+- Continuity: PASS.
+- Preflight: PASS.
+- v27.36b: PASS.
+- v27.36c: PASS.
+- v27.36d Regression: PASS.
+- v27.36e Regression: PASS.
+- v27.36f Regression: PASS.
+- v27.37a Regression: PASS.
+- v27.37b Nachfolgeprofil: PASS.
+- `git diff --check`: PASS.
+
+### Permanenter v27.37b-Lifecycle
+
+Die legitime Historie enthält genau einmal und in dieser Reihenfolge `v2737b_bootstrap`, `v2737b_bootstrap_repair`, `v2737b_gate` und `v2737b_implementation`.
+
+`v2737b_closure_prepared` verlangt die abgeschlossene Implementation, exakt die fünf Closure-Dateien im Working Tree und den kanonischen CLOSED-Kopf: `Task-ID: NONE`, `Status: BLOCKED`, `Autorisiert: NEIN`, `Titel: Kein Task autorisiert`, `Funktionaler Ausgangsstand: v27.35g`, `Letzter abgeschlossener Kontrollschritt: v27.37b`, `Erlaubte Implementierungsdateien: KEINE`, `Commit erlaubt: NEIN` und `Push erlaubt: NEIN`.
+
+Die fünf Closure-Dateien sind ausschließlich `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/PROJECT_MASTERLIST.md`, `docs/PROJECT_STATE_CURRENT.md`, `docs/tasks/CURRENT_TASK.md` und `tools/check-project-continuity-control.py`. Produkt- und Implementierungsdateien sowie `tools/preflight.py` bleiben unverändert.
+
+Ein späterer legitimer direkter Closure-Commit wird dynamisch als `v2737b_closure_committed` erkannt. Keine zukünftige Closure-SHA wird hartcodiert. Eine zweite Implementation, eine zweite Closure, eine Rückkehr zur Autorisierung und unbekannte Folgetasks bleiben blockiert.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g. Der letzte abgeschlossene Kontrollschritt ist v27.37b.
+
+Kein Folgetask wurde ausgewählt oder autorisiert. Commit und Push bleiben NEIN.
+
+Die folgenden Autorisierungs-, Bootstrap- und Repair-Abschnitte dokumentieren unverändert die historische Freigabe und Kontrollinfrastruktur; sie erteilen keine aktuelle Implementierungs- oder Folgetaskfreigabe.
 
 ## Autorisierter Task v27.37b
 
@@ -1026,6 +1082,7 @@ Werkzeuge (nicht in der App geladen, aber Pflicht vor Commit):
 | v27.36f | Kontrollierter Browser-Aktivierungsweg vollständig abgeschlossen; Implementierungscommit `a68dd9e81f26c3a887e668b90e9f5e8973c7ddfa`; zusätzlicher enger Prüfpfad-Repair v27.36f-REPAIR mit Repair-Implementierungscommit `b035c62100b033dbce03a4ab016e4471b4ab54d4` und Repair-Closure `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712`; Default `data-enabled=false`, fail-closed, Checker 41/27/46 PASS, Supabase NICHT LIVE – **erledigt** |
 | v27.36f-REPAIR | Closure-Prüfpfad für v27.36f eng repariert; Repair-Implementierungscommit `b035c62100b033dbce03a4ab016e4471b4ab54d4`; Repair-Closure `d2a303e3ca4cfd8b61a1e7b7f8e5c4b43682c712`; Checker 41/27/46, Regressionen, Kontinuitätschecker, Preflight und `git diff --check` PASS; keine App-, Loader- oder Supabase-Änderung – **erledigt** |
 | v27.37a | Isolierter CommonJS Teilnehmer-Auth-/Session-Adapter; Implementierungscommit `54f6425fac70da134e3c6f39b376f66fa75063cb`; öffentliche Oberfläche exakt `resolveSession()`, `signIn({ email, password })`, `signOut()`; Supabase NICHT LIVE – **erledigt** |
+| v27.37b | Isolierte CommonJS Teilnehmer-Auth-/Session-Bootstrap-Brücke abgeschlossen; Implementierungscommit `dfa54c5327fb411d2624b05c064a214da18f3b54`; exakt zwei Dependencies und drei öffentliche Methoden, einmaliger Bootstrap-Aufruf pro Operation, kein Client-Cache, ausschließlich `{ auth }`, frischer Adapter und unveränderte Ergebnisse; Checker 40/397/49 PASS, Shared-Fake und Regressionen PASS; Supabase NICHT LIVE, kein Folgetask – **erledigt** |
 | v27.37a-GATE-REPAIR-FOLLOWUP | Einmaliger atomarer Follow-up-Repair für striktes UTF-8-Historienlesen und nichtleere Gate-Dateiteilmengen; ausschließlich vier Steuerdokumente, Kontinuitätschecker und Preflight; keine Produktänderung, Supabase NICHT LIVE – **erledigt** |
 | v27.37a-GATE-REPAIR | Einmaliger atomarer Bootstrap des engen Preflight-Nachfolgeprofils nach vollständig abgeschlossenem v27.36f; ausschließlich vier Steuerdokumente, Kontinuitätschecker und Preflight; keine Produktänderung, Supabase NICHT LIVE – **erledigt** |
 

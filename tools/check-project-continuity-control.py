@@ -12352,6 +12352,207 @@ def validate_v2737a_closed_at_v2737b_base() -> tuple[tuple[str, ...], str]:
     return documents, implementation_commit
 
 
+V2737B_COMPLETION_SECTION_HEADING = "## Abgeschlossener technischer Schritt v27.37b"
+V2737B_COMPLETION_REQUIRED_FACTS = (
+    "v27.37b abgeschlossen.",
+    "Die isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke ist implementiert und CommonJS-only.",
+    "createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })",
+    "Die Dependencies sind exakt `bootstrap` und `createParticipantAuthSessionAdapter`.",
+    "Die öffentliche Oberfläche enthält exakt `resolveSession()`, `signIn(credentials)` und `signOut()` und ist eingefroren.",
+    "`require()` und Factory-Erzeugung verursachen keine Side Effects.",
+    "Pro öffentlicher Operation wird `getClient()` exakt einmal aufgerufen; der Client wird nicht gecacht.",
+    "Ausschließlich `client.auth` wird als exakt `{ auth }` an die Adapterfactory weitergegeben.",
+    "Der Adapter wird pro Operation frisch erzeugt; nur die passende Methode wird genau einmal aufgerufen.",
+    "Credentials werden unverändert weitergegeben; gültige v27.37a-Ergebnisse werden unverändert und identisch delegiert.",
+    'Brückenfehler liefern exakt `Object.freeze({ ok: false, code: "auth_error" })`.',
+    "Sensitive Daten, Session-, User-, Passwort-, Token-, Client-, Auth-, Config- und Rohfehlerwerte werden nicht ausgegeben.",
+    "Es gibt keine Browser-, Storage-, Netzwerk- oder eigene Domainlogik.",
+    "Supabase bleibt NICHT LIVE. Keine echten Keys. Keine echten Teilnehmerdaten.",
+    "Bestätigte Testergebnisse der Implementation:",
+    "Positiv: 40 PASS.",
+    "Negativ: 397 PASS.",
+    "Manipulation: 49 PASS.",
+    "Shared-Fake signIn -> access_allowed: PASS.",
+    "Shared-Fake signOut -> session_missing: PASS.",
+    "Continuity: PASS.",
+    "Preflight: PASS.",
+    "v27.36b: PASS.",
+    "v27.36c: PASS.",
+    "v27.36d Regression: PASS.",
+    "v27.36e Regression: PASS.",
+    "v27.36f Regression: PASS.",
+    "v27.37a Regression: PASS.",
+    "v27.37b Nachfolgeprofil: PASS.",
+    "`git diff --check`: PASS.",
+    "### Permanenter v27.37b-Lifecycle",
+    "`v2737b_bootstrap`, `v2737b_bootstrap_repair`, `v2737b_gate` und `v2737b_implementation`",
+    "`v2737b_closure_prepared`",
+    "`v2737b_closure_committed`",
+    "Produkt- und Implementierungsdateien sowie `tools/preflight.py` bleiben unverändert.",
+    "Keine zukünftige Closure-SHA wird hartcodiert.",
+    "Eine zweite Implementation, eine zweite Closure, eine Rückkehr zur Autorisierung und unbekannte Folgetasks bleiben blockiert.",
+    "Der letzte abgeschlossene funktionale Stand bleibt v27.35g. Der letzte abgeschlossene Kontrollschritt ist v27.37b.",
+    "Kein Folgetask wurde ausgewählt oder autorisiert. Commit und Push bleiben NEIN.",
+)
+
+
+def extract_v2737b_completion_section(text: str, document_name: str) -> str:
+    require(
+        text.count(V2737B_COMPLETION_SECTION_HEADING) == 1,
+        f"{document_name}: v27.37b-Abschlussabschnitt fehlt oder ist doppelt",
+    )
+    tail = text.split(V2737B_COMPLETION_SECTION_HEADING, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    return tail[:next_heading.start()] if next_heading else tail
+
+
+def validate_v2737b_completion_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    implementation_commit: str,
+) -> None:
+    require(
+        re.fullmatch(r"[0-9a-f]{40}", implementation_commit) is not None,
+        "v27.37b-Closure benötigt den dynamisch erkannten Implementierungscommit",
+    )
+    validate_exact_fields(state_text, {
+        "Stand": "v27.37b",
+        "Weiterer funktionaler Schritt autorisiert": "NEIN",
+        "Aktuell autorisierter Task": "NONE",
+        "Aktuelle Taskart": "Kein Task autorisiert",
+    })
+    require(
+        v2737b_current_task_state(task_text) == "v2737b_closed",
+        "v27.37b-Abschluss benötigt den kanonischen aktuellen CLOSED-Kopf",
+    )
+    require(exact_field(cursor_text, "Stand") == "v27.37b", "CURSOR-Kontext muss nach Closure auf v27.37b stehen")
+    require(exact_field(masterlist_text, "Stand") == "v27.37b", "PROJECT_MASTERLIST muss nach Closure auf v27.37b stehen")
+    validate_project_paths(cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI")
+    for text, name in (
+        (state_text, "PROJECT_STATE_CURRENT"),
+        (task_text, "CURRENT_TASK"),
+        (cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (masterlist_text, "PROJECT_MASTERLIST"),
+    ):
+        section = extract_v2737b_completion_section(text, name)
+        validate_required_markers(section, V2737B_COMPLETION_REQUIRED_FACTS, f"{name} / v27.37b-Abschluss")
+        commit_marker = f"Implementierungscommit: `{implementation_commit}`"
+        require(section.count(commit_marker) == 1, f"{name}: v27.37b-Implementierungsbeleg fehlt oder ist doppelt")
+        require(
+            frozenset(re.findall(r"\b[0-9a-fA-F]{40}\b", section)) == frozenset({implementation_commit}),
+            f"{name}: falscher Implementierungscommit oder zukünftige Closure-SHA",
+        )
+    rows = re.findall(r"(?m)^\| v27\.37b \|.*$", masterlist_text)
+    require(
+        len(rows) == 1 and "**erledigt**" in rows[0]
+        and implementation_commit in rows[0] and "Supabase NICHT LIVE" in rows[0],
+        "PROJECT_MASTERLIST muss v27.37b exakt einmal mit Implementierungsbeleg als erledigt führen",
+    )
+
+
+def read_v2737b_implementation_snapshot(revision: str | None) -> dict[str, bytes]:
+    snapshot: dict[str, bytes] = {}
+    for path in V2737B_IMPLEMENTATION_FILE_ORDER:
+        if revision is None:
+            require((ROOT / path).is_file(), f"v27.37b-Implementierungsdatei fehlt: {path}")
+            snapshot[path] = (ROOT / path).read_bytes()
+        else:
+            snapshot[path] = run_git_bytes(["show", f"{revision}:{path}"])
+    return snapshot
+
+
+def validate_v2737b_implementation_snapshot(
+    snapshot: dict[str, bytes], baseline: dict[str, bytes]
+) -> None:
+    require(
+        frozenset(snapshot) == V2737B_IMPLEMENTATION_FILES
+        and frozenset(baseline) == V2737B_IMPLEMENTATION_FILES,
+        "v27.37b-Closure benötigt exakt vier unveränderte Implementierungsdateien",
+    )
+    for path in V2737B_IMPLEMENTATION_FILE_ORDER:
+        require(snapshot[path] == baseline[path], f"v27.37b-Closure verändert Implementierungsdatei: {path}")
+
+
+def validate_v2737b_frozen_implementation(
+    implementation_commit: str, revision: str | None = None
+) -> None:
+    validate_v2737b_implementation_snapshot(
+        read_v2737b_implementation_snapshot(revision),
+        read_v2737b_implementation_snapshot(implementation_commit),
+    )
+
+
+def run_v2737b_completion_manipulation_matrix(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+    implementation_commit: str,
+) -> int:
+    documents = (state_text, task_text, cursor_text, masterlist_text)
+    validate_v2737b_completion_documents(*documents, implementation_commit)
+    checks = 0
+
+    def rejected(action: Callable[[], None], label: str) -> None:
+        nonlocal checks
+        try:
+            action()
+        except ValidationError:
+            checks += 1
+            return
+        raise ValidationError(f"v27.37b-Closure-Manipulation wurde nicht blockiert: {label}")
+
+    def validate_variant(index: int, candidate: str) -> None:
+        changed = list(documents)
+        changed[index] = candidate
+        validate_v2737b_completion_documents(*changed, implementation_commit)
+
+    for index, text in enumerate(documents):
+        for marker in ("v27.37b abgeschlossen.", "Positiv: 40 PASS."):
+            changed = replace_v2737b_in_heading_section(text, V2737B_COMPLETION_SECTION_HEADING, marker, "")
+            rejected(lambda index=index, changed=changed: validate_variant(index, changed), f"Dokument {index}: Abschlussbeleg fehlt")
+        section = extract_v2737b_completion_section(text, str(index))
+        commit_marker = f"Implementierungscommit: `{implementation_commit}`"
+        duplicate = text.replace(section, section.replace(commit_marker, commit_marker + "\n" + commit_marker, 1), 1)
+        rejected(lambda index=index, duplicate=duplicate: validate_variant(index, duplicate), f"Dokument {index}: doppelter Implementierungsbeleg")
+        for synthetic_sha in ("a" * 40, "A" * 40):
+            future = text.replace(section, section + "\nZukünftige Closure-SHA: `" + synthetic_sha + "`\n", 1)
+            rejected(lambda index=index, future=future: validate_variant(index, future), f"Dokument {index}: zukünftige SHA")
+    authorized_header = extract_v2737b_current_task_header(
+        build_v2737b_synthetic_current_task(dict(V2737B_AUTHORIZED_TASK_FIELDS))
+    )
+    reopened = task_text.replace(extract_v2737b_current_task_header(task_text), authorized_header, 1)
+    rejected(lambda: validate_variant(1, reopened), "aktuelle Autorisierung trotz Closure")
+    row = re.findall(r"(?m)^\| v27\.37b \|.*$", masterlist_text)[0]
+    reopened_masterlist = masterlist_text.replace(row, row.replace("**erledigt**", "**autorisiert**", 1), 1)
+    rejected(lambda: validate_variant(3, reopened_masterlist), "Masterliste wieder autorisiert")
+    implementation_roles = ("v2737b_bootstrap", "v2737b_bootstrap_repair", "v2737b_gate", "v2737b_implementation")
+    prepared = dict(
+        phase="v2737b_closure_prepared", task_state="v2737b_closed",
+        working_files=V2737B_GATE_FILES, history_roles=implementation_roles,
+        products_unchanged=True,
+    )
+    for override in (
+        {"working_files": V2737B_GATE_FILES - {"tools/check-project-continuity-control.py"}},
+        {"working_files": V2737B_GATE_FILES | {"tools/preflight.py"}},
+        {"history_roles": ("v2737b_bootstrap", "v2737b_gate", "v2737b_implementation")},
+        {"history_roles": (*implementation_roles, "v2737b_implementation")},
+        {"history_roles": (*implementation_roles, "v2737b_closure")},
+        {"phase": "v2737b_closure_committed", "working_files": frozenset(), "history_roles": (*implementation_roles, "v2737b_closure", "v2737b_closure")},
+    ):
+        require(not v2737b_scope_facts_are_valid(**{**prepared, **override}), "v27.37b-Closure-Scope-Manipulation wurde nicht blockiert")
+        checks += 1
+    baseline = read_v2737b_implementation_snapshot(implementation_commit)
+    validate_v2737b_implementation_snapshot(dict(baseline), baseline)
+    for path in V2737B_IMPLEMENTATION_FILE_ORDER:
+        changed_snapshot = {**baseline, path: baseline[path] + b"\nSYNTHETIC_CLOSURE_MUTATION"}
+        rejected(lambda changed_snapshot=changed_snapshot: validate_v2737b_implementation_snapshot(changed_snapshot, baseline), f"eingefrorene Implementierungsdatei {path}")
+    require(checks == 32, "v27.37b-Closure-Manipulationszählung ist inkonsistent")
+    return checks
+
+
 def read_v2737b_history(head: str) -> tuple[tuple[str, ...], str | None]:
     commits = tuple(
         line.strip()
@@ -12455,6 +12656,21 @@ def read_v2737b_history(head: str) -> tuple[tuple[str, ...], str | None]:
             and files == V2737B_GATE_FILES
             and task_state == "v2737b_closed"
         ):
+            require(
+                implementation_commit is not None,
+                "v27.37b-Closure ohne erkannte Implementation ist unzulässig",
+            )
+            documents = tuple(
+                read_v2735f_commit_document(commit, path)
+                for path in (
+                    "docs/PROJECT_STATE_CURRENT.md",
+                    "docs/tasks/CURRENT_TASK.md",
+                    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+                    "docs/PROJECT_MASTERLIST.md",
+                )
+            )
+            validate_v2737b_completion_documents(*documents, implementation_commit)
+            validate_v2737b_frozen_implementation(implementation_commit, revision=commit)
             roles.append("v2737b_closure")
         else:
             raise ValidationError(
@@ -12509,7 +12725,7 @@ def validate_v2737b_lifecycle(
     )
     require(not staged_files, "v27.37b-Working-Tree darf keine staged Dateien enthalten")
     working_files = diff_files | untracked_files
-    roles, _implementation_commit = read_v2737b_history(head)
+    roles, implementation_commit = read_v2737b_history(head)
     task_state = v2737b_current_task_state(task_text)
     if not roles and head == V2737B_GATE_BOOTSTRAP_BASE_SHA:
         phase = "v2737b_gate_bootstrap_prepared"
@@ -12588,6 +12804,15 @@ def validate_v2737b_lifecycle(
             cursor_text,
             masterlist_text,
         )
+    if phase in {"v2737b_closure_prepared", "v2737b_closure_committed"}:
+        require(
+            implementation_commit is not None,
+            "v27.37b-Abschluss benötigt die erkannte Implementation",
+        )
+        validate_v2737b_completion_documents(
+            state_text, task_text, cursor_text, masterlist_text, implementation_commit
+        )
+        validate_v2737b_frozen_implementation(implementation_commit)
     require(
         v2737b_scope_facts_are_valid(
             phase=phase,
@@ -13448,6 +13673,23 @@ def main() -> int:
             masterlist_text,
         )
         manipulation_checks += v2737b_manipulation_checks
+        v2737b_completion_checks = 0
+        if v2737b_phase in {"v2737b_closure_prepared", "v2737b_closure_committed"}:
+            _roles, implementation_commit = read_v2737b_history(
+                run_git(["rev-parse", "HEAD"]).strip()
+            )
+            require(
+                implementation_commit is not None,
+                "v27.37b-Abschlussmatrix benötigt die erkannte Implementation",
+            )
+            v2737b_completion_checks = run_v2737b_completion_manipulation_matrix(
+                state_text,
+                task_text,
+                cursor_context_text,
+                masterlist_text,
+                implementation_commit,
+            )
+            manipulation_checks += v2737b_completion_checks
     except ValidationError as exc:
         print(f"FEHLER: {exc}")
         print("STOPP: Projektkontinuität oder Task-Steuerung verletzt.")
@@ -13658,6 +13900,11 @@ def main() -> int:
         f"{v2737b_positive_tests} / PASS; Negativtests: "
         f"{v2737b_negative_tests} / vollständig blockiert"
     )
+    if v2737b_completion_checks:
+        print(
+            "v27.37b-Abschlussbelege und Frozen-Implementation: PASS; "
+            f"Manipulationen: {v2737b_completion_checks} / vollständig blockiert"
+        )
     print(
         f"Manipulationsmatrix: {manipulation_checks} Blockierungen bestätigt "
         f"(davon v27.36a: {v2736a_manipulation_checks}; "
