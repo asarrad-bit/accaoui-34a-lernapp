@@ -1570,6 +1570,25 @@ def check_supabase_participant_auth_session_adapter_v2737a():
         )
 
 
+def check_supabase_participant_auth_session_bootstrap_bridge_v2737b():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-supabase-participant-auth-session-bootstrap-bridge.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "Supabase-Teilnehmer-Auth-/Session-Bootstrap-Brueckenpruefung "
+            "v27.37b fehlgeschlagen"
+        )
+
+
 V2736E_AUTHORIZED_IMPLEMENTATION_FILES = (
     "data/supabase-participant-access-adapter.js",
     "data/supabase-participant-access-bootstrap-bridge.js",
@@ -4945,11 +4964,14 @@ def main():
         "data/supabase-participant-access-bootstrap-bridge.js",
         "data/supabase-participant-access-browser-provider.js",
         "data/supabase-participant-auth-session-adapter.js",
+        "data/supabase-participant-auth-session-bootstrap-bridge.js",
         "tools/check-supabase-participant-access-adapter.py",
         "tools/check-supabase-participant-access-bootstrap-bridge.py",
         "tools/check-supabase-participant-auth-session-adapter.py",
+        "tools/check-supabase-participant-auth-session-bootstrap-bridge.py",
         "docs/SUPABASE_PARTICIPANT_ACCESS_ADAPTER_V2736B.md",
         "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_ADAPTER_V2737A.md",
+        "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_V2737B.md",
         "tools/check-participant-access-app-entry-v2736d.py",
         "docs/PARTICIPANT_ACCESS_APP_ENTRY_V2736D.md",
         "tools/check-participant-access-browser-provider-v2736e.py",
@@ -5079,6 +5101,7 @@ def main():
     check_supabase_participant_access_adapter()
     check_supabase_participant_access_bootstrap_bridge()
     check_supabase_participant_auth_session_adapter_v2737a()
+    check_supabase_participant_auth_session_bootstrap_bridge_v2737b()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()
