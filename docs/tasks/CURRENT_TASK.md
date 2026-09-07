@@ -1,14 +1,42 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
+Task-ID: v27.37b
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: v27.37b – Isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37a
-Erlaubte Implementierungsdateien: KEINE
+Letzter abgeschlossener Kontrollschritt: v27.37b-GATE-BOOTSTRAP
+Erlaubte Implementierungsdateien: `data/supabase-participant-auth-session-bootstrap-bridge.js`, `tools/check-supabase-participant-auth-session-bootstrap-bridge.py`, `docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_V2737B.md`, `tools/preflight.py`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Autorisierter Task v27.37b
+
+Das frische v27.37b-Autorisierungs-Gate autorisiert ausschließlich den späteren Task `v27.37b – Isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke`.
+
+Technische Gate-Basis: `8f56e6459f75b4dfd50e7d792dd56d6443d58fd3`.
+
+Die lineare Git-Historie muss vor diesem Gate dynamisch genau `v2737b_bootstrap` und `v2737b_bootstrap_repair` enthalten.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `data/supabase-participant-auth-session-bootstrap-bridge.js`
+- `tools/check-supabase-participant-auth-session-bootstrap-bridge.py`
+- `docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_V2737B.md`
+- `tools/preflight.py`
+
+Keine fünfte Implementierungsdatei und keine Produktdatei sind zulässig.
+
+Die Factory ist `createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })`. Die Dependencies sind exakt `bootstrap` und `createParticipantAuthSessionAdapter`; eine dritte Dependency ist ausgeschlossen. Die öffentliche Oberfläche enthält exakt `resolveSession()`, `signIn({ email, password })` und `signOut()`; eine vierte öffentliche Methode ist ausgeschlossen.
+
+Pro öffentlicher Operation wird `bootstrap.getClient` sicher gelesen, `getClient()` exakt einmal aufgerufen und der Client nicht gecacht. Ausschließlich `client.auth` wird als `{ auth }` an den bestehenden v27.37a-Adapter weitergegeben. Gültige v27.37a-Ergebnisse werden unverändert delegiert. Jeder Brückenfehler liefert exakt `Object.freeze({ ok: false, code: "auth_error" })`; sensitive Session-, User-, ID-, E-Mail-, Passwort-, Token-, Config- und Rohfehlerdaten bleiben ausgeschlossen.
+
+Verboten bleiben `initializeClient()`, `createClient()`, `getState()`, Browser-Wiring oder Browser-Export, `window`, `document`, DOM, `localStorage`, `sessionStorage`, Cookies, IndexedDB, Config-Lesen, eigener Netzwerkcode, `.from(...)`, Teilnehmer-, Enrollment- oder Kurslogik, SQL, Migrationen, echte Keys und echte Teilnehmerdaten.
+
+Der Lifecycle erkennt die Vorbereitung als `v2737b_authorization_prepared`, verlangt den legitimen einmaligen Bootstrap und Repair, den AUTHORIZED-Kopf sowie ausschließlich die fünf Gate-Dateien. Nach dem späteren direkten Gate-Commit wird dynamisch `v2737b_authorization_committed` erkannt; erst danach ist `v2737b_implementation_prepared` zulässig. Keine zukünftige Gate-, Implementierungs- oder Closure-SHA wird hartcodiert.
+
+Supabase bleibt NICHT LIVE.
+
 
 ## v27.37b-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur
 

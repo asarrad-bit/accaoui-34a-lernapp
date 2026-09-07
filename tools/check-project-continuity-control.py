@@ -11541,6 +11541,7 @@ def run_v2737a_completion_manipulation_matrix(
 
 V2737B_GATE_BOOTSTRAP_BASE_SHA = "b5d676d226891b4f53e9e614e015c433c2616ad1"
 V2737B_GATE_BOOTSTRAP_REPAIR_BASE_SHA = "b83581612fa25b73f62c4b146e8df782d67c869c"
+V2737B_AUTHORIZATION_BASE_SHA = "8f56e6459f75b4dfd50e7d792dd56d6443d58fd3"
 V2737B_TITLE = "v27.37b – Isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke"
 V2737B_GATE_FILES = frozenset(EXPECTED_CONTROL_FILES)
 V2737B_BOOTSTRAP_FILES = frozenset((*EXPECTED_CONTROL_FILES, "tools/preflight.py"))
@@ -11572,6 +11573,49 @@ V2737B_BOOTSTRAP_SECTION_HEADING = (
 )
 V2737B_GATE_BOOTSTRAP_REPAIR_SECTION_HEADING = (
     "## v27.37b-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur"
+)
+V2737B_AUTHORIZATION_SECTION_HEADING = "## Autorisierter Task v27.37b"
+V2737B_AUTHORIZATION_REQUIRED_MARKERS = (
+    "Das frische v27.37b-Autorisierungs-Gate autorisiert ausschließlich den späteren Task",
+    V2737B_TITLE,
+    f"Technische Gate-Basis: `{V2737B_AUTHORIZATION_BASE_SHA}`.",
+    "Die lineare Git-Historie muss vor diesem Gate dynamisch genau `v2737b_bootstrap` und `v2737b_bootstrap_repair` enthalten.",
+    "Der spätere Implementierungsscope umfasst exakt:",
+    "Keine fünfte Implementierungsdatei und keine Produktdatei sind zulässig.",
+    "createParticipantAuthSessionBootstrapBridge({ bootstrap, createParticipantAuthSessionAdapter })",
+    "Die Dependencies sind exakt `bootstrap` und `createParticipantAuthSessionAdapter`; eine dritte Dependency ist ausgeschlossen.",
+    "Die öffentliche Oberfläche enthält exakt `resolveSession()`, `signIn({ email, password })` und `signOut()`; eine vierte öffentliche Methode ist ausgeschlossen.",
+    "`bootstrap.getClient` sicher gelesen",
+    "`getClient()` exakt einmal aufgerufen",
+    "der Client nicht gecacht",
+    "Ausschließlich `client.auth` wird als `{ auth }` an den bestehenden v27.37a-Adapter weitergegeben.",
+    "Gültige v27.37a-Ergebnisse werden unverändert delegiert.",
+    "Object.freeze({ ok: false, code: \"auth_error\" })",
+    "sensitive Session-, User-, ID-, E-Mail-, Passwort-, Token-, Config- und Rohfehlerdaten bleiben ausgeschlossen.",
+    "`initializeClient()`",
+    "`createClient()`",
+    "`getState()`",
+    "Browser-Wiring oder Browser-Export",
+    "`window`",
+    "`document`",
+    "DOM",
+    "`localStorage`",
+    "`sessionStorage`",
+    "Cookies",
+    "IndexedDB",
+    "Config-Lesen",
+    "eigener Netzwerkcode",
+    "`.from(...)`",
+    "Teilnehmer-, Enrollment- oder Kurslogik",
+    "SQL",
+    "Migrationen",
+    "echte Keys",
+    "echte Teilnehmerdaten",
+    "`v2737b_authorization_prepared`",
+    "`v2737b_authorization_committed`",
+    "`v2737b_implementation_prepared`",
+    "Keine zukünftige Gate-, Implementierungs- oder Closure-SHA wird hartcodiert.",
+    "Supabase bleibt NICHT LIVE.",
 )
 V2737B_GATE_BOOTSTRAP_REPAIR_REQUIRED_MARKERS = (
     "v27.37b-GATE-BOOTSTRAP-REPAIR korrigiert ausschließlich den phasenfesten und strukturellen CURRENT_TASK-Vertrag in Continuity und Preflight.",
@@ -11850,6 +11894,35 @@ def extract_v2737b_bootstrap_section(text: str, document_name: str) -> str:
     return tail[:match.start()] if match else tail
 
 
+def replace_v2737b_in_heading_section(
+    text: str,
+    section_heading: str,
+    needle: str,
+    replacement: str,
+) -> str:
+    require(
+        text.count(section_heading) == 1,
+        f"v27.37b-Manipulationsabschnitt ist nicht eindeutig: {section_heading}",
+    )
+    section_start = text.index(section_heading) + len(section_heading)
+    tail = text[section_start:]
+    next_heading = re.search(r"(?m)^## ", tail)
+    section_end = (
+        section_start + next_heading.start() if next_heading else len(text)
+    )
+    section = text[section_start:section_end]
+    mutated_section = replace_v2737b_exact_once(section, needle, replacement)
+    prefix = text[:section_start]
+    suffix = text[section_end:]
+    mutated = prefix + mutated_section + suffix
+    require(
+        mutated[:section_start] == prefix
+        and mutated[section_start + len(mutated_section):] == suffix,
+        "v27.37b-Manipulation hat Text außerhalb des Zielabschnitts verändert",
+    )
+    return mutated
+
+
 def validate_v2737b_bootstrap_section(section: str, document_name: str) -> None:
     for marker in V2737B_BOOTSTRAP_REQUIRED_MARKERS:
         require(
@@ -11982,6 +12055,67 @@ def validate_v2737b_gate_bootstrap_repair_documents(
     ):
         validate_v2737b_gate_bootstrap_repair_section(
             extract_v2737b_gate_bootstrap_repair_section(text, name),
+            name,
+        )
+
+
+def extract_v2737b_authorization_section(
+    text: str, document_name: str
+) -> str:
+    require(
+        text.count(V2737B_AUTHORIZATION_SECTION_HEADING) == 1,
+        f"{document_name}: v27.37b-Autorisierungsabschnitt fehlt oder ist doppelt",
+    )
+    tail = text.split(V2737B_AUTHORIZATION_SECTION_HEADING, 1)[1]
+    match = re.search(r"(?m)^## ", tail)
+    return tail[:match.start()] if match else tail
+
+
+def validate_v2737b_authorization_section(
+    section: str, document_name: str
+) -> None:
+    for marker in V2737B_AUTHORIZATION_REQUIRED_MARKERS:
+        require(
+            marker in section,
+            f"{document_name}: v27.37b-Autorisierungs-Pflichtaussage fehlt: {marker}",
+        )
+    file_list_start = "Der spätere Implementierungsscope umfasst exakt:"
+    file_list_end = "Keine fünfte Implementierungsdatei und keine Produktdatei sind zulässig."
+    require(
+        section.count(file_list_start) == 1 and section.count(file_list_end) == 1,
+        f"{document_name}: v27.37b-Autorisierungs-Dateiliste ist nicht eindeutig",
+    )
+    file_list = section.split(file_list_start, 1)[1].split(
+        file_list_end, 1
+    )[0].strip()
+    require(
+        file_list
+        == "\n".join(
+            f"- `{path}`" for path in V2737B_IMPLEMENTATION_FILE_ORDER
+        ),
+        f"{document_name}: v27.37b muss exakt vier Implementierungsdateien autorisieren",
+    )
+    shas = frozenset(re.findall(r"\b[0-9a-f]{40}\b", section))
+    require(
+        shas == frozenset({V2737B_AUTHORIZATION_BASE_SHA}),
+        f"{document_name}: v27.37b-Gate-Basis fehlt oder zukünftige SHA ist hartcodiert",
+    )
+
+
+def validate_v2737b_authorization_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+) -> None:
+    for text, name in (
+        (state_text, "PROJECT_STATE_CURRENT"),
+        (task_text, "CURRENT_TASK"),
+        (cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (masterlist_text, "PROJECT_MASTERLIST"),
+    ):
+        validate_v2737b_authorization_section(
+            extract_v2737b_authorization_section(text, name),
             name,
         )
 
@@ -12271,6 +12405,10 @@ def read_v2737b_history(head: str) -> tuple[tuple[str, ...], str | None]:
             and files == V2737B_GATE_BOOTSTRAP_REPAIR_FILES
             and task_state == "v2737a_closed"
         ):
+            require(
+                commit == V2737B_AUTHORIZATION_BASE_SHA,
+                "v27.37b-GATE-BOOTSTRAP-REPAIR-Commit stimmt nicht mit der technischen Gate-Basis überein",
+            )
             documents = tuple(
                 read_v2735f_commit_document(commit, path)
                 for path in (
@@ -12287,6 +12425,16 @@ def read_v2737b_history(head: str) -> tuple[tuple[str, ...], str | None]:
             and files == V2737B_GATE_FILES
             and task_state == "v2737b_authorized"
         ):
+            documents = tuple(
+                read_v2735f_commit_document(commit, path)
+                for path in (
+                    "docs/PROJECT_STATE_CURRENT.md",
+                    "docs/tasks/CURRENT_TASK.md",
+                    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+                    "docs/PROJECT_MASTERLIST.md",
+                )
+            )
+            validate_v2737b_authorization_documents(*documents)
             roles.append("v2737b_gate")
         elif (
             roles
@@ -12421,6 +12569,20 @@ def validate_v2737b_lifecycle(
         "v2737b_closure_committed",
     }:
         validate_v2737b_gate_bootstrap_repair_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            masterlist_text,
+        )
+    if phase in {
+        "v2737b_authorization_prepared",
+        "v2737b_authorization_committed",
+        "v2737b_implementation_prepared",
+        "v2737b_implementation_committed",
+        "v2737b_closure_prepared",
+        "v2737b_closure_committed",
+    }:
+        validate_v2737b_authorization_documents(
             state_text,
             task_text,
             cursor_text,
@@ -12811,6 +12973,97 @@ def run_v2737b_gate_bootstrap_manipulation_matrix(
         raise ValidationError(
             "v27.37b-zukünftige-Repair-SHA-Manipulation wurde nicht blockiert"
         )
+    authorization_sections = (
+        (
+            extract_v2737b_authorization_section(
+                state_text, "PROJECT_STATE_CURRENT"
+            ),
+            "PROJECT_STATE_CURRENT",
+        ),
+        (
+            extract_v2737b_authorization_section(task_text, "CURRENT_TASK"),
+            "CURRENT_TASK",
+        ),
+        (
+            extract_v2737b_authorization_section(
+                cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"
+            ),
+            "CURSOR_MASTER_CONTEXT_ACCAOUI",
+        ),
+        (
+            extract_v2737b_authorization_section(
+                masterlist_text, "PROJECT_MASTERLIST"
+            ),
+            "PROJECT_MASTERLIST",
+        ),
+    )
+    for section, name in authorization_sections:
+        validate_v2737b_authorization_section(section, name)
+        for marker in V2737B_AUTHORIZATION_REQUIRED_MARKERS:
+            require(
+                section.count(marker) == 1,
+                f"{name}: v27.37b-Autorisierungs-Manipulation benötigt eindeutigen Pflichtmarker: {marker}",
+            )
+            mutated = replace_v2737b_exact_once(section, marker, "")
+            try:
+                validate_v2737b_authorization_section(mutated, name)
+            except ValidationError:
+                manipulation_checks += 1
+                continue
+            raise ValidationError(
+                f"v27.37b-Autorisierungs-Dokumentmanipulation wurde nicht blockiert: {name} / {marker}"
+            )
+    authorization_section, authorization_name = authorization_sections[0]
+    authorization_file_list_start = "Der spätere Implementierungsscope umfasst exakt:"
+    authorization_file_list_end = "Keine fünfte Implementierungsdatei und keine Produktdatei sind zulässig."
+    for path in V2737B_IMPLEMENTATION_FILE_ORDER:
+        mutated = replace_v2737b_in_delimited_block(
+            authorization_section,
+            authorization_file_list_start,
+            authorization_file_list_end,
+            f"- `{path}`\n",
+            "",
+        )
+        try:
+            validate_v2737b_authorization_section(mutated, authorization_name)
+        except ValidationError:
+            manipulation_checks += 1
+            continue
+        raise ValidationError(
+            f"v27.37b-Autorisierungs-Dateimanipulation wurde nicht blockiert: {path}"
+        )
+    authorization_with_fifth_file = insert_v2737b_after_in_delimited_block(
+        authorization_section,
+        authorization_file_list_start,
+        authorization_file_list_end,
+        f"- `{V2737B_IMPLEMENTATION_FILE_ORDER[0]}`\n",
+        "- `app.js`\n",
+    )
+    try:
+        validate_v2737b_authorization_section(
+            authorization_with_fifth_file, authorization_name
+        )
+    except ValidationError:
+        manipulation_checks += 1
+    else:
+        raise ValidationError(
+            "v27.37b-fünfte-Autorisierungsdatei-Manipulation wurde nicht blockiert"
+        )
+    authorization_with_future_sha = insert_v2737b_after_exact_once(
+        authorization_section,
+        "Supabase bleibt NICHT LIVE.",
+        "\nZukünftige Gate-SHA: `" + ("c" * 40) + "`",
+    )
+    try:
+        validate_v2737b_authorization_section(
+            authorization_with_future_sha, authorization_name
+        )
+    except ValidationError:
+        manipulation_checks += 1
+    else:
+        raise ValidationError(
+            "v27.37b-zukünftige-Gate-SHA-Manipulation wurde nicht blockiert"
+        )
     expected_fields_by_state = (
         ("BASE_CLOSED", V2737B_BASE_CLOSED_TASK_FIELDS, "v2737a_closed"),
         ("AUTHORIZED", V2737B_AUTHORIZED_TASK_FIELDS, "v2737b_authorized"),
@@ -12941,10 +13194,38 @@ def run_v2737b_gate_bootstrap_manipulation_matrix(
         V2737B_BOOTSTRAP_SECTION_HEADING,
         "## Manipulierter v27.37b-Bootstrap-Abschnitt",
     )
-    destroyed_implementation_document = replace_v2737b_exact_once(
+    implementation_scope_marker = "Der spätere Implementierungsscope umfasst exakt:"
+    bootstrap_section_before = extract_v2737b_bootstrap_section(
+        state_text, "PROJECT_STATE_CURRENT"
+    )
+    authorization_section_before = extract_v2737b_authorization_section(
+        state_text, "PROJECT_STATE_CURRENT"
+    )
+    require(
+        bootstrap_section_before.count(implementation_scope_marker) == 1,
+        "v27.37b-Bootstrap-Implementierungsscope ist nicht eindeutig",
+    )
+    destroyed_implementation_document = replace_v2737b_in_heading_section(
         state_text,
-        "Der spätere Implementierungsscope umfasst exakt:",
+        V2737B_BOOTSTRAP_SECTION_HEADING,
+        implementation_scope_marker,
         "Der spätere Implementierungsscope wurde zerstört:",
+    )
+    require(
+        extract_v2737b_authorization_section(
+            destroyed_implementation_document, "PROJECT_STATE_CURRENT"
+        )
+        == authorization_section_before,
+        "v27.37b-Bootstrap-Manipulation hat den Autorisierungsabschnitt verändert",
+    )
+    require(
+        extract_v2737b_bootstrap_section(
+            destroyed_implementation_document, "PROJECT_STATE_CURRENT"
+        )
+        != bootstrap_section_before
+        and destroyed_implementation_document.count(implementation_scope_marker)
+        == state_text.count(implementation_scope_marker) - 1,
+        "v27.37b-Bootstrap-Manipulation hat den Zielmarker nicht ausschließlich im Zielabschnitt verändert",
     )
     for label, mutated_document in (
         ("zerstörter Bootstrap-Abschnitt", destroyed_bootstrap_document),
