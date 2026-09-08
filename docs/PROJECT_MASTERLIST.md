@@ -8,6 +8,49 @@ Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 
+## v27.37c-GATE-BOOTSTRAP – Kontrollinfrastruktur
+
+v27.37c-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.
+
+Stabile Bootstrap-Basis: `41c14d89d7557abe64933a72cd6eb7f2272d075e`.
+
+Der einmalige atomare Bootstrap umfasst exakt:
+
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Keine siebte Datei und keine Produktdatei sind zulässig. v27.37b bleibt vollständig abgeschlossen und wird nicht wieder geöffnet.
+
+Der spätere Task heißt exakt `v27.37c – Kontrollierte Browser-Export-Grenze für Teilnehmer-Auth-/Session-Factories`, ist durch diesen Bootstrap aber NICHT autorisiert. Der aktuelle Task bleibt NONE / BLOCKED / nicht autorisiert. Commit und Push bleiben gesperrt.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `data/supabase-participant-auth-session-adapter.js`
+- `data/supabase-participant-auth-session-bootstrap-bridge.js`
+- `tools/check-supabase-participant-auth-session-adapter.py`
+- `tools/check-supabase-participant-auth-session-bootstrap-bridge.py`
+- `docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BROWSER_EXPORT_V2737C.md`
+- `tools/preflight.py`
+
+Ziel ist ausschließlich eine kontrollierte Browser-Export-Grenze für die bereits bestehenden Factories. Die CommonJS-Oberflächen und das bestehende Auth-/Session-Verhalten bleiben fachlich unverändert.
+
+Die vorgesehenen Browser-Grenzen heißen exakt:
+
+- `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY`
+- `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY`
+
+Ein Browser-Export darf nur eine noch nicht belegte Grenze setzen, keine bestehende Grenze überschreiben und beim Laden keine Auth-Operation, keinen Clientzugriff und keine Sessionauflösung ausführen.
+
+Verboten bleiben insbesondere `initializeClient()`, `createClient()`, `getState()`, automatisches SDK-/Config-Laden, `index.html`, `app.js`, Login-UI, eigener Netzwerkcode, `.from(...)`, SQL, Migrationen, echte Keys und echte Teilnehmerdaten.
+
+Dieser Bootstrap kennt ausschließlich die einmalige Vorbereitung `v2737c_gate_bootstrap_prepared` und nach einem direkten Sechs-Dateien-Commit `v2737c_gate_bootstrap_committed`. Erst danach darf ein separates ausdrückliches v27.37c-Autorisierungs-Gate vorbereitet werden. Keine zukünftige Autorisierungs-, Implementierungs- oder Closure-SHA wird hartcodiert.
+
+Kein Produktcode wird durch diesen Bootstrap geändert. Supabase bleibt NICHT LIVE.
+
 ## Abgeschlossener technischer Schritt v27.37b
 
 v27.37b abgeschlossen.
