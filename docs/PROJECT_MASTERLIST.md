@@ -8,6 +8,48 @@ Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 
+## v27.37d-GATE-BOOTSTRAP – Kontrollinfrastruktur
+
+v27.37d-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.
+
+Stabile Bootstrap-Basis: `7211e9449a4478d31688daefa313a8722b82da76`.
+
+Der einmalige atomare Bootstrap umfasst exakt:
+
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Keine siebte Bootstrap-Datei ist zulässig.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `data/supabase-participant-auth-session-browser-provider.js`
+- `tools/check-participant-auth-session-browser-provider-v2737d.py`
+- `docs/PARTICIPANT_AUTH_SESSION_BROWSER_PROVIDER_V2737D.md`
+- `tools/preflight.py`
+
+Keine fünfte Implementierungsdatei ist zulässig.
+
+v27.37c bleibt vollständig abgeschlossen und wird nicht wieder geöffnet.
+
+Der spätere Task heißt exakt `v27.37d – Isolierter Browser-Provider für Teilnehmer-Auth-/Session-Kette`, ist durch diesen Bootstrap aber NICHT autorisiert.
+
+Die spätere Browser-Grenze heißt `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER`.
+
+Sie darf ausschließlich den vorhandenen `window.ACCAOUI_SUPABASE_BOOTSTRAP`, `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY` und `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY` kontrolliert komponieren.
+
+Die spätere öffentliche Oberfläche darf nur `resolveSession()`, `signIn()` und `signOut()` bereitstellen.
+
+`index.html` und `app.js` bleiben in diesem Bootstrap und in der späteren Provider-Implementierung gesperrt.
+
+Dieser Bootstrap kennt ausschließlich `v2737d_gate_bootstrap_prepared` und `v2737d_gate_bootstrap_committed`. Er autorisiert weder eine Implementation noch einen weiteren Folgetask.
+
+Supabase bleibt NICHT LIVE.
+
 ## Abgeschlossener technischer Schritt v27.37c
 
 v27.37c abgeschlossen.

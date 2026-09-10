@@ -14657,6 +14657,322 @@ def run_v2737c_manipulation_matrix(
         len(negative),
     )
 
+
+V2737D_GATE_BOOTSTRAP_BASE_SHA = (
+    "7211e9449a4478d31688daefa313a8722b82da76"
+)
+V2737D_TITLE = (
+    "v27.37d – Isolierter Browser-Provider für "
+    "Teilnehmer-Auth-/Session-Kette"
+)
+V2737D_GATE_FILE_ORDER = (
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "tools/check-project-continuity-control.py",
+    "tools/preflight.py",
+)
+V2737D_GATE_FILES = frozenset(V2737D_GATE_FILE_ORDER)
+
+V2737D_IMPLEMENTATION_FILE_ORDER = (
+    "data/supabase-participant-auth-session-browser-provider.js",
+    "tools/check-participant-auth-session-browser-provider-v2737d.py",
+    "docs/PARTICIPANT_AUTH_SESSION_BROWSER_PROVIDER_V2737D.md",
+    "tools/preflight.py",
+)
+
+V2737D_BOOTSTRAP_HEADING = (
+    "## v27.37d-GATE-BOOTSTRAP – Kontrollinfrastruktur"
+)
+
+V2737D_CLOSED_TASK_FIELDS = {
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.37c",
+    "Erlaubte Implementierungsdateien": "KEINE",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+
+
+def extract_v2737d_bootstrap_section(
+    text: str,
+    document_name: str,
+) -> str:
+    require(
+        text.count(V2737D_BOOTSTRAP_HEADING) == 1,
+        f"{document_name}: v27.37d-Bootstrap fehlt oder ist doppelt",
+    )
+    tail = text.split(V2737D_BOOTSTRAP_HEADING, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    return tail[:next_heading.start()] if next_heading else tail
+
+
+def validate_v2737d_bootstrap_section(
+    section: str,
+    document_name: str,
+) -> None:
+    required = (
+        "v27.37d-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.",
+        f"Stabile Bootstrap-Basis: `{V2737D_GATE_BOOTSTRAP_BASE_SHA}`.",
+        "v27.37c bleibt vollständig abgeschlossen",
+        V2737D_TITLE,
+        "durch diesen Bootstrap aber NICHT autorisiert",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER",
+        "window.ACCAOUI_SUPABASE_BOOTSTRAP",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        "`resolveSession()`",
+        "`signIn()`",
+        "`signOut()`",
+        "`index.html`",
+        "`app.js`",
+        "`v2737d_gate_bootstrap_prepared`",
+        "`v2737d_gate_bootstrap_committed`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+
+    for marker in required:
+        require(
+            marker in section,
+            f"{document_name}: v27.37d-Marker fehlt: {marker}",
+        )
+
+    blocks = (
+        (
+            "Der einmalige atomare Bootstrap umfasst exakt:",
+            "Keine siebte Bootstrap-Datei ist zulässig.",
+            V2737D_GATE_FILE_ORDER,
+        ),
+        (
+            "Der spätere Implementierungsscope umfasst exakt:",
+            "Keine fünfte Implementierungsdatei ist zulässig.",
+            V2737D_IMPLEMENTATION_FILE_ORDER,
+        ),
+    )
+
+    for start, end, paths in blocks:
+        require(
+            section.count(start) == 1 and section.count(end) == 1,
+            f"{document_name}: v27.37d-Dateiliste nicht eindeutig",
+        )
+        actual = section.split(start, 1)[1].split(end, 1)[0].strip()
+        expected = "\n".join(f"- `{path}`" for path in paths)
+        require(
+            actual == expected,
+            f"{document_name}: v27.37d-Dateiscope abweichend",
+        )
+
+    shas = frozenset(
+        re.findall(r"\b[0-9a-f]{40}\b", section)
+    )
+    require(
+        shas == frozenset({V2737D_GATE_BOOTSTRAP_BASE_SHA}),
+        f"{document_name}: v27.37d-Bootstrap-SHA-Vertrag verletzt",
+    )
+
+
+def validate_v2737d_bootstrap_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+) -> None:
+    for document, name in (
+        (state_text, "PROJECT_STATE_CURRENT"),
+        (task_text, "CURRENT_TASK"),
+        (cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (masterlist_text, "PROJECT_MASTERLIST"),
+    ):
+        validate_v2737d_bootstrap_section(
+            extract_v2737d_bootstrap_section(document, name),
+            name,
+        )
+
+
+def validate_v2737c_closed_at_v2737d_base():
+    documents = tuple(
+        read_v2735f_commit_document(
+            V2737D_GATE_BOOTSTRAP_BASE_SHA,
+            path,
+        )
+        for path in (
+            "docs/PROJECT_STATE_CURRENT.md",
+            "docs/tasks/CURRENT_TASK.md",
+            "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+            "docs/PROJECT_MASTERLIST.md",
+        )
+    )
+
+    require(
+        v2737c_task_state(documents[1]) == "v2737c_closed",
+        "v27.37d-Basis ist kein geschlossener v27.37c-Zustand",
+    )
+
+    roles, implementation_commit = read_v2737c_history(
+        V2737D_GATE_BOOTSTRAP_BASE_SHA
+    )
+
+    require(
+        roles == (
+            "v2737c_bootstrap",
+            "v2737c_gate",
+            "v2737c_implementation",
+            "v2737c_closure",
+        ),
+        "v27.37c ist an der v27.37d-Basis nicht vollständig geschlossen",
+    )
+    require(
+        implementation_commit is not None,
+        "v27.37c-Implementierungscommit fehlt an v27.37d-Basis",
+    )
+
+    validate_v2737c_bootstrap_documents(*documents)
+    validate_v2737c_authorization_documents(*documents)
+    validate_v2737c_completion_documents(
+        *documents,
+        implementation_commit,
+    )
+
+    v2737b_implementation_commit = (
+        validate_v2737b_closed_at_v2737c_base()
+    )
+
+    return implementation_commit, v2737b_implementation_commit
+
+
+def v2737d_direct_bootstrap_commit_is_valid(head: str) -> bool:
+    commits = [
+        line.strip()
+        for line in run_git([
+            "rev-list",
+            "--reverse",
+            f"{V2737D_GATE_BOOTSTRAP_BASE_SHA}..{head}",
+        ]).splitlines()
+        if line.strip()
+    ]
+    if commits != [head]:
+        return False
+
+    lineage = run_git([
+        "rev-list", "--parents", "-n", "1", head
+    ]).split()
+
+    if (
+        len(lineage) != 2
+        or lineage[1] != V2737D_GATE_BOOTSTRAP_BASE_SHA
+    ):
+        return False
+
+    files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git([
+            "diff",
+            "--name-only",
+            V2737D_GATE_BOOTSTRAP_BASE_SHA,
+            head,
+        ]).splitlines()
+        if line.strip()
+    )
+    return files == V2737D_GATE_FILES
+
+
+def validate_v2737d_gate_bootstrap_lifecycle(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+):
+    (
+        v2737c_implementation_commit,
+        v2737b_implementation_commit,
+    ) = validate_v2737c_closed_at_v2737d_base()
+
+    validate_v2737d_bootstrap_documents(
+        state_text,
+        task_text,
+        cursor_text,
+        masterlist_text,
+    )
+
+    require(
+        v2737a_current_task_header_fields(task_text)
+        == V2737D_CLOSED_TASK_FIELDS,
+        "v27.37d-Bootstrap darf CURRENT_TASK nicht autorisieren",
+    )
+
+    branch = run_git(["branch", "--show-current"]).strip()
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    origin_main = run_git(["rev-parse", "origin/main"]).strip()
+
+    require(branch == "main", "v27.37d-Bootstrap nur auf main zulässig")
+
+    diff_files = frozenset(
+        x.strip().replace("\\", "/")
+        for x in run_git(["diff", "--name-only"]).splitlines()
+        if x.strip()
+    )
+    staged_files = frozenset(
+        x.strip().replace("\\", "/")
+        for x in run_git([
+            "diff", "--cached", "--name-only"
+        ]).splitlines()
+        if x.strip()
+    )
+    untracked_files = frozenset(
+        x.strip().replace("\\", "/")
+        for x in run_git([
+            "ls-files", "--others", "--exclude-standard"
+        ]).splitlines()
+        if x.strip()
+    )
+
+    require(
+        not staged_files,
+        "v27.37d-Bootstrap darf noch keine staged Dateien enthalten",
+    )
+
+    working_files = diff_files | untracked_files
+
+    if head == V2737D_GATE_BOOTSTRAP_BASE_SHA:
+        require(
+            origin_main == head,
+            "v27.37d-Bootstrap-Basis nicht mit origin/main synchron",
+        )
+        phase = "v2737d_gate_bootstrap_prepared"
+        require(
+            working_files == V2737D_GATE_FILES,
+            "v27.37d-Bootstrap-Working-Tree-Scope verletzt",
+        )
+    else:
+        phase = "v2737d_gate_bootstrap_committed"
+        require(
+            not working_files,
+            "v27.37d-Bootstrap-Commit mit offenem Working Tree",
+        )
+        require(
+            origin_main in {
+                V2737D_GATE_BOOTSTRAP_BASE_SHA,
+                head,
+            },
+            "origin/main außerhalb der v27.37d-Bootstrap-Grenze",
+        )
+        require(
+            v2737d_direct_bootstrap_commit_is_valid(head),
+            "v27.37d-Bootstrap-Commit ist nicht der direkte Sechs-Dateien-Commit",
+        )
+
+    return (
+        phase,
+        v2737c_implementation_commit,
+        v2737b_implementation_commit,
+    )
+
+
 def main() -> int:
     try:
         state_text = read_required_text(STATE_PATH)
@@ -14726,16 +15042,30 @@ def main() -> int:
             v2737a_implementation_commit,
         ) = validate_v2737a_closed_at_v2737b_base()
         v2737a_gate_repair_phase = "v2737a_closure_committed"
-        (
-            v2737c_phase,
-            v2737c_implementation_commit,
-            v2737b_implementation_commit,
-        ) = validate_v2737c_lifecycle(
-            state_text,
-            task_text,
-            cursor_context_text,
-            masterlist_text,
-        )
+        if V2737D_BOOTSTRAP_HEADING in state_text:
+            (
+                v2737d_phase,
+                v2737c_implementation_commit,
+                v2737b_implementation_commit,
+            ) = validate_v2737d_gate_bootstrap_lifecycle(
+                state_text,
+                task_text,
+                cursor_context_text,
+                masterlist_text,
+            )
+            v2737c_phase = "v2737c_closure_committed"
+        else:
+            v2737d_phase = None
+            (
+                v2737c_phase,
+                v2737c_implementation_commit,
+                v2737b_implementation_commit,
+            ) = validate_v2737c_lifecycle(
+                state_text,
+                task_text,
+                cursor_context_text,
+                masterlist_text,
+            )
         v2737b_phase = "v2737b_closure_committed"
         v2737b_closed_documents = tuple(
             read_v2735f_commit_document(
@@ -15035,6 +15365,8 @@ def main() -> int:
     print(f"Aktuelle v27.37a-Phase: {v2737a_phase_display}")
     print(f"Aktuelle v27.37b-Phase: {v2737b_phase}")
     print(f"Aktuelle v27.37c-Phase: {v2737c_phase}")
+    if v2737d_phase is not None:
+        print(f"Aktuelle v27.37d-Phase: {v2737d_phase}")
     print(
         "v27.36f-REPAIR-Synchronisation: lokaler HEAD "
         f"{v2736f_repair_working_tree.head}; origin/main "

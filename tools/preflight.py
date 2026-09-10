@@ -1771,6 +1771,16 @@ def check_participant_access_browser_provider_v2736e():
     ):
         working_paths.update(staged_paths)
         working_paths.update(untracked_paths)
+        v2737d_phase = _detect_v2737d_gate_bootstrap_profile_phase(
+            working_paths
+        )
+        if v2737d_phase is not None:
+            print(
+                "Browser-Regression: PASS über das enge "
+                "v27.37d-GATE-BOOTSTRAP-Profil "
+                f"({v2737d_phase})"
+            )
+            return
         v2737c_phase = _detect_v2737c_gate_bootstrap_profile_phase(
             working_paths
         )
@@ -1849,6 +1859,16 @@ def check_participant_access_browser_loader_v2736f():
     ):
         working_paths.update(staged_paths)
         working_paths.update(untracked_paths)
+        v2737d_phase = _detect_v2737d_gate_bootstrap_profile_phase(
+            working_paths
+        )
+        if v2737d_phase is not None:
+            print(
+                "Browser-Regression: PASS über das enge "
+                "v27.37d-GATE-BOOTSTRAP-Profil "
+                f"({v2737d_phase})"
+            )
+            return
         v2737c_phase = _detect_v2737c_gate_bootstrap_profile_phase(
             working_paths
         )
@@ -5533,6 +5553,205 @@ def check_protected_core_files_v2356():
             "KRITISCH: Geschützte Datei geändert: " + protected + "\n"
             "Nur committen, wenn diese Datei ausdrücklich für den aktuellen Task freigegeben wurde."
         )
+
+
+
+V2737D_GATE_BOOTSTRAP_BASE_SHA = (
+    "7211e9449a4478d31688daefa313a8722b82da76"
+)
+V2737D_TITLE = (
+    "v27.37d – Isolierter Browser-Provider für "
+    "Teilnehmer-Auth-/Session-Kette"
+)
+V2737D_GATE_FILE_ORDER = (
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "tools/check-project-continuity-control.py",
+    "tools/preflight.py",
+)
+V2737D_GATE_FILES = set(V2737D_GATE_FILE_ORDER)
+V2737D_IMPLEMENTATION_FILE_ORDER = (
+    "data/supabase-participant-auth-session-browser-provider.js",
+    "tools/check-participant-auth-session-browser-provider-v2737d.py",
+    "docs/PARTICIPANT_AUTH_SESSION_BROWSER_PROVIDER_V2737D.md",
+    "tools/preflight.py",
+)
+V2737D_BOOTSTRAP_HEADING = (
+    "## v27.37d-GATE-BOOTSTRAP – Kontrollinfrastruktur"
+)
+V2737D_CLOSED_TASK_FIELDS = {
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.37c",
+    "Erlaubte Implementierungsdateien": "KEINE",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+
+
+def _v2737d_bootstrap_section(text):
+    if text.count(V2737D_BOOTSTRAP_HEADING) != 1:
+        return None
+    tail = text.split(V2737D_BOOTSTRAP_HEADING, 1)[1]
+    match = re.search(r"(?m)^## ", tail)
+    return tail[:match.start()] if match else tail
+
+
+def _v2737d_bootstrap_section_is_valid(section):
+    if not isinstance(section, str):
+        return False
+
+    required = (
+        "v27.37d-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.",
+        f"Stabile Bootstrap-Basis: `{V2737D_GATE_BOOTSTRAP_BASE_SHA}`.",
+        "v27.37c bleibt vollständig abgeschlossen",
+        V2737D_TITLE,
+        "durch diesen Bootstrap aber NICHT autorisiert",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER",
+        "window.ACCAOUI_SUPABASE_BOOTSTRAP",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        "`resolveSession()`",
+        "`signIn()`",
+        "`signOut()`",
+        "`index.html`",
+        "`app.js`",
+        "`v2737d_gate_bootstrap_prepared`",
+        "`v2737d_gate_bootstrap_committed`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+    if not all(marker in section for marker in required):
+        return False
+
+    blocks = (
+        (
+            "Der einmalige atomare Bootstrap umfasst exakt:",
+            "Keine siebte Bootstrap-Datei ist zulässig.",
+            V2737D_GATE_FILE_ORDER,
+        ),
+        (
+            "Der spätere Implementierungsscope umfasst exakt:",
+            "Keine fünfte Implementierungsdatei ist zulässig.",
+            V2737D_IMPLEMENTATION_FILE_ORDER,
+        ),
+    )
+    for start, end, paths in blocks:
+        if section.count(start) != 1 or section.count(end) != 1:
+            return False
+        actual = section.split(start, 1)[1].split(end, 1)[0].strip()
+        expected = "\n".join(f"- `{path}`" for path in paths)
+        if actual != expected:
+            return False
+
+    shas = set(re.findall(r"\b[0-9a-f]{40}\b", section))
+    return shas == {V2737D_GATE_BOOTSTRAP_BASE_SHA}
+
+
+def _v2737d_current_documents_are_valid():
+    for path in (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    ):
+        try:
+            text = Path(path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            return False
+        if not _v2737d_bootstrap_section_is_valid(
+            _v2737d_bootstrap_section(text)
+        ):
+            return False
+    return True
+
+
+def _v2737d_direct_bootstrap_commit_is_valid(head):
+    code, stdout, _stderr = run_command(
+        "git rev-list --reverse "
+        + V2737D_GATE_BOOTSTRAP_BASE_SHA
+        + ".."
+        + head
+    )
+    commits = [
+        line.strip() for line in stdout.splitlines() if line.strip()
+    ] if code == 0 else []
+    if len(commits) != 1 or commits[0] != head:
+        return False
+
+    code, stdout, _stderr = run_command(
+        "git rev-list --parents -n 1 " + head
+    )
+    lineage = stdout.split() if code == 0 else []
+    if (
+        len(lineage) != 2
+        or lineage[1] != V2737D_GATE_BOOTSTRAP_BASE_SHA
+    ):
+        return False
+
+    files = _git_paths([
+        "diff",
+        "--name-only",
+        V2737D_GATE_BOOTSTRAP_BASE_SHA,
+        head,
+    ])
+    return files == V2737D_GATE_FILES
+
+
+def _detect_v2737d_gate_bootstrap_profile_phase(working_paths):
+    try:
+        task_text = Path(
+            "docs/tasks/CURRENT_TASK.md"
+        ).read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+
+    if (
+        _v2737b_current_task_header_fields(task_text)
+        != V2737D_CLOSED_TASK_FIELDS
+    ):
+        return None
+
+    if not _v2737d_current_documents_are_valid():
+        return None
+
+    code, branch, _stderr = run_command("git branch --show-current")
+    if code != 0 or branch.strip() != "main":
+        return None
+
+    code, head, _stderr = run_command("git rev-parse HEAD")
+    if code != 0:
+        return None
+    head = head.strip()
+
+    code, origin_main, _stderr = run_command("git rev-parse origin/main")
+    if code != 0:
+        return None
+    origin_main = origin_main.strip()
+
+    if head == V2737D_GATE_BOOTSTRAP_BASE_SHA:
+        if (
+            origin_main == head
+            and working_paths == V2737D_GATE_FILES
+        ):
+            return "v2737d_gate_bootstrap_prepared"
+        return None
+
+    if (
+        not working_paths
+        and origin_main in {
+            V2737D_GATE_BOOTSTRAP_BASE_SHA,
+            head,
+        }
+        and _v2737d_direct_bootstrap_commit_is_valid(head)
+    ):
+        return "v2737d_gate_bootstrap_committed"
+
+    return None
 
 
 def check_exam_result_history_outer_domain_mutation_e2e_audit():
