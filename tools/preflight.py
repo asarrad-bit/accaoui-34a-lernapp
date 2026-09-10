@@ -1551,6 +1551,57 @@ def check_supabase_participant_access_bootstrap_bridge():
         )
 
 
+def check_supabase_participant_auth_session_browser_export_v2737c():
+    path = Path(
+        "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BROWSER_EXPORT_V2737C.md"
+    )
+    if not path.is_file():
+        errors.append(
+            "Teilnehmer-Auth-/Session-Browser-Export-Vertrag "
+            "v27.37c fehlt"
+        )
+        return
+
+    text = path.read_text(encoding="utf-8")
+    required = (
+        "# Teilnehmer-Auth-/Session Browser-Export v27.37c",
+        "`window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY`",
+        "`window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY`",
+        "`createParticipantAuthSessionAdapter`",
+        "`createParticipantAuthSessionBootstrapBridge`",
+        "Eine vorhandene Grenze wird niemals überschrieben.",
+        "keine Auth-Operation",
+        "keine Sessionauflösung",
+        "kein `getClient()`",
+        "kein Clientzugriff",
+        "keine Adapteroperation",
+        "Supabase bleibt NICHT LIVE.",
+    )
+    missing = [marker for marker in required if marker not in text]
+    if missing:
+        errors.append(
+            "Teilnehmer-Auth-/Session-Browser-Export-Vertrag "
+            "v27.37c unvollständig: " + ", ".join(missing)
+        )
+
+    boundaries = (
+        "`window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY`",
+        "`window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY`",
+    )
+    for boundary in boundaries:
+        if text.count(boundary) != 1:
+            errors.append(
+                "Teilnehmer-Auth-/Session-Browser-Grenze "
+                "nicht exakt dokumentiert: " + boundary
+            )
+
+    if re.search(r"\b[0-9a-f]{40}\b", text):
+        errors.append(
+            "v27.37c-Browser-Export-Vertrag darf keine "
+            "zukünftige Commit-SHA enthalten"
+        )
+
+
 def check_supabase_participant_auth_session_adapter_v2737a():
     code, stdout, stderr = run_command(
         f'"{sys.executable}" '
@@ -5833,6 +5884,7 @@ def main():
     check_exam_result_history_disposable_postgresql_test_python_environment_materialization_authorization_atomic_consumption_registry_adapter_local_fake_driver_adapter_contract()
     check_supabase_participant_access_adapter()
     check_supabase_participant_access_bootstrap_bridge()
+    check_supabase_participant_auth_session_browser_export_v2737c()
     check_supabase_participant_auth_session_adapter_v2737a()
     check_supabase_participant_auth_session_bootstrap_bridge_v2737b()
     check_participant_access_app_entry_v2736d()

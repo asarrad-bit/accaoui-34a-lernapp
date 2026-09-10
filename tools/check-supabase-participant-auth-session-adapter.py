@@ -85,7 +85,19 @@ def source_contract_errors(source: str) -> list[str]:
         "function createParticipantAuthSessionAdapter(dependencies)",
         "return Object.freeze({ ok, code });",
         "return Object.freeze({ resolveSession, signIn, signOut });",
-        "module.exports = Object.freeze({ createParticipantAuthSessionAdapter });",
+        "(function exposeParticipantAuthSessionAdapter(browserRoot, commonJsModule) {",
+        "const participantAuthSessionAdapterApi = Object.freeze({",
+        "commonJsModule.exports = participantAuthSessionAdapterApi;",
+        "browserRoot.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY;",
+        '"ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",',
+        "if (existingFactory === undefined) {",
+        "Object.defineProperty(",
+        "value: createParticipantAuthSessionAdapter,",
+        "enumerable: true,",
+        "configurable: false,",
+        "writable: false",
+        'typeof window !== "undefined" ? window : null,',
+        'typeof module !== "undefined" ? module : null',
     )
     for marker in required_exact:
         if source.count(marker) != 1:
@@ -98,10 +110,18 @@ def source_contract_errors(source: str) -> list[str]:
     for marker in required_calls:
         if source.count(marker) != 1:
             errors.append(f"Auth-Aufruf nicht exakt einmal vorhanden: {marker}")
-    if source.count("module.exports") != 1:
+    commonjs_exports = re.findall(
+        r"\b(?:module|commonJsModule)\s*\.\s*exports\s*=", source
+    )
+    if len(commonjs_exports) != 1:
         errors.append("CommonJS-Export ist nicht exakt einmal vorhanden")
+    if source.count("window") != 2:
+        errors.append("Browser-window darf nur in der kontrollierten Grenze vorkommen")
+    if source.count("ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY") != 2:
+        errors.append("Browser-Factory-Grenze ist nicht exakt")
     forbidden_tokens = (
-        "window",
+        "self",
+        "globalThis",
         "document",
         "localStorage",
         "sessionStorage",
@@ -112,6 +132,8 @@ def source_contract_errors(source: str) -> list[str]:
         "refresh_token",
         "createClient",
         "initializeClient",
+        "getState",
+        "require(",
         "fetch(",
         "XMLHttpRequest",
         "WebSocket",
@@ -138,10 +160,15 @@ def source_contract_errors(source: str) -> list[str]:
 
 HARNESS = r'''"use strict";
 
+const fs = require("fs");
+const vm = require("vm");
 const authAdapterPath = process.argv[2];
 const accessAdapterPath = process.argv[3];
 const api = require(authAdapterPath);
 const accessApi = require(accessAdapterPath);
+const authSource = fs.readFileSync(authAdapterPath, "utf8");
+const BROWSER_FACTORY =
+  "ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY";
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
 const PARTICIPANT_ID = "22222222-2222-4222-8222-222222222222";
@@ -249,6 +276,77 @@ async function main() {
     assert(Object.isFrozen(api), "Module-API nicht frozen");
     assert(typeof api.createParticipantAuthSessionAdapter === "function", "Factory fehlt");
   });
+  await test("positive", "PB01 kontrollierter Browser-Export", async () => {
+    const browserWindow = {};
+    const moduleBox = { exports: {} };
+    const sandbox = { window: browserWindow, module: moduleBox };
+    for (const key of [
+      "document", "localStorage", "sessionStorage", "indexedDB",
+      "fetch", "createClient", "initializeClient", "getState"
+    ]) {
+      Object.defineProperty(sandbox, key, {
+        get() { throw new Error(`unerwarteter Ladezugriff ${key}`); },
+        set() { throw new Error(`unerwarteter Ladeschreibzugriff ${key}`); }
+      });
+    }
+
+    vm.runInNewContext(authSource, sandbox, { timeout: 2000 });
+
+    const descriptor =
+      Object.getOwnPropertyDescriptor(browserWindow, BROWSER_FACTORY);
+    assert(descriptor, "Browser-Descriptor fehlt");
+    assert(
+      browserWindow[BROWSER_FACTORY] ===
+        moduleBox.exports.createParticipantAuthSessionAdapter,
+      "Browser-/CommonJS-Factory nicht identisch"
+    );
+    assert(descriptor.enumerable === true, "Browser-Factory nicht enumerable");
+    assert(descriptor.configurable === false, "Browser-Factory configurable");
+    assert(descriptor.writable === false, "Browser-Factory writable");
+  });
+
+  await test("positive", "PB02 Browser-only ohne CommonJS", async () => {
+    const browserWindow = {};
+    vm.runInNewContext(authSource, { window: browserWindow }, { timeout: 2000 });
+    assert(
+      typeof browserWindow[BROWSER_FACTORY] === "function",
+      "Browser-only Factory fehlt"
+    );
+  });
+
+  await test("positive", "PB03 bestehende Browser-Grenze bleibt erhalten", async () => {
+    for (const existing of [null, false, 0, "occupied", {}, function occupied() {}]) {
+      const browserWindow = {};
+      Object.defineProperty(browserWindow, BROWSER_FACTORY, {
+        value: existing,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      });
+      vm.runInNewContext(authSource, { window: browserWindow }, { timeout: 2000 });
+      assert(
+        browserWindow[BROWSER_FACTORY] === existing,
+        "bestehende Browser-Grenze überschrieben"
+      );
+    }
+  });
+
+  await test("positive", "PB04 fehlerhafte Browser-Grenzen bleiben passiv", async () => {
+    const throwingWindow = {};
+    Object.defineProperty(throwingWindow, BROWSER_FACTORY, {
+      configurable: true,
+      get() { throw new Error("synthetischer Getterfehler"); }
+    });
+    vm.runInNewContext(authSource, { window: throwingWindow }, { timeout: 2000 });
+
+    const sealedWindow = Object.preventExtensions({});
+    vm.runInNewContext(authSource, { window: sealedWindow }, { timeout: 2000 });
+    assert(
+      !Object.prototype.hasOwnProperty.call(sealedWindow, BROWSER_FACTORY),
+      "nicht beschreibbare Grenze verändert"
+    );
+  });
+
   await test("positive", "P02 Adapteroberfläche und Side Effects", async () => {
     const auth = makeAuth();
     const adapter = adapterFor(auth);
@@ -522,7 +620,7 @@ def run_mutation_tests(source: str, checker_temp_root: Path) -> int:
         ("initializeClient", "\"use strict\";", "\"use strict\"; initializeClient();"),
         ("Tabellenzugriff", "\"use strict\";", "\"use strict\"; auth.from(\"x\");"),
         ("Participant-Abfrage", "\"use strict\";", "\"use strict\"; void auth.participants;"),
-        ("Browser-window", "\"use strict\";", "\"use strict\"; void window;"),
+        ("zusätzliches Browser-window", "\"use strict\";", "\"use strict\"; void window;"),
     )
     passed = 0
     with tempfile.TemporaryDirectory(

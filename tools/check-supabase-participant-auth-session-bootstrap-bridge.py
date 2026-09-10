@@ -16,6 +16,9 @@ AUTH_PATH = ROOT / "data/supabase-participant-auth-session-adapter.js"
 ACCESS_PATH = ROOT / "data/supabase-participant-access-adapter.js"
 REPORT_PATH = ROOT / "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_V2737B.md"
 FACTORY = "createParticipantAuthSessionBootstrapBridge"
+BROWSER_FACTORY = (
+    "ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY"
+)
 
 
 def stop(message: str) -> None:
@@ -63,12 +66,39 @@ def get_checker_temp_root() -> Path:
 def source_contract_errors(source: str) -> list[str]:
     errors: list[str] = []
     code = re.sub(r"//[^\n]*|/\*[\s\S]*?\*/", "", source)
-    if len(re.findall(r"\bmodule\s*\.\s*exports\s*=", code)) != 1:
+    commonjs_exports = re.findall(
+        r"\b(?:module|commonJsModule)\s*\.\s*exports\s*=", code
+    )
+    if len(commonjs_exports) != 1:
         errors.append("CommonJS-Export fehlt oder ist mehrfach vorhanden")
     if not re.search(r"\bfunction\s+" + FACTORY + r"\s*\(\s*dependencies\s*\)", code):
         errors.append("erwartete injizierte Factory fehlt")
+
+    required_browser = (
+        "(function exposeParticipantAuthSessionBootstrapBridge(",
+        "commonJsModule.exports = participantAuthSessionBootstrapBridgeApi;",
+        "browserRoot." + BROWSER_FACTORY + ";",
+        '"' + BROWSER_FACTORY + '",',
+        "if (existingFactory === undefined) {",
+        "Object.defineProperty(",
+        "value: createParticipantAuthSessionBootstrapBridge,",
+        "enumerable: true,",
+        "configurable: false,",
+        "writable: false",
+        'typeof window !== "undefined" ? window : null,',
+        'typeof module !== "undefined" ? module : null',
+    )
+    for marker in required_browser:
+        if source.count(marker) != 1:
+            errors.append("Browser-Export-Vertrag nicht exakt: " + marker)
+
+    if source.count("window") != 2:
+        errors.append("Browser-window darf nur in der kontrollierten Grenze vorkommen")
+    if source.count(BROWSER_FACTORY) != 2:
+        errors.append("Browser-Factory-Grenze ist nicht exakt")
+
     forbidden = (
-        r"\b(?:window|self|globalThis|document|DOM)\b",
+        r"\b(?:self|globalThis|document|DOM)\b",
         r"\b(?:localStorage|sessionStorage|indexedDB|caches|CacheStorage|cookies?)\b",
         r"\b(?:fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b",
         r"\b(?:initializeClient|createClient|getState)\b",
@@ -101,6 +131,9 @@ const vm = require("vm");
 const bridgePath = process.argv[2];
 const authPath = process.argv[3];
 const accessPath = process.argv[4];
+const bridgeSource = fs.readFileSync(bridgePath,"utf8");
+const BROWSER_FACTORY =
+  "ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY";
 const METHODS = ["resolveSession", "signIn", "signOut"];
 const PAIRS = {
   resolveSession: [[true,"session_available"],[false,"session_missing"],[false,"session_invalid"],[false,"auth_error"]],
@@ -246,12 +279,94 @@ async function main() {
   await test("positive","CommonJS require ohne Seiteneffekte",async()=>{
     const sandbox = {module:{exports:{}}};
     sandbox.exports = sandbox.module.exports;
-    for (const key of ["window","self","globalThis","document","localStorage","sessionStorage","indexedDB","caches","fetch","XMLHttpRequest","WebSocket","EventSource","navigator","console","process","setTimeout","setInterval","require"]) {
+    for (const key of ["self","globalThis","document","localStorage","sessionStorage","indexedDB","caches","fetch","XMLHttpRequest","WebSocket","EventSource","navigator","console","process","setTimeout","setInterval","require","bootstrap","auth","createParticipantAuthSessionAdapter"]) {
       Object.defineProperty(sandbox,key,{get:throwing,set:throwing});
     }
-    vm.runInNewContext(fs.readFileSync(bridgePath,"utf8"),sandbox,{timeout:2000});
+    vm.runInNewContext(bridgeSource,sandbox,{timeout:2000});
     equal(Reflect.ownKeys(sandbox.module.exports),["createParticipantAuthSessionBootstrapBridge"],"CommonJS Export");
     assert(Object.isFrozen(sandbox.module.exports),"Module frozen");
+  });
+
+  await test("positive","Browser-Export ohne Ladezugriff",async()=>{
+    const browserWindow = {};
+    const moduleBox = {exports:{}};
+    const sandbox = {window:browserWindow,module:moduleBox};
+
+    for (const key of ["bootstrap","auth","createParticipantAuthSessionAdapter","document","localStorage","sessionStorage","fetch"]) {
+      Object.defineProperty(sandbox,key,{get:throwing,set:throwing});
+    }
+
+    vm.runInNewContext(bridgeSource,sandbox,{timeout:2000});
+
+    const descriptor =
+      Object.getOwnPropertyDescriptor(browserWindow,BROWSER_FACTORY);
+    assert(descriptor,"Browser-Descriptor fehlt");
+    assert(
+      browserWindow[BROWSER_FACTORY] ===
+        moduleBox.exports.createParticipantAuthSessionBootstrapBridge,
+      "Browser-/CommonJS-Factory nicht identisch"
+    );
+    assert(descriptor.enumerable === true,"Browser-Factory nicht enumerable");
+    assert(descriptor.configurable === false,"Browser-Factory configurable");
+    assert(descriptor.writable === false,"Browser-Factory writable");
+  });
+
+  await test("positive","Browser-only Export",async()=>{
+    const browserWindow = {};
+    vm.runInNewContext(
+      bridgeSource,
+      {window:browserWindow},
+      {timeout:2000}
+    );
+    assert(
+      typeof browserWindow[BROWSER_FACTORY] === "function",
+      "Browser-only Factory fehlt"
+    );
+  });
+
+  await test("positive","Bestehende Browser-Grenze bleibt erhalten",async()=>{
+    for (const existing of [null,false,0,"occupied",{},function occupied(){}]) {
+      const browserWindow = {};
+      Object.defineProperty(browserWindow,BROWSER_FACTORY,{
+        value:existing,
+        enumerable:false,
+        configurable:true,
+        writable:true
+      });
+      vm.runInNewContext(
+        bridgeSource,
+        {window:browserWindow},
+        {timeout:2000}
+      );
+      assert(
+        browserWindow[BROWSER_FACTORY] === existing,
+        "bestehende Browser-Grenze überschrieben"
+      );
+    }
+  });
+
+  await test("positive","Fehlerhafte Browser-Grenzen bleiben passiv",async()=>{
+    const throwingWindow = {};
+    Object.defineProperty(throwingWindow,BROWSER_FACTORY,{
+      configurable:true,
+      get:throwing
+    });
+    vm.runInNewContext(
+      bridgeSource,
+      {window:throwingWindow},
+      {timeout:2000}
+    );
+
+    const sealedWindow = Object.preventExtensions({});
+    vm.runInNewContext(
+      bridgeSource,
+      {window:sealedWindow},
+      {timeout:2000}
+    );
+    assert(
+      !Object.prototype.hasOwnProperty.call(sealedWindow,BROWSER_FACTORY),
+      "nicht beschreibbare Browser-Grenze verändert"
+    );
   });
   const api = require(bridgePath);
   createBridge = api.createParticipantAuthSessionBootstrapBridge;

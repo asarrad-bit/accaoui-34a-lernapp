@@ -1,6 +1,10 @@
 // Accaoui §34a Lern-App – isolierte Teilnehmer-Auth-/Session-Bootstrap-Brücke
 // Stand: v27.37b
 
+(function exposeParticipantAuthSessionBootstrapBridge(
+  browserRoot,
+  commonJsModule
+) {
 "use strict";
 
 function isRecord(value) {
@@ -140,4 +144,42 @@ function createParticipantAuthSessionBootstrapBridge(dependencies) {
   return Object.freeze({ resolveSession, signIn, signOut });
 }
 
-module.exports = Object.freeze({ createParticipantAuthSessionBootstrapBridge });
+const participantAuthSessionBootstrapBridgeApi = Object.freeze({
+  createParticipantAuthSessionBootstrapBridge
+});
+
+if (commonJsModule && typeof commonJsModule === "object") {
+  commonJsModule.exports = participantAuthSessionBootstrapBridgeApi;
+}
+
+if (browserRoot) {
+  let existingFactory;
+
+  try {
+    existingFactory =
+      browserRoot.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY;
+  } catch (_error) {
+    return;
+  }
+
+  if (existingFactory === undefined) {
+    try {
+      Object.defineProperty(
+        browserRoot,
+        "ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        {
+          value: createParticipantAuthSessionBootstrapBridge,
+          enumerable: true,
+          configurable: false,
+          writable: false
+        }
+      );
+    } catch (_error) {
+      // Bestehende oder nicht beschreibbare Grenze niemals überschreiben.
+    }
+  }
+}
+})(
+  typeof window !== "undefined" ? window : null,
+  typeof module !== "undefined" ? module : null
+);

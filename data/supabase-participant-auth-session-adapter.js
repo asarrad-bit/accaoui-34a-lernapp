@@ -1,6 +1,7 @@
 // Accaoui §34a Lern-App – isolierter Teilnehmer-Auth-/Session-Adapter
 // Stand: v27.37a
 
+(function exposeParticipantAuthSessionAdapter(browserRoot, commonJsModule) {
 "use strict";
 
 const UUID_PATTERN =
@@ -144,4 +145,42 @@ function createParticipantAuthSessionAdapter(dependencies) {
   return Object.freeze({ resolveSession, signIn, signOut });
 }
 
-module.exports = Object.freeze({ createParticipantAuthSessionAdapter });
+const participantAuthSessionAdapterApi = Object.freeze({
+  createParticipantAuthSessionAdapter
+});
+
+if (commonJsModule && typeof commonJsModule === "object") {
+  commonJsModule.exports = participantAuthSessionAdapterApi;
+}
+
+if (browserRoot) {
+  let existingFactory;
+
+  try {
+    existingFactory =
+      browserRoot.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY;
+  } catch (_error) {
+    return;
+  }
+
+  if (existingFactory === undefined) {
+    try {
+      Object.defineProperty(
+        browserRoot,
+        "ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        {
+          value: createParticipantAuthSessionAdapter,
+          enumerable: true,
+          configurable: false,
+          writable: false
+        }
+      );
+    } catch (_error) {
+      // Bestehende oder nicht beschreibbare Grenze niemals überschreiben.
+    }
+  }
+}
+})(
+  typeof window !== "undefined" ? window : null,
+  typeof module !== "undefined" ? module : null
+);
