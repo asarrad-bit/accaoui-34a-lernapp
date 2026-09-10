@@ -4510,11 +4510,12 @@ def _v2737c_commit_documents_are_valid(
     )
 
 
-def _read_v2737c_history():
+def _read_v2737c_history(end_ref="HEAD"):
     code, stdout, _stderr = run_command(
         "git rev-list --reverse "
         + V2737C_GATE_BOOTSTRAP_BASE_SHA
-        + "..HEAD"
+        + ".."
+        + end_ref
     )
     if code != 0:
         return None
@@ -4887,7 +4888,12 @@ def check_v2737c_gate_bootstrap_scope_logic():
             require_authorization=True
         )
     elif current_kind == "v2737c_closed":
-        history = _read_v2737c_history()
+        history_end_ref = (
+            V2737D_GATE_BOOTSTRAP_BASE_SHA
+            if V2737D_BOOTSTRAP_HEADING in current_task
+            else "HEAD"
+        )
+        history = _read_v2737c_history(history_end_ref)
         implementation_commit = (
             history[1] if history is not None else None
         )
@@ -5559,6 +5565,24 @@ def check_protected_core_files_v2356():
 V2737D_GATE_BOOTSTRAP_BASE_SHA = (
     "7211e9449a4478d31688daefa313a8722b82da76"
 )
+V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA = (
+    "68f5525e27de6fa37176125191f960494ed5aedd"
+)
+V2737D_GATE_BOOTSTRAP_REPAIR_FILES = set(
+    (
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "tools/check-project-continuity-control.py",
+        "tools/preflight.py",
+    )
+)
+V2737D_REPAIR_HEADING = (
+    "## v27.37d-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur"
+)
+
+
 V2737D_TITLE = (
     "v27.37d – Isolierter Browser-Provider für "
     "Teilnehmer-Auth-/Session-Kette"
@@ -5670,6 +5694,107 @@ def _v2737d_current_documents_are_valid():
     return True
 
 
+def _v2737d_repair_section(text):
+    if text.count(V2737D_REPAIR_HEADING) != 1:
+        return None
+    tail = text.split(V2737D_REPAIR_HEADING, 1)[1]
+    match = re.search(r"(?m)^## ", tail)
+    return tail[:match.start()] if match else tail
+
+
+def _v2737d_repair_section_is_valid(section):
+    if not isinstance(section, str):
+        return False
+
+    required = (
+        "v27.37d-GATE-BOOTSTRAP-REPAIR ist ausschließlich Kontrollinfrastruktur.",
+        f"Stabile Repair-Basis: `{V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA}`.",
+        "Der Repair korrigiert ausschließlich die v27.37c-Historiengrenze.",
+        "v27.37c bleibt vollständig abgeschlossen",
+        "CURRENT_TASK bleibt NONE / BLOCKED / nicht autorisiert.",
+        "`v2737d_gate_bootstrap_repair_prepared`",
+        "`v2737d_gate_bootstrap_repair_committed`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+    if not all(marker in section for marker in required):
+        return False
+
+    start = "Der einmalige atomare Repair umfasst exakt:"
+    end = "Keine siebte Repair-Datei ist zulässig."
+    if section.count(start) != 1 or section.count(end) != 1:
+        return False
+
+    actual = section.split(start, 1)[1].split(end, 1)[0].strip()
+    expected = "\n".join(
+        f"- `{path}`"
+        for path in (
+            "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+            "docs/PROJECT_MASTERLIST.md",
+            "docs/PROJECT_STATE_CURRENT.md",
+            "docs/tasks/CURRENT_TASK.md",
+            "tools/check-project-continuity-control.py",
+            "tools/preflight.py",
+        )
+    )
+    if actual != expected:
+        return False
+
+    shas = set(re.findall(r"\b[0-9a-f]{40}\b", section))
+    return shas == {V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA}
+
+
+def _v2737d_current_repair_documents_are_valid():
+    for path in (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    ):
+        try:
+            text = Path(path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            return False
+        if not _v2737d_repair_section_is_valid(
+            _v2737d_repair_section(text)
+        ):
+            return False
+    return True
+
+
+def _v2737d_direct_repair_commit_is_valid(head):
+    code, stdout, _stderr = run_command(
+        "git rev-list --reverse "
+        + V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA
+        + ".."
+        + head
+    )
+    commits = [
+        line.strip() for line in stdout.splitlines() if line.strip()
+    ] if code == 0 else []
+
+    if commits != [head]:
+        return False
+
+    code, stdout, _stderr = run_command(
+        "git rev-list --parents -n 1 " + head
+    )
+    lineage = stdout.split() if code == 0 else []
+
+    if (
+        len(lineage) != 2
+        or lineage[1] != V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA
+    ):
+        return False
+
+    files = _git_paths([
+        "diff",
+        "--name-only",
+        V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA,
+        head,
+    ])
+    return files == V2737D_GATE_BOOTSTRAP_REPAIR_FILES
+
+
 def _v2737d_direct_bootstrap_commit_is_valid(head):
     code, stdout, _stderr = run_command(
         "git rev-list --reverse "
@@ -5741,15 +5866,36 @@ def _detect_v2737d_gate_bootstrap_profile_phase(working_paths):
             return "v2737d_gate_bootstrap_prepared"
         return None
 
+    if head == V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA:
+        if (
+            origin_main in {
+                V2737D_GATE_BOOTSTRAP_BASE_SHA,
+                head,
+            }
+            and not working_paths
+            and _v2737d_direct_bootstrap_commit_is_valid(head)
+        ):
+            return "v2737d_gate_bootstrap_committed"
+
+        if (
+            origin_main == head
+            and working_paths == V2737D_GATE_BOOTSTRAP_REPAIR_FILES
+            and _v2737d_current_repair_documents_are_valid()
+        ):
+            return "v2737d_gate_bootstrap_repair_prepared"
+
+        return None
+
     if (
         not working_paths
         and origin_main in {
-            V2737D_GATE_BOOTSTRAP_BASE_SHA,
+            V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA,
             head,
         }
-        and _v2737d_direct_bootstrap_commit_is_valid(head)
+        and _v2737d_direct_repair_commit_is_valid(head)
+        and _v2737d_current_repair_documents_are_valid()
     ):
-        return "v2737d_gate_bootstrap_committed"
+        return "v2737d_gate_bootstrap_repair_committed"
 
     return None
 

@@ -9,6 +9,35 @@ Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 
+## v27.37d-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur
+
+v27.37d-GATE-BOOTSTRAP-REPAIR ist ausschließlich Kontrollinfrastruktur.
+
+Stabile Repair-Basis: `68f5525e27de6fa37176125191f960494ed5aedd`.
+
+Der Repair korrigiert ausschließlich die v27.37c-Historiengrenze.
+
+Der einmalige atomare Repair umfasst exakt:
+
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Keine siebte Repair-Datei ist zulässig.
+
+v27.37c bleibt vollständig abgeschlossen und wird nicht wieder geöffnet.
+
+CURRENT_TASK bleibt NONE / BLOCKED / nicht autorisiert.
+
+Der Repair kennt ausschließlich `v2737d_gate_bootstrap_repair_prepared` und `v2737d_gate_bootstrap_repair_committed`.
+
+Der spätere v27.37d-Provider-Task wird durch diesen Repair NICHT autorisiert.
+
+Supabase bleibt NICHT LIVE.
+
 ## v27.37d-GATE-BOOTSTRAP – Kontrollinfrastruktur
 
 v27.37d-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.

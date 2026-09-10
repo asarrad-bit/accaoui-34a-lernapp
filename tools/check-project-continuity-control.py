@@ -14675,6 +14675,16 @@ V2737D_GATE_FILE_ORDER = (
 )
 V2737D_GATE_FILES = frozenset(V2737D_GATE_FILE_ORDER)
 
+V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA = (
+    "68f5525e27de6fa37176125191f960494ed5aedd"
+)
+V2737D_GATE_BOOTSTRAP_REPAIR_FILES = frozenset(
+    V2737D_GATE_FILE_ORDER
+)
+V2737D_REPAIR_HEADING = (
+    "## v27.37d-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur"
+)
+
 V2737D_IMPLEMENTATION_FILE_ORDER = (
     "data/supabase-participant-auth-session-browser-provider.js",
     "tools/check-participant-auth-session-browser-provider-v2737d.py",
@@ -14794,6 +14804,85 @@ def validate_v2737d_bootstrap_documents(
         )
 
 
+def extract_v2737d_repair_section(
+    text: str,
+    document_name: str,
+) -> str:
+    require(
+        text.count(V2737D_REPAIR_HEADING) == 1,
+        f"{document_name}: v27.37d-Repair fehlt oder ist doppelt",
+    )
+    tail = text.split(V2737D_REPAIR_HEADING, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    return tail[:next_heading.start()] if next_heading else tail
+
+
+def validate_v2737d_repair_section(
+    section: str,
+    document_name: str,
+) -> None:
+    required = (
+        "v27.37d-GATE-BOOTSTRAP-REPAIR ist ausschließlich Kontrollinfrastruktur.",
+        f"Stabile Repair-Basis: `{V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA}`.",
+        "Der Repair korrigiert ausschließlich die v27.37c-Historiengrenze.",
+        "v27.37c bleibt vollständig abgeschlossen",
+        "CURRENT_TASK bleibt NONE / BLOCKED / nicht autorisiert.",
+        "`v2737d_gate_bootstrap_repair_prepared`",
+        "`v2737d_gate_bootstrap_repair_committed`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+
+    for marker in required:
+        require(
+            marker in section,
+            f"{document_name}: v27.37d-Repair-Marker fehlt: {marker}",
+        )
+
+    start = "Der einmalige atomare Repair umfasst exakt:"
+    end = "Keine siebte Repair-Datei ist zulässig."
+
+    require(
+        section.count(start) == 1 and section.count(end) == 1,
+        f"{document_name}: v27.37d-Repair-Dateiliste nicht eindeutig",
+    )
+
+    actual = section.split(start, 1)[1].split(end, 1)[0].strip()
+    expected = "\n".join(
+        f"- `{path}`" for path in V2737D_GATE_FILE_ORDER
+    )
+
+    require(
+        actual == expected,
+        f"{document_name}: v27.37d-Repair-Scope abweichend",
+    )
+
+    shas = frozenset(
+        re.findall(r"\b[0-9a-f]{40}\b", section)
+    )
+    require(
+        shas == frozenset({V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA}),
+        f"{document_name}: v27.37d-Repair-SHA-Vertrag verletzt",
+    )
+
+
+def validate_v2737d_repair_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+) -> None:
+    for document, name in (
+        (state_text, "PROJECT_STATE_CURRENT"),
+        (task_text, "CURRENT_TASK"),
+        (cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (masterlist_text, "PROJECT_MASTERLIST"),
+    ):
+        validate_v2737d_repair_section(
+            extract_v2737d_repair_section(document, name),
+            name,
+        )
+
+
 def validate_v2737c_closed_at_v2737d_base():
     documents = tuple(
         read_v2735f_commit_document(
@@ -14881,6 +14970,43 @@ def v2737d_direct_bootstrap_commit_is_valid(head: str) -> bool:
     return files == V2737D_GATE_FILES
 
 
+def v2737d_direct_repair_commit_is_valid(head: str) -> bool:
+    commits = [
+        line.strip()
+        for line in run_git([
+            "rev-list",
+            "--reverse",
+            f"{V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA}..{head}",
+        ]).splitlines()
+        if line.strip()
+    ]
+    if commits != [head]:
+        return False
+
+    lineage = run_git([
+        "rev-list", "--parents", "-n", "1", head
+    ]).split()
+
+    if (
+        len(lineage) != 2
+        or lineage[1] != V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA
+    ):
+        return False
+
+    files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git([
+            "diff",
+            "--name-only",
+            V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA,
+            head,
+        ]).splitlines()
+        if line.strip()
+    )
+
+    return files == V2737D_GATE_BOOTSTRAP_REPAIR_FILES
+
+
 def validate_v2737d_gate_bootstrap_lifecycle(
     state_text: str,
     task_text: str,
@@ -14909,7 +15035,10 @@ def validate_v2737d_gate_bootstrap_lifecycle(
     head = run_git(["rev-parse", "HEAD"]).strip()
     origin_main = run_git(["rev-parse", "origin/main"]).strip()
 
-    require(branch == "main", "v27.37d-Bootstrap nur auf main zulässig")
+    require(
+        branch == "main",
+        "v27.37d-Bootstrap nur auf main zulässig",
+    )
 
     diff_files = frozenset(
         x.strip().replace("\\", "/")
@@ -14933,7 +15062,7 @@ def validate_v2737d_gate_bootstrap_lifecycle(
 
     require(
         not staged_files,
-        "v27.37d-Bootstrap darf noch keine staged Dateien enthalten",
+        "v27.37d darf keine staged Dateien enthalten",
     )
 
     working_files = diff_files | untracked_files
@@ -14943,28 +15072,60 @@ def validate_v2737d_gate_bootstrap_lifecycle(
             origin_main == head,
             "v27.37d-Bootstrap-Basis nicht mit origin/main synchron",
         )
-        phase = "v2737d_gate_bootstrap_prepared"
         require(
             working_files == V2737D_GATE_FILES,
             "v27.37d-Bootstrap-Working-Tree-Scope verletzt",
         )
-    else:
-        phase = "v2737d_gate_bootstrap_committed"
+        phase = "v2737d_gate_bootstrap_prepared"
+
+    elif head == V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA:
         require(
-            not working_files,
-            "v27.37d-Bootstrap-Commit mit offenem Working Tree",
-        )
-        require(
-            origin_main in {
-                V2737D_GATE_BOOTSTRAP_BASE_SHA,
-                head,
-            },
-            "origin/main außerhalb der v27.37d-Bootstrap-Grenze",
+            origin_main == head,
+            "v27.37d-Repair-Basis nicht mit origin/main synchron",
         )
         require(
             v2737d_direct_bootstrap_commit_is_valid(head),
-            "v27.37d-Bootstrap-Commit ist nicht der direkte Sechs-Dateien-Commit",
+            "v27.37d-Bootstrap-Commit an Repair-Basis ungültig",
         )
+
+        if not working_files:
+            phase = "v2737d_gate_bootstrap_committed"
+        else:
+            require(
+                working_files == V2737D_GATE_BOOTSTRAP_REPAIR_FILES,
+                "v27.37d-Repair-Working-Tree-Scope verletzt",
+            )
+            validate_v2737d_repair_documents(
+                state_text,
+                task_text,
+                cursor_text,
+                masterlist_text,
+            )
+            phase = "v2737d_gate_bootstrap_repair_prepared"
+
+    else:
+        require(
+            not working_files,
+            "v27.37d-Repair-Commit mit offenem Working Tree",
+        )
+        require(
+            origin_main in {
+                V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA,
+                head,
+            },
+            "origin/main außerhalb der v27.37d-Repair-Grenze",
+        )
+        require(
+            v2737d_direct_repair_commit_is_valid(head),
+            "v27.37d-Repair-Commit ist nicht der direkte Sechs-Dateien-Commit",
+        )
+        validate_v2737d_repair_documents(
+            state_text,
+            task_text,
+            cursor_text,
+            masterlist_text,
+        )
+        phase = "v2737d_gate_bootstrap_repair_committed"
 
     return (
         phase,
