@@ -1,16 +1,50 @@
 # Aktueller Projektzustand
 
-Stand: v27.37b
+Stand: v27.37c-AUTORISIERUNG
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: NONE
-Aktuelle Taskart: Kein Task autorisiert
-Aktueller Blocker: Neue Implementierung bleibt bis zu einer ausdrücklichen Autorisierung blockiert
+Weiterer funktionaler Schritt autorisiert: JA
+Aktuell autorisierter Task: v27.37c
+Aktuelle Taskart: v27.37c – Kontrollierte Browser-Export-Grenze für Teilnehmer-Auth-/Session-Factories
+Aktueller Blocker: Umsetzung bleibt bis zum Commit dieses Autorisierungs-Gates blockiert
+
+## Autorisierter Task v27.37c
+
+Das frische v27.37c-Autorisierungs-Gate autorisiert ausschließlich den Task `v27.37c – Kontrollierte Browser-Export-Grenze für Teilnehmer-Auth-/Session-Factories`.
+
+Technische Gate-Basis: `c2931bba8fb1799e2f55dcb505fb1202dfc9e09a`.
+
+Die lineare Git-Historie muss vor diesem Gate dynamisch genau den einmaligen `v2737c_bootstrap` enthalten.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `data/supabase-participant-auth-session-adapter.js`
+- `data/supabase-participant-auth-session-bootstrap-bridge.js`
+- `tools/check-supabase-participant-auth-session-adapter.py`
+- `tools/check-supabase-participant-auth-session-bootstrap-bridge.py`
+- `docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BROWSER_EXPORT_V2737C.md`
+- `tools/preflight.py`
+
+Keine siebte Implementierungsdatei ist zulässig.
+
+Ziel ist ausschließlich die kontrollierte Browser-Export-Grenze der beiden bereits bestehenden Auth-/Session-Factories. CommonJS-Verhalten, öffentliche Factory-Verträge und bestehende Auth-/Session-Fachlogik bleiben erhalten.
+
+Die erlaubten Browser-Grenzen heißen exakt:
+
+- `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY`
+- `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY`
+
+Eine Grenze darf nur gesetzt werden, wenn sie noch unbelegt ist. Bestehende Grenzen dürfen nicht überschrieben werden. Beim Laden dürfen keine Auth-Operation, keine Sessionauflösung und kein Clientzugriff stattfinden.
+
+Verboten bleiben insbesondere `initializeClient()`, `createClient()`, `getState()`, automatisches SDK-/Config-Laden, `index.html`, `app.js`, Login-UI, eigener Netzwerkcode, `.from(...)`, SQL, Migrationen, echte Keys und echte Teilnehmerdaten.
+
+Der Lifecycle erkennt diese Vorbereitung als `v2737c_authorization_prepared`. Nach einem direkten Autorisierungs-Commit muss `v2737c_authorization_committed` erkannt werden; erst danach darf `v2737c_implementation_prepared` zulässig werden. Keine zukünftige Autorisierungs-, Implementierungs- oder Closure-SHA wird hartcodiert.
+
+Supabase bleibt NICHT LIVE. Commit und Push bleiben bis zur erfolgreichen Prüfung gesperrt.
 
 ## v27.37c-GATE-BOOTSTRAP – Kontrollinfrastruktur
 

@@ -1726,7 +1726,7 @@ def check_participant_access_browser_provider_v2736e():
         if v2737c_phase is not None:
             print(
                 "Browser-Regression: PASS über das enge "
-                "v27.37c-GATE-BOOTSTRAP-Profil "
+                "v27.37c-Nachfolge-Regressionsprofil "
                 f"({v2737c_phase})"
             )
             return
@@ -1804,7 +1804,7 @@ def check_participant_access_browser_loader_v2736f():
         if v2737c_phase is not None:
             print(
                 "Browser-Regression: PASS über das enge "
-                "v27.37c-GATE-BOOTSTRAP-Profil "
+                "v27.37c-Nachfolge-Regressionsprofil "
                 f"({v2737c_phase})"
             )
             return
@@ -4128,6 +4128,12 @@ def _detect_v2737b_successor_profile_phase(working_paths):
 
 
 V2737C_GATE_BOOTSTRAP_BASE_SHA = "41c14d89d7557abe64933a72cd6eb7f2272d075e"
+V2737C_AUTHORIZATION_BASE_SHA = "c2931bba8fb1799e2f55dcb505fb1202dfc9e09a"
+V2737C_TITLE = (
+    "v27.37c – Kontrollierte Browser-Export-Grenze für "
+    "Teilnehmer-Auth-/Session-Factories"
+)
+
 V2737C_BOOTSTRAP_FILE_ORDER = (
     "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
     "docs/PROJECT_MASTERLIST.md",
@@ -4137,6 +4143,9 @@ V2737C_BOOTSTRAP_FILE_ORDER = (
     "tools/preflight.py",
 )
 V2737C_BOOTSTRAP_FILES = set(V2737C_BOOTSTRAP_FILE_ORDER)
+
+V2737C_AUTHORIZATION_FILES = set(V2737C_BOOTSTRAP_FILE_ORDER)
+
 V2737C_IMPLEMENTATION_FILE_ORDER = (
     "data/supabase-participant-auth-session-adapter.js",
     "data/supabase-participant-auth-session-bootstrap-bridge.js",
@@ -4145,15 +4154,72 @@ V2737C_IMPLEMENTATION_FILE_ORDER = (
     "docs/SUPABASE_PARTICIPANT_AUTH_SESSION_BROWSER_EXPORT_V2737C.md",
     "tools/preflight.py",
 )
-V2737C_SECTION_HEADING = (
-    "## v27.37c-GATE-BOOTSTRAP – Kontrollinfrastruktur"
+V2737C_IMPLEMENTATION_FILES = set(V2737C_IMPLEMENTATION_FILE_ORDER)
+
+V2737C_CLOSURE_FILE_ORDER = (
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+)
+V2737C_CLOSURE_FILES = set(V2737C_CLOSURE_FILE_ORDER)
+
+V2737C_ALLOWED_FILES_VALUE = ", ".join(
+    f"`{path}`" for path in V2737C_IMPLEMENTATION_FILE_ORDER
 )
 
+V2737C_BOOTSTRAP_SECTION_HEADING = (
+    "## v27.37c-GATE-BOOTSTRAP – Kontrollinfrastruktur"
+)
+V2737C_AUTHORIZATION_SECTION_HEADING = "## Autorisierter Task v27.37c"
+V2737C_COMPLETION_SECTION_HEADING = (
+    "## Abgeschlossener technischer Schritt v27.37c"
+)
 
-def _v2737c_bootstrap_section(text):
-    if text.count(V2737C_SECTION_HEADING) != 1:
+V2737C_BASE_TASK_FIELDS = {
+    "Task-ID": "NONE",
+    "Status": "BLOCKED",
+    "Autorisiert": "NEIN",
+    "Titel": "Kein Task autorisiert",
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt": "v27.37b",
+    "Erlaubte Implementierungsdateien": "KEINE",
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+V2737C_AUTHORIZED_TASK_FIELDS = {
+    "Task-ID": "v27.37c",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": V2737C_TITLE,
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt":
+        "v27.37c-GATE-BOOTSTRAP",
+    "Erlaubte Implementierungsdateien": V2737C_ALLOWED_FILES_VALUE,
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+V2737C_CLOSED_TASK_FIELDS = {
+    **V2737C_BASE_TASK_FIELDS,
+    "Letzter abgeschlossener Kontrollschritt": "v27.37c",
+}
+
+
+def _v2737c_task_kind_from_text(text):
+    fields = _v2737b_current_task_header_fields(text)
+    if fields == V2737C_BASE_TASK_FIELDS:
+        return "v2737b_closed"
+    if fields == V2737C_AUTHORIZED_TASK_FIELDS:
+        return "v2737c_authorized"
+    if fields == V2737C_CLOSED_TASK_FIELDS:
+        return "v2737c_closed"
+    return "invalid"
+
+
+def _v2737c_section(text, heading):
+    if text.count(heading) != 1:
         return None
-    tail = text.split(V2737C_SECTION_HEADING, 1)[1]
+    tail = text.split(heading, 1)[1]
     match = re.search(r"(?m)^## ", tail)
     return tail[:match.start()] if match else tail
 
@@ -4166,12 +4232,11 @@ def _v2737c_bootstrap_section_is_valid(section):
         "v27.37c-GATE-BOOTSTRAP ist ausschließlich Kontrollinfrastruktur.",
         f"Stabile Bootstrap-Basis: `{V2737C_GATE_BOOTSTRAP_BASE_SHA}`.",
         "Keine siebte Datei und keine Produktdatei sind zulässig.",
-        "v27.37b bleibt vollständig abgeschlossen und wird nicht wieder geöffnet.",
-        "v27.37c – Kontrollierte Browser-Export-Grenze für Teilnehmer-Auth-/Session-Factories",
+        "v27.37b bleibt vollständig abgeschlossen",
+        V2737C_TITLE,
         "durch diesen Bootstrap aber NICHT autorisiert.",
         "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
         "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
-        "keine bestehende Grenze überschreiben",
         "`initializeClient()`",
         "`createClient()`",
         "`getState()`",
@@ -4184,61 +4249,179 @@ def _v2737c_bootstrap_section_is_valid(section):
     if not all(marker in section for marker in required):
         return False
 
-    bootstrap_start = "Der einmalige atomare Bootstrap umfasst exakt:"
-    bootstrap_end = "Keine siebte Datei und keine Produktdatei sind zulässig."
-    implementation_start = "Der spätere Implementierungsscope umfasst exakt:"
-    implementation_end = (
-        "Ziel ist ausschließlich eine kontrollierte Browser-Export-Grenze"
-    )
-
-    if not (
-        section.count(bootstrap_start) == 1
-        and section.count(bootstrap_end) == 1
-        and section.count(implementation_start) == 1
-        and section.count(implementation_end) == 1
+    start_marker = "Der einmalige atomare Bootstrap umfasst exakt:"
+    end_marker = "Keine siebte Datei und keine Produktdatei sind zulässig."
+    if (
+        section.count(start_marker) != 1
+        or section.count(end_marker) != 1
     ):
         return False
 
-    bootstrap_list = section.split(bootstrap_start, 1)[1].split(
-        bootstrap_end, 1
+    actual = section.split(start_marker, 1)[1].split(
+        end_marker, 1
     )[0].strip()
-    if bootstrap_list != "\n".join(
+    expected = "\n".join(
         f"- `{path}`" for path in V2737C_BOOTSTRAP_FILE_ORDER
-    ):
-        return False
-
-    implementation_list = section.split(
-        implementation_start, 1
-    )[1].split(implementation_end, 1)[0].strip()
-    if implementation_list != "\n".join(
-        f"- `{path}`" for path in V2737C_IMPLEMENTATION_FILE_ORDER
-    ):
+    )
+    if actual != expected:
         return False
 
     shas = set(re.findall(r"\b[0-9a-f]{40}\b", section))
     return shas == {V2737C_GATE_BOOTSTRAP_BASE_SHA}
 
 
-def _v2737c_current_documents_are_valid():
-    try:
-        return all(
-            _v2737c_bootstrap_section_is_valid(
-                _v2737c_bootstrap_section(
-                    Path(path).read_text(encoding="utf-8")
+def _v2737c_authorization_section_is_valid(section):
+    if not isinstance(section, str):
+        return False
+
+    required = (
+        "Das frische v27.37c-Autorisierungs-Gate autorisiert "
+        "ausschließlich den Task",
+        V2737C_TITLE,
+        f"Technische Gate-Basis: `{V2737C_AUTHORIZATION_BASE_SHA}`.",
+        "dynamisch genau den einmaligen `v2737c_bootstrap` enthalten.",
+        "Keine siebte Implementierungsdatei ist zulässig.",
+        "CommonJS-Verhalten, öffentliche Factory-Verträge",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        "Bestehende Grenzen dürfen nicht überschrieben werden.",
+        "keine Auth-Operation, keine Sessionauflösung und kein Clientzugriff",
+        "`initializeClient()`",
+        "`createClient()`",
+        "`getState()`",
+        "`index.html`",
+        "`app.js`",
+        "`v2737c_authorization_prepared`",
+        "`v2737c_authorization_committed`",
+        "`v2737c_implementation_prepared`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+    if not all(marker in section for marker in required):
+        return False
+
+    start_marker = "Der spätere Implementierungsscope umfasst exakt:"
+    end_marker = "Keine siebte Implementierungsdatei ist zulässig."
+    if (
+        section.count(start_marker) != 1
+        or section.count(end_marker) != 1
+    ):
+        return False
+
+    actual = section.split(start_marker, 1)[1].split(
+        end_marker, 1
+    )[0].strip()
+    expected = "\n".join(
+        f"- `{path}`" for path in V2737C_IMPLEMENTATION_FILE_ORDER
+    )
+    if actual != expected:
+        return False
+
+    shas = set(re.findall(r"\b[0-9a-f]{40}\b", section))
+    return shas == {V2737C_AUTHORIZATION_BASE_SHA}
+
+
+def _v2737c_completion_section_is_valid(
+    section, implementation_commit
+):
+    if (
+        not isinstance(section, str)
+        or not isinstance(implementation_commit, str)
+    ):
+        return False
+
+    required = (
+        "v27.37c abgeschlossen.",
+        f"Implementierungscommit: `{implementation_commit}`",
+        "ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        "ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        "CommonJS",
+        "Supabase bleibt NICHT LIVE.",
+    )
+    if not all(marker in section for marker in required):
+        return False
+
+    shas = set(re.findall(r"\b[0-9a-f]{40}\b", section))
+    return shas == {implementation_commit}
+
+
+def _v2737c_documents_are_valid(
+    texts,
+    *,
+    require_authorization=False,
+    require_completion=False,
+    implementation_commit=None,
+):
+    if not isinstance(texts, (list, tuple)) or len(texts) != 4:
+        return False
+
+    for text in texts:
+        if not isinstance(text, str):
+            return False
+
+        if not _v2737c_bootstrap_section_is_valid(
+            _v2737c_section(
+                text, V2737C_BOOTSTRAP_SECTION_HEADING
+            )
+        ):
+            return False
+
+        if require_authorization and not (
+            _v2737c_authorization_section_is_valid(
+                _v2737c_section(
+                    text, V2737C_AUTHORIZATION_SECTION_HEADING
                 )
             )
-            for path in (
-                "docs/PROJECT_STATE_CURRENT.md",
-                "docs/tasks/CURRENT_TASK.md",
-                "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
-                "docs/PROJECT_MASTERLIST.md",
+        ):
+            return False
+
+        if require_completion and not (
+            _v2737c_completion_section_is_valid(
+                _v2737c_section(
+                    text, V2737C_COMPLETION_SECTION_HEADING
+                ),
+                implementation_commit,
             )
-        )
+        ):
+            return False
+
+    return True
+
+
+def _v2737c_current_documents_are_valid(
+    *,
+    require_authorization=False,
+    require_completion=False,
+    implementation_commit=None,
+):
+    paths = (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    )
+    try:
+        texts = [
+            Path(path).read_text(encoding="utf-8")
+            for path in paths
+        ]
     except (OSError, UnicodeError):
         return False
 
+    return _v2737c_documents_are_valid(
+        texts,
+        require_authorization=require_authorization,
+        require_completion=require_completion,
+        implementation_commit=implementation_commit,
+    )
 
-def _v2737c_commit_documents_are_valid(commit):
+
+def _v2737c_commit_documents_are_valid(
+    commit,
+    *,
+    require_authorization=False,
+    require_completion=False,
+    implementation_commit=None,
+):
     texts = [
         _read_v2737a_git_blob_utf8(commit, path)
         for path in (
@@ -4248,16 +4431,15 @@ def _v2737c_commit_documents_are_valid(commit):
             "docs/PROJECT_MASTERLIST.md",
         )
     ]
-    return all(
-        isinstance(value, str)
-        and _v2737c_bootstrap_section_is_valid(
-            _v2737c_bootstrap_section(value)
-        )
-        for value in texts
+    return _v2737c_documents_are_valid(
+        texts,
+        require_authorization=require_authorization,
+        require_completion=require_completion,
+        implementation_commit=implementation_commit,
     )
 
 
-def _read_v2737c_gate_bootstrap_history():
+def _read_v2737c_history():
     code, stdout, _stderr = run_command(
         "git rev-list --reverse "
         + V2737C_GATE_BOOTSTRAP_BASE_SHA
@@ -4268,6 +4450,7 @@ def _read_v2737c_gate_bootstrap_history():
 
     previous = V2737C_GATE_BOOTSTRAP_BASE_SHA
     roles = []
+    implementation_commit = None
 
     for commit in (
         line.strip() for line in stdout.splitlines() if line.strip()
@@ -4279,25 +4462,72 @@ def _read_v2737c_gate_bootstrap_history():
         if len(lineage) != 2 or lineage[1] != previous:
             return None
 
-        files = _git_paths(["diff", "--name-only", previous, commit])
+        files = _git_paths(
+            ["diff", "--name-only", previous, commit]
+        )
         task_text = _read_v2737a_git_blob_utf8(
             commit, "docs/tasks/CURRENT_TASK.md"
         )
+        if files is None or task_text is None:
+            return None
+
+        task_kind = _v2737c_task_kind_from_text(task_text)
 
         if (
             not roles
+            and commit == V2737C_AUTHORIZATION_BASE_SHA
             and files == V2737C_BOOTSTRAP_FILES
-            and task_text is not None
-            and _v2737b_task_kind_from_text(task_text) == "v2737b_closed"
+            and task_kind == "v2737b_closed"
             and _v2737c_commit_documents_are_valid(commit)
         ):
             roles.append("v2737c_bootstrap")
+
+        elif (
+            roles == ["v2737c_bootstrap"]
+            and files == V2737C_AUTHORIZATION_FILES
+            and task_kind == "v2737c_authorized"
+            and _v2737c_commit_documents_are_valid(
+                commit, require_authorization=True
+            )
+        ):
+            roles.append("v2737c_gate")
+
+        elif (
+            roles == ["v2737c_bootstrap", "v2737c_gate"]
+            and files == V2737C_IMPLEMENTATION_FILES
+            and task_kind == "v2737c_authorized"
+            and _v2737c_commit_documents_are_valid(
+                commit, require_authorization=True
+            )
+        ):
+            roles.append("v2737c_implementation")
+            implementation_commit = commit
+
+        elif (
+            roles
+            == [
+                "v2737c_bootstrap",
+                "v2737c_gate",
+                "v2737c_implementation",
+            ]
+            and files == V2737C_CLOSURE_FILES
+            and task_kind == "v2737c_closed"
+            and implementation_commit is not None
+            and _v2737c_commit_documents_are_valid(
+                commit,
+                require_authorization=True,
+                require_completion=True,
+                implementation_commit=implementation_commit,
+            )
+        ):
+            roles.append("v2737c_closure")
+
         else:
             return None
 
         previous = commit
 
-    return tuple(roles)
+    return tuple(roles), implementation_commit
 
 
 def _v2737c_scope_facts_are_valid(
@@ -4314,7 +4544,51 @@ def _v2737c_scope_facts_are_valid(
             set(),
             ("v2737c_bootstrap",),
         ),
+        "v2737c_authorization_prepared": (
+            "v2737c_authorized",
+            V2737C_AUTHORIZATION_FILES,
+            ("v2737c_bootstrap",),
+        ),
+        "v2737c_authorization_committed": (
+            "v2737c_authorized",
+            set(),
+            ("v2737c_bootstrap", "v2737c_gate"),
+        ),
+        "v2737c_implementation_prepared": (
+            "v2737c_authorized",
+            V2737C_IMPLEMENTATION_FILES,
+            ("v2737c_bootstrap", "v2737c_gate"),
+        ),
+        "v2737c_implementation_committed": (
+            "v2737c_authorized",
+            set(),
+            (
+                "v2737c_bootstrap",
+                "v2737c_gate",
+                "v2737c_implementation",
+            ),
+        ),
+        "v2737c_closure_prepared": (
+            "v2737c_closed",
+            V2737C_CLOSURE_FILES,
+            (
+                "v2737c_bootstrap",
+                "v2737c_gate",
+                "v2737c_implementation",
+            ),
+        ),
+        "v2737c_closure_committed": (
+            "v2737c_closed",
+            set(),
+            (
+                "v2737c_bootstrap",
+                "v2737c_gate",
+                "v2737c_implementation",
+                "v2737c_closure",
+            ),
+        ),
     }
+
     return expected.get(phase) == (
         task_kind,
         working_paths,
@@ -4323,51 +4597,74 @@ def _v2737c_scope_facts_are_valid(
 
 
 def _detect_v2737c_gate_bootstrap_profile_phase(working_paths):
-    if not _v2737c_current_documents_are_valid():
-        return None
-    if not _git_is_ancestor(V2737C_GATE_BOOTSTRAP_BASE_SHA, "HEAD"):
+    if not _git_is_ancestor(
+        V2737C_GATE_BOOTSTRAP_BASE_SHA, "HEAD"
+    ):
         return None
 
     try:
-        task_text = Path("docs/tasks/CURRENT_TASK.md").read_text(
-            encoding="utf-8"
-        )
+        task_text = Path(
+            "docs/tasks/CURRENT_TASK.md"
+        ).read_text(encoding="utf-8")
     except (OSError, UnicodeError):
         return None
 
-    task_kind = _v2737b_task_kind_from_text(task_text)
-    history_roles = _read_v2737c_gate_bootstrap_history()
-    if history_roles is None:
+    task_kind = _v2737c_task_kind_from_text(task_text)
+    history = _read_v2737c_history()
+    if history is None:
         return None
 
-    code, head, _stderr = run_command("git rev-parse HEAD")
-    if code != 0:
-        return None
-    head = head.strip()
+    history_roles, implementation_commit = history
 
-    if (
-        head == V2737C_GATE_BOOTSTRAP_BASE_SHA
-        and _v2737c_scope_facts_are_valid(
-            phase="v2737c_gate_bootstrap_prepared",
+    candidates = (
+        "v2737c_gate_bootstrap_prepared",
+        "v2737c_gate_bootstrap_committed",
+        "v2737c_authorization_prepared",
+        "v2737c_authorization_committed",
+        "v2737c_implementation_prepared",
+        "v2737c_implementation_committed",
+        "v2737c_closure_prepared",
+        "v2737c_closure_committed",
+    )
+
+    for phase in candidates:
+        if not _v2737c_scope_facts_are_valid(
+            phase=phase,
             task_kind=task_kind,
             working_paths=working_paths,
             history_roles=history_roles,
-        )
-    ):
-        return "v2737c_gate_bootstrap_prepared"
+        ):
+            continue
 
-    if _v2737c_scope_facts_are_valid(
-        phase="v2737c_gate_bootstrap_committed",
-        task_kind=task_kind,
-        working_paths=working_paths,
-        history_roles=history_roles,
-    ):
-        return "v2737c_gate_bootstrap_committed"
+        needs_authorization = phase not in {
+            "v2737c_gate_bootstrap_prepared",
+            "v2737c_gate_bootstrap_committed",
+        }
+        needs_completion = phase in {
+            "v2737c_closure_prepared",
+            "v2737c_closure_committed",
+        }
+
+        if not _v2737c_current_documents_are_valid(
+            require_authorization=needs_authorization,
+            require_completion=needs_completion,
+            implementation_commit=implementation_commit,
+        ):
+            return None
+
+        return phase
 
     return None
 
 
 def check_v2737c_gate_bootstrap_scope_logic():
+    gate_history = ("v2737c_bootstrap", "v2737c_gate")
+    implementation_history = (
+        "v2737c_bootstrap",
+        "v2737c_gate",
+        "v2737c_implementation",
+    )
+
     positive = (
         (
             "v2737c_gate_bootstrap_prepared",
@@ -4381,38 +4678,41 @@ def check_v2737c_gate_bootstrap_scope_logic():
             set(),
             ("v2737c_bootstrap",),
         ),
-    )
-
-    negative = (
         (
-            "v2737c_gate_bootstrap_prepared",
-            "v2737b_closed",
-            V2737C_BOOTSTRAP_FILES | {"app.js"},
-            (),
-        ),
-        (
-            "v2737c_gate_bootstrap_prepared",
-            "v2737b_closed",
-            V2737C_BOOTSTRAP_FILES - {"tools/preflight.py"},
-            (),
-        ),
-        (
-            "v2737c_gate_bootstrap_prepared",
-            "v2737b_authorized",
-            V2737C_BOOTSTRAP_FILES,
-            (),
-        ),
-        (
-            "v2737c_gate_bootstrap_committed",
-            "v2737b_closed",
-            set(),
-            ("v2737c_bootstrap", "v2737c_bootstrap"),
-        ),
-        (
-            "unknown_future_task",
-            "v2737b_closed",
-            set(),
+            "v2737c_authorization_prepared",
+            "v2737c_authorized",
+            V2737C_AUTHORIZATION_FILES,
             ("v2737c_bootstrap",),
+        ),
+        (
+            "v2737c_authorization_committed",
+            "v2737c_authorized",
+            set(),
+            gate_history,
+        ),
+        (
+            "v2737c_implementation_prepared",
+            "v2737c_authorized",
+            V2737C_IMPLEMENTATION_FILES,
+            gate_history,
+        ),
+        (
+            "v2737c_implementation_committed",
+            "v2737c_authorized",
+            set(),
+            implementation_history,
+        ),
+        (
+            "v2737c_closure_prepared",
+            "v2737c_closed",
+            V2737C_CLOSURE_FILES,
+            implementation_history,
+        ),
+        (
+            "v2737c_closure_committed",
+            "v2737c_closed",
+            set(),
+            (*implementation_history, "v2737c_closure"),
         ),
     )
 
@@ -4424,10 +4724,67 @@ def check_v2737c_gate_bootstrap_scope_logic():
             history_roles=roles,
         ):
             errors.append(
-                "v27.37c-GATE-BOOTSTRAP-Positivprüfung fehlgeschlagen: "
+                "v27.37c-Nachfolgeprofil-Positivprüfung fehlgeschlagen: "
                 + phase
             )
             return
+
+    negative = (
+        (
+            "unknown_future_task",
+            "v2737c_authorized",
+            set(),
+            gate_history,
+        ),
+        (
+            "v2737c_authorization_prepared",
+            "v2737c_authorized",
+            V2737C_AUTHORIZATION_FILES | {"app.js"},
+            ("v2737c_bootstrap",),
+        ),
+        (
+            "v2737c_authorization_prepared",
+            "v2737c_authorized",
+            V2737C_AUTHORIZATION_FILES - {"tools/preflight.py"},
+            ("v2737c_bootstrap",),
+        ),
+        (
+            "v2737c_authorization_prepared",
+            "v2737b_closed",
+            V2737C_AUTHORIZATION_FILES,
+            ("v2737c_bootstrap",),
+        ),
+        (
+            "v2737c_implementation_prepared",
+            "v2737c_authorized",
+            V2737C_IMPLEMENTATION_FILES | {"index.html"},
+            gate_history,
+        ),
+        (
+            "v2737c_implementation_prepared",
+            "v2737c_authorized",
+            V2737C_IMPLEMENTATION_FILES - {"tools/preflight.py"},
+            gate_history,
+        ),
+        (
+            "v2737c_closure_prepared",
+            "v2737c_closed",
+            V2737C_CLOSURE_FILES | {"app.js"},
+            implementation_history,
+        ),
+        (
+            "v2737c_closure_prepared",
+            "v2737c_authorized",
+            V2737C_CLOSURE_FILES,
+            implementation_history,
+        ),
+        (
+            "v2737c_closure_committed",
+            "v2737c_closed",
+            set(),
+            implementation_history,
+        ),
+    )
 
     for phase, task_kind, paths, roles in negative:
         if _v2737c_scope_facts_are_valid(
@@ -4437,19 +4794,46 @@ def check_v2737c_gate_bootstrap_scope_logic():
             history_roles=roles,
         ):
             errors.append(
-                "v27.37c-GATE-BOOTSTRAP-Manipulation nicht blockiert: "
+                "v27.37c-Nachfolgeprofil-Manipulation nicht blockiert: "
                 + phase
             )
             return
 
-    if not _v2737c_current_documents_are_valid():
-        errors.append(
-            "v27.37c-GATE-BOOTSTRAP-Dokumentvertrag ungültig"
+    try:
+        current_task = Path(
+            "docs/tasks/CURRENT_TASK.md"
+        ).read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        errors.append(f"v27.37c-CURRENT_TASK nicht lesbar: {exc}")
+        return
+
+    current_kind = _v2737c_task_kind_from_text(current_task)
+
+    if current_kind == "v2737b_closed":
+        valid_documents = _v2737c_current_documents_are_valid()
+    elif current_kind == "v2737c_authorized":
+        valid_documents = _v2737c_current_documents_are_valid(
+            require_authorization=True
         )
+    elif current_kind == "v2737c_closed":
+        history = _read_v2737c_history()
+        implementation_commit = (
+            history[1] if history is not None else None
+        )
+        valid_documents = _v2737c_current_documents_are_valid(
+            require_authorization=True,
+            require_completion=True,
+            implementation_commit=implementation_commit,
+        )
+    else:
+        valid_documents = False
+
+    if not valid_documents:
+        errors.append("v27.37c-Dokument-/CURRENT_TASK-Vertrag ungültig")
         return
 
     print(
-        "v27.37c-GATE-BOOTSTRAP-Selbstprüfung: "
+        "v27.37c-Nachfolgeprofil-Selbstprüfung: "
         f"{len(positive)} Positiv- und {len(negative)} Negativfälle PASS"
     )
 
