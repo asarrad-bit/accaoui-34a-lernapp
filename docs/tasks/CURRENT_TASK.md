@@ -1,14 +1,45 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
+Task-ID: v27.37d
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: v27.37d – Isolierter Browser-Provider für Teilnehmer-Auth-/Session-Kette
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37c
-Erlaubte Implementierungsdateien: KEINE
+Letzter abgeschlossener Kontrollschritt: v27.37d-GATE-BOOTSTRAP-REPAIR
+Erlaubte Implementierungsdateien: `data/supabase-participant-auth-session-browser-provider.js`, `tools/check-participant-auth-session-browser-provider-v2737d.py`, `docs/PARTICIPANT_AUTH_SESSION_BROWSER_PROVIDER_V2737D.md`, `tools/preflight.py`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Autorisierter Task v27.37d
+
+Das frische v27.37d-Autorisierungs-Gate autorisiert ausschließlich den Task `v27.37d – Isolierter Browser-Provider für Teilnehmer-Auth-/Session-Kette`.
+
+Technische Gate-Basis: `b5a0bd686d0e953893ea78976b6726897446ce63`.
+
+Die lineare Git-Historie muss vor diesem Gate den einmaligen v27.37d-Bootstrap und dessen einmaligen Repair enthalten.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `data/supabase-participant-auth-session-browser-provider.js`
+- `tools/check-participant-auth-session-browser-provider-v2737d.py`
+- `docs/PARTICIPANT_AUTH_SESSION_BROWSER_PROVIDER_V2737D.md`
+- `tools/preflight.py`
+
+Keine fünfte Implementierungsdatei ist zulässig.
+
+Ziel ist ausschließlich ein isolierter Browser-Provider an `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER`.
+
+Der Provider darf ausschließlich `window.ACCAOUI_SUPABASE_BOOTSTRAP`, `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY` und `window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY` kontrolliert komponieren.
+
+Die öffentliche Oberfläche darf nur `resolveSession()`, `signIn()` und `signOut()` bereitstellen. Die Komposition erfolgt erst bei einem Methodenaufruf. Beim Laden dürfen keine Auth-, Session- oder Client-Aktionen stattfinden.
+
+Fehlende oder ungültige Abhängigkeiten sowie Fehler und ungültige Ergebnisse müssen fail-closed behandelt werden. Bestehende Browser-Grenzen dürfen nicht überschrieben werden.
+
+Verboten bleiben insbesondere `initializeClient()`, `createClient()`, `getState()`, automatisches SDK-/Config-Laden, `index.html`, `app.js`, Login-UI, eigener Netzwerkcode, `.from(...)`, SQL, Migrationen, echte Keys und echte Teilnehmerdaten.
+
+Der Lifecycle erkennt diese Vorbereitung als `v2737d_authorization_prepared`. Nach einem direkten Autorisierungs-Commit muss `v2737d_authorization_committed` erkannt werden; erst danach darf `v2737d_implementation_prepared` zulässig werden. Keine zukünftige Autorisierungs- oder Implementierungs-SHA wird hartcodiert.
+
+Supabase bleibt NICHT LIVE. Commit und Push bleiben bis zur erfolgreichen Prüfung dieses Autorisierungs-Gates gesperrt.
 
 ## v27.37d-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur
 

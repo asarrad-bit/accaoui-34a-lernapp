@@ -14685,6 +14685,18 @@ V2737D_REPAIR_HEADING = (
     "## v27.37d-GATE-BOOTSTRAP-REPAIR – Kontrollinfrastruktur"
 )
 
+V2737D_AUTHORIZATION_BASE_SHA = (
+    "b5a0bd686d0e953893ea78976b6726897446ce63"
+)
+V2737D_AUTHORIZATION_FILES = V2737D_GATE_FILES
+V2737D_AUTHORIZATION_HEADING = "## Autorisierter Task v27.37d"
+
+V2737D_AUTHORIZATION_BASE_SHA = (
+    "b5a0bd686d0e953893ea78976b6726897446ce63"
+)
+V2737D_AUTHORIZATION_FILES = V2737D_GATE_FILES
+V2737D_AUTHORIZATION_HEADING = "## Autorisierter Task v27.37d"
+
 V2737D_IMPLEMENTATION_FILE_ORDER = (
     "data/supabase-participant-auth-session-browser-provider.js",
     "tools/check-participant-auth-session-browser-provider-v2737d.py",
@@ -14695,6 +14707,36 @@ V2737D_IMPLEMENTATION_FILE_ORDER = (
 V2737D_BOOTSTRAP_HEADING = (
     "## v27.37d-GATE-BOOTSTRAP – Kontrollinfrastruktur"
 )
+
+V2737D_AUTHORIZED_TASK_FIELDS = {
+    "Task-ID": "v27.37d",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": V2737D_TITLE,
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt":
+        "v27.37d-GATE-BOOTSTRAP-REPAIR",
+    "Erlaubte Implementierungsdateien": ", ".join(
+        f"`{path}`" for path in V2737D_IMPLEMENTATION_FILE_ORDER
+    ),
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+
+V2737D_AUTHORIZED_TASK_FIELDS = {
+    "Task-ID": "v27.37d",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": V2737D_TITLE,
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt":
+        "v27.37d-GATE-BOOTSTRAP-REPAIR",
+    "Erlaubte Implementierungsdateien": ", ".join(
+        f"`{path}`" for path in V2737D_IMPLEMENTATION_FILE_ORDER
+    ),
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
 
 V2737D_CLOSED_TASK_FIELDS = {
     "Task-ID": "NONE",
@@ -14883,6 +14925,306 @@ def validate_v2737d_repair_documents(
         )
 
 
+def extract_v2737d_authorization_section(
+    text: str,
+    document_name: str,
+) -> str:
+    require(
+        text.count(V2737D_AUTHORIZATION_HEADING) == 1,
+        f"{document_name}: v27.37d-Autorisierung fehlt oder ist doppelt",
+    )
+    tail = text.split(V2737D_AUTHORIZATION_HEADING, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    return tail[:next_heading.start()] if next_heading else tail
+
+
+def validate_v2737d_authorization_section(
+    section: str,
+    document_name: str,
+) -> None:
+    required = (
+        "Das frische v27.37d-Autorisierungs-Gate autorisiert "
+        "ausschließlich den Task",
+        V2737D_TITLE,
+        f"Technische Gate-Basis: `{V2737D_AUTHORIZATION_BASE_SHA}`.",
+        "einmaligen v27.37d-Bootstrap und dessen einmaligen Repair",
+        "Keine fünfte Implementierungsdatei ist zulässig.",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER",
+        "window.ACCAOUI_SUPABASE_BOOTSTRAP",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        "`resolveSession()`",
+        "`signIn()`",
+        "`signOut()`",
+        "Komposition erfolgt erst bei einem Methodenaufruf",
+        "fail-closed",
+        "`initializeClient()`",
+        "`createClient()`",
+        "`getState()`",
+        "`index.html`",
+        "`app.js`",
+        "`v2737d_authorization_prepared`",
+        "`v2737d_authorization_committed`",
+        "`v2737d_implementation_prepared`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+
+    for marker in required:
+        require(
+            marker in section,
+            f"{document_name}: v27.37d-Autorisierungsmarker fehlt: "
+            f"{marker}",
+        )
+
+    start = "Der spätere Implementierungsscope umfasst exakt:"
+    end = "Keine fünfte Implementierungsdatei ist zulässig."
+
+    require(
+        section.count(start) == 1 and section.count(end) == 1,
+        f"{document_name}: v27.37d-Implementierungsscope nicht eindeutig",
+    )
+
+    actual = section.split(start, 1)[1].split(end, 1)[0].strip()
+    expected = "\n".join(
+        f"- `{path}`" for path in V2737D_IMPLEMENTATION_FILE_ORDER
+    )
+
+    require(
+        actual == expected,
+        f"{document_name}: v27.37d-Implementierungsscope abweichend",
+    )
+
+    shas = frozenset(re.findall(r"\b[0-9a-f]{40}\b", section))
+    require(
+        shas == frozenset({V2737D_AUTHORIZATION_BASE_SHA}),
+        f"{document_name}: v27.37d-Autorisierungs-SHA-Vertrag verletzt",
+    )
+
+
+def validate_v2737d_authorization_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+) -> None:
+    for document, name in (
+        (state_text, "PROJECT_STATE_CURRENT"),
+        (task_text, "CURRENT_TASK"),
+        (cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (masterlist_text, "PROJECT_MASTERLIST"),
+    ):
+        validate_v2737d_authorization_section(
+            extract_v2737d_authorization_section(document, name),
+            name,
+        )
+
+    require(
+        v2737a_current_task_header_fields(task_text)
+        == V2737D_AUTHORIZED_TASK_FIELDS,
+        "v27.37d-AUTHORIZED-CURRENT_TASK-Vertrag ungültig",
+    )
+
+    for marker in (
+        "Stand: v27.37d-AUTORISIERUNG",
+        "Weiterer funktionaler Schritt autorisiert: JA",
+        "Aktuell autorisierter Task: v27.37d",
+        f"Aktuelle Taskart: {V2737D_TITLE}",
+    ):
+        require(
+            marker in state_text,
+            f"PROJECT_STATE_CURRENT: v27.37d-Autorisierungsfeld fehlt: "
+            f"{marker}",
+        )
+
+
+def v2737d_direct_authorization_commit_is_valid(head: str) -> bool:
+    commits = [
+        line.strip()
+        for line in run_git([
+            "rev-list",
+            "--reverse",
+            f"{V2737D_AUTHORIZATION_BASE_SHA}..{head}",
+        ]).splitlines()
+        if line.strip()
+    ]
+
+    if commits != [head]:
+        return False
+
+    lineage = run_git([
+        "rev-list", "--parents", "-n", "1", head
+    ]).split()
+
+    if (
+        len(lineage) != 2
+        or lineage[1] != V2737D_AUTHORIZATION_BASE_SHA
+    ):
+        return False
+
+    files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git([
+            "diff",
+            "--name-only",
+            V2737D_AUTHORIZATION_BASE_SHA,
+            head,
+        ]).splitlines()
+        if line.strip()
+    )
+
+    return files == V2737D_AUTHORIZATION_FILES
+
+
+def extract_v2737d_authorization_section(
+    text: str,
+    document_name: str,
+) -> str:
+    require(
+        text.count(V2737D_AUTHORIZATION_HEADING) == 1,
+        f"{document_name}: v27.37d-Autorisierung fehlt oder ist doppelt",
+    )
+    tail = text.split(V2737D_AUTHORIZATION_HEADING, 1)[1]
+    next_heading = re.search(r"(?m)^## ", tail)
+    return tail[:next_heading.start()] if next_heading else tail
+
+
+def validate_v2737d_authorization_section(
+    section: str,
+    document_name: str,
+) -> None:
+    required = (
+        "Das frische v27.37d-Autorisierungs-Gate autorisiert "
+        "ausschließlich den Task",
+        V2737D_TITLE,
+        f"Technische Gate-Basis: `{V2737D_AUTHORIZATION_BASE_SHA}`.",
+        "einmaligen v27.37d-Bootstrap und dessen einmaligen Repair",
+        "Keine fünfte Implementierungsdatei ist zulässig.",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER",
+        "window.ACCAOUI_SUPABASE_BOOTSTRAP",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        "`resolveSession()`",
+        "`signIn()`",
+        "`signOut()`",
+        "Komposition erfolgt erst bei einem Methodenaufruf",
+        "fail-closed",
+        "`initializeClient()`",
+        "`createClient()`",
+        "`getState()`",
+        "`index.html`",
+        "`app.js`",
+        "`v2737d_authorization_prepared`",
+        "`v2737d_authorization_committed`",
+        "`v2737d_implementation_prepared`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+
+    for marker in required:
+        require(
+            marker in section,
+            f"{document_name}: v27.37d-Autorisierungsmarker fehlt: "
+            f"{marker}",
+        )
+
+    start = "Der spätere Implementierungsscope umfasst exakt:"
+    end = "Keine fünfte Implementierungsdatei ist zulässig."
+
+    require(
+        section.count(start) == 1 and section.count(end) == 1,
+        f"{document_name}: v27.37d-Implementierungsscope nicht eindeutig",
+    )
+
+    actual = section.split(start, 1)[1].split(end, 1)[0].strip()
+    expected = "\n".join(
+        f"- `{path}`" for path in V2737D_IMPLEMENTATION_FILE_ORDER
+    )
+
+    require(
+        actual == expected,
+        f"{document_name}: v27.37d-Implementierungsscope abweichend",
+    )
+
+    shas = frozenset(re.findall(r"\b[0-9a-f]{40}\b", section))
+    require(
+        shas == frozenset({V2737D_AUTHORIZATION_BASE_SHA}),
+        f"{document_name}: v27.37d-Autorisierungs-SHA-Vertrag verletzt",
+    )
+
+
+def validate_v2737d_authorization_documents(
+    state_text: str,
+    task_text: str,
+    cursor_text: str,
+    masterlist_text: str,
+) -> None:
+    for document, name in (
+        (state_text, "PROJECT_STATE_CURRENT"),
+        (task_text, "CURRENT_TASK"),
+        (cursor_text, "CURSOR_MASTER_CONTEXT_ACCAOUI"),
+        (masterlist_text, "PROJECT_MASTERLIST"),
+    ):
+        validate_v2737d_authorization_section(
+            extract_v2737d_authorization_section(document, name),
+            name,
+        )
+
+    require(
+        v2737a_current_task_header_fields(task_text)
+        == V2737D_AUTHORIZED_TASK_FIELDS,
+        "v27.37d-AUTHORIZED-CURRENT_TASK-Vertrag ungültig",
+    )
+
+    for marker in (
+        "Stand: v27.37d-AUTORISIERUNG",
+        "Weiterer funktionaler Schritt autorisiert: JA",
+        "Aktuell autorisierter Task: v27.37d",
+        f"Aktuelle Taskart: {V2737D_TITLE}",
+    ):
+        require(
+            marker in state_text,
+            f"PROJECT_STATE_CURRENT: v27.37d-Autorisierungsfeld fehlt: "
+            f"{marker}",
+        )
+
+
+def v2737d_direct_authorization_commit_is_valid(head: str) -> bool:
+    commits = [
+        line.strip()
+        for line in run_git([
+            "rev-list",
+            "--reverse",
+            f"{V2737D_AUTHORIZATION_BASE_SHA}..{head}",
+        ]).splitlines()
+        if line.strip()
+    ]
+
+    if commits != [head]:
+        return False
+
+    lineage = run_git([
+        "rev-list", "--parents", "-n", "1", head
+    ]).split()
+
+    if (
+        len(lineage) != 2
+        or lineage[1] != V2737D_AUTHORIZATION_BASE_SHA
+    ):
+        return False
+
+    files = frozenset(
+        line.strip().replace("\\", "/")
+        for line in run_git([
+            "diff",
+            "--name-only",
+            V2737D_AUTHORIZATION_BASE_SHA,
+            head,
+        ]).splitlines()
+        if line.strip()
+    )
+
+    return files == V2737D_AUTHORIZATION_FILES
+
+
 def validate_v2737c_closed_at_v2737d_base():
     documents = tuple(
         read_v2735f_commit_document(
@@ -15025,20 +15367,11 @@ def validate_v2737d_gate_bootstrap_lifecycle(
         masterlist_text,
     )
 
-    require(
-        v2737a_current_task_header_fields(task_text)
-        == V2737D_CLOSED_TASK_FIELDS,
-        "v27.37d-Bootstrap darf CURRENT_TASK nicht autorisieren",
-    )
-
     branch = run_git(["branch", "--show-current"]).strip()
     head = run_git(["rev-parse", "HEAD"]).strip()
     origin_main = run_git(["rev-parse", "origin/main"]).strip()
 
-    require(
-        branch == "main",
-        "v27.37d-Bootstrap nur auf main zulässig",
-    )
+    require(branch == "main", "v27.37d nur auf main zulässig")
 
     diff_files = frozenset(
         x.strip().replace("\\", "/")
@@ -15066,26 +15399,35 @@ def validate_v2737d_gate_bootstrap_lifecycle(
     )
 
     working_files = diff_files | untracked_files
+    task_fields = v2737a_current_task_header_fields(task_text)
 
     if head == V2737D_GATE_BOOTSTRAP_BASE_SHA:
         require(
+            task_fields == V2737D_CLOSED_TASK_FIELDS,
+            "v27.37d-Bootstrap darf CURRENT_TASK nicht autorisieren",
+        )
+        require(
             origin_main == head,
-            "v27.37d-Bootstrap-Basis nicht mit origin/main synchron",
+            "v27.37d-Bootstrap-Basis nicht synchron",
         )
         require(
             working_files == V2737D_GATE_FILES,
-            "v27.37d-Bootstrap-Working-Tree-Scope verletzt",
+            "v27.37d-Bootstrap-Scope verletzt",
         )
         phase = "v2737d_gate_bootstrap_prepared"
 
     elif head == V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA:
         require(
+            task_fields == V2737D_CLOSED_TASK_FIELDS,
+            "v27.37d-Repair darf CURRENT_TASK nicht autorisieren",
+        )
+        require(
             origin_main == head,
-            "v27.37d-Repair-Basis nicht mit origin/main synchron",
+            "v27.37d-Repair-Basis nicht synchron",
         )
         require(
             v2737d_direct_bootstrap_commit_is_valid(head),
-            "v27.37d-Bootstrap-Commit an Repair-Basis ungültig",
+            "v27.37d-Bootstrap-Commit ungültig",
         )
 
         if not working_files:
@@ -15093,39 +15435,68 @@ def validate_v2737d_gate_bootstrap_lifecycle(
         else:
             require(
                 working_files == V2737D_GATE_BOOTSTRAP_REPAIR_FILES,
-                "v27.37d-Repair-Working-Tree-Scope verletzt",
+                "v27.37d-Repair-Scope verletzt",
             )
             validate_v2737d_repair_documents(
-                state_text,
-                task_text,
-                cursor_text,
-                masterlist_text,
+                state_text, task_text, cursor_text, masterlist_text
             )
             phase = "v2737d_gate_bootstrap_repair_prepared"
 
-    else:
-        require(
-            not working_files,
-            "v27.37d-Repair-Commit mit offenem Working Tree",
-        )
-        require(
-            origin_main in {
-                V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA,
-                head,
-            },
-            "origin/main außerhalb der v27.37d-Repair-Grenze",
-        )
+    elif head == V2737D_AUTHORIZATION_BASE_SHA:
         require(
             v2737d_direct_repair_commit_is_valid(head),
-            "v27.37d-Repair-Commit ist nicht der direkte Sechs-Dateien-Commit",
+            "v27.37d-Repair-Abschluss an Autorisierungsbasis ungültig",
         )
         validate_v2737d_repair_documents(
-            state_text,
-            task_text,
-            cursor_text,
-            masterlist_text,
+            state_text, task_text, cursor_text, masterlist_text
         )
-        phase = "v2737d_gate_bootstrap_repair_committed"
+        require(
+            origin_main == head,
+            "v27.37d-Autorisierungsbasis nicht synchron",
+        )
+
+        if not working_files:
+            require(
+                task_fields == V2737D_CLOSED_TASK_FIELDS,
+                "v27.37d-Repair-Abschlusszustand ungültig",
+            )
+            phase = "v2737d_gate_bootstrap_repair_committed"
+        else:
+            require(
+                working_files == V2737D_AUTHORIZATION_FILES,
+                "v27.37d-Autorisierungs-Gate-Scope verletzt",
+            )
+            validate_v2737d_authorization_documents(
+                state_text, task_text, cursor_text, masterlist_text
+            )
+            phase = "v2737d_authorization_prepared"
+
+    else:
+        require(
+            v2737d_direct_authorization_commit_is_valid(head),
+            "v27.37d-Autorisierungs-Commit ungültig",
+        )
+        require(
+            origin_main in {V2737D_AUTHORIZATION_BASE_SHA, head},
+            "origin/main außerhalb der v27.37d-Autorisierungsgrenze",
+        )
+
+        validate_v2737d_repair_documents(
+            state_text, task_text, cursor_text, masterlist_text
+        )
+        validate_v2737d_authorization_documents(
+            state_text, task_text, cursor_text, masterlist_text
+        )
+
+        if not working_files:
+            phase = "v2737d_authorization_committed"
+        else:
+            require(
+                working_files
+                == frozenset(V2737D_IMPLEMENTATION_FILE_ORDER),
+                "v27.37d-Implementierungsscope verletzt",
+            )
+            phase = "v2737d_implementation_prepared"
 
     return (
         phase,

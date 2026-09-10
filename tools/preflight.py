@@ -4902,6 +4902,25 @@ def check_v2737c_gate_bootstrap_scope_logic():
             require_completion=True,
             implementation_commit=implementation_commit,
         )
+    elif (
+        V2737D_AUTHORIZATION_HEADING in current_task
+        and _v2737d_current_authorization_documents_are_valid()
+    ):
+        history = _read_v2737c_history(
+            V2737D_GATE_BOOTSTRAP_BASE_SHA
+        )
+        implementation_commit = (
+            history[1] if history is not None else None
+        )
+        valid_documents = (
+            history is not None
+            and _v2737c_commit_documents_are_valid(
+                V2737D_GATE_BOOTSTRAP_BASE_SHA,
+                require_authorization=True,
+                require_completion=True,
+                implementation_commit=implementation_commit,
+            )
+        )
     else:
         valid_documents = False
 
@@ -5596,6 +5615,12 @@ V2737D_GATE_FILE_ORDER = (
     "tools/preflight.py",
 )
 V2737D_GATE_FILES = set(V2737D_GATE_FILE_ORDER)
+V2737D_AUTHORIZATION_BASE_SHA = (
+    "b5a0bd686d0e953893ea78976b6726897446ce63"
+)
+V2737D_AUTHORIZATION_FILES = set(V2737D_GATE_FILE_ORDER)
+V2737D_AUTHORIZATION_HEADING = "## Autorisierter Task v27.37d"
+
 V2737D_IMPLEMENTATION_FILE_ORDER = (
     "data/supabase-participant-auth-session-browser-provider.js",
     "tools/check-participant-auth-session-browser-provider-v2737d.py",
@@ -5605,6 +5630,21 @@ V2737D_IMPLEMENTATION_FILE_ORDER = (
 V2737D_BOOTSTRAP_HEADING = (
     "## v27.37d-GATE-BOOTSTRAP – Kontrollinfrastruktur"
 )
+V2737D_AUTHORIZED_TASK_FIELDS = {
+    "Task-ID": "v27.37d",
+    "Status": "AUTHORIZED",
+    "Autorisiert": "JA",
+    "Titel": V2737D_TITLE,
+    "Funktionaler Ausgangsstand": "v27.35g",
+    "Letzter abgeschlossener Kontrollschritt":
+        "v27.37d-GATE-BOOTSTRAP-REPAIR",
+    "Erlaubte Implementierungsdateien": ", ".join(
+        f"`{path}`" for path in V2737D_IMPLEMENTATION_FILE_ORDER
+    ),
+    "Commit erlaubt": "NEIN",
+    "Push erlaubt": "NEIN",
+}
+
 V2737D_CLOSED_TASK_FIELDS = {
     "Task-ID": "NONE",
     "Status": "BLOCKED",
@@ -5795,6 +5835,138 @@ def _v2737d_direct_repair_commit_is_valid(head):
     return files == V2737D_GATE_BOOTSTRAP_REPAIR_FILES
 
 
+def _v2737d_authorization_section(text):
+    if text.count(V2737D_AUTHORIZATION_HEADING) != 1:
+        return None
+    tail = text.split(V2737D_AUTHORIZATION_HEADING, 1)[1]
+    match = re.search(r"(?m)^## ", tail)
+    return tail[:match.start()] if match else tail
+
+
+def _v2737d_authorization_section_is_valid(section):
+    if not isinstance(section, str):
+        return False
+
+    required = (
+        "Das frische v27.37d-Autorisierungs-Gate autorisiert "
+        "ausschließlich den Task",
+        V2737D_TITLE,
+        f"Technische Gate-Basis: `{V2737D_AUTHORIZATION_BASE_SHA}`.",
+        "einmaligen v27.37d-Bootstrap und dessen einmaligen Repair",
+        "Keine fünfte Implementierungsdatei ist zulässig.",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER",
+        "window.ACCAOUI_SUPABASE_BOOTSTRAP",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_ADAPTER_FACTORY",
+        "window.ACCAOUI_PARTICIPANT_AUTH_SESSION_BOOTSTRAP_BRIDGE_FACTORY",
+        "`resolveSession()`",
+        "`signIn()`",
+        "`signOut()`",
+        "Komposition erfolgt erst bei einem Methodenaufruf",
+        "fail-closed",
+        "`initializeClient()`",
+        "`createClient()`",
+        "`getState()`",
+        "`index.html`",
+        "`app.js`",
+        "`v2737d_authorization_prepared`",
+        "`v2737d_authorization_committed`",
+        "`v2737d_implementation_prepared`",
+        "Supabase bleibt NICHT LIVE.",
+    )
+
+    if not all(marker in section for marker in required):
+        return False
+
+    start = "Der spätere Implementierungsscope umfasst exakt:"
+    end = "Keine fünfte Implementierungsdatei ist zulässig."
+
+    if section.count(start) != 1 or section.count(end) != 1:
+        return False
+
+    actual = section.split(start, 1)[1].split(end, 1)[0].strip()
+    expected = "\n".join(
+        f"- `{path}`" for path in V2737D_IMPLEMENTATION_FILE_ORDER
+    )
+
+    if actual != expected:
+        return False
+
+    shas = set(re.findall(r"\b[0-9a-f]{40}\b", section))
+    return shas == {V2737D_AUTHORIZATION_BASE_SHA}
+
+
+def _v2737d_current_authorization_documents_are_valid():
+    texts = {}
+
+    for path in (
+        "docs/PROJECT_STATE_CURRENT.md",
+        "docs/tasks/CURRENT_TASK.md",
+        "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+        "docs/PROJECT_MASTERLIST.md",
+    ):
+        try:
+            texts[path] = Path(path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            return False
+
+        if not _v2737d_authorization_section_is_valid(
+            _v2737d_authorization_section(texts[path])
+        ):
+            return False
+
+    task_text = texts["docs/tasks/CURRENT_TASK.md"]
+
+    if (
+        _v2737b_current_task_header_fields(task_text)
+        != V2737D_AUTHORIZED_TASK_FIELDS
+    ):
+        return False
+
+    state_text = texts["docs/PROJECT_STATE_CURRENT.md"]
+    required_state = (
+        "Stand: v27.37d-AUTORISIERUNG",
+        "Weiterer funktionaler Schritt autorisiert: JA",
+        "Aktuell autorisierter Task: v27.37d",
+        f"Aktuelle Taskart: {V2737D_TITLE}",
+    )
+
+    return all(marker in state_text for marker in required_state)
+
+
+def _v2737d_direct_authorization_commit_is_valid(head):
+    code, stdout, _stderr = run_command(
+        "git rev-list --reverse "
+        + V2737D_AUTHORIZATION_BASE_SHA
+        + ".."
+        + head
+    )
+    commits = [
+        line.strip() for line in stdout.splitlines() if line.strip()
+    ] if code == 0 else []
+
+    if commits != [head]:
+        return False
+
+    code, stdout, _stderr = run_command(
+        "git rev-list --parents -n 1 " + head
+    )
+    lineage = stdout.split() if code == 0 else []
+
+    if (
+        len(lineage) != 2
+        or lineage[1] != V2737D_AUTHORIZATION_BASE_SHA
+    ):
+        return False
+
+    files = _git_paths([
+        "diff",
+        "--name-only",
+        V2737D_AUTHORIZATION_BASE_SHA,
+        head,
+    ])
+    return files == V2737D_AUTHORIZATION_FILES
+
+
 def _v2737d_direct_bootstrap_commit_is_valid(head):
     code, stdout, _stderr = run_command(
         "git rev-list --reverse "
@@ -5835,12 +6007,6 @@ def _detect_v2737d_gate_bootstrap_profile_phase(working_paths):
     except (OSError, UnicodeError):
         return None
 
-    if (
-        _v2737b_current_task_header_fields(task_text)
-        != V2737D_CLOSED_TASK_FIELDS
-    ):
-        return None
-
     if not _v2737d_current_documents_are_valid():
         return None
 
@@ -5858,27 +6024,34 @@ def _detect_v2737d_gate_bootstrap_profile_phase(working_paths):
         return None
     origin_main = origin_main.strip()
 
+    task_fields = _v2737b_current_task_header_fields(task_text)
+
     if head == V2737D_GATE_BOOTSTRAP_BASE_SHA:
         if (
-            origin_main == head
+            task_fields == V2737D_CLOSED_TASK_FIELDS
+            and origin_main == head
             and working_paths == V2737D_GATE_FILES
         ):
             return "v2737d_gate_bootstrap_prepared"
         return None
 
     if head == V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA:
+        if not _v2737d_direct_bootstrap_commit_is_valid(head):
+            return None
+
         if (
-            origin_main in {
+            task_fields == V2737D_CLOSED_TASK_FIELDS
+            and origin_main in {
                 V2737D_GATE_BOOTSTRAP_BASE_SHA,
                 head,
             }
             and not working_paths
-            and _v2737d_direct_bootstrap_commit_is_valid(head)
         ):
             return "v2737d_gate_bootstrap_committed"
 
         if (
-            origin_main == head
+            task_fields == V2737D_CLOSED_TASK_FIELDS
+            and origin_main == head
             and working_paths == V2737D_GATE_BOOTSTRAP_REPAIR_FILES
             and _v2737d_current_repair_documents_are_valid()
         ):
@@ -5886,16 +6059,52 @@ def _detect_v2737d_gate_bootstrap_profile_phase(working_paths):
 
         return None
 
+    if head == V2737D_AUTHORIZATION_BASE_SHA:
+        if (
+            not _v2737d_direct_repair_commit_is_valid(head)
+            or not _v2737d_current_repair_documents_are_valid()
+            or origin_main != head
+        ):
+            return None
+
+        if (
+            task_fields == V2737D_CLOSED_TASK_FIELDS
+            and not working_paths
+        ):
+            return "v2737d_gate_bootstrap_repair_committed"
+
+        if (
+            task_fields == V2737D_AUTHORIZED_TASK_FIELDS
+            and working_paths == V2737D_AUTHORIZATION_FILES
+            and _v2737d_current_authorization_documents_are_valid()
+        ):
+            return "v2737d_authorization_prepared"
+
+        return None
+
+    if not _v2737d_direct_authorization_commit_is_valid(head):
+        return None
+
+    if origin_main not in {V2737D_AUTHORIZATION_BASE_SHA, head}:
+        return None
+
+    if not _v2737d_current_repair_documents_are_valid():
+        return None
+
+    if not _v2737d_current_authorization_documents_are_valid():
+        return None
+
     if (
-        not working_paths
-        and origin_main in {
-            V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA,
-            head,
-        }
-        and _v2737d_direct_repair_commit_is_valid(head)
-        and _v2737d_current_repair_documents_are_valid()
+        task_fields == V2737D_AUTHORIZED_TASK_FIELDS
+        and not working_paths
     ):
-        return "v2737d_gate_bootstrap_repair_committed"
+        return "v2737d_authorization_committed"
+
+    if (
+        task_fields == V2737D_AUTHORIZED_TASK_FIELDS
+        and working_paths == set(V2737D_IMPLEMENTATION_FILE_ORDER)
+    ):
+        return "v2737d_implementation_prepared"
 
     return None
 
