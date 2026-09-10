@@ -1651,6 +1651,26 @@ V2736E_AUTHORIZED_IMPLEMENTATION_FILES = (
 V2736E_AUTHORIZATION_HEAD = "ad6ccd8b8e010167f303cf0a24edfe8d8036fb81"
 
 
+
+def check_participant_auth_session_browser_provider_v2737d():
+    code, stdout, stderr = run_command(
+        f'"{sys.executable}" '
+        "tools/check-participant-auth-session-browser-provider-v2737d.py"
+    )
+
+    if stdout:
+        print(stdout)
+
+    if stderr:
+        print(stderr)
+
+    if code != 0:
+        errors.append(
+            "v27.37d Teilnehmer-Auth-/Session-"
+            "Browser-Provider-Prüfung fehlgeschlagen"
+        )
+
+
 def _git_paths(arguments):
     code, stdout, _stderr = run_command("git " + " ".join(arguments))
     if code != 0:
@@ -6461,6 +6481,7 @@ def main():
     check_supabase_participant_auth_session_browser_export_v2737c()
     check_supabase_participant_auth_session_adapter_v2737a()
     check_supabase_participant_auth_session_bootstrap_bridge_v2737b()
+    check_participant_auth_session_browser_provider_v2737d()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()
