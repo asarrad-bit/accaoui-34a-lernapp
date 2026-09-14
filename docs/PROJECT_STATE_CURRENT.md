@@ -1,16 +1,73 @@
 # Aktueller Projektzustand
 
-Stand: v27.37d
+Stand: v27.37e-AUTORISIERUNG
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: NONE
-Aktuelle Taskart: Kein Task autorisiert
-Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+Weiterer funktionaler Schritt autorisiert: JA
+Aktuell autorisierter Task: v27.37e
+Aktuelle Taskart: v27.37e – Auth-/Session-Browser-Loader
+Aktueller Blocker: Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt
+
+## Autorisierter Task v27.37e
+
+v27.37e – Auth-/Session-Browser-Loader ist ausschließlich als späterer Implementierungstask autorisiert.
+
+Technische Gate-Basis: `bdb1f08c0c22cbb00c18ae9c13ea539abd4b919c`.
+
+Dieses direkte Gate erhält den vollständig abgeschlossenen v27.37d-Verlauf. Es benötigt keinen zusätzlichen Bootstrap und autorisiert keinen unbekannten Folgetask. Die Implementation bleibt bis zum direkten Commit dieses Autorisierungs-Gates gesperrt.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `data/supabase-participant-auth-session-browser-loader.js`
+- `index.html`
+- `tools/check-participant-auth-session-browser-loader-v2737e.py`
+- `docs/PARTICIPANT_AUTH_SESSION_BROWSER_LOADER_V2737E.md`
+- `tools/preflight.py`
+
+Keine sechste Implementierungsdatei ist zulässig. In diesem Gate wird noch keine dieser Produktdateien erstellt oder geändert.
+
+Der Loader bleibt standardmäßig deaktiviert. Nur das exakte Attribut `data-enabled="true"` fordert die lokale Kette an; fehlende, andere oder fehlerhaft gelesene Werte laden keine Module.
+
+Die lokale Ladefolge ist exakt:
+
+1. `data/supabase-participant-auth-session-adapter.js`
+2. `data/supabase-participant-auth-session-bootstrap-bridge.js`
+3. `data/supabase-participant-auth-session-browser-provider.js`
+
+Jede Stufe wird erst nach erfolgreichem Laden und Prüfung ihrer erwarteten Factory beziehungsweise Provider-Oberfläche fortgesetzt. Bestehende eigene oder geerbte Globals, einschließlich mit undefined belegter Grenzen, werden nicht überschrieben. Ein mehrfacher Ladeversuch darf keine zweite Kette starten.
+
+Die Loader-ID lautet `accaoui-participant-auth-session-browser-loader`. Die einzige neue Bereitschaftsgrenze heißt `ACCAOUI_PARTICIPANT_AUTH_SESSION_BROWSER_LOADER_READY`. Eine angeforderte Kette liefert einen eindeutigen eingefrorenen Bereitschafts- oder Fehlerzustand; Lade-, Grenz- und Prüfungsfehler bleiben fail-closed und geben keine Rohfehler aus.
+
+Beim Laden finden keine Auth-, Session- oder Clientoperationen statt. Keine SDK-/Config-Nachladung, keine Live-Aktivierung, kein eigener Netzwerk- oder Datenbankzugriff und keine SQL-/Migrationsänderung. Das Laden der drei fest vorgegebenen lokalen Scriptressourcen ist die einzige erlaubte Ressourcenanforderung.
+
+`index.html` erhält später ausschließlich eine zusätzliche deaktivierte Loader-Einbindung unmittelbar vor dem bestehenden app.js-Script. Die bestehende Teilnehmerzugangs-Loader-Einbindung bleibt unverändert deaktiviert. `app.js`, die vorhandenen Auth-/Session-Bausteine, Bootstrap, SDK, Config und sämtliche historischen Einzelchecker bleiben unverändert.
+
+Der Lifecycle umfasst von Anfang an exakt:
+
+- `v2737e_authorization_prepared`: Basis-HEAD, autorisierter Task und exakt die sechs Gate-Dateien.
+- `v2737e_authorization_committed`: genau ein direkter Gate-Commit, autorisierter Task und sauberer Working Tree.
+- `v2737e_implementation_prepared`: Gate committet, autorisierter Task und exakt die fünf Implementierungsdateien.
+- `v2737e_implementation_committed`: genau eine direkte Implementation, autorisierter Task und sauberer Working Tree.
+- `v2737e_closure_prepared`: Implementation committet, geschlossener Task und exakt die vier Steuerungsdokumente.
+- `v2737e_closure_committed`: genau eine direkte Closure, geschlossener Task und sauberer Working Tree.
+
+Gate-Dateien sind exakt die vier Steuerungsdokumente, `tools/check-project-continuity-control.py` und `tools/preflight.py`. Closure-Dateien sind exakt die vier Steuerungsdokumente. Nach der Implementation bleiben die fünf Implementierungsdateien während der Closure unverändert.
+
+Phasen, Commitrollen und Übergänge werden aus linearer Git-Historie, Dokumentvertrag und exaktem Dateiumfang abgeleitet. Übersprungene, wiederholte oder fremde Übergänge sowie Wiederöffnung nach Closure sind verboten. Keine zukünftigen Commit-SHAs werden hartcodiert.
+
+Die v27.37d-Regression bleibt verpflichtend: bis zur Loader-Implementation läuft der unveränderte Provider-Einzelchecker direkt; danach prüft ein enges zentrales Nachfolgeprofil die unveränderten Provider-/Checkerbytes, die exakt erlaubte deaktivierte Index-Ergänzung und denselben historischen synthetischen Provider-Harness. Kein pauschales PASS und kein allgemeiner Bypass.
+
+In der Implementation darf `tools/preflight.py` ausschließlich den fest vorgegebenen Loader-Checker registrieren; alle übrigen Prüfungen bleiben erhalten. Die Closure verändert weder Checker noch Preflight.
+
+Der spätere Loader-Checker muss Deaktivierung, exaktes true, Reihenfolge, Readiness, Fehlerpfade, globale Kollisionen, Mehrfachladung und passive Auth-/Session-Kette lokal synthetisch prüfen. Continuity, vollständiger Preflight, bestehende Regressionen und isolierte Lifecycle-Übergangstests bleiben verpflichtend.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g; der letzte abgeschlossene Kontrollschritt bleibt bis zur v27.37e-Closure v27.37d. Commit und Push bleiben gesperrt. Supabase bleibt NICHT LIVE. Keine echten Keys und keine echten Teilnehmerdaten.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Abgeschlossener technischer Schritt v27.37d
 

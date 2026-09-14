@@ -1654,6 +1654,13 @@ V2736E_AUTHORIZATION_HEAD = "ad6ccd8b8e010167f303cf0a24edfe8d8036fb81"
 
 
 def check_participant_auth_session_browser_provider_v2737d():
+    phase = _v2737d_post_commit_profile_phase()
+    if phase in {
+        "v2737e_implementation_prepared", "v2737e_implementation_committed",
+        "v2737e_closure_prepared", "v2737e_closure_committed",
+    }:
+        _v2737e_provider_regression_profile()
+        return
     code, stdout, stderr = run_command(
         f'"{sys.executable}" '
         "tools/check-participant-auth-session-browser-provider-v2737d.py"
@@ -1670,6 +1677,85 @@ def check_participant_auth_session_browser_provider_v2737d():
             "v27.37d Teilnehmer-Auth-/Session-"
             "Browser-Provider-Prüfung fehlgeschlagen"
         )
+
+
+# Gate-only placeholder: implementation may replace this one assignment with
+# the fixed checker path. This is test registration, never a runtime/live flag.
+V2737E_IMPLEMENTATION_CHECKER = None
+
+
+def _v2737e_provider_regression_profile():
+    """Run the historical harness only after the complete successor contract."""
+    import ast
+    import shutil
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        if phase not in {
+            "v2737e_implementation_prepared", "v2737e_implementation_committed",
+            "v2737e_closure_prepared", "v2737e_closure_committed",
+        }:
+            raise ValueError("kein gültiges v27.37e-Implementierungs-/Abschlussprofil")
+        control = _V2737D_POST_COMMIT_CONTROL
+        root = Path(__file__).resolve().parents[1]
+        checker_path = "tools/check-participant-auth-session-browser-provider-v2737d.py"
+        source = (root / checker_path).read_text(encoding="utf-8")
+        baseline = control["read_v2735f_commit_document"](
+            control["V2737E_BASE_SHA"], checker_path)
+        if source != baseline:
+            raise ValueError("historischer Provider-Checker verändert")
+        assignments = [
+            ast.literal_eval(statement.value)
+            for statement in ast.parse(source).body
+            if isinstance(statement, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "HARNESS"
+                    for target in statement.targets)
+        ]
+        if len(assignments) != 1 or not isinstance(assignments[0], str):
+            raise ValueError("historischer Provider-Harness uneindeutig")
+        node = shutil.which("node")
+        if not node:
+            raise ValueError("Node.js für historische Provider-Regression fehlt")
+        result = subprocess.run(
+            [node, "-e", assignments[0],
+             str(root / "data/supabase-participant-auth-session-browser-provider.js")],
+            cwd=root, capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=30, check=False,
+        )
+        if result.stdout:
+            print(result.stdout.strip())
+        if result.returncode != 0:
+            raise ValueError("historischer synthetischer Provider-Harness fehlgeschlagen: "
+                             + result.stderr.strip())
+        print("v27.37d: unveränderte Provider-/Checkerquellen und historischer Harness "
+              "im exakten v27.37e-Nachfolgeprofil / PASS")
+    except Exception as exc:
+        errors.append(f"v27.37e Provider-Regression fehlgeschlagen: {exc}")
+
+
+def check_participant_auth_session_browser_loader_v2737e():
+    phase = _v2737d_post_commit_profile_phase()
+    if phase is None or not phase.startswith("v2737e_"):
+        return
+    implementation_phases = {
+        "v2737e_implementation_prepared", "v2737e_implementation_committed",
+        "v2737e_closure_prepared", "v2737e_closure_committed",
+    }
+    if phase not in implementation_phases:
+        if V2737E_IMPLEMENTATION_CHECKER is not None:
+            errors.append("v27.37e: Loader-Checker vor Implementation registriert")
+        return
+    expected = "tools/check-participant-auth-session-browser-loader-v2737e.py"
+    if V2737E_IMPLEMENTATION_CHECKER != expected or not Path(expected).is_file():
+        errors.append("v27.37e: autorisierter Loader-Checker fehlt oder ist nicht registriert")
+        return
+    code, stdout, stderr = run_command(f'"{sys.executable}" -B "{expected}"')
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr)
+    if code != 0:
+        errors.append("v27.37e Auth-/Session-Browser-Loader-Prüfung fehlgeschlagen")
+
 
 
 def _git_paths(arguments):
@@ -5587,8 +5673,15 @@ def check_protected_core_files_v2356():
     authorized_v2736f_browser_loader_scope = (
         _is_authorized_v2736f_browser_loader_scope(changed_paths)
     )
+    authorized_v2737e_index_scope = (
+        "index.html" in changed_protected
+        and _v2737d_post_commit_profile_phase(changed_paths)
+            == "v2737e_implementation_prepared"
+    )
 
     for protected in sorted(changed_protected):
+        if protected == "index.html" and authorized_v2737e_index_scope:
+            continue
         if protected in allowed_protected:
             continue
         if protected == "app.js" and authorized_v2736d_app_scope:
@@ -6510,6 +6603,7 @@ def main():
     check_supabase_participant_auth_session_adapter_v2737a()
     check_supabase_participant_auth_session_bootstrap_bridge_v2737b()
     check_participant_auth_session_browser_provider_v2737d()
+    check_participant_auth_session_browser_loader_v2737e()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()
