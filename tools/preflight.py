@@ -1681,7 +1681,7 @@ def check_participant_auth_session_browser_provider_v2737d():
 
 # Gate-only placeholder: implementation may replace this one assignment with
 # the fixed checker path. This is test registration, never a runtime/live flag.
-V2737E_IMPLEMENTATION_CHECKER = None
+V2737E_IMPLEMENTATION_CHECKER = "tools/check-participant-auth-session-browser-loader-v2737e.py"
 
 
 def _v2737e_provider_regression_profile():
