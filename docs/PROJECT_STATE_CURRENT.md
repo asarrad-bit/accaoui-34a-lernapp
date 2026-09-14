@@ -1,16 +1,28 @@
 # Aktueller Projektzustand
 
-Stand: v27.37e-AUTORISIERUNG
+Stand: v27.37e
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37e
-Aktuelle Taskart: v27.37e – Auth-/Session-Browser-Loader
-Aktueller Blocker: Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener technischer Schritt v27.37e
+
+v27.37e – Auth-/Session-Browser-Loader ist abgeschlossen.
+
+Implementierungscommit: `a8fe8a6081625c5a9c14b854fedb841613470a2f`.
+
+Der Loader ist deaktiviert eingebunden. Die vorhandene Auth-/Session-Kette und app.js bleiben unverändert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37e
 

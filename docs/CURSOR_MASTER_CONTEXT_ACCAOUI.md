@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37e-AUTORISIERUNG
+Stand: v27.37e
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,18 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Abgeschlossener technischer Schritt v27.37e
+
+v27.37e – Auth-/Session-Browser-Loader ist abgeschlossen.
+
+Implementierungscommit: `a8fe8a6081625c5a9c14b854fedb841613470a2f`.
+
+Der Loader ist deaktiviert eingebunden. Die vorhandene Auth-/Session-Kette und app.js bleiben unverändert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37e
 

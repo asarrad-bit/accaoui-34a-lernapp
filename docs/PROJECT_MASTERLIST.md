@@ -1,12 +1,24 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37e-AUTORISIERUNG
+Stand: v27.37e
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Abgeschlossener technischer Schritt v27.37e
+
+v27.37e – Auth-/Session-Browser-Loader ist abgeschlossen.
+
+Implementierungscommit: `a8fe8a6081625c5a9c14b854fedb841613470a2f`.
+
+Der Loader ist deaktiviert eingebunden. Die vorhandene Auth-/Session-Kette und app.js bleiben unverändert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37e
 

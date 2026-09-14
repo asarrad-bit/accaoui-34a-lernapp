@@ -1,14 +1,26 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37e
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37e – Auth-/Session-Browser-Loader
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37d
-Erlaubte Implementierungsdateien: `data/supabase-participant-auth-session-browser-loader.js`, `index.html`, `tools/check-participant-auth-session-browser-loader-v2737e.py`, `docs/PARTICIPANT_AUTH_SESSION_BROWSER_LOADER_V2737E.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37e
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37e
+
+v27.37e – Auth-/Session-Browser-Loader ist abgeschlossen.
+
+Implementierungscommit: `a8fe8a6081625c5a9c14b854fedb841613470a2f`.
+
+Der Loader ist deaktiviert eingebunden. Die vorhandene Auth-/Session-Kette und app.js bleiben unverändert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37e
 
