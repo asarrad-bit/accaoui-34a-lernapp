@@ -1,14 +1,36 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37d
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37d – Isolierter Browser-Provider für Teilnehmer-Auth-/Session-Kette
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37d-GATE-BOOTSTRAP-REPAIR
-Erlaubte Implementierungsdateien: `data/supabase-participant-auth-session-browser-provider.js`, `tools/check-participant-auth-session-browser-provider-v2737d.py`, `docs/PARTICIPANT_AUTH_SESSION_BROWSER_PROVIDER_V2737D.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37d
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37d
+
+v27.37d abgeschlossen.
+
+Implementierungscommit: `3a3933ceb85e83bac19ca71cc960ecb1674f9a38`
+
+Ergebnis:
+
+- Isolierter Browser-Provider `ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER` umgesetzt.
+- Öffentliche Oberfläche bleibt exakt `resolveSession()`, `signIn()` und `signOut()`.
+- Die Auth-/Session-Kette wird ausschließlich lazy beim Methodenaufruf komponiert.
+- Gültige Bridge-Ergebnisse bleiben unverändert; Fehler werden fail-closed als `auth_error` behandelt.
+- Bereits vorhandene Browser-Grenzen werden nicht überschrieben.
+- Kein `initializeClient()`, `createClient()`, `getState()`, eigener `getClient()`-Aufruf, Netzwerkcode, SQL oder Migrationen.
+- `index.html`, `app.js`, Auth-/Session-Adapter und Bootstrap-Brücke blieben unverändert.
+- Der dedizierte v27.37d-Browser-Provider-Checker bestand vor dem Implementierungscommit.
+- Der Abschluss ergänzt ausschließlich die fehlende Post-Commit-/Nachfolger-Kontrollphase; historische v27.36e-/v27.36f-Checker bleiben unverändert.
+- Supabase bleibt NICHT LIVE.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Kein Folgetask ist ausgewählt oder autorisiert.
 
 ## Autorisierter Task v27.37d
 

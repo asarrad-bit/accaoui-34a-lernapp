@@ -1,12 +1,34 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37d-AUTORISIERUNG
+Stand: v27.37d
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Abgeschlossener technischer Schritt v27.37d
+
+v27.37d abgeschlossen.
+
+Implementierungscommit: `3a3933ceb85e83bac19ca71cc960ecb1674f9a38`
+
+Ergebnis:
+
+- Isolierter Browser-Provider `ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER` umgesetzt.
+- Öffentliche Oberfläche bleibt exakt `resolveSession()`, `signIn()` und `signOut()`.
+- Die Auth-/Session-Kette wird ausschließlich lazy beim Methodenaufruf komponiert.
+- Gültige Bridge-Ergebnisse bleiben unverändert; Fehler werden fail-closed als `auth_error` behandelt.
+- Bereits vorhandene Browser-Grenzen werden nicht überschrieben.
+- Kein `initializeClient()`, `createClient()`, `getState()`, eigener `getClient()`-Aufruf, Netzwerkcode, SQL oder Migrationen.
+- `index.html`, `app.js`, Auth-/Session-Adapter und Bootstrap-Brücke blieben unverändert.
+- Der dedizierte v27.37d-Browser-Provider-Checker bestand vor dem Implementierungscommit.
+- Der Abschluss ergänzt ausschließlich die fehlende Post-Commit-/Nachfolger-Kontrollphase; historische v27.36e-/v27.36f-Checker bleiben unverändert.
+- Supabase bleibt NICHT LIVE.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Kein Folgetask ist ausgewählt oder autorisiert.
 
 ## Autorisierter Task v27.37d
 

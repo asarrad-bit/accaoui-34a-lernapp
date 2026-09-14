@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import shutil
+import runpy
 import subprocess
 from pathlib import Path
 
@@ -135,13 +136,24 @@ def find_node() -> str:
 if not PROVIDER_PATH.is_file():
     stop("Provider-Datei fehlt")
 
-require_authorized_task()
+try:
+    control = runpy.run_path(str(
+        ROOT / "tools/check-project-continuity-control.py"
+    ))
+    post_commit_phase = control["detect_v2737d_post_commit_phase"]()
+except Exception as exc:
+    stop(f"v27.37d-Post-Commit-Vertrag ungültig: {exc}")
+
+if post_commit_phase is None:
+    require_authorized_task()
+else:
+    print(f"v27.37d Provider-Checker: geprüfte Phase {post_commit_phase}")
 
 changes = changed_paths()
 if not changes:
     stop("keine v27.37d-Implementierungsänderung gefunden")
 
-if not changes.issubset(IMPLEMENTATION_FILES):
+if post_commit_phase is None and not changes.issubset(IMPLEMENTATION_FILES):
     stop(
         "Working Tree enthält nicht autorisierte Dateien: "
         + ", ".join(sorted(changes - IMPLEMENTATION_FILES))

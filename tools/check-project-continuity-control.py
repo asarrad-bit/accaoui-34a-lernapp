@@ -15349,6 +15349,203 @@ def v2737d_direct_repair_commit_is_valid(head: str) -> bool:
     return files == V2737D_GATE_BOOTSTRAP_REPAIR_FILES
 
 
+V2737D_IMPLEMENTATION_SHA = "3a3933ceb85e83bac19ca71cc960ecb1674f9a38"
+V2737D_COMPLETION_HEADING = "## Abgeschlossener technischer Schritt v27.37d"
+V2737D_DOCUMENT_PATHS = (
+    "docs/PROJECT_STATE_CURRENT.md",
+    "docs/tasks/CURRENT_TASK.md",
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+    "docs/PROJECT_MASTERLIST.md",
+)
+# Separate closure repair authorized by the owner; the historical four-file
+# implementation scope and all older bootstrap/authorization scopes stay intact.
+V2737D_CLOSURE_FILES = V2737D_GATE_FILES | frozenset({
+    "tools/check-participant-auth-session-browser-provider-v2737d.py",
+})
+V2737D_COMPLETED_TASK_FIELDS = {
+    **V2737D_CLOSED_TASK_FIELDS,
+    "Letzter abgeschlossener Kontrollschritt": "v27.37d",
+}
+
+
+def v2737d_post_commit_scope_is_valid(
+    phase: str, task_fields: dict[str, str], working_files: frozenset[str],
+    closure_count: int,
+) -> bool:
+    expected = {
+        "v2737d_implementation_committed": (
+            V2737D_AUTHORIZED_TASK_FIELDS, frozenset(), 0,
+        ),
+        "v2737d_closure_prepared": (
+            V2737D_COMPLETED_TASK_FIELDS, V2737D_CLOSURE_FILES, 0,
+        ),
+        "v2737d_closure_committed": (
+            V2737D_COMPLETED_TASK_FIELDS, frozenset(), 1,
+        ),
+    }
+    return phase in expected and expected[phase] == (
+        task_fields, working_files, closure_count,
+    )
+
+
+def validate_v2737d_completion_documents(
+    documents: tuple[str, ...], implementation_documents: tuple[str, ...],
+) -> None:
+    require(len(documents) == len(implementation_documents) == 4,
+            "v27.37d-Closure benötigt vier Dokumente")
+    require(v2737a_current_task_header_fields(documents[1])
+            == V2737D_COMPLETED_TASK_FIELDS,
+            "v27.37d-Closure muss NONE / BLOCKED / Autorisiert NEIN sein")
+    required_markers = (
+        "v27.37d abgeschlossen.",
+        f"Implementierungscommit: `{V2737D_IMPLEMENTATION_SHA}`",
+        "ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER",
+        "`resolveSession()`", "`signIn()`", "`signOut()`",
+        "fail-closed", "Supabase bleibt NICHT LIVE.",
+        "Der letzte abgeschlossene funktionale Stand bleibt v27.35g.",
+        "Kein Folgetask ist ausgewählt oder autorisiert.",
+    )
+    for path, text, baseline in zip(
+        V2737D_DOCUMENT_PATHS, documents, implementation_documents
+    ):
+        require(text.count(V2737D_COMPLETION_HEADING) == 1,
+                f"{path}: v27.37d-Abschluss fehlt oder ist doppelt")
+        before, tail = text.split(V2737D_COMPLETION_HEADING, 1)
+        require("## " not in before,
+                f"{path}: v27.37d-Abschluss steht nicht an erster Stelle")
+        next_heading = re.search(r"(?m)^## ", tail)
+        require(next_heading is not None,
+                f"{path}: historische Dokumentation fehlt")
+        section = tail[:next_heading.start()]
+        require(all(marker in section for marker in required_markers),
+                f"{path}: v27.37d-Abschlussmarker fehlt")
+        require(set(re.findall(r"\b[0-9a-f]{40}\b", section))
+                == {V2737D_IMPLEMENTATION_SHA},
+                f"{path}: v27.37d-Abschluss-SHA-Vertrag verletzt")
+        old_heading = re.search(r"(?m)^## ", baseline)
+        require(old_heading is not None
+                and tail[next_heading.start():] == baseline[old_heading.start():],
+                f"{path}: historische Dokumentation wurde verändert")
+        if path != "docs/tasks/CURRENT_TASK.md":
+            require(re.findall(r"(?m)^Stand: (.*)$", before) == ["v27.37d"],
+                    f"{path}: Abschlussstand ist nicht v27.37d")
+
+    state_header = documents[0].split("## ", 1)[0]
+    for key, value in (
+        ("Letzter abgeschlossener funktionaler Stand", "v27.35g"),
+        ("Funktionsstatus", "v27.35g abgeschlossen"),
+        ("Weiterer funktionaler Schritt autorisiert", "NEIN"),
+        ("Aktuell autorisierter Task", "NONE"),
+        ("Aktuelle Taskart", "Kein Task autorisiert"),
+    ):
+        require(re.findall(r"(?m)^" + re.escape(key) + r": (.*)$", state_header)
+                == [value], f"PROJECT_STATE_CURRENT: Abschlussfeld {key} ungültig")
+
+
+def detect_v2737d_post_commit_phase(
+    expected_working_files: frozenset[str] | None = None,
+) -> str | None:
+    """Shared strict post-implementation gate; never accepts an unknown successor.
+
+    None means an earlier lifecycle phase. Invalid states after the existing
+    implementation raise ValidationError, rather than reopening authorization.
+    """
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    known_implementation = subprocess.run(
+        ["git", "cat-file", "-e", V2737D_IMPLEMENTATION_SHA + "^{commit}"],
+        cwd=ROOT, capture_output=True, check=False,
+    )
+    if known_implementation.returncode != 0:
+        return None
+    if not git_is_ancestor(V2737D_IMPLEMENTATION_SHA, head):
+        return None
+    require(run_git(["branch", "--show-current"]).strip() == "main",
+            "v27.37d nur auf main zulässig")
+    lineage = run_git([
+        "rev-list", "--parents", "-n", "1", V2737D_IMPLEMENTATION_SHA
+    ]).split()
+    require(len(lineage) == 2, "v27.37d-Implementierung ist kein linearer Commit")
+    authorization_commit = lineage[1]
+    require(v2737d_direct_bootstrap_commit_is_valid(
+                V2737D_GATE_BOOTSTRAP_REPAIR_BASE_SHA)
+            and v2737d_direct_repair_commit_is_valid(V2737D_AUTHORIZATION_BASE_SHA)
+            and v2737d_direct_authorization_commit_is_valid(authorization_commit),
+            "v27.37d-Bootstrap-/Repair-/Autorisierungshistorie ungültig")
+
+    def paths(arguments: list[str]) -> frozenset[str]:
+        return frozenset(run_git(arguments).splitlines())
+
+    require(paths(["diff", "--name-only", authorization_commit,
+                   V2737D_IMPLEMENTATION_SHA])
+            == frozenset(V2737D_IMPLEMENTATION_FILE_ORDER),
+            "v27.37d-Implementierungscommit hat nicht exakt vier Dateien")
+    implementation_documents = tuple(
+        read_v2735f_commit_document(V2737D_IMPLEMENTATION_SHA, path)
+        for path in V2737D_DOCUMENT_PATHS
+    )
+    for commit in (authorization_commit, V2737D_IMPLEMENTATION_SHA):
+        documents = tuple(read_v2735f_commit_document(commit, path)
+                          for path in V2737D_DOCUMENT_PATHS)
+        validate_v2737d_bootstrap_documents(*documents)
+        validate_v2737d_repair_documents(*documents)
+        validate_v2737d_authorization_documents(*documents)
+
+    commits = run_git([
+        "rev-list", "--reverse", f"{V2737D_IMPLEMENTATION_SHA}..{head}"
+    ]).splitlines()
+    require(len(commits) <= 1, "v27.37d: unbekannter oder wiederholter Closure-Commit")
+    if commits:
+        require(commits == [head] and run_git([
+            "rev-list", "--parents", "-n", "1", head
+        ]).split() == [head, V2737D_IMPLEMENTATION_SHA],
+            "v27.37d-Closure muss direkt und linear auf Implementation folgen")
+        require(paths(["diff", "--name-only", V2737D_IMPLEMENTATION_SHA, head])
+                == V2737D_CLOSURE_FILES,
+                "v27.37d-Closure-Commit muss exakt sieben Kontrolldateien enthalten")
+        validate_v2737d_completion_documents(tuple(
+            read_v2735f_commit_document(head, path) for path in V2737D_DOCUMENT_PATHS
+        ), implementation_documents)
+
+    origin_main = run_git(["rev-parse", "origin/main"]).strip()
+    require(origin_main in {authorization_commit, V2737D_IMPLEMENTATION_SHA, head},
+            "origin/main außerhalb der v27.37d-Post-Commit-Grenze")
+    staged = paths(["diff", "--cached", "--name-only"])
+    require(not staged, "v27.37d darf keine staged Dateien enthalten")
+    working = paths(["diff", "--name-only"]) | paths([
+        "ls-files", "--others", "--exclude-standard"
+    ])
+    require(expected_working_files is None or working == expected_working_files,
+            "v27.37d: Working-Tree-Erfassung widersprüchlich")
+    documents = tuple(read_required_text(ROOT / path) for path in V2737D_DOCUMENT_PATHS)
+    task_fields = v2737a_current_task_header_fields(documents[1])
+    phase = (
+        "v2737d_closure_committed" if commits else
+        "v2737d_implementation_committed" if task_fields == V2737D_AUTHORIZED_TASK_FIELDS
+        else "v2737d_closure_prepared"
+    )
+    require(v2737d_post_commit_scope_is_valid(phase, task_fields, working, len(commits)),
+            "v27.37d-Post-Commit-Scope-/Phasenvertrag verletzt")
+    if phase == "v2737d_implementation_committed":
+        require(documents == implementation_documents,
+                "v27.37d-Implementierungsdokumente verändert")
+    else:
+        validate_v2737d_completion_documents(documents, implementation_documents)
+    # A permitted control change must never mask a product change, even when a
+    # later working-tree edit cancels an earlier committed product edit.
+    for path in (
+        "index.html", "app.js",
+        "data/supabase-participant-auth-session-adapter.js",
+        "data/supabase-participant-auth-session-bootstrap-bridge.js",
+        "data/supabase-participant-auth-session-browser-provider.js",
+        "docs/PARTICIPANT_AUTH_SESSION_BROWSER_PROVIDER_V2737D.md",
+    ):
+        baseline = run_git_bytes(["show", f"{V2737D_IMPLEMENTATION_SHA}:{path}"])
+        current = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+        require(current == baseline.replace(b"\r\n", b"\n"),
+                f"v27.37d: eingefrorene Datei verändert: {path}")
+    return phase
+
+
 def validate_v2737d_gate_bootstrap_lifecycle(
     state_text: str,
     task_text: str,
@@ -15401,7 +15598,11 @@ def validate_v2737d_gate_bootstrap_lifecycle(
     working_files = diff_files | untracked_files
     task_fields = v2737a_current_task_header_fields(task_text)
 
-    if head == V2737D_GATE_BOOTSTRAP_BASE_SHA:
+    post_commit_phase = detect_v2737d_post_commit_phase(working_files)
+    if post_commit_phase is not None:
+        phase = post_commit_phase
+
+    elif head == V2737D_GATE_BOOTSTRAP_BASE_SHA:
         require(
             task_fields == V2737D_CLOSED_TASK_FIELDS,
             "v27.37d-Bootstrap darf CURRENT_TASK nicht autorisieren",

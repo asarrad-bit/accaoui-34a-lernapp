@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import os
 import re
+import runpy
 import subprocess
 import sys
 
@@ -4924,7 +4925,10 @@ def check_v2737c_gate_bootstrap_scope_logic():
         )
     elif (
         V2737D_AUTHORIZATION_HEADING in current_task
-        and _v2737d_current_authorization_documents_are_valid()
+        and (
+            _v2737d_current_authorization_documents_are_valid()
+            or _v2737d_post_commit_profile_phase() is not None
+        )
     ):
         history = _read_v2737c_history(
             V2737D_GATE_BOOTSTRAP_BASE_SHA
@@ -6019,7 +6023,31 @@ def _v2737d_direct_bootstrap_commit_is_valid(head):
     return files == V2737D_GATE_FILES
 
 
+_V2737D_POST_COMMIT_CONTROL = None
+
+
+def _v2737d_post_commit_profile_phase(working_paths=None):
+    global _V2737D_POST_COMMIT_CONTROL
+    try:
+        if _V2737D_POST_COMMIT_CONTROL is None:
+            _V2737D_POST_COMMIT_CONTROL = runpy.run_path(str(
+                Path(__file__).resolve().with_name("check-project-continuity-control.py")
+            ))
+        detector = _V2737D_POST_COMMIT_CONTROL["detect_v2737d_post_commit_phase"]
+        return detector(None if working_paths is None else frozenset(working_paths))
+    except Exception as exc:
+        # Keep the gate closed; do not silently fall through to a historical PASS.
+        message = f"v27.37d-Post-Commit-Prüfung fehlgeschlagen: {exc}"
+        if message not in errors:
+            errors.append(message)
+        return None
+
+
 def _detect_v2737d_gate_bootstrap_profile_phase(working_paths):
+    post_commit_phase = _v2737d_post_commit_profile_phase(working_paths)
+    if post_commit_phase is not None:
+        return post_commit_phase
+
     try:
         task_text = Path(
             "docs/tasks/CURRENT_TASK.md"

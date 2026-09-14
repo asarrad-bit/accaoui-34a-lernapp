@@ -1,16 +1,38 @@
 # Aktueller Projektzustand
 
-Stand: v27.37d-AUTORISIERUNG
+Stand: v27.37d
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37d
-Aktuelle Taskart: v27.37d – Isolierter Browser-Provider für Teilnehmer-Auth-/Session-Kette
-Aktueller Blocker: Umsetzung bleibt bis zum Commit dieses Autorisierungs-Gates blockiert
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener technischer Schritt v27.37d
+
+v27.37d abgeschlossen.
+
+Implementierungscommit: `3a3933ceb85e83bac19ca71cc960ecb1674f9a38`
+
+Ergebnis:
+
+- Isolierter Browser-Provider `ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER` umgesetzt.
+- Öffentliche Oberfläche bleibt exakt `resolveSession()`, `signIn()` und `signOut()`.
+- Die Auth-/Session-Kette wird ausschließlich lazy beim Methodenaufruf komponiert.
+- Gültige Bridge-Ergebnisse bleiben unverändert; Fehler werden fail-closed als `auth_error` behandelt.
+- Bereits vorhandene Browser-Grenzen werden nicht überschrieben.
+- Kein `initializeClient()`, `createClient()`, `getState()`, eigener `getClient()`-Aufruf, Netzwerkcode, SQL oder Migrationen.
+- `index.html`, `app.js`, Auth-/Session-Adapter und Bootstrap-Brücke blieben unverändert.
+- Der dedizierte v27.37d-Browser-Provider-Checker bestand vor dem Implementierungscommit.
+- Der Abschluss ergänzt ausschließlich die fehlende Post-Commit-/Nachfolger-Kontrollphase; historische v27.36e-/v27.36f-Checker bleiben unverändert.
+- Supabase bleibt NICHT LIVE.
+
+Der letzte abgeschlossene funktionale Stand bleibt v27.35g.
+Kein Folgetask ist ausgewählt oder autorisiert.
 
 ## Autorisierter Task v27.37d
 
