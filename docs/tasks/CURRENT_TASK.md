@@ -1,14 +1,26 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37f
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37f – Auth-/Session-Anbindung an den App-Start
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37e
-Erlaubte Implementierungsdateien: `app.js`, `tools/check-participant-auth-session-app-entry-v2737f.py`, `docs/PARTICIPANT_AUTH_SESSION_APP_ENTRY_V2737F.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37f
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37f
+
+v27.37f – Auth-/Session-Anbindung an den App-Start ist abgeschlossen.
+
+Implementierungscommit: `48a9b27f190e8dc872aedd9df578470ffe4ce9c1`.
+
+Die Auth-/Session-Anbindung gilt ausschließlich für ausdrücklich angeforderten Auth-Modus. Beide Loader bleiben deaktiviert; die bestehende Teilnehmerzugangsprüfung bleibt erforderlich. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37f
 

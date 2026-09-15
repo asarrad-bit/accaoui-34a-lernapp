@@ -1,16 +1,28 @@
 # Aktueller Projektzustand
 
-Stand: v27.37f-AUTORISIERUNG
+Stand: v27.37f
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37f
-Aktuelle Taskart: v27.37f – Auth-/Session-Anbindung an den App-Start
-Aktueller Blocker: Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener technischer Schritt v27.37f
+
+v27.37f – Auth-/Session-Anbindung an den App-Start ist abgeschlossen.
+
+Implementierungscommit: `48a9b27f190e8dc872aedd9df578470ffe4ce9c1`.
+
+Die Auth-/Session-Anbindung gilt ausschließlich für ausdrücklich angeforderten Auth-Modus. Beide Loader bleiben deaktiviert; die bestehende Teilnehmerzugangsprüfung bleibt erforderlich. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37f
 
