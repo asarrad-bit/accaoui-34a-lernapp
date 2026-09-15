@@ -160,15 +160,164 @@ document.addEventListener("DOMContentLoaded", () => {
   initAppBoot();
 });
 
+// BEGIN v27.37f auth/session app entry
+let participantAppBootPromiseV2737F = null;
+let participantAuthFlowPromiseV2737F = null;
+let participantStartActivationV2737F = null;
+let participantStartNoticeShownV2737F = false;
+
+function readParticipantStartActivationV2737F() {
+  if (participantStartActivationV2737F !== null) {
+    return participantStartActivationV2737F;
+  }
+  let authRequested = false;
+  let accessRequested = false;
+  let failed = false;
+  try {
+    const lookup = document.getElementById;
+    if (typeof lookup === "function") {
+      const authElement = lookup.call(
+        document, "accaoui-participant-auth-session-browser-loader"
+      );
+      authRequested = !!authElement &&
+        authElement.getAttribute("data-enabled") === "true";
+      const accessElement = lookup.call(
+        document, PARTICIPANT_ACCESS_BROWSER_LOADER_ID_V2736F
+      );
+      accessRequested = !!accessElement &&
+        accessElement.getAttribute("data-enabled") === "true";
+    }
+  } catch (_error) {
+    failed = true;
+  }
+  participantStartActivationV2737F = Object.freeze({
+    authRequested, accessRequested, failed
+  });
+  return participantStartActivationV2737F;
+}
+
+function showParticipantStartNoticeV2737F(notice) {
+  if (participantStartNoticeShownV2737F) {
+    return;
+  }
+  participantStartNoticeShownV2737F = true;
+  try {
+    renderLoginOrAccessNotice(notice);
+  } catch (_error) {
+    // A failed view cannot reopen access or expose its raw exception.
+  }
+}
+
+function participantStartErrorV2737F() {
+  showParticipantStartNoticeV2737F(
+    createParticipantAccessNoticeStateV2736D("access_error")
+  );
+}
+
+function isParticipantStartRecordV2737F(value, names) {
+  try {
+    if (
+      value === null || typeof value !== "object" ||
+      Object.getPrototypeOf(value) !== Object.prototype || !Object.isFrozen(value)
+    ) {
+      return false;
+    }
+    const keys = Reflect.ownKeys(value);
+    if (keys.length !== names.length || !names.every((name) => keys.includes(name))) {
+      return false;
+    }
+    return names.every((name) => {
+      const field = Object.getOwnPropertyDescriptor(value, name);
+      return field && Object.prototype.hasOwnProperty.call(field, "value") &&
+        field.enumerable && !field.configurable && !field.writable;
+    });
+  } catch (_error) {
+    return false;
+  }
+}
+
+function readParticipantStartBoundaryV2737F(name) {
+  const field = Object.getOwnPropertyDescriptor(window, name);
+  if (
+    !field || !Object.prototype.hasOwnProperty.call(field, "value") ||
+    !field.enumerable || field.configurable || field.writable
+  ) {
+    return null;
+  }
+  return field.value;
+}
+
+async function resolveParticipantStartSessionV2737F() {
+  try {
+    const readiness = readParticipantStartBoundaryV2737F(
+      "ACCAOUI_PARTICIPANT_AUTH_SESSION_BROWSER_LOADER_READY"
+    );
+    if (
+      readiness === null ||
+      (typeof readiness !== "object" && typeof readiness !== "function") ||
+      typeof readiness.then !== "function"
+    ) {
+      return "access_error";
+    }
+    const state = await readiness;
+    if (
+      !isParticipantStartRecordV2737F(state, ["requested", "ready", "status"]) ||
+      state.requested !== true || state.ready !== true || state.status !== "ready"
+    ) {
+      return "access_error";
+    }
+    const provider = readParticipantStartBoundaryV2737F(
+      "ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER"
+    );
+    if (
+      !isParticipantStartRecordV2737F(provider, ["resolveSession", "signIn", "signOut"]) ||
+      typeof provider.resolveSession !== "function" ||
+      typeof provider.signIn !== "function" || typeof provider.signOut !== "function"
+    ) {
+      return "access_error";
+    }
+    const result = await provider.resolveSession.call(provider);
+    if (!isParticipantStartRecordV2737F(result, ["ok", "code"])) {
+      return "access_error";
+    }
+    if (result.ok === true && result.code === "session_available") {
+      return null;
+    }
+    if (
+      result.ok === false &&
+      (result.code === "session_missing" || result.code === "session_invalid")
+    ) {
+      return "login_required";
+    }
+    return "access_error";
+  } catch (_error) {
+    return "access_error";
+  }
+}
+// END v27.37f auth/session app entry
 async function initAppBoot() {
-  console.log("App-Version:", APP_VERSION);
+  if (participantAppBootPromiseV2737F !== null) {
+    return participantAppBootPromiseV2737F;
+  }
+  participantAppBootPromiseV2737F = Promise.resolve().then(async () => {
+    const activation = readParticipantStartActivationV2737F();
+    if (
+      activation.authRequested || activation.failed ||
+      participantAuthFlowPromiseV2737F !== null
+    ) {
+      await initAuthFlow();
+      return;
+    }
+    console.log("App-Version:", APP_VERSION);
 
-  const configLoadState = await loadOptionalSupabaseConfig();
-  console.info("Supabase-Config-Ladeweg:", configLoadState.status);
+    const configLoadState = await loadOptionalSupabaseConfig();
+    console.info("Supabase-Config-Ladeweg:", configLoadState.status);
 
-  logSupabaseConfigState();
-  logSupabaseAdapterHealthState();
-  await initAuthFlow();
+    logSupabaseConfigState();
+    logSupabaseAdapterHealthState();
+    await initAuthFlow();
+  }).catch(participantStartErrorV2737F);
+  return participantAppBootPromiseV2737F;
 }
 
 async function loadOptionalSupabaseConfig() {
@@ -320,22 +469,41 @@ function logSupabaseAdapterHealthState() {
 }
 
 async function initAuthFlow() {
+  if (participantAuthFlowPromiseV2737F !== null) {
+    return participantAuthFlowPromiseV2737F;
+  }
+  participantAuthFlowPromiseV2737F = Promise.resolve().then(async () => {
   const accessState = getCurrentAccessState();
 
-  // Lokale Auth-Guard-Testzustände und bestehende lokale Sperren behalten
-  // Vorrang; ein injizierter Provider wird dann nicht ausgewertet.
+  // Local guards keep priority over readiness and both provider operations.
   if (!accessState.isAllowed) {
-    renderLoginOrAccessNotice(accessState);
+    showParticipantStartNoticeV2737F(accessState);
     return;
   }
 
-  const loaderRequested = isParticipantAccessBrowserLoaderRequestedV2736F();
+  const activation = readParticipantStartActivationV2737F();
+  if (activation.failed) {
+    participantStartErrorV2737F();
+    return;
+  }
+  const authRequested = activation.authRequested;
+  if (authRequested) {
+    const sessionNotice = await resolveParticipantStartSessionV2737F();
+    if (sessionNotice !== null) {
+      showParticipantStartNoticeV2737F(
+        createParticipantAccessNoticeStateV2736D(sessionNotice)
+      );
+      return;
+    }
+  }
+
+  const loaderRequested = activation.accessRequested;
 
   if (loaderRequested) {
     const loaderReady = await awaitParticipantAccessBrowserLoaderV2736F();
 
     if (!loaderReady) {
-      renderLoginOrAccessNotice(
+      showParticipantStartNoticeV2737F(
         createParticipantAccessNoticeStateV2736D("access_error")
       );
       return;
@@ -345,8 +513,8 @@ async function initAuthFlow() {
   const providerAccessState = await resolveParticipantAccessAppProviderV2736D();
 
   if (providerAccessState.isProviderAbsent) {
-    if (loaderRequested) {
-      renderLoginOrAccessNotice(
+    if (loaderRequested || authRequested) {
+      showParticipantStartNoticeV2737F(
         createParticipantAccessNoticeStateV2736D("access_error")
       );
       return;
@@ -361,7 +529,9 @@ async function initAuthFlow() {
     return;
   }
 
-  renderLoginOrAccessNotice(providerAccessState);
+  showParticipantStartNoticeV2737F(providerAccessState);
+  }).catch(participantStartErrorV2737F);
+  return participantAuthFlowPromiseV2737F;
 }
 
 function isParticipantAccessBrowserLoaderRequestedV2736F() {

@@ -1766,7 +1766,7 @@ def check_participant_auth_session_browser_loader_v2737e():
 
 
 # Only this fixed registration may change during the later implementation.
-V2737F_IMPLEMENTATION_CHECKER = None
+V2737F_IMPLEMENTATION_CHECKER = "tools/check-participant-auth-session-app-entry-v2737f.py"
 
 
 def _v2737f_historical_regression_profile():
