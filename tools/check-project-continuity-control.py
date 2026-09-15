@@ -15653,9 +15653,19 @@ def validate_v2737e_facts(
     return phase
 
 
-def detect_v2737e_phase(expected_working_files: frozenset[str] | None = None) -> str | None:
-    head = run_git(["rev-parse", "HEAD"]).strip()
-    state = read_required_text(STATE_PATH)
+def detect_v2737e_phase(
+    expected_working_files: frozenset[str] | None = None,
+    *, _closed_snapshot: str | None = None,
+) -> str | None:
+    require(_closed_snapshot in (None, V2737F_BASE_SHA),
+            "v27.37e: nur vollständiger historischer Abschluss als Snapshot erlaubt")
+    if _closed_snapshot is None:
+        successor = detect_v2737f_phase(expected_working_files)
+        if successor is not None:
+            return successor
+    head = _closed_snapshot or run_git(["rev-parse", "HEAD"]).strip()
+    state = (read_required_text(STATE_PATH) if _closed_snapshot is None
+             else read_v2735f_commit_document(_closed_snapshot, "docs/PROJECT_STATE_CURRENT.md"))
     active = V2737E_AUTHORIZATION_HEADING in state
     if not git_is_ancestor(V2737E_BASE_SHA, head):
         require(not active, "v27.37e: falsche Git-Basis")
@@ -15695,16 +15705,17 @@ def detect_v2737e_phase(expected_working_files: frozenset[str] | None = None) ->
         )
         commits.append(commit)
         previous = ref
-    working = paths(["diff", "--name-only", "--no-renames"]) | paths([
-        "ls-files", "--others", "--exclude-standard"
-    ])
+    working = (frozenset() if _closed_snapshot else
+               paths(["diff", "--name-only", "--no-renames"]) | paths([
+                   "ls-files", "--others", "--exclude-standard"
+               ]))
     require(expected_working_files is None or working == expected_working_files,
             "v27.37e: Working-Tree-Erfassung widersprüchlich")
-    current = snapshot(None)
+    current = snapshot(_closed_snapshot)
     current.update(
-        branch=run_git(["branch", "--show-current"]).strip(),
-        head=head, origin=run_git(["rev-parse", "origin/main"]).strip(),
-        staged=paths(["diff", "--cached", "--name-only"]), working=working,
+        branch="main" if _closed_snapshot else run_git(["branch", "--show-current"]).strip(),
+        head=head, origin=head if _closed_snapshot else run_git(["rev-parse", "origin/main"]).strip(),
+        staged=frozenset() if _closed_snapshot else paths(["diff", "--cached", "--name-only"]), working=working,
     )
     phase = validate_v2737e_facts(
         tuple(content(V2737E_BASE_SHA, p) for p in V2737E_DOCUMENT_PATHS),
@@ -15720,7 +15731,7 @@ def detect_v2737e_phase(expected_working_files: frozenset[str] | None = None) ->
         "data/supabase-participant-auth-session-browser-provider.js",
         "tools/check-participant-auth-session-browser-provider-v2737d.py",
     ):
-        require(content(None, path) == content(V2737E_BASE_SHA, path),
+        require(content(_closed_snapshot, path) == content(V2737E_BASE_SHA, path),
                 f"v27.37e: eingefrorene Regression verändert: {path}")
     return phase
 
@@ -15831,6 +15842,467 @@ def run_v2737e_lifecycle_self_checks() -> tuple[int, int]:
     altered[1]["index"] += "<script>cancelled-later()</script>\n"
     blocked(tuple(altered), current)
     return positives, negatives
+
+
+
+
+# Strict successor of the complete v27.37e closure.
+V2737F_BASE_SHA = "514b0c25805a53f711d963f2fe3b7c08d4eef3e1"
+V2737F_TITLE = "v27.37f – Auth-/Session-Anbindung an den App-Start"
+V2737F_AUTHORIZATION_HEADING = "## Autorisierter Task v27.37f"
+V2737F_DOCUMENT_PATHS = V2737D_DOCUMENT_PATHS
+V2737F_GATE_FILES = frozenset(V2737D_GATE_FILE_ORDER)
+V2737F_IMPLEMENTATION_FILE_ORDER = (
+    "app.js",
+    "tools/check-participant-auth-session-app-entry-v2737f.py",
+    "docs/PARTICIPANT_AUTH_SESSION_APP_ENTRY_V2737F.md",
+    "tools/preflight.py",
+)
+V2737F_IMPLEMENTATION_FILES = frozenset(V2737F_IMPLEMENTATION_FILE_ORDER)
+V2737F_CLOSURE_FILES = frozenset(V2737F_DOCUMENT_PATHS)
+V2737F_AUTHORIZED_TASK_FIELDS = {
+    **V2737E_CLOSED_TASK_FIELDS,
+    "Task-ID": "v27.37f", "Status": "AUTHORIZED", "Autorisiert": "JA",
+    "Titel": V2737F_TITLE,
+    "Erlaubte Implementierungsdateien": ", ".join(
+        f"`{path}`" for path in V2737F_IMPLEMENTATION_FILE_ORDER
+    ),
+}
+V2737F_CLOSED_TASK_FIELDS = {
+    **V2737E_CLOSED_TASK_FIELDS,
+    "Letzter abgeschlossener Kontrollschritt": "v27.37f",
+}
+V2737F_INDEX_LINE = (
+    '<script id="accaoui-participant-auth-session-browser-loader" '
+    'src="data/supabase-participant-auth-session-browser-loader.js" '
+    'data-enabled="false"></script>\n'
+)
+V2737F_APP_LINE = '<script src="app.js?v=24.8"></script>\n'
+V2737F_CHECKER_REGISTRATION = "V2737F_IMPLEMENTATION_CHECKER = None\n"
+V2737F_REGISTERED_CHECKER = (
+    'V2737F_IMPLEMENTATION_CHECKER = '
+    '"tools/check-participant-auth-session-app-entry-v2737f.py"\n'
+)
+
+V2737F_PHASES = frozenset("v2737f_" + name for name in (
+    "authorization_prepared", "authorization_committed", "implementation_prepared",
+    "implementation_committed", "closure_prepared", "closure_committed",
+))
+V2737F_FROZEN_REGRESSION_PATHS = (
+    "index.html",
+    "data/supabase-participant-access-adapter.js",
+    "data/supabase-participant-access-bootstrap-bridge.js",
+    "data/supabase-participant-access-browser-provider.js",
+    "data/supabase-participant-access-browser-loader.js",
+    "data/supabase-participant-auth-session-adapter.js",
+    "data/supabase-participant-auth-session-bootstrap-bridge.js",
+    "data/supabase-participant-auth-session-browser-provider.js",
+    "data/supabase-participant-auth-session-browser-loader.js",
+    "tools/check-participant-access-app-entry-v2736d.py",
+    "tools/check-participant-access-browser-loader-v2736f.py",
+    "tools/check-participant-auth-session-browser-provider-v2737d.py",
+    "tools/check-participant-auth-session-browser-loader-v2737e.py",
+    "docs/PARTICIPANT_AUTH_SESSION_BROWSER_LOADER_V2737E.md",
+)
+
+V2737F_AUTHORIZATION_SECTION = '## Autorisierter Task v27.37f\n\nv27.37f – Auth-/Session-Anbindung an den App-Start ist ausschließlich als späterer Implementierungstask autorisiert.\n\nTechnische Gate-Basis: `514b0c25805a53f711d963f2fe3b7c08d4eef3e1`.\n\nDieses direkte Gate erhält den vollständigen v27.37e-Abschluss einschließlich Historie und Dokumenten. Kein zusätzlicher Bootstrap ist erforderlich. Die Implementation bleibt bis zum direkten Commit dieses Gates und einem ausdrücklichen Implementierungsauftrag gesperrt. Dieses Gate implementiert keine Produktänderung.\n\nDer spätere Implementierungsscope umfasst exakt:\n\n- `app.js`\n- `tools/check-participant-auth-session-app-entry-v2737f.py`\n- `docs/PARTICIPANT_AUTH_SESSION_APP_ENTRY_V2737F.md`\n- `tools/preflight.py`\n\nKeine fünfte Implementierungsdatei ist zulässig. In app.js sind ausschließlich initAppBoot(), initAuthFlow() und ein zusammenhängender Hilfsblock unmittelbar vor initAppBoot() erlaubt. Der Hilfsblock wird mit den eigenständigen Kommentarzeilen `// BEGIN v27.37f auth/session app entry` und `// END v27.37f auth/session app entry` begrenzt. Der übrige App-Code bleibt identisch zur Basis, insbesondere bestehender Teilnehmerzugangsresolver, Hinweisansichten, startLocalApp(), Lernlogik und Config-/Health-Funktionen. In der Implementation darf tools/preflight.py ausschließlich die vorbereitete feste Checker-Registrierung ersetzen.\n\nVorbereitungsbefund: initAppBoot() lädt bisher vor initAuthFlow() optional Config nach. initAuthFlow() erhält lokale Sperren, wartet bei angefordertem Zugangs-Loader auf Readiness und erlaubt bei fehlendem Zugangsprovider ohne Loader-Anforderung einen lokalen Start. Der Auth-Modus muss vor der optionalen Config-Nachladung abzweigen und den Abwesenheits-Fallback sperren. Die vorhandene Zugangsprüfung ermittelt ihre Benutzeridentität selbst aus der Session und prüft Teilnehmer, Enrollment und Kurs; keine Logikduplikation und keine frei übergebene userId.\n\nAktivierung und alle vier Schalterkombinationen:\n\nA bedeutet exakt data-enabled="true" am Script mit ID accaoui-participant-auth-session-browser-loader. Z bedeutet dasselbe Attribut am bestehenden Teilnehmerzugangs-Loader. Kein neuer URL-, Storage-, Config- oder globaler Aktivierungsschalter. Vorhandene Auth-Globals allein aktivieren nichts.\n\n- A=false, Z=false: bisheriger lokaler Start einschließlich vorhandener injizierter Zugangsprovider; keine Auth-/Session-Aufrufe.\n- A=false, Z=true: bisheriger Teilnehmerzugangs-Loader-/Provider-Pfad; keine Auth-/Session-Aufrufe.\n- A=true, Z=false: Auth-Readiness, Sessionprüfung, danach bestehende Teilnehmerzugangsprüfung. Ein bereits kontrolliert bereitgestellter Zugangsprovider darf entscheiden; fehlt er oder ist er ungültig, generisch sperren. Kein lokaler Freigabe-Fallback.\n- A=true, Z=true: Auth-Readiness, Sessionprüfung, Zugangs-Readiness, bestehende Teilnehmerzugangsprüfung. Nur deren positives access_allowed erlaubt den Start.\n\nFehlendes Script oder fehlendes/anderes Attribut ist keine Anforderung. Großschreibung, Leerzeichen, Boolean true und "1" sind nicht das exakte "true". Eine strukturell fehlende DOM-Lookup-Funktion erhält den bisherigen lokalen Testpfad. Geworfene Fehler beim Lesen vorhandener Aktivierungsgrenzen werden technisch fail-closed behandelt und dürfen keinen lokalen Fallback auslösen. Aktivierung pro Startversuch einmal erfassen und während asynchroner Wartezeiten nicht herabstufen.\n\nVerbindliche Abnahmekriterien:\n\n1. Lokale Auth-Guard-Testzustände und bestehende lokale Sperren behalten Vorrang: vorhandenen Hinweis anzeigen, keine Session-/Zugangsoperation und kein Warten auf Loader bei lokaler Sperre.\n2. Angeforderter Auth-Modus verzweigt vor loadOptionalSupabaseConfig() in die kontrollierte Startprüfung. Kein Aufruf dieser Nachladefunktion, keine zusätzliche Health-/Config-Aktion durch den neuen Zweig; bestehende lokale Sperrprüfung bleibt erforderlich. Kein SDK-/Config-Nachladen und keine Client-Erzeugung.\n3. Auf ACCAOUI_PARTICIPANT_AUTH_SESSION_BROWSER_LOADER_READY warten. Nur ein eingefrorener einfacher Datensatz mit exakt eigenen Datenfeldern requested=true, ready=true, status="ready" erlaubt Fortsetzung. Fehlende/ungültige Grenze, Getterfehler, Reject und Fehlerzustand führen zu access_error. Ausstehende Bereitschaft erlaubt weder Sessionauflösung noch Freigabe.\n4. Ausschließlich ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER.resolveSession() genau einmal, mit Provider als this und ohne Argumente kontrolliert aufrufen. Keine Adapter-/Bridge-Komposition, direkten Client-/Auth-/Session- oder Datenbankaufrufe im neuen App-Code.\n5. Nur der gültige eingefrorene einfache Datensatz mit exakt eigenen Datenfeldern ok=true und code="session_available" führt zur Zugangsprüfung. Gültige ok=false/session_missing oder session_invalid führen zu login_required. auth_error, Throw, Reject, unbekannte Codes, widersprüchliche Werte, zusätzliche/geerbte/accessor-basierte Felder oder ungültige Provider führen generisch zu access_error. Keine Rohfehler, Sessiondaten oder Tokens in UI, Logs oder neuen Globals.\n6. Gültige Session allein startet niemals die App. Vorhandenen resolveParticipantAccessAppProviderV2736D() und seine Ergebnis-/Hinweiszuordnung erhalten. Bei Z=true vorher bestehende Zugangs-Readiness abwarten. Fehlender Provider und alle Ablehnungen bleiben gesperrt. Eine inzwischen fehlende/ungültige Session in der erneuten Zugangsprüfung darf ebenfalls nicht freigeben.\n7. Wiederholte, parallele oder erneut ausgelöste Boot-/Auth-Flow-Aufrufe teilen einen einzigen Startversuch: höchstens ein resolveSession(), ein resolveAccess() und ein startLocalApp() pro Seitenkontext. Nach Fehler kein späteres Wiederöffnen oder doppeltes Rendern. Keine Überschreibung von Provider-/Readiness-Globals.\n8. Neuer synthetischer Checker prüft alle vier Schalterkombinationen, exaktes true, Globals ohne Anforderung, verzögerte Readiness, Ergebnisvalidierung, Fehlerpfade, lokale Vorränge, fehlenden Zugangsprovider mit und ohne Z, Ablehnungen trotz Session, Aufrufreihenfolge/-zahlen und parallelen/mehrfachen Start. Gesamten DOMContentLoaded-/initAppBoot-Pfad einschließlich Config-Nachladeverbot testen; positive lokale Regression erhalten.\n9. Echte lokale Provider-/Adapterketten mit synthetischem vorhandenen Client testen: Session plus verweigerter Teilnehmer-/Enrollment-/Kurszugang bleibt gesperrt. signIn/signOut, Client-Erzeugung, SDK-/Config-Laden und fremde Netzwerkoperationen mit Spies als unerlaubt erfassen. Keine echten Keys, Teilnehmerdaten oder Live-Verbindung.\n10. Semantische Negativmutationen müssen Session-only-Freigabe, fehlenden Provider-Fallback, übersprungene Readiness, gelockertes true, doppelten Start und Config-Nachladung erkennen. Historische Harnesses und Mutationen bleiben verpflichtend.\n\nUnverändert bleiben index.html (beide Loader data-enabled="false"), beide Browser-Loader, beide Provider, alle Auth-/Session- und Teilnehmerzugangsadapter/-brücken, Bootstrap, SDK, Config, Login-UI, SQL/Migrationen und historische Einzelchecker. Kein Loginformular, kein signIn/signOut, keine automatische Anmeldung, kein Logout-Flow und keine Live-Aktivierung.\n\nDer Lifecycle umfasst von Anfang an exakt:\n\n- `v2737f_authorization_prepared`: Basis-HEAD, autorisierter Task, exakt sechs Gate-Dateien.\n- `v2737f_authorization_committed`: ein direkter Gate-Commit, autorisierter Task, sauberer Working Tree.\n- `v2737f_implementation_prepared`: Gate committet, autorisierter Task, exakt vier Implementierungsdateien.\n- `v2737f_implementation_committed`: eine direkte Implementation, autorisierter Task, sauberer Working Tree.\n- `v2737f_closure_prepared`: Implementation committet, geschlossener Task, exakt vier Steuerungsdokumente.\n- `v2737f_closure_committed`: eine direkte Closure, geschlossener Task, sauberer Working Tree.\n\nGate-Dateien sind exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Closure-Dateien sind exakt die vier Steuerungsdokumente. v2737f_completion_documents erzeugt die Closure mit dem tatsächlichen Implementierungscommit: CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN, letzter Kontrollschritt v27.37f, funktionaler Stand weiterhin v27.35g, kein Folgetask autorisiert.\n\nAlle Zwischencommits werden einzeln gegen exakte Rollen, Dateiumfänge und Dokumentfassungen geprüft. Direkte lineare Übergänge, leerer Staging-Bereich, unveränderte historische Abschnitte und legitime origin/main-Vorfahren sind erforderlich. Kein Überspringen, Wiederholen, Merge, fremder Commit, Wiederöffnen, versteckte zwischenzeitliche Produktänderung oder unbekannter Folgetask. Keine zukünftigen Commit-SHAs hartcodieren.\n\nDas enge zentrale Nachfolgeprofil validiert zuerst die vollständige v27.37e-Closure an dieser historischen Basis und danach den aktuellen v27.37f-Vertrag. Historische Einzelchecker bleiben unverändert. Ihre eingefrorenen Quellen und Produktgrenzen werden geprüft. Derselbe v27.37d-Provider-Harness, v27.37e-Loader-Harness einschließlich aller sechs Mutationen sowie v27.36d-/v27.36f-App-/Loader-Harnesses einschließlich ihrer Mutationen laufen gegen aktuelle erlaubte Quellen. Kein pauschales PASS. Der neue v27.37f-Checker wird ab Implementation verpflichtend registriert; vorher keine Implementierungsartefakte.\n\nKontinuitätschecker einschließlich isolierter Lifecycle-Positiv-/Negativtests, vollständiger Preflight einschließlich Regressionen, git diff --check und exakter Phasenscope bleiben verpflichtend. Isolierte Lifecycle-Tests verändern weder Dateien noch echte Git-Historie.\n\nLetzter funktionaler Stand bleibt v27.35g, letzter abgeschlossener Kontrollschritt bis zur Closure v27.37e. Supabase bleibt NICHT LIVE. Commit und Push bleiben gesperrt.\n\nDie folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.\n\n'
+
+def v2737f_authorization_documents(base_documents: tuple[str, ...]) -> tuple[str, ...]:
+    require(len(base_documents) == 4, "v27.37f: vier Basisdokumente erforderlich")
+    result = []
+    for path, original in zip(V2737F_DOCUMENT_PATHS, base_documents):
+        fields = (V2737F_AUTHORIZED_TASK_FIELDS if path.endswith("CURRENT_TASK.md")
+                  else {"Stand": "v27.37f-AUTORISIERUNG"})
+        if path == "docs/PROJECT_STATE_CURRENT.md":
+            fields = {**fields,
+                "Weiterer funktionaler Schritt autorisiert": "JA",
+                "Aktuell autorisierter Task": "v27.37f",
+                "Aktuelle Taskart": V2737F_TITLE,
+                "Aktueller Blocker":
+                    "Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt",
+            }
+        document = v2737e_replace_header(original, fields)
+        split = re.search(r"(?m)^## ", document)
+        result.append(document[:split.start()] + V2737F_AUTHORIZATION_SECTION
+                      + document[split.start():])
+    return tuple(result)
+
+
+def v2737f_completion_documents(
+    authorization_documents: tuple[str, ...], implementation_commit: str,
+) -> tuple[str, ...]:
+    require(re.fullmatch(r"[0-9a-f]{40}", implementation_commit) is not None,
+            "v27.37f: Abschluss benötigt den tatsächlichen Implementierungscommit")
+    section = (
+        "## Abgeschlossener technischer Schritt v27.37f\n\n"
+        + V2737F_TITLE + " ist abgeschlossen.\n\n"
+        + f"Implementierungscommit: `{implementation_commit}`.\n\n"
+        + "Die Auth-/Session-Anbindung gilt ausschließlich für ausdrücklich angeforderten "
+        "Auth-Modus. Beide Loader bleiben deaktiviert; die bestehende "
+        "Teilnehmerzugangsprüfung bleibt erforderlich. Supabase bleibt NICHT LIVE.\n\n"
+        + "Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.\n\n"
+        + "Die folgenden Abschnitte dokumentieren historische Abschlüsse und "
+        "Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.\n\n"
+    )
+    result = []
+    for path, original in zip(V2737F_DOCUMENT_PATHS, authorization_documents):
+        fields = (V2737F_CLOSED_TASK_FIELDS if path.endswith("CURRENT_TASK.md")
+                  else {"Stand": "v27.37f"})
+        if path == "docs/PROJECT_STATE_CURRENT.md":
+            fields = {**fields,
+                "Weiterer funktionaler Schritt autorisiert": "NEIN",
+                "Aktuell autorisierter Task": "NONE",
+                "Aktuelle Taskart": "Kein Task autorisiert",
+                "Aktueller Blocker": "Neue Taskauswahl und ausdrückliche Autorisierung "
+                                    "durch Projekteigentümer und verbindlichen Projektchat",
+            }
+        document = v2737e_replace_header(original, fields)
+        split = re.search(r"(?m)^## ", document)
+        result.append(document[:split.start()] + section + document[split.start():])
+    return tuple(result)
+
+
+def v2737f_implementation_preflight(gate_preflight: str) -> str:
+    require(gate_preflight.count(V2737F_CHECKER_REGISTRATION) == 1
+            and V2737F_REGISTERED_CHECKER not in gate_preflight,
+            "v27.37f: uneindeutige Loader-Checker-Registrierung im Gate")
+    return gate_preflight.replace(V2737F_CHECKER_REGISTRATION, V2737F_REGISTERED_CHECKER)
+
+
+def v2737f_classify_phase(
+    roles: tuple[str, ...], working: frozenset[str], task_fields: dict[str, str],
+) -> str:
+    cases = (
+        ((), V2737F_GATE_FILES, V2737F_AUTHORIZED_TASK_FIELDS, "authorization_prepared"),
+        (("gate",), frozenset(), V2737F_AUTHORIZED_TASK_FIELDS, "authorization_committed"),
+        (("gate",), V2737F_IMPLEMENTATION_FILES, V2737F_AUTHORIZED_TASK_FIELDS,
+         "implementation_prepared"),
+        (("gate", "implementation"), frozenset(), V2737F_AUTHORIZED_TASK_FIELDS,
+         "implementation_committed"),
+        (("gate", "implementation"), V2737F_CLOSURE_FILES, V2737F_CLOSED_TASK_FIELDS,
+         "closure_prepared"),
+        (("gate", "implementation", "closure"), frozenset(), V2737F_CLOSED_TASK_FIELDS,
+         "closure_committed"),
+    )
+    matches = [phase for history, scope, fields, phase in cases
+               if roles == history and working == scope and task_fields == fields]
+    require(len(matches) == 1, "v27.37f: unzulässiger Task-, Scope- oder Phasenübergang")
+    return "v2737f_" + matches[0]
+
+
+def v2737f_expected_index(base_index: str) -> str:
+    return base_index
+
+
+def validate_v2737f_facts(
+    base_documents: tuple[str, ...], base_index: str,
+    commits: tuple[dict, ...], current: dict, base_app: str,
+) -> str:
+    """Pure lifecycle validator, shared by real Git reads and isolated tests.
+
+    Every intermediate commit is checked; later edits cannot cancel a forbidden
+    earlier delta. No Git mutation or synthetic repository is needed for tests.
+    """
+    require(current["branch"] == "main" and not current["staged"],
+            "v27.37f: main und leerer Index erforderlich")
+    require(len(commits) <= 3, "v27.37f: unbekannter oder wiederholter Folgecommit")
+    authorization = v2737f_authorization_documents(base_documents)
+    parent = V2737F_BASE_SHA
+    gate_preflight = None
+    gate_checker = None
+    roles = []
+    scopes = (V2737F_GATE_FILES, V2737F_IMPLEMENTATION_FILES, V2737F_CLOSURE_FILES)
+    for number, commit in enumerate(commits):
+        require(commit["parents"] == (parent,),
+                "v27.37f: Commit muss direkt und linear folgen")
+        require(commit["paths"] == scopes[number],
+                "v27.37f: Commit-Dateiumfang oder Übergangsreihenfolge verletzt")
+        require(commit["sha"] not in {V2737F_BASE_SHA, *(c["sha"] for c in commits[:number])},
+                "v27.37f: wiederholte Commitidentität")
+        expected_documents = (authorization if number < 2 else
+                              v2737f_completion_documents(authorization, commits[1]["sha"]))
+        require(commit["documents"] == expected_documents,
+                "v27.37f: Commit-Dokumentvertrag oder historischer Verlauf verletzt")
+        require(commit["index"] == (base_index if number == 0
+                                   else v2737f_expected_index(base_index)),
+                "v27.37f: Index gegenüber Basis verändert")
+        v2737f_validate_product_snapshot(commit, base_app, number >= 1)
+        if number == 2:
+            require(commit["app"] == commits[1]["app"]
+                    and commit["artifacts"] == commits[1]["artifacts"],
+                    "v27.37f: Implementierungsdateien in Closure verändert")
+        if number == 0:
+            gate_preflight = commit["preflight"]
+            gate_checker = commit["checker"]
+            v2737f_implementation_preflight(gate_preflight)
+        else:
+            require(commit["preflight"] == v2737f_implementation_preflight(gate_preflight),
+                    "v27.37f: andere Preflight-Änderung als Checker-Registrierung")
+            require(commit["checker"] == gate_checker,
+                    "v27.37f: Continuity-Checker nach Gate verändert")
+        roles.append(("gate", "implementation", "closure")[number])
+        parent = commit["sha"]
+    require(current["head"] == parent, "v27.37f: HEAD passt nicht zur linearen Historie")
+    require(current["origin"] in {V2737F_BASE_SHA, *(c["sha"] for c in commits)},
+            "v27.37f: origin/main ist kein legitimer Lifecycle-Vorfahr")
+    phase = v2737f_classify_phase(
+        tuple(roles), current["working"],
+        v2737a_current_task_header_fields(current["documents"][1]),
+    )
+    closed = phase in ("v2737f_closure_prepared", "v2737f_closure_committed")
+    implemented = len(commits) >= 2 or phase == "v2737f_implementation_prepared"
+    require(current["documents"] == (
+        v2737f_completion_documents(authorization, commits[1]["sha"]) if closed
+        else authorization), "v27.37f: aktuelle Dokumente oder Historie verändert")
+    require(current["index"] == (v2737f_expected_index(base_index) if implemented
+                                 else base_index),
+            "v27.37f: Index gegenüber Basis verändert")
+    if gate_preflight is None:
+        v2737f_implementation_preflight(current["preflight"])
+    else:
+        require(current["preflight"] == (
+            v2737f_implementation_preflight(gate_preflight) if implemented
+            else gate_preflight), "v27.37f: Preflight-Registrierung oder Regression verändert")
+        require(current["checker"] == gate_checker,
+                "v27.37f: bestehende Lifecycle-Kontrolle nach Gate verändert")
+    v2737f_validate_product_snapshot(current, base_app, implemented)
+    if len(commits) >= 2:
+        require(current["app"] == commits[1]["app"]
+                and current["artifacts"] == commits[1]["artifacts"],
+                "v27.37f: Implementierungsdateien nach Implementation verändert")
+    return phase
+
+
+
+def v2737f_app_remainder(source: str) -> str:
+    """Keep every app byte outside the two startup functions and one helper block."""
+    begin = "// BEGIN v27.37f auth/session app entry\n"
+    end = "// END v27.37f auth/session app entry\n"
+    if begin in source or end in source:
+        require(source.count(begin) == source.count(end) == 1,
+                "v27.37f: uneindeutiger App-Hilfsblock")
+        left, tail = source.split(begin)
+        block, right = tail.split(end)
+        require(right.startswith("async function initAppBoot() {"),
+                "v27.37f: Hilfsblock nicht unmittelbar vor initAppBoot")
+        source = left + right
+    for start, following in (
+        ("async function initAppBoot() {", "async function loadOptionalSupabaseConfig() {"),
+        ("async function initAuthFlow() {",
+         "function isParticipantAccessBrowserLoaderRequestedV2736F() {"),
+    ):
+        require(source.count(start) == 1 and source.count(following) == 1,
+                "v27.37f: App-Funktionsgrenzen uneindeutig")
+        left, tail = source.split(start)
+        body, right = tail.split(following)
+        require(body.rstrip().endswith("}"), "v27.37f: App-Funktionsende fehlt")
+        source = left + start + "\n}\n\n" + following + right
+    return source
+
+
+def v2737f_validate_product_snapshot(snapshot: dict, base_app: str, implemented: bool) -> None:
+    if not implemented:
+        require(snapshot["app"] == base_app and snapshot["artifacts"] == (None, None),
+                "v27.37f: Produktimplementation vor Gate-Abschluss")
+        return
+    require(snapshot["app"] != base_app
+            and v2737f_app_remainder(snapshot["app"]) == v2737f_app_remainder(base_app),
+            "v27.37f: App-Änderung außerhalb autorisierter Startgrenzen")
+    require(len(snapshot["artifacts"]) == 2
+            and all(isinstance(value, str) and value.strip() and value.endswith("\n")
+                    and not value.startswith("\ufeff") for value in snapshot["artifacts"]),
+            "v27.37f: Implementierungschecker oder Dokument fehlt")
+
+
+def detect_v2737f_phase(expected_working_files: frozenset[str] | None = None) -> str | None:
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    state = read_required_text(STATE_PATH)
+    active = V2737F_AUTHORIZATION_HEADING in state
+    if not git_is_ancestor(V2737F_BASE_SHA, head):
+        require(not active, "v27.37f: falsche Git-Basis")
+        return None
+    if not active and head == V2737F_BASE_SHA:
+        return None
+    require(active, "v27.37f: unbekannter Nachfolgetask")
+    require(detect_v2737e_phase(_closed_snapshot=V2737F_BASE_SHA)
+            == "v2737e_closure_committed", "v27.37f: v27.37e nicht vollständig geschlossen")
+
+    def paths(arguments):
+        return frozenset(run_git(arguments).splitlines())
+
+    def content(ref, path):
+        return (read_required_text(ROOT / path) if ref is None
+                else read_v2735f_commit_document(ref, path))
+
+    def snapshot(ref):
+        existing = (None if ref is None else paths(["ls-tree", "-r", "--name-only", ref]))
+        artifacts = tuple(
+            content(ref, path) if ((ROOT / path).is_file() if ref is None
+                                   else path in existing) else None
+            for path in V2737F_IMPLEMENTATION_FILE_ORDER[1:3]
+        )
+        return {
+            "documents": tuple(content(ref, p) for p in V2737F_DOCUMENT_PATHS),
+            "index": content(ref, "index.html"),
+            "app": content(ref, "app.js"), "artifacts": artifacts,
+            "preflight": content(ref, "tools/preflight.py"),
+            "checker": content(ref, CHECKER_RELATIVE_PATH),
+        }
+
+    refs = run_git(["rev-list", "--reverse", V2737F_BASE_SHA + ".." + head]).splitlines()
+    require(len(refs) <= 3, "v27.37f: mehr als Gate, Implementation und Closure")
+    commits = []
+    previous = V2737F_BASE_SHA
+    for ref in refs:
+        commit = snapshot(ref)
+        commit.update(
+            sha=ref, parents=tuple(run_git(["rev-list", "--parents", "-n", "1", ref]).split()[1:]),
+            paths=paths(["diff", "--name-only", "--no-renames", previous, ref]),
+        )
+        commits.append(commit)
+        previous = ref
+    working = paths(["diff", "--name-only", "--no-renames"]) | paths([
+        "ls-files", "--others", "--exclude-standard"
+    ])
+    require(expected_working_files is None or working == expected_working_files,
+            "v27.37f: Working-Tree-Erfassung widersprüchlich")
+    current = snapshot(None)
+    current.update(
+        branch=run_git(["branch", "--show-current"]).strip(),
+        head=head, origin=run_git(["rev-parse", "origin/main"]).strip(),
+        staged=paths(["diff", "--cached", "--name-only"]), working=working,
+    )
+    phase = validate_v2737f_facts(
+        tuple(content(V2737F_BASE_SHA, p) for p in V2737F_DOCUMENT_PATHS),
+        content(V2737F_BASE_SHA, "index.html"), tuple(commits), current,
+        content(V2737F_BASE_SHA, "app.js"),
+    )
+    for path in V2737F_FROZEN_REGRESSION_PATHS:
+        require(content(None, path) == content(V2737F_BASE_SHA, path),
+                f"v27.37f: eingefrorene Regression verändert: {path}")
+    return phase
+
+def run_v2737f_lifecycle_self_checks() -> tuple[int, int]:
+    """Exercise transitions and document/index contracts entirely in memory."""
+    import copy
+    base = tuple(read_v2735f_commit_document(V2737F_BASE_SHA, p)
+                 for p in V2737F_DOCUMENT_PATHS)
+    index = read_v2735f_commit_document(V2737F_BASE_SHA, "index.html")
+    base_app = read_v2735f_commit_document(V2737F_BASE_SHA, "app.js")
+    app_fixture = base_app.replace("async function initAppBoot() {",
+        "// BEGIN v27.37f auth/session app entry\n"
+        "// isolated fixture, no product implementation\n"
+        "// END v27.37f auth/session app entry\nasync function initAppBoot() {")
+    auth = v2737f_authorization_documents(base)
+    identities = [hashlib.sha1(("isolated-v2737f-" + role).encode()).hexdigest()
+                  for role in ("gate", "implementation", "closure")]
+    preflight = V2737F_CHECKER_REGISTRATION + "# existing regression checks\n"
+    checker = "# unchanged lifecycle checker\n"
+    gate = dict(sha=identities[0], parents=(V2737F_BASE_SHA,),
+                paths=V2737F_GATE_FILES, documents=auth, index=index,
+                preflight=preflight, checker=checker, app=base_app, artifacts=(None, None))
+    implementation = dict(
+        sha=identities[1], parents=(identities[0],), paths=V2737F_IMPLEMENTATION_FILES,
+        documents=auth, index=v2737f_expected_index(index),
+        preflight=v2737f_implementation_preflight(preflight), checker=checker,
+        app=app_fixture, artifacts=("# isolated checker\n", "# isolated document\n"),
+    )
+    closure = dict(
+        sha=identities[2], parents=(identities[1],), paths=V2737F_CLOSURE_FILES,
+        documents=v2737f_completion_documents(auth, identities[1]),
+        index=implementation["index"], preflight=implementation["preflight"], checker=checker,
+        app=app_fixture, artifacts=implementation["artifacts"],
+    )
+    states = []
+    for commits, scope, source in (
+        ((), V2737F_GATE_FILES, gate),
+        ((gate,), frozenset(), gate),
+        ((gate,), V2737F_IMPLEMENTATION_FILES, implementation),
+        ((gate, implementation), frozenset(), implementation),
+        ((gate, implementation), V2737F_CLOSURE_FILES, closure),
+        ((gate, implementation, closure), frozenset(), closure),
+    ):
+        current = {key: source[key] for key in ("documents", "index", "preflight", "checker", "app", "artifacts")}
+        current.update(branch="main", head=commits[-1]["sha"] if commits else V2737F_BASE_SHA,
+                       origin=V2737F_BASE_SHA, staged=frozenset(), working=scope)
+        states.append((commits, current))
+    expected = (
+        "authorization_prepared", "authorization_committed", "implementation_prepared",
+        "implementation_committed", "closure_prepared", "closure_committed",
+    )
+    positives = negatives = 0
+    for (commits, current), name in zip(states, expected):
+        require(validate_v2737f_facts(base, index, commits, current, base_app) == "v2737f_" + name,
+                "v27.37f: positiver Übergangstest fehlgeschlagen")
+        positives += 1
+        # The remote may point to each actual prefix, never to an unrelated ref.
+        for ref in [c["sha"] for c in commits]:
+            validate_v2737f_facts(base, index, commits, {**current, "origin": ref}, base_app)
+            positives += 1
+
+    def blocked(commits, current):
+        nonlocal negatives
+        try:
+            validate_v2737f_facts(base, index, commits, current, base_app)
+        except ValidationError:
+            negatives += 1
+        else:
+            raise ValidationError("v27.37f: isolierte Manipulation nicht blockiert")
+
+    for commits, current in states:
+        for change in (
+            {"branch": "other"}, {"origin": "unrelated"}, {"head": "unrelated"},
+            {"staged": frozenset({"index.html"})},
+            {"working": current["working"] | {"foreign.txt"}},
+            {"index": current["index"] + "<script>unexpected()</script>\n"},
+            {"preflight": current["preflight"].replace("V2737F_IMPLEMENTATION_CHECKER", "BYPASS")},
+            {"documents": tuple(d.replace("Task-ID: v27.37f", "Task-ID: v27.99")
+                                .replace("Task-ID: NONE", "Task-ID: v27.99")
+                                for d in current["documents"])},
+            {"documents": (current["documents"][0] + "historical drift\n",
+                           *current["documents"][1:])},
+        ):
+            blocked(commits, {**current, **change})
+        if current["working"]:
+            blocked(commits, {**current, "working": frozenset(
+                sorted(current["working"])[1:])})
+    for i, (commits, current) in enumerate(states):
+        # Mixing each other phase's history with the present working state must fail.
+        for j, (other, _other_current) in enumerate(states):
+            if i != j and other != commits:
+                blocked(other, current)
+        for position in range(len(commits)):
+            for key, value in (
+                ("parents", ("unrelated",)),
+                ("parents", (commits[position]["parents"][0], "merge-parent")),
+                ("paths", commits[position]["paths"] | {"foreign.txt"}),
+                ("documents", tuple(d + "tampered\n" for d in commits[position]["documents"])),
+                ("index", commits[position]["index"] + "tampered\n"),
+            ):
+                altered = copy.deepcopy(list(commits))
+                altered[position][key] = value
+                blocked(tuple(altered), current)
+    commits, current = states[-1]
+    blocked(commits + (closure,), current)  # repeated closure / unknown successor
+    blocked(commits, {**current, "documents": auth, "working": V2737F_GATE_FILES})
+    blocked(commits, {**current, "preflight": current["preflight"] + "# bypass\n"})
+    blocked(commits, {**current, "checker": checker + "# changed\n"})
+    blocked(commits, {**current, "index": current["index"].replace(
+        V2737F_INDEX_LINE, V2737F_INDEX_LINE.replace('data-enabled="false"', 'data-enabled="true"'))})
+    blocked(commits, {**current, "documents": v2737f_completion_documents(auth, identities[0])})
+    # A forbidden committed product edit is rejected even if the working copy cancels it.
+    altered = copy.deepcopy(list(commits))
+    altered[1]["index"] += "<script>cancelled-later()</script>\n"
+    blocked(tuple(altered), current)
+    for commits, current in states:
+        blocked(commits, {**current, "app": current["app"] + "// forbidden edit\n"})
+        blocked(commits, {**current, "artifacts": ("# unexpected\n", None)})
+    for position in (0, 1, 2):
+        altered = copy.deepcopy(list(states[-1][0]))
+        altered[position]["app"] += "// cancelled forbidden edit\n"
+        blocked(tuple(altered), states[-1][1])
+    return positives, negatives
+
 
 
 
@@ -16120,6 +16592,9 @@ def main() -> int:
 
         validate_agents_text(agents_text)
         validate_preflight_text(preflight_text)
+        v2737f_self_checks = None
+        if V2737F_AUTHORIZATION_HEADING in state_text:
+            v2737f_self_checks = run_v2737f_lifecycle_self_checks()
         v2737e_self_checks = None
         if V2737E_AUTHORIZATION_HEADING in state_text:
             v2737e_self_checks = run_v2737e_lifecycle_self_checks()
@@ -16505,11 +16980,17 @@ def main() -> int:
     print(f"Aktuelle v27.37b-Phase: {v2737b_phase}")
     print(f"Aktuelle v27.37c-Phase: {v2737c_phase}")
     if v2737d_phase is not None:
-        if v2737d_phase.startswith("v2737e_"):
+        if v2737d_phase in V2737F_PHASES:
+            print("Historischer v27.37e-Abschluss: vollständig validiert / PASS")
+            print(f"Aktuelle v27.37f-Phase: {v2737d_phase}")
+        elif v2737d_phase.startswith("v2737e_"):
             print("Historischer v27.37d-Abschluss: vollständig validiert / PASS")
             print(f"Aktuelle v27.37e-Phase: {v2737d_phase}")
         else:
             print(f"Aktuelle v27.37d-Phase: {v2737d_phase}")
+    if v2737f_self_checks is not None:
+        print(f"v27.37f isolierter Lifecycle: {v2737f_self_checks[0]} Positivtests / PASS; "
+              f"{v2737f_self_checks[1]} Negativtests / vollständig blockiert; keine Git-Mutation")
     if v2737e_self_checks is not None:
         print(f"v27.37e isolierter Lifecycle: {v2737e_self_checks[0]} Positivtests / PASS; "
               f"{v2737e_self_checks[1]} Negativtests / vollständig blockiert; keine Git-Mutation")

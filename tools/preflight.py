@@ -1658,7 +1658,8 @@ def check_participant_auth_session_browser_provider_v2737d():
     if phase in {
         "v2737e_implementation_prepared", "v2737e_implementation_committed",
         "v2737e_closure_prepared", "v2737e_closure_committed",
-    }:
+    } or (_V2737D_POST_COMMIT_CONTROL is not None
+          and phase in _V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]):
         _v2737e_provider_regression_profile()
         return
     code, stdout, stderr = run_command(
@@ -1693,7 +1694,8 @@ def _v2737e_provider_regression_profile():
         if phase not in {
             "v2737e_implementation_prepared", "v2737e_implementation_committed",
             "v2737e_closure_prepared", "v2737e_closure_committed",
-        }:
+        } and not (_V2737D_POST_COMMIT_CONTROL is not None
+                   and phase in _V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]):
             raise ValueError("kein gültiges v27.37e-Implementierungs-/Abschlussprofil")
         control = _V2737D_POST_COMMIT_CONTROL
         root = Path(__file__).resolve().parents[1]
@@ -1727,13 +1729,17 @@ def _v2737e_provider_regression_profile():
             raise ValueError("historischer synthetischer Provider-Harness fehlgeschlagen: "
                              + result.stderr.strip())
         print("v27.37d: unveränderte Provider-/Checkerquellen und historischer Harness "
-              "im exakten v27.37e-Nachfolgeprofil / PASS")
+              f"im exakten Nachfolgeprofil {phase} / PASS")
     except Exception as exc:
         errors.append(f"v27.37e Provider-Regression fehlgeschlagen: {exc}")
 
 
 def check_participant_auth_session_browser_loader_v2737e():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]):
+        _v2737f_historical_regression_profile()
+        return
     if phase is None or not phase.startswith("v2737e_"):
         return
     implementation_phases = {
@@ -1756,6 +1762,115 @@ def check_participant_auth_session_browser_loader_v2737e():
     if code != 0:
         errors.append("v27.37e Auth-/Session-Browser-Loader-Prüfung fehlgeschlagen")
 
+
+
+
+# Only this fixed registration may change during the later implementation.
+V2737F_IMPLEMENTATION_CHECKER = None
+
+
+def _v2737f_historical_regression_profile():
+    """Run unchanged historical harnesses under the exact f lifecycle only."""
+    import ast
+    import shutil
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        control = _V2737D_POST_COMMIT_CONTROL
+        if control is None or phase not in control["V2737F_PHASES"]:
+            raise ValueError("kein gültiges v27.37f-Nachfolgeprofil")
+        root = Path(__file__).resolve().parents[1]
+        node = shutil.which("node")
+        if node is None:
+            raise ValueError("Node.js fehlt")
+
+        def legacy(relative):
+            source = (root / relative).read_text(encoding="utf-8")
+            if source != control["read_v2735f_commit_document"](
+                    control["V2737F_BASE_SHA"], relative):
+                raise ValueError("historischer Checker verändert: " + relative)
+            tree = ast.parse(source)
+            values = [ast.literal_eval(statement.value) for statement in tree.body
+                      if isinstance(statement, ast.Assign)
+                      and any(isinstance(target, ast.Name) and target.id == "HARNESS"
+                              for target in statement.targets)]
+            if len(values) != 1 or not isinstance(values[0], str):
+                raise ValueError("historischer Harness uneindeutig")
+            return values[0], tree
+
+        def execute(harness, paths, source=None):
+            return subprocess.run(
+                [node, "-e", harness, *(str(root / path) for path in paths)],
+                input=source, cwd=root, capture_output=True, text=True,
+                encoding="utf-8", errors="strict", timeout=60, check=False,
+            )
+
+        # Byte-identical frozen inputs retain every historical static contract.
+        harness, tree = legacy("tools/check-participant-auth-session-browser-loader-v2737e.py")
+        source = (root / "data/supabase-participant-auth-session-browser-loader.js").read_text(
+            encoding="utf-8")
+        result = execute(harness, ("",), source)
+        if result.returncode != 0:
+            raise ValueError("historischer v27.37e-Loader-Harness: " + result.stderr.strip())
+        print(result.stdout.strip())
+        mutations = [
+            ast.literal_eval(statement.value) for statement in ast.walk(tree)
+            if isinstance(statement, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "mutations"
+                    for target in statement.targets)
+        ]
+        if len(mutations) != 1 or len(mutations[0]) != 6:
+            raise ValueError("historische v27.37e-Mutationen uneindeutig")
+        for before, after in mutations[0]:
+            if source.count(before) != 1:
+                raise ValueError("historischer Mutationsanker uneindeutig")
+            changed = execute(harness, ("",), source.replace(before, after, 1))
+            if changed.returncode == 0:
+                raise ValueError("historische Loader-Mutation nicht erkannt")
+        print("v27.37e: alle 6 historischen semantischen Mutationen blockiert / PASS")
+        for checker, paths in (
+            ("tools/check-participant-access-app-entry-v2736d.py", ("app.js",)),
+            ("tools/check-participant-access-browser-loader-v2736f.py", (
+                "data/supabase-participant-access-browser-loader.js",
+                "data/supabase-participant-access-adapter.js",
+                "data/supabase-participant-access-bootstrap-bridge.js",
+                "data/supabase-participant-access-browser-provider.js", "app.js",
+            )),
+        ):
+            harness, _tree = legacy(checker)
+            result = execute(harness, paths)
+            if result.returncode != 0:
+                raise ValueError("historischer App-/Loader-Harness: " + result.stderr.strip())
+            summary = json.loads(result.stdout)
+            if (not isinstance(summary, dict)
+                    or any(type(summary.get(key)) is not int or summary[key] <= 0
+                           for key in ("positive", "negative", "manipulations"))):
+                raise ValueError("historische Testzahlen fehlen")
+            print(checker + ": " + result.stdout.strip() + " / PASS")
+        print("v27.37f: historische Harnesses und semantische Mutationen / PASS")
+    except Exception as exc:
+        errors.append(f"v27.37f historische Regression fehlgeschlagen: {exc}")
+
+
+def check_participant_auth_session_app_entry_v2737f():
+    phase = _v2737d_post_commit_profile_phase()
+    control = _V2737D_POST_COMMIT_CONTROL
+    if control is None or phase not in control["V2737F_PHASES"]:
+        return
+    if phase in {"v2737f_authorization_prepared", "v2737f_authorization_committed"}:
+        if V2737F_IMPLEMENTATION_CHECKER is not None:
+            errors.append("v27.37f: Checker vor Implementation registriert")
+        return
+    expected = "tools/check-participant-auth-session-app-entry-v2737f.py"
+    if V2737F_IMPLEMENTATION_CHECKER != expected or not Path(expected).is_file():
+        errors.append("v27.37f: Checker fehlt oder ist nicht registriert")
+        return
+    code, stdout, stderr = run_command(f'"{sys.executable}" -X utf8 -B "{expected}"')
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr)
+    if code != 0:
+        errors.append("v27.37f Auth-/Session-App-Einstiegsprüfung fehlgeschlagen")
 
 
 def _git_paths(arguments):
@@ -5679,7 +5794,14 @@ def check_protected_core_files_v2356():
             == "v2737e_implementation_prepared"
     )
 
+    authorized_v2737f_app_scope = (
+        "app.js" in changed_protected
+        and _v2737d_post_commit_profile_phase(changed_paths)
+            == "v2737f_implementation_prepared"
+    )
     for protected in sorted(changed_protected):
+        if protected == "app.js" and authorized_v2737f_app_scope:
+            continue
         if protected == "index.html" and authorized_v2737e_index_scope:
             continue
         if protected in allowed_protected:
@@ -6604,6 +6726,7 @@ def main():
     check_supabase_participant_auth_session_bootstrap_bridge_v2737b()
     check_participant_auth_session_browser_provider_v2737d()
     check_participant_auth_session_browser_loader_v2737e()
+    check_participant_auth_session_app_entry_v2737f()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()

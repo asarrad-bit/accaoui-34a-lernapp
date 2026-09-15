@@ -1,16 +1,82 @@
 # Aktueller Projektzustand
 
-Stand: v27.37e
+Stand: v27.37f-AUTORISIERUNG
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: NONE
-Aktuelle Taskart: Kein Task autorisiert
-Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+Weiterer funktionaler Schritt autorisiert: JA
+Aktuell autorisierter Task: v27.37f
+Aktuelle Taskart: v27.37f – Auth-/Session-Anbindung an den App-Start
+Aktueller Blocker: Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt
+
+## Autorisierter Task v27.37f
+
+v27.37f – Auth-/Session-Anbindung an den App-Start ist ausschließlich als späterer Implementierungstask autorisiert.
+
+Technische Gate-Basis: `514b0c25805a53f711d963f2fe3b7c08d4eef3e1`.
+
+Dieses direkte Gate erhält den vollständigen v27.37e-Abschluss einschließlich Historie und Dokumenten. Kein zusätzlicher Bootstrap ist erforderlich. Die Implementation bleibt bis zum direkten Commit dieses Gates und einem ausdrücklichen Implementierungsauftrag gesperrt. Dieses Gate implementiert keine Produktänderung.
+
+Der spätere Implementierungsscope umfasst exakt:
+
+- `app.js`
+- `tools/check-participant-auth-session-app-entry-v2737f.py`
+- `docs/PARTICIPANT_AUTH_SESSION_APP_ENTRY_V2737F.md`
+- `tools/preflight.py`
+
+Keine fünfte Implementierungsdatei ist zulässig. In app.js sind ausschließlich initAppBoot(), initAuthFlow() und ein zusammenhängender Hilfsblock unmittelbar vor initAppBoot() erlaubt. Der Hilfsblock wird mit den eigenständigen Kommentarzeilen `// BEGIN v27.37f auth/session app entry` und `// END v27.37f auth/session app entry` begrenzt. Der übrige App-Code bleibt identisch zur Basis, insbesondere bestehender Teilnehmerzugangsresolver, Hinweisansichten, startLocalApp(), Lernlogik und Config-/Health-Funktionen. In der Implementation darf tools/preflight.py ausschließlich die vorbereitete feste Checker-Registrierung ersetzen.
+
+Vorbereitungsbefund: initAppBoot() lädt bisher vor initAuthFlow() optional Config nach. initAuthFlow() erhält lokale Sperren, wartet bei angefordertem Zugangs-Loader auf Readiness und erlaubt bei fehlendem Zugangsprovider ohne Loader-Anforderung einen lokalen Start. Der Auth-Modus muss vor der optionalen Config-Nachladung abzweigen und den Abwesenheits-Fallback sperren. Die vorhandene Zugangsprüfung ermittelt ihre Benutzeridentität selbst aus der Session und prüft Teilnehmer, Enrollment und Kurs; keine Logikduplikation und keine frei übergebene userId.
+
+Aktivierung und alle vier Schalterkombinationen:
+
+A bedeutet exakt data-enabled="true" am Script mit ID accaoui-participant-auth-session-browser-loader. Z bedeutet dasselbe Attribut am bestehenden Teilnehmerzugangs-Loader. Kein neuer URL-, Storage-, Config- oder globaler Aktivierungsschalter. Vorhandene Auth-Globals allein aktivieren nichts.
+
+- A=false, Z=false: bisheriger lokaler Start einschließlich vorhandener injizierter Zugangsprovider; keine Auth-/Session-Aufrufe.
+- A=false, Z=true: bisheriger Teilnehmerzugangs-Loader-/Provider-Pfad; keine Auth-/Session-Aufrufe.
+- A=true, Z=false: Auth-Readiness, Sessionprüfung, danach bestehende Teilnehmerzugangsprüfung. Ein bereits kontrolliert bereitgestellter Zugangsprovider darf entscheiden; fehlt er oder ist er ungültig, generisch sperren. Kein lokaler Freigabe-Fallback.
+- A=true, Z=true: Auth-Readiness, Sessionprüfung, Zugangs-Readiness, bestehende Teilnehmerzugangsprüfung. Nur deren positives access_allowed erlaubt den Start.
+
+Fehlendes Script oder fehlendes/anderes Attribut ist keine Anforderung. Großschreibung, Leerzeichen, Boolean true und "1" sind nicht das exakte "true". Eine strukturell fehlende DOM-Lookup-Funktion erhält den bisherigen lokalen Testpfad. Geworfene Fehler beim Lesen vorhandener Aktivierungsgrenzen werden technisch fail-closed behandelt und dürfen keinen lokalen Fallback auslösen. Aktivierung pro Startversuch einmal erfassen und während asynchroner Wartezeiten nicht herabstufen.
+
+Verbindliche Abnahmekriterien:
+
+1. Lokale Auth-Guard-Testzustände und bestehende lokale Sperren behalten Vorrang: vorhandenen Hinweis anzeigen, keine Session-/Zugangsoperation und kein Warten auf Loader bei lokaler Sperre.
+2. Angeforderter Auth-Modus verzweigt vor loadOptionalSupabaseConfig() in die kontrollierte Startprüfung. Kein Aufruf dieser Nachladefunktion, keine zusätzliche Health-/Config-Aktion durch den neuen Zweig; bestehende lokale Sperrprüfung bleibt erforderlich. Kein SDK-/Config-Nachladen und keine Client-Erzeugung.
+3. Auf ACCAOUI_PARTICIPANT_AUTH_SESSION_BROWSER_LOADER_READY warten. Nur ein eingefrorener einfacher Datensatz mit exakt eigenen Datenfeldern requested=true, ready=true, status="ready" erlaubt Fortsetzung. Fehlende/ungültige Grenze, Getterfehler, Reject und Fehlerzustand führen zu access_error. Ausstehende Bereitschaft erlaubt weder Sessionauflösung noch Freigabe.
+4. Ausschließlich ACCAOUI_PARTICIPANT_AUTH_SESSION_APP_PROVIDER.resolveSession() genau einmal, mit Provider als this und ohne Argumente kontrolliert aufrufen. Keine Adapter-/Bridge-Komposition, direkten Client-/Auth-/Session- oder Datenbankaufrufe im neuen App-Code.
+5. Nur der gültige eingefrorene einfache Datensatz mit exakt eigenen Datenfeldern ok=true und code="session_available" führt zur Zugangsprüfung. Gültige ok=false/session_missing oder session_invalid führen zu login_required. auth_error, Throw, Reject, unbekannte Codes, widersprüchliche Werte, zusätzliche/geerbte/accessor-basierte Felder oder ungültige Provider führen generisch zu access_error. Keine Rohfehler, Sessiondaten oder Tokens in UI, Logs oder neuen Globals.
+6. Gültige Session allein startet niemals die App. Vorhandenen resolveParticipantAccessAppProviderV2736D() und seine Ergebnis-/Hinweiszuordnung erhalten. Bei Z=true vorher bestehende Zugangs-Readiness abwarten. Fehlender Provider und alle Ablehnungen bleiben gesperrt. Eine inzwischen fehlende/ungültige Session in der erneuten Zugangsprüfung darf ebenfalls nicht freigeben.
+7. Wiederholte, parallele oder erneut ausgelöste Boot-/Auth-Flow-Aufrufe teilen einen einzigen Startversuch: höchstens ein resolveSession(), ein resolveAccess() und ein startLocalApp() pro Seitenkontext. Nach Fehler kein späteres Wiederöffnen oder doppeltes Rendern. Keine Überschreibung von Provider-/Readiness-Globals.
+8. Neuer synthetischer Checker prüft alle vier Schalterkombinationen, exaktes true, Globals ohne Anforderung, verzögerte Readiness, Ergebnisvalidierung, Fehlerpfade, lokale Vorränge, fehlenden Zugangsprovider mit und ohne Z, Ablehnungen trotz Session, Aufrufreihenfolge/-zahlen und parallelen/mehrfachen Start. Gesamten DOMContentLoaded-/initAppBoot-Pfad einschließlich Config-Nachladeverbot testen; positive lokale Regression erhalten.
+9. Echte lokale Provider-/Adapterketten mit synthetischem vorhandenen Client testen: Session plus verweigerter Teilnehmer-/Enrollment-/Kurszugang bleibt gesperrt. signIn/signOut, Client-Erzeugung, SDK-/Config-Laden und fremde Netzwerkoperationen mit Spies als unerlaubt erfassen. Keine echten Keys, Teilnehmerdaten oder Live-Verbindung.
+10. Semantische Negativmutationen müssen Session-only-Freigabe, fehlenden Provider-Fallback, übersprungene Readiness, gelockertes true, doppelten Start und Config-Nachladung erkennen. Historische Harnesses und Mutationen bleiben verpflichtend.
+
+Unverändert bleiben index.html (beide Loader data-enabled="false"), beide Browser-Loader, beide Provider, alle Auth-/Session- und Teilnehmerzugangsadapter/-brücken, Bootstrap, SDK, Config, Login-UI, SQL/Migrationen und historische Einzelchecker. Kein Loginformular, kein signIn/signOut, keine automatische Anmeldung, kein Logout-Flow und keine Live-Aktivierung.
+
+Der Lifecycle umfasst von Anfang an exakt:
+
+- `v2737f_authorization_prepared`: Basis-HEAD, autorisierter Task, exakt sechs Gate-Dateien.
+- `v2737f_authorization_committed`: ein direkter Gate-Commit, autorisierter Task, sauberer Working Tree.
+- `v2737f_implementation_prepared`: Gate committet, autorisierter Task, exakt vier Implementierungsdateien.
+- `v2737f_implementation_committed`: eine direkte Implementation, autorisierter Task, sauberer Working Tree.
+- `v2737f_closure_prepared`: Implementation committet, geschlossener Task, exakt vier Steuerungsdokumente.
+- `v2737f_closure_committed`: eine direkte Closure, geschlossener Task, sauberer Working Tree.
+
+Gate-Dateien sind exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Closure-Dateien sind exakt die vier Steuerungsdokumente. v2737f_completion_documents erzeugt die Closure mit dem tatsächlichen Implementierungscommit: CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN, letzter Kontrollschritt v27.37f, funktionaler Stand weiterhin v27.35g, kein Folgetask autorisiert.
+
+Alle Zwischencommits werden einzeln gegen exakte Rollen, Dateiumfänge und Dokumentfassungen geprüft. Direkte lineare Übergänge, leerer Staging-Bereich, unveränderte historische Abschnitte und legitime origin/main-Vorfahren sind erforderlich. Kein Überspringen, Wiederholen, Merge, fremder Commit, Wiederöffnen, versteckte zwischenzeitliche Produktänderung oder unbekannter Folgetask. Keine zukünftigen Commit-SHAs hartcodieren.
+
+Das enge zentrale Nachfolgeprofil validiert zuerst die vollständige v27.37e-Closure an dieser historischen Basis und danach den aktuellen v27.37f-Vertrag. Historische Einzelchecker bleiben unverändert. Ihre eingefrorenen Quellen und Produktgrenzen werden geprüft. Derselbe v27.37d-Provider-Harness, v27.37e-Loader-Harness einschließlich aller sechs Mutationen sowie v27.36d-/v27.36f-App-/Loader-Harnesses einschließlich ihrer Mutationen laufen gegen aktuelle erlaubte Quellen. Kein pauschales PASS. Der neue v27.37f-Checker wird ab Implementation verpflichtend registriert; vorher keine Implementierungsartefakte.
+
+Kontinuitätschecker einschließlich isolierter Lifecycle-Positiv-/Negativtests, vollständiger Preflight einschließlich Regressionen, git diff --check und exakter Phasenscope bleiben verpflichtend. Isolierte Lifecycle-Tests verändern weder Dateien noch echte Git-Historie.
+
+Letzter funktionaler Stand bleibt v27.35g, letzter abgeschlossener Kontrollschritt bis zur Closure v27.37e. Supabase bleibt NICHT LIVE. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Abgeschlossener technischer Schritt v27.37e
 
