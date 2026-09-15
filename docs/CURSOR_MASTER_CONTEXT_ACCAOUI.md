@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37f
+Stand: v27.37g-AUTORISIERUNG
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,60 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Autorisierter Reparaturtask v27.37g
+
+v27.37g – Prüfungsabschluss gegen Wiederaufnahme und Doppelverbuchung absichern
+
+Task-ID: vom Projekteigentümer ausdrücklich als v27.37g festgelegt. Vor diesem Gate war die ID in versionierten Projektdateien und vorhandenen Commit-Titeln unbelegt. Dies ist der ausdrücklich beauftragte Reparaturtask, kein aus einer Versionsfolge abgeleiteter Auth-Folgetask.
+
+Technische Gate-Basis: 36bfe77f64a7d183556517522c02223a391dde74.
+Der vollständige v27.37f-Abschluss und alle älteren Abschnitte bleiben erhalten. Das direkte Gate benötigt keinen zusätzlichen Bootstrap. Es bereitet ausschließlich die Autorisierung vor. Produktimplementation erst nach direktem Gate-Commit und ausdrücklichem Implementierungsauftrag. Commit und Push sind nicht autorisiert.
+
+Befund an der Basis: Die letzte wirksame finishExamMode()-Deklaration in app.js löscht zunächst die gespeicherte Sitzung, beendet aber den aktiven Prüfungszustand im Arbeitsspeicher nicht. autoSaveActiveSessionOnLeave() speichert bei currentMode="exam" und vorhandenen examQuestions erneut, insbesondere bei beforeunload/pagehide nach dem Ergebnis-Button mit location.reload(). getActiveSession(), hasActiveExamSession(), resumeActiveExamSession() und die Dashboard-Auswahl prüfen keinen Abschlussstatus. saveExamResult() hängt bedingungslos einen Eintrag an. Sitzung und Verlauf besitzen keine gemeinsame eindeutige Versuchs-ID. Wiederholter Abschluss wiederholt außerdem Themenstatistik und Fehlerverbuchung.
+
+Späterer Implementierungsscope: exakt vier Dateien:
+
+- app.js
+- tools/check-written-exam-completion-v2737g.py
+- docs/WRITTEN_EXAM_COMPLETION_REPAIR_V2737G.md
+- tools/preflight.py
+
+Keine fünfte Implementierungsdatei. In app.js sind ausschließlich getActiveSession(), saveActiveExamSession(), resumeActiveExamSession(), renderDashboardResumeExamCard(), startExamMode(), saveExamResult(), buildDashboardResumeStepV2735B() und die letzte wirksame finishExamMode()-Deklaration freigegeben. Die frühere gleichnamige Deklaration bleibt unverändert. Ein zusammenhängender Hilfsblock unmittelbar vor getActiveSession() ist erlaubt, begrenzt durch die eigenständigen Kommentarzeilen // BEGIN v27.37g written exam completion und // END v27.37g written exam completion. Alle Bytes außerhalb dieser Grenzen bleiben zur Basis identisch. Neue Logik ist auf schriftliche Versuchsidentität, Abschlussstatus, Abschluss-/Speicherschutz und den beschriebenen Altbestandsdialog begrenzt. Keine neue allgemeine Storage-Abstraktion und keine Eingriffe in andere Lernarten.
+
+In der Implementation darf tools/preflight.py ausschließlich die vorbereitete Zuweisung V2737G_IMPLEMENTATION_CHECKER = None durch den festen neuen Checker-Pfad ersetzen. Steuerungsdokumente, Kontinuitätschecker, historische Einzelchecker, index.html, style.css, patch-v21.js, oral-exam.js, Fragenbanken, Lernkarten, Auth-/Session-/Zugangsbausteine, SDK, Config, SQL und Migrationen bleiben unverändert.
+
+Verbindlicher Abnahmevertrag:
+
+1. Jeder neu gestartete schriftliche Versuch erhält vor seiner ersten Speicherung eine stabile eigene Versuchs-ID. Pause, Timer-Speicherung, Navigation und Wiederaufnahme behalten dieselbe ID, Fragenreihenfolge, Antworten, Position und Restzeit. Eine ausdrücklich neu gestartete Prüfung erhält eine andere ID, auch mit gleichen Fragen und Antworten.
+2. Abschluss ist terminal. Ein synchroner Abschlusswächter greift vor jeder Statistik-, Fehler- oder Verlaufsnebenwirkung. Wiederholte finishExamMode()-Aufrufe, Doppelklick, Timerabschluss plus Klick und verzögerte Autosave-Ereignisse dürfen denselben Versuch weder erneut auswerten/verbuchen noch als aktiv speichern.
+3. Die stabile ID wird im Ergebnis gespeichert und vor neuer Verbuchung gegen den tatsächlich gespeicherten Verlauf geprüft. Höchstens ein Eintrag pro Versuch. Gleiche Punktzahlen oder Antwortmuster verschiedener IDs sind keine Duplikate. Reihenfolge und sämtliche vorhandenen Verlaufseinträge bleiben erhalten.
+4. Nach erfolgreicher Abgabe erscheint dieser Versuch weder unmittelbar noch nach Navigation, beforeunload, pagehide, visibilitychange oder Neuladen als fortsetzbare Prüfung. Direkter Resume bleibt gesperrt. Identifizierbare abgeschlossene Sitzungen werden anhand terminalen Status oder exakt passender Ergebnis-ID ausgeschlossen. Gespeicherte Nutzdaten werden nicht als Nebenwirkung des Lesens gelöscht.
+5. Ergebnisansicht, Punkte-/Teilpunkteberechnung, Bestehensgrenze, Themenauswertung und Fehlertraining einschließlich unbeantworteter Fragen bleiben korrekt. Nebenwirkungen erfolgen pro Versuch genau einmal. Der Abschlusswächter leert die benötigten Daten nicht vor Ergebnisberechnung oder Fehlertraining.
+6. Laufende Prüfungen bleiben pausierbar und nach Neuladen fortsetzbar. Eine neue Prüfung nach Abschluss ist unabhängig, zählt einmal und kann erneut pausiert werden. Lernkarten, normales Lernen und mündliche Vorbereitung bleiben unverändert.
+7. Altbestände ohne verlässliche ID und Abschlussstatus sind technisch nicht eindeutig als abgegeben oder pausiert erkennbar. Keine Heuristik anhand letzter Frage, vollständiger Antworten, Zeit, Titel, Punkten oder ähnlichen Verlaufseinträgen. Dashboard bezeichnet sie als zu prüfende gespeicherte Prüfung; direkter Resume erfordert ebenfalls Klärung. Ein kleiner lokaler Dialog bietet ausdrücklich: bereits abgegeben / noch nicht abgegeben / abbrechen. Keine vorgewählte Bestätigung und kein automatisches Fortsetzen. Bei bereits abgegeben bleiben Fragen, Antworten und Zeitdaten erhalten, ergänzt nur um terminale Metadaten; kein neuer Verlaufseintrag. Bei bestätigtem noch nicht abgegeben wird eine ID dauerhaft ergänzt und derselbe Lernstand fortgesetzt. Abbrechen verändert nichts. Diese Benutzerklärung ist die dokumentierte Grenze für nicht zuordenbare Altbestände, keine behauptete automatische Erkennung alter Abschlüsse.
+8. Vorhandene Lernstände und alte doppelte Verlaufseinträge nicht löschen, neu sortieren oder spekulativ zusammenführen. Keine Migration fremder Storage-Keys. Fehler beim Lesen/Schreiben oder ungültige neue Status-/ID-Daten führen zu einem generischen verständlichen Hinweis, keiner falschen Erfolgsanzeige und keiner erneuten Verbuchung. Vorhandene Daten nicht durch leere Defaults überschreiben. Keine neue verteilte Transaktions-/Mehrgerätefunktion.
+9. Der neue synthetische Checker führt den tatsächlichen letzten Abschlusscode und den zusammenhängenden Speicher-/Resume-/Dashboard-Pfad aus: Abgabe → Verlassen → Neuladen → keine Fortsetzung; doppelte/reentrante Abschlussaufrufe und Autosave-Timer; unveränderter Verlauf bei Wiederholung; zwei neue Versuche mit gleichen Antworten; Pause/Resume; leere, teilweise und vollständig beantwortete Versuche; richtige, falsche und unbeantwortete Fehlerfragen; repräsentative Teilpunkte und Bestehensgrenzen; Altbestände mit terminalem Status, bekannter ID sowie alle drei Klärungsentscheidungen; beschädigte Speicherung und Storage-Throw. Positiv-/Negativfälle und Aufrufzahlen statt bloßer Textmarker.
+10. Semantische Manipulationsfälle müssen mindestens fehlenden terminalen Autosave-Schutz, entfernten Abschlusswächter, unbedingtes Verlaufs-Anhängen, neue ID bei Resume, wiederverwendete ID beim Neustart und ungesicherte Altbestandsfortsetzung erkennen. Syntaxfehler zählen nicht als bestandene semantische Prüfung. Nur isolierte synthetische Daten, keine bestehenden Browser-Lernstände und keine Live-Verbindung. Ein späterer Browser-Smoke-Test muss die konkrete Dashboard-Reproduktion erneut abdecken. Checker-PASS ersetzt keine Unterrichtsfreigabe.
+
+Alle sechs Lifecycle-Phasen sind von Anfang an verbindlich:
+
+- v2737g_authorization_prepared: Basis-HEAD, vorbereiteter autorisierter Reparaturvertrag, exakt sechs Gate-Dateien.
+- v2737g_authorization_committed: ein direkter Gate-Commit, autorisierter Reparaturvertrag, sauberer Working Tree.
+- v2737g_implementation_prepared: Gate committet, autorisierter Reparaturvertrag, exakt vier Implementierungsdateien.
+- v2737g_implementation_committed: eine direkte Implementation, autorisierter Reparaturvertrag, sauberer Working Tree.
+- v2737g_closure_prepared: Implementation committet, NONE / BLOCKED / Autorisiert NEIN, exakt vier Steuerungsdokumente.
+- v2737g_closure_committed: eine direkte Closure, geschlossener Task, sauberer Working Tree.
+
+Gate-Dateien sind exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Closure-Dateien sind exakt die vier Steuerungsdokumente. v2737g_completion_documents verwendet den tatsächlichen Implementierungs-SHA, schließt v27.37g und autorisiert keinen Folgetask. Bestätigter funktionaler Ausgangsstand bleibt v27.35g; allgemeine Unterrichtsfreigabe ist nicht Teil dieses Tasks.
+
+Jeder Zwischencommit wird einzeln geprüft: direkte lineare Elternfolge, exakte Rollen und Dateiumfänge, unveränderte historische Dokumentabschnitte und Produktgrenzen. Leerer Staging-Bereich ist erforderlich. origin/main darf nur auf die reale Basis oder einen vorhandenen Lifecycle-Vorfahren zeigen. Keine zukünftigen Commit-SHAs hartcodieren. Unbekannte Folgetasks, wiederholte/übersprungene Phasen, Merge-Commits und durch spätere Änderungen verdeckte Fremdänderungen werden abgewiesen.
+
+Das enge zentrale Nachfolgeprofil validiert die vollständige historische v27.37f-Closure an dieser Basis mit allen älteren Abschlüssen. Historische Einzelchecker bleiben byte-identisch. Die unveränderten v27.37d-/v27.37e-/v27.36d-/v27.36f-Harnesses und ihre Mutationen laufen weiter gegen aktuelle erlaubte Quellen. Zusätzlich werden der unveränderte v27.37f-App-Harness, seine Positiv-/Negativmatrix und alle zehn semantischen Mutationen ausgeführt. Auth-Funktionsgrenzen und zugehörige Dokumentation bleiben byte-identisch zur abgeschlossenen Basis; kein pauschales PASS und kein allgemeiner Bypass.
+
+Kontinuitätschecker einschließlich isolierter Lifecycle-Positiv-/Negativtests, vollständiger Preflight einschließlich Regressionen, git diff --check und exakter Phasenscope sind verpflichtend. Isolierte Lifecycle-Tests verändern weder Dateien noch echte Git-Historie. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE. Keine Produktänderung in diesem Gate, kein Commit, kein Push.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Abgeschlossener technischer Schritt v27.37f
 

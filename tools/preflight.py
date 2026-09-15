@@ -1659,7 +1659,8 @@ def check_participant_auth_session_browser_provider_v2737d():
         "v2737e_implementation_prepared", "v2737e_implementation_committed",
         "v2737e_closure_prepared", "v2737e_closure_committed",
     } or (_V2737D_POST_COMMIT_CONTROL is not None
-          and phase in _V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]):
+          and phase in (_V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]
+                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"])):
         _v2737e_provider_regression_profile()
         return
     code, stdout, stderr = run_command(
@@ -1695,7 +1696,8 @@ def _v2737e_provider_regression_profile():
             "v2737e_implementation_prepared", "v2737e_implementation_committed",
             "v2737e_closure_prepared", "v2737e_closure_committed",
         } and not (_V2737D_POST_COMMIT_CONTROL is not None
-                   and phase in _V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]):
+                   and phase in (_V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]
+                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"])):
             raise ValueError("kein gültiges v27.37e-Implementierungs-/Abschlussprofil")
         control = _V2737D_POST_COMMIT_CONTROL
         root = Path(__file__).resolve().parents[1]
@@ -1737,7 +1739,8 @@ def _v2737e_provider_regression_profile():
 def check_participant_auth_session_browser_loader_v2737e():
     phase = _v2737d_post_commit_profile_phase()
     if (_V2737D_POST_COMMIT_CONTROL is not None
-            and phase in _V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]):
+            and phase in (_V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]
+                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"])):
         _v2737f_historical_regression_profile()
         return
     if phase is None or not phase.startswith("v2737e_"):
@@ -1776,7 +1779,7 @@ def _v2737f_historical_regression_profile():
     try:
         phase = _v2737d_post_commit_profile_phase()
         control = _V2737D_POST_COMMIT_CONTROL
-        if control is None or phase not in control["V2737F_PHASES"]:
+        if control is None or phase not in (control["V2737F_PHASES"] | control["V2737G_PHASES"]):
             raise ValueError("kein gültiges v27.37f-Nachfolgeprofil")
         root = Path(__file__).resolve().parents[1]
         node = shutil.which("node")
@@ -1854,6 +1857,9 @@ def _v2737f_historical_regression_profile():
 def check_participant_auth_session_app_entry_v2737f():
     phase = _v2737d_post_commit_profile_phase()
     control = _V2737D_POST_COMMIT_CONTROL
+    if control is not None and phase in control["V2737G_PHASES"]:
+        _v2737g_auth_entry_regression_profile()
+        return
     if control is None or phase not in control["V2737F_PHASES"]:
         return
     if phase in {"v2737f_authorization_prepared", "v2737f_authorization_committed"}:
@@ -1871,6 +1877,96 @@ def check_participant_auth_session_app_entry_v2737f():
         print(stderr)
     if code != 0:
         errors.append("v27.37f Auth-/Session-App-Einstiegsprüfung fehlgeschlagen")
+
+
+
+# Gate-only registration: implementation may replace only this assignment.
+V2737G_IMPLEMENTATION_CHECKER = None
+
+
+def _v2737g_auth_entry_regression_profile():
+    """Run the unchanged f harness and all semantic mutations on current app."""
+    import ast
+    import shutil
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        control = _V2737D_POST_COMMIT_CONTROL
+        if control is None or phase not in control["V2737G_PHASES"]:
+            raise ValueError("kein gültiges v27.37g-Nachfolgeprofil")
+        root = Path(__file__).resolve().parents[1]
+        path = "tools/check-participant-auth-session-app-entry-v2737f.py"
+        historical = (root / path).read_text(encoding="utf-8")
+        if historical != control["read_v2735f_commit_document"](control["V2737G_BASE_SHA"], path):
+            raise ValueError("historischer v27.37f-Checker verändert")
+        tree = ast.parse(historical)
+        def assignment(name, nodes):
+            found = [ast.literal_eval(n.value) for n in nodes if isinstance(n, ast.Assign)
+                     and any(isinstance(t, ast.Name) and t.id == name for t in n.targets)]
+            if len(found) != 1:
+                raise ValueError("historischer Vertrag uneindeutig: " + name)
+            return found[0]
+        harness = assignment("HARNESS", tree.body)
+        mutations = assignment("mutations", ast.walk(tree))
+        if not isinstance(harness, str) or len(mutations) != 10:
+            raise ValueError("historische v27.37f-Matrix unvollständig")
+        source = (root / "app.js").read_text(encoding="utf-8")
+        base_app = control["read_v2735f_commit_document"](control["V2737G_BASE_SHA"], "app.js")
+        # Complete f closure is validated first. All f static inputs remain
+        # byte-identical: auth helpers/functions, implementation doc and modules.
+        if control["v2737g_app_remainder"](source) != control["v2737g_app_remainder"](base_app):
+            raise ValueError("geschützte App-/Auth-Grenzen verändert")
+        if not source.endswith("\n") or source.startswith("\ufeff"):
+            raise ValueError("App-Encodingvertrag verletzt")
+        node = shutil.which("node")
+        if not node:
+            raise ValueError("Node.js fehlt")
+        def execute(text):
+            return subprocess.run([node, "-e", harness, str(root)], input=text,
+                                  cwd=root, capture_output=True, text=True,
+                                  encoding="utf-8", errors="strict", timeout=60, check=False)
+        result = execute(source)
+        if result.returncode:
+            raise ValueError("historischer v27.37f-Harness: " + result.stderr.strip())
+        summary = json.loads(result.stdout)
+        if summary["positive"] < 25 or summary["negative"] < 80:
+            raise ValueError("historische v27.37f-Testzahlen unvollständig")
+        print("v27.37f App-Einstieg: " + result.stdout.strip() + " / PASS")
+        for before, after in mutations:
+            if source.count(before) != 1:
+                raise ValueError("historischer Mutationsanker uneindeutig: " + before)
+            mutated = source.replace(before, after, 1)
+            syntax = subprocess.run([node, "--check"], input=mutated, cwd=root,
+                                    capture_output=True, text=True, encoding="utf-8",
+                                    errors="strict", timeout=30, check=False)
+            if syntax.returncode:
+                raise ValueError("historische Mutation syntaktisch ungültig")
+            if execute(mutated).returncode == 0:
+                raise ValueError("historische v27.37f-Mutation nicht blockiert")
+        print("v27.37g-Nachfolgeprofil: alle 10 historischen v27.37f-Mutationen blockiert / PASS")
+    except Exception as exc:
+        errors.append(f"v27.37g historische Auth-App-Regression fehlgeschlagen: {exc}")
+
+
+def check_written_exam_completion_v2737g():
+    phase = _v2737d_post_commit_profile_phase()
+    control = _V2737D_POST_COMMIT_CONTROL
+    if control is None or phase not in control["V2737G_PHASES"]:
+        return
+    if phase in {"v2737g_authorization_prepared", "v2737g_authorization_committed"}:
+        if V2737G_IMPLEMENTATION_CHECKER is not None:
+            errors.append("v27.37g: Checker vor Implementation registriert")
+        return
+    expected = "tools/check-written-exam-completion-v2737g.py"
+    if V2737G_IMPLEMENTATION_CHECKER != expected or not Path(expected).is_file():
+        errors.append("v27.37g: Checker fehlt oder ist nicht registriert")
+        return
+    code, stdout, stderr = run_command(f'"{sys.executable}" -X utf8 -B "{expected}"')
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr)
+    if code != 0:
+        errors.append("v27.37g schriftlicher Prüfungsabschluss fehlgeschlagen")
 
 
 def _git_paths(arguments):
@@ -5799,7 +5895,14 @@ def check_protected_core_files_v2356():
         and _v2737d_post_commit_profile_phase(changed_paths)
             == "v2737f_implementation_prepared"
     )
+    authorized_v2737g_app_scope = (
+        "app.js" in changed_protected
+        and _v2737d_post_commit_profile_phase(changed_paths)
+            == "v2737g_implementation_prepared"
+    )
     for protected in sorted(changed_protected):
+        if protected == "app.js" and authorized_v2737g_app_scope:
+            continue
         if protected == "app.js" and authorized_v2737f_app_scope:
             continue
         if protected == "index.html" and authorized_v2737e_index_scope:
@@ -6727,6 +6830,7 @@ def main():
     check_participant_auth_session_browser_provider_v2737d()
     check_participant_auth_session_browser_loader_v2737e()
     check_participant_auth_session_app_entry_v2737f()
+    check_written_exam_completion_v2737g()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()
