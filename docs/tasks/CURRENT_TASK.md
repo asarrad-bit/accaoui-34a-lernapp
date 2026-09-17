@@ -1,14 +1,26 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37g
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37g – Prüfungsabschluss gegen Wiederaufnahme und Doppelverbuchung absichern
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37f
-Erlaubte Implementierungsdateien: `app.js`, `tools/check-written-exam-completion-v2737g.py`, `docs/WRITTEN_EXAM_COMPLETION_REPAIR_V2737G.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37g
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37g
+
+v27.37g – Prüfungsabschluss gegen Wiederaufnahme und Doppelverbuchung absichern ist abgeschlossen.
+
+Implementierungscommit: `9d82197359b2beb7a4fe56d5fad1ffbd1f4e5d25`.
+
+Der schriftliche Prüfungsabschluss ist terminal geschützt und wird pro Versuchs-ID höchstens einmal verbucht. Laufende Prüfungen bleiben fortsetzbar; uneindeutige Altbestände benötigen ausdrückliche Klärung. Vorhandene Verlaufseinträge bleiben erhalten. Übrige Auditbefunde bleiben offen. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Reparaturtask v27.37g
 

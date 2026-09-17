@@ -1,16 +1,28 @@
 # Aktueller Projektzustand
 
-Stand: v27.37g-AUTORISIERUNG
+Stand: v27.37g
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37g
-Aktuelle Taskart: v27.37g – Prüfungsabschluss gegen Wiederaufnahme und Doppelverbuchung absichern
-Aktueller Blocker: Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener technischer Schritt v27.37g
+
+v27.37g – Prüfungsabschluss gegen Wiederaufnahme und Doppelverbuchung absichern ist abgeschlossen.
+
+Implementierungscommit: `9d82197359b2beb7a4fe56d5fad1ffbd1f4e5d25`.
+
+Der schriftliche Prüfungsabschluss ist terminal geschützt und wird pro Versuchs-ID höchstens einmal verbucht. Laufende Prüfungen bleiben fortsetzbar; uneindeutige Altbestände benötigen ausdrückliche Klärung. Vorhandene Verlaufseinträge bleiben erhalten. Übrige Auditbefunde bleiben offen. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Reparaturtask v27.37g
 

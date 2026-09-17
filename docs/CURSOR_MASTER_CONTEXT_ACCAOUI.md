@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37g-AUTORISIERUNG
+Stand: v27.37g
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,18 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Abgeschlossener technischer Schritt v27.37g
+
+v27.37g – Prüfungsabschluss gegen Wiederaufnahme und Doppelverbuchung absichern ist abgeschlossen.
+
+Implementierungscommit: `9d82197359b2beb7a4fe56d5fad1ffbd1f4e5d25`.
+
+Der schriftliche Prüfungsabschluss ist terminal geschützt und wird pro Versuchs-ID höchstens einmal verbucht. Laufende Prüfungen bleiben fortsetzbar; uneindeutige Altbestände benötigen ausdrückliche Klärung. Vorhandene Verlaufseinträge bleiben erhalten. Übrige Auditbefunde bleiben offen. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Reparaturtask v27.37g
 
