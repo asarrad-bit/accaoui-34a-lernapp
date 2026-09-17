@@ -1881,7 +1881,7 @@ def check_participant_auth_session_app_entry_v2737f():
 
 
 # Gate-only registration: implementation may replace only this assignment.
-V2737G_IMPLEMENTATION_CHECKER = None
+V2737G_IMPLEMENTATION_CHECKER = "tools/check-written-exam-completion-v2737g.py"
 
 
 def _v2737g_auth_entry_regression_profile():

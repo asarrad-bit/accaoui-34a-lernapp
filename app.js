@@ -873,8 +873,155 @@ function writeStorage(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+// BEGIN v27.37g written exam completion
+let writtenExamAttemptV2737G = null;
+
+function writtenExamNoticeV2737G() {
+  showSmallNotice("Die gespeicherte Prüfung konnte nicht sicher verarbeitet werden. Bitte prüfen Sie den lokalen Speicher; es wurde kein erfolgreicher Abschluss bestätigt.");
+}
+
+function writtenExamRecordV2737G(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function writtenExamHistoryV2737G() {
+  const raw = localStorage.getItem(STORAGE_KEYS.examHistory);
+  const history = raw === null ? [] : JSON.parse(raw);
+  if (!Array.isArray(history) || !history.every(writtenExamRecordV2737G)) {
+    throw new Error("written-exam-storage");
+  }
+  return history;
+}
+
+function writtenExamSessionV2737G() {
+  const raw = localStorage.getItem(STORAGE_KEYS.activeSession);
+  if (raw === null) return null;
+  const session = JSON.parse(raw);
+  if (!writtenExamRecordV2737G(session) || session.sessionType !== "exam" ||
+      !Array.isArray(session.questions) || session.questions.length === 0 ||
+      !session.questions.every(question => writtenExamRecordV2737G(question) &&
+        Array.isArray(question.answers) && Array.isArray(question.correct)) ||
+      !Number.isInteger(session.currentIndex) || session.currentIndex < 0 ||
+      session.currentIndex >= session.questions.length ||
+      !Number.isFinite(session.secondsLeft) || session.secondsLeft < 0 ||
+      !writtenExamRecordV2737G(session.answers) ||
+      !Object.entries(session.answers).every(([key, answers]) =>
+        /^(0|[1-9][0-9]*)$/.test(key) && Number(key) < session.questions.length &&
+        Array.isArray(answers) && answers.every(answer => Number.isInteger(answer) &&
+          answer >= 0 && answer < session.questions[Number(key)].answers.length))) {
+    throw new Error("written-exam-storage");
+  }
+  const keys = ["attemptVersion", "attemptId", "attemptStatus"];
+  const count = keys.filter(key => Object.prototype.hasOwnProperty.call(session, key)).length;
+  if (count !== 0 && (count !== keys.length || session.attemptVersion !== 1 ||
+      typeof session.attemptId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(session.attemptId) ||
+      !["active", "completed"].includes(session.attemptStatus))) {
+    throw new Error("written-exam-metadata");
+  }
+  return session;
+}
+
+function writtenExamIsCompletedV2737G(session, history) {
+  return session.attemptStatus === "completed" ||
+    (typeof session.attemptId === "string" &&
+      history.some(result => result.attemptId === session.attemptId));
+}
+
+function writtenExamNewIdV2737G(session, history) {
+  const id = crypto.randomUUID();
+  if ((session && session.attemptId === id) || history.some(result => result.attemptId === id)) {
+    throw new Error("written-exam-identity");
+  }
+  return id;
+}
+
+function writtenExamSnapshotV2737G(status) {
+  return {
+    version: "v24.6c", sessionType: "exam", title: currentExamTitle,
+    examType: currentExamType, examLimit: currentExamLimit,
+    questions: examQuestions, currentIndex: examQuestionIndex, answers: examAnswers,
+    secondsLeft: Math.max(0, examSecondsLeft), focusQuestionIndexes: examFocusQuestionIndexes,
+    focusQuestionPosition: examFocusQuestionPosition,
+    createdAt: writtenExamAttemptV2737G.createdAt, updatedAt: new Date().toISOString(),
+    attemptVersion: 1, attemptId: writtenExamAttemptV2737G.id, attemptStatus: status
+  };
+}
+
+function writtenExamTrainingStateV2737G() {
+  // Validate the three existing written-training stores before any completion write.
+  const values = [STORAGE_KEYS.topicStats, STORAGE_KEYS.topicMistakes, STORAGE_KEYS.answeredQuestions]
+    .map(key => {
+      const raw = localStorage.getItem(key);
+      const value = raw === null ? {} : JSON.parse(raw);
+      if (!writtenExamRecordV2737G(value)) throw new Error("written-exam-training");
+      return value;
+    });
+  if (!Object.values(values[0]).every(value => writtenExamRecordV2737G(value) &&
+        ["answered", "correct", "wrong"].every(key => Number.isFinite(value[key]) && value[key] >= 0)) ||
+      !Object.values(values[1]).every(value => Array.isArray(value) && value.every(writtenExamRecordV2737G)) ||
+      !Object.values(values[2]).every(writtenExamRecordV2737G)) {
+    throw new Error("written-exam-training");
+  }
+  [topicStats, topicMistakes, answeredQuestions] = values;
+}
+
+function writtenExamLegacyDialogV2737G(session) {
+  if (document.getElementById("writtenExamLegacyDialogV2737G")) return;
+  const original = localStorage.getItem(STORAGE_KEYS.activeSession);
+  const dialog = document.createElement("dialog");
+  dialog.id = "writtenExamLegacyDialogV2737G";
+  dialog.className = "exam-warning-box";
+  const title = document.createElement("h2");
+  title.id = "writtenExamLegacyTitleV2737G";
+  title.textContent = "Zu prüfende gespeicherte Prüfung";
+  dialog.setAttribute("aria-labelledby", title.id);
+  const explanation = document.createElement("p");
+  explanation.textContent = "Bei dieser älteren Speicherung ist nicht erkennbar, ob die Prüfung bereits abgegeben wurde. Bitte wählen Sie ausdrücklich. Ihre gespeicherten Antworten bleiben erhalten.";
+  dialog.appendChild(title);
+  dialog.appendChild(explanation);
+  const actions = document.createElement("div");
+  actions.className = "warning-actions";
+  for (const [label, decision] of [["Bereits abgegeben", "completed"], ["Noch nicht abgegeben", "active"], ["Abbrechen", "cancel"]]) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "warning-btn";
+    button.textContent = label;
+    button.addEventListener("click", () => {
+      if (decision === "cancel") { dialog.close(); dialog.remove(); return; }
+      try {
+        if (localStorage.getItem(STORAGE_KEYS.activeSession) !== original) throw new Error("written-exam-changed");
+        const current = writtenExamSessionV2737G();
+        if (!current || current.attemptId !== undefined) throw new Error("written-exam-changed");
+        const id = writtenExamNewIdV2737G(current, writtenExamHistoryV2737G());
+        saveActiveSession({...session, attemptVersion: 1, attemptId: id, attemptStatus: decision});
+        dialog.close();
+        dialog.remove();
+        if (decision === "active") resumeActiveExamSession();
+        else {
+          renderDashboardResumeExamCard();
+          renderDashboardNextLearningStepCardV2735B();
+          showSmallNotice("Die gespeicherte Prüfung bleibt abgeschlossen. Es wurde kein Verlaufseintrag ergänzt.");
+        }
+      } catch (error) { writtenExamNoticeV2737G(); }
+    });
+    actions.appendChild(button);
+  }
+  dialog.appendChild(actions);
+  dialog.addEventListener("cancel", () => dialog.remove());
+  document.body.appendChild(dialog);
+  dialog.showModal();
+}
+// END v27.37g written exam completion
 function getActiveSession() {
-  return readStorage(STORAGE_KEYS.activeSession, null);
+  try {
+    const session = writtenExamSessionV2737G();
+    if (!session || writtenExamIsCompletedV2737G(session, writtenExamHistoryV2737G())) return null;
+    return session;
+  } catch (error) {
+    writtenExamNoticeV2737G();
+    return null;
+  }
 }
 
 function saveActiveSession(session) {
@@ -901,28 +1048,20 @@ function hasActiveExamSession() {
 }
 
 function saveActiveExamSession() {
-  if (currentMode !== "exam" || !Array.isArray(examQuestions) || examQuestions.length === 0) {
-    return;
+  if (!writtenExamAttemptV2737G || writtenExamAttemptV2737G.status !== "active" ||
+      currentMode !== "exam" || !Array.isArray(examQuestions) || examQuestions.length === 0) return false;
+  try {
+    const existing = writtenExamSessionV2737G();
+    const history = writtenExamHistoryV2737G();
+    if (existing && (existing.attemptId !== writtenExamAttemptV2737G.id ||
+        writtenExamIsCompletedV2737G(existing, history))) return false;
+    if (history.some(result => result.attemptId === writtenExamAttemptV2737G.id)) return false;
+    saveActiveSession(writtenExamSnapshotV2737G("active"));
+    return true;
+  } catch (error) {
+    writtenExamNoticeV2737G();
+    return false;
   }
-
-  const existing = getActiveSession();
-  const now = new Date().toISOString();
-
-  saveActiveSession({
-    version: "v24.6c",
-    sessionType: "exam",
-    title: currentExamTitle,
-    examType: currentExamType,
-    examLimit: currentExamLimit,
-    questions: examQuestions,
-    currentIndex: examQuestionIndex,
-    answers: examAnswers,
-    secondsLeft: examSecondsLeft,
-    focusQuestionIndexes: examFocusQuestionIndexes,
-    focusQuestionPosition: examFocusQuestionPosition,
-    createdAt: existing && existing.createdAt ? existing.createdAt : now,
-    updatedAt: now
-  });
 }
 
 function scheduleExamSessionTimerSave() {
@@ -940,17 +1079,20 @@ function scheduleExamSessionTimerSave() {
 }
 
 function resumeActiveExamSession() {
-  const session = getActiveSession();
-
-  if (!session || session.sessionType !== "exam") {
-    showSmallNotice("Keine gespeicherte Prüfung gefunden.");
-    return false;
-  }
-
-  if (!Array.isArray(session.questions) || session.questions.length === 0) {
-    showSmallNotice("Gespeicherte Prüfung ist ungültig.");
-    clearActiveSession();
-    renderDashboardResumeExamCard();
+  let session;
+  try {
+    session = writtenExamSessionV2737G();
+    if (!session || writtenExamIsCompletedV2737G(session, writtenExamHistoryV2737G())) {
+      showSmallNotice("Keine fortsetzbare Prüfung vorhanden.");
+      return false;
+    }
+    if (session.attemptId === undefined) {
+      writtenExamLegacyDialogV2737G(session);
+      return false;
+    }
+    writtenExamAttemptV2737G = {id: session.attemptId, status: "active", createdAt: session.createdAt};
+  } catch (error) {
+    writtenExamNoticeV2737G();
     return false;
   }
 
@@ -1055,7 +1197,7 @@ function renderDashboardResumeExamCard() {
   const mainContent = document.querySelector(".main-content");
   const heroGrid = document.querySelector(".hero-grid");
 
-  if (!mainContent || !heroGrid) {
+  if (!session || !mainContent || !heroGrid) {
     return;
   }
 
@@ -1069,13 +1211,13 @@ function renderDashboardResumeExamCard() {
   card.id = "examResumeCard";
   card.className = "last-exam-box";
   card.innerHTML = `
-    <span>Angefangene Prüfung</span>
+    <span>${session.attemptId === undefined ? "Zu prüfende gespeicherte Prüfung" : "Angefangene Prüfung"}</span>
     <strong>${escapeHtml(title)}</strong>
     <p>${escapeHtml(questionLabel)} · gespeichert am ${escapeHtml(formatSessionDate(session.updatedAt))}</p>
 
     <div class="result-actions">
       <button class="next-btn" onclick="resumeActiveExamSession()">
-        Prüfung fortsetzen
+        ${session.attemptId === undefined ? "Gespeicherte Prüfung prüfen" : "Prüfung fortsetzen"}
       </button>
 
       <button class="next-btn secondary-btn" onclick="discardSavedExamSession()">
@@ -3474,10 +3616,22 @@ function startExamMode(questionLimit, examTitle, examType) {
     return;
   }
 
-  clearActiveSession();
-  renderDashboardResumeExamCard();
-
-  currentMode = "exam";
+  let previous;
+  let history;
+  let attemptId;
+  try {
+    previous = writtenExamSessionV2737G();
+    history = writtenExamHistoryV2737G();
+    if (previous && !writtenExamIsCompletedV2737G(previous, history)) {
+      if (previous.attemptId === undefined) writtenExamLegacyDialogV2737G(previous);
+      else showSmallNotice("Bitte die laufende Prüfung zuerst fortsetzen oder über die vorhandene Löschfunktion bewusst verwerfen.");
+      return;
+    }
+    attemptId = writtenExamNewIdV2737G(previous, history);
+  } catch (error) {
+    writtenExamNoticeV2737G();
+    return;
+  }
 
   currentExamLimit = Number(questionLimit) || EXAM_SHORT_QUESTION_LIMIT_V20;
   currentExamTitle = examTitle || "§34a Kurzprüfung";
@@ -3529,6 +3683,21 @@ function startExamMode(questionLimit, examTitle, examType) {
   examSecondsLeft = EXAM_DURATION_SECONDS;
   lastExamMistakes = [];
 
+  // Persist identity and the complete new attempt before exposing the exam UI.
+  writtenExamAttemptV2737G = {id: attemptId, status: "active", createdAt: new Date().toISOString()};
+  currentMode = "exam";
+  examFocusQuestionIndexes = null;
+  examFocusQuestionPosition = 0;
+  try {
+    if (JSON.stringify(writtenExamSessionV2737G()) !== JSON.stringify(previous)) throw new Error("written-exam-changed");
+    saveActiveSession(writtenExamSnapshotV2737G("active"));
+  } catch (error) {
+    writtenExamAttemptV2737G.status = "failed";
+    currentMode = "dashboard";
+    writtenExamNoticeV2737G();
+    return;
+  }
+  renderDashboardResumeExamCard();
   showExamView();
 
   if (examHasTimer()) {
@@ -3999,8 +4168,21 @@ function updateExamTimerDisplay() {
 }
 
 function finishExamMode() {
+  if (!writtenExamAttemptV2737G || writtenExamAttemptV2737G.status !== "active" || currentMode !== "exam") return;
+  writtenExamAttemptV2737G.status = "closing";
+  currentMode = "exam-result";
   clearExamTimer();
-  clearActiveSession();
+  clearTimeout(examSessionTimerSaveTimeout);
+  examSessionTimerSaveTimeout = null;
+  try {
+    const stored = writtenExamSessionV2737G();
+    if (!stored || stored.attemptId !== writtenExamAttemptV2737G.id ||
+        writtenExamIsCompletedV2737G(stored, writtenExamHistoryV2737G())) {
+      throw new Error("written-exam-completed");
+    }
+    writtenExamTrainingStateV2737G();
+    // A persisted terminal snapshot precedes every training/history side effect.
+    saveActiveSession(writtenExamSnapshotV2737G("completed"));
 
   let correctCount = 0;
   let wrongCount = 0;
@@ -4054,7 +4236,8 @@ function finishExamMode() {
 
   const topicBreakdown = buildExamTopicBreakdown();
 
-  saveExamResult({
+  if (!saveExamResult({
+    attemptId: writtenExamAttemptV2737G.id,
     total,
     correct: correctCount,
     wrong: wrongCount,
@@ -4076,7 +4259,8 @@ function finishExamMode() {
     examTitle: currentExamTitle,
     examLimit: currentExamLimit,
     date: new Date().toLocaleString("de-DE")
-  });
+  })) throw new Error("written-exam-history");
+  writtenExamAttemptV2737G.status = "completed";
 
   updateDashboardNumbers();
 
@@ -4171,6 +4355,10 @@ function finishExamMode() {
 
     </section>
   `;
+  } catch (error) {
+    writtenExamAttemptV2737G.status = "failed";
+    writtenExamNoticeV2737G();
+  }
 }
 
 function isExamAnswerCorrect(question, selectedAnswersForQuestion) {
@@ -4656,8 +4844,14 @@ function loadExamHistory() {
 }
 
 function saveExamResult(result) {
-  examHistory.push(result);
-  writeStorage(STORAGE_KEYS.examHistory, examHistory);
+  if (!writtenExamAttemptV2737G || writtenExamAttemptV2737G.status !== "closing" ||
+      !result || result.attemptId !== writtenExamAttemptV2737G.id) return false;
+  const history = writtenExamHistoryV2737G();
+  if (history.some(entry => entry.attemptId === result.attemptId)) return false;
+  const nextHistory = [...history, result];
+  writeStorage(STORAGE_KEYS.examHistory, nextHistory);
+  examHistory = nextHistory;
+  return true;
 }
 
 function showStatsPage() {
@@ -5931,11 +6125,11 @@ function buildDashboardResumeStepV2735B(candidate) {
     const progressLabel = getDashboardSessionProgressLabelV2735B(session, "Frage");
 
     return {
-      title: session.title || "Ihre Prüfung",
+      title: session.attemptId === undefined ? "Zu prüfende gespeicherte Prüfung" : (session.title || "Ihre Prüfung"),
       description: progressLabel
         ? progressLabel + " · gespeichert am " + formatSessionDate(session.updatedAt)
         : "Fortsetzen jederzeit möglich.",
-      actionLabel: "Prüfung fortsetzen",
+      actionLabel: session.attemptId === undefined ? "Gespeicherte Prüfung prüfen" : "Prüfung fortsetzen",
       actionHandler: "resumeActiveExamSession()"
     };
   }
