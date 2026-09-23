@@ -1976,7 +1976,7 @@ def check_written_exam_completion_v2737g():
 
 
 # Gate-only registration: implementation may replace only this assignment.
-V2737H_IMPLEMENTATION_CHECKER = None
+V2737H_IMPLEMENTATION_CHECKER = "tools/check-dashboard-readiness-display-v2737h.py"
 
 
 def _v2737h_written_exam_regression_profile():
