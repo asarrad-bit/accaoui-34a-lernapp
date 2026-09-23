@@ -1,16 +1,28 @@
 # Aktueller Projektzustand
 
-Stand: v27.37h-AUTORISIERUNG
+Stand: v27.37h
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37h
-Aktuelle Taskart: v27.37h – Statische 72-%-Bereitschaftsanzeige entfernen
-Aktueller Blocker: Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener technischer Schritt v27.37h
+
+v27.37h – Statische 72-%-Bereitschaftsanzeige entfernen ist abgeschlossen.
+
+Implementierungscommit: `646a93e2f4850ed1a04e79405599ec7bcb77429d`.
+
+Die unbelegte feste 72-%-Bereitschaftsanzeige ist entfernt. Der Bereitschaftsbereich zeigt neutral Nicht berechnet; eine fachliche Berechnungsformel wurde nicht eingeführt. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37h
 

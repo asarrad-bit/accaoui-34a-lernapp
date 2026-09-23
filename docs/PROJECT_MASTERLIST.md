@@ -1,12 +1,24 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37h-AUTORISIERUNG
+Stand: v27.37h
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Abgeschlossener technischer Schritt v27.37h
+
+v27.37h – Statische 72-%-Bereitschaftsanzeige entfernen ist abgeschlossen.
+
+Implementierungscommit: `646a93e2f4850ed1a04e79405599ec7bcb77429d`.
+
+Die unbelegte feste 72-%-Bereitschaftsanzeige ist entfernt. Der Bereitschaftsbereich zeigt neutral Nicht berechnet; eine fachliche Berechnungsformel wurde nicht eingeführt. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37h
 

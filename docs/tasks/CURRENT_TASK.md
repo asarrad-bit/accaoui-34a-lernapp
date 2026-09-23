@@ -1,14 +1,26 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37h
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37h – Statische 72-%-Bereitschaftsanzeige entfernen
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37g
-Erlaubte Implementierungsdateien: `index.html`, `tools/check-dashboard-readiness-display-v2737h.py`, `docs/DASHBOARD_READINESS_DISPLAY_V2737H.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37h
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37h
+
+v27.37h – Statische 72-%-Bereitschaftsanzeige entfernen ist abgeschlossen.
+
+Implementierungscommit: `646a93e2f4850ed1a04e79405599ec7bcb77429d`.
+
+Die unbelegte feste 72-%-Bereitschaftsanzeige ist entfernt. Der Bereitschaftsbereich zeigt neutral Nicht berechnet; eine fachliche Berechnungsformel wurde nicht eingeführt. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37h
 
