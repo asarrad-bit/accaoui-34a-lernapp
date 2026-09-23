@@ -1,12 +1,61 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37g
+Stand: v27.37h-AUTORISIERUNG
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Autorisierter Task v27.37h
+
+v27.37h – Statische 72-%-Bereitschaftsanzeige entfernen
+
+Task-ID und Titel wurden vom Projekteigentümer und verbindlichen Projektchat ausdrücklich ausgewählt. Das Gate leitet keinen Task aus einer Versionsfolge ab.
+
+Technische Gate-Basis: b6eae9b1c8684f293c6d2d6fec22762f88ebea71.
+Der vollständige v27.37g-Abschluss und die gesamte ältere Historie bleiben erhalten und werden weiter validiert. Dieses Gate bereitet ausschließlich die Autorisierung vor. Produktimplementation ist erst nach dem direkten Gate-Commit und einem ausdrücklichen Implementierungsauftrag zulässig. Commit und Push sind in diesem Gate gesperrt.
+
+Fachlicher Befund: Im produktiven index.html steht im Bereitschafts-score-box-Bereich statisch 72 %. Dieser Wert wird nicht aus einem realen Lernstand berechnet. Es gibt keine fachlich freigegebene Prüfungsreife-/Bereitschaftsformel; verborgene Dashboard-Fortschrittsstates liefern keine freigegebene Prozentanzeige. Die feste Prozentbehauptung kann Teilnehmer irreführen.
+
+Späterer Implementierungsscope: exakt vier Dateien:
+
+- index.html
+- tools/check-dashboard-readiness-display-v2737h.py
+- docs/DASHBOARD_READINESS_DISPLAY_V2737H.md
+- tools/preflight.py
+
+Keine fünfte Implementierungsdatei. In index.html darf ausschließlich der bestehende, eindeutig lokalisierte score-box-Bereich mit dem Label Bereitschaft geändert werden: Der Wert 72% wird exakt durch Nicht berechnet ersetzt. Der übrige Inhalt von index.html bleibt gegenüber der Implementierungsbasis byte-identisch, insbesondere alle Script-Tags, Reihenfolgen, Versionsquerystrings, die style.css-Einbindung und beide Loader mit data-enabled="false". app.js, style.css, patch-v21.js, test/index.html, test/app.js, test/style.css, Fragenbanken, Lernkartenlogik, mündliche Prüfung, Auth-/Session-/Zugangsbausteine, Supabase, Config, SDK, SQL und Migrationen bleiben unverändert.
+
+Verbindlicher Abnahmevertrag:
+
+1. Der produktive Bereitschafts-score-box-Bereich existiert weiterhin exakt einmal. Er enthält als Label exakt Bereitschaft und als Wert exakt Nicht berechnet. Die feste 72-%-Anzeige und jede andere Prozentzahl sind in diesem Bereich ausgeschlossen.
+2. v27.37h führt keine Bereitschaftsberechnung ein. Es entsteht keine Formel aus answeredQuestions, topicStats, examHistory, Lernkarten, Fehlertraining, Prüfungsdurchschnitt, Anzahl absolvierter Fragen oder anderen Nutzerdaten.
+3. Keine neuen localStorage-/sessionStorage-Keys, keine Netzwerk-, Supabase-, Auth-, Teilnehmer- oder Datenbankaktion. Das Dashboard-Verhalten außerhalb der Anzeige bleibt unverändert. test/index.html und historische Testkopien bleiben unverändert.
+4. Der neue Checker lädt das produktive index.html, lokalisiert den score-box-Bereich strukturell und eindeutig, bestätigt das exakte Label und den exakten Wert, blockiert Prozentwerte und erkennt jede Änderung außerhalb des erlaubten Blocks.
+5. Der Checker schützt app.js, style.css, patch-v21.js, Testkopien und relevante Loader-/Auth-Grenzen gegen Änderungen. Beide Loader bleiben exakt deaktiviert. Supabase bleibt NICHT LIVE.
+6. Semantische Negativfälle umfassen mindestens: 72 % bleibt stehen; 50 %; fehlendes Nicht berechnet; entferntes Bereitschaftslabel; neue JS-Berechnung; Änderung außerhalb der score-box; aktivierter Loader; verändertes app.js. Syntax- oder bloße Textmarkerprüfungen ersetzen diese Fälle nicht.
+7. v27.37h behauptet keine Unterrichts- oder Prüfungsreife. Eine echte fachliche Berechnung benötigt einen eigenen später autorisierten Task.
+
+Alle sechs Lifecycle-Phasen sind von Anfang an verbindlich:
+
+- v2737h_authorization_prepared: Basis-HEAD, autorisierter Task, exakt sechs Gate-Dateien.
+- v2737h_authorization_committed: ein direkter Gate-Commit, autorisierter Task, sauberer Working Tree.
+- v2737h_implementation_prepared: Gate committet, autorisierter Task, exakt vier Implementierungsdateien.
+- v2737h_implementation_committed: eine direkte Implementation, autorisierter Task, sauberer Working Tree.
+- v2737h_closure_prepared: Implementation committet, NONE / BLOCKED / Autorisiert NEIN, exakt vier Steuerungsdokumente.
+- v2737h_closure_committed: eine direkte Closure, geschlossener Task, sauberer Working Tree.
+
+Gate-Dateien sind exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Closure-Dateien sind exakt die vier Steuerungsdokumente. v2737h_completion_documents verwendet den tatsächlichen Implementierungs-SHA, schließt v27.37h und autorisiert keinen Folgetask. Der funktionale Ausgangsstand bleibt v27.35g.
+
+Jeder Zwischencommit wird einzeln geprüft: direkte lineare Elternfolge, exakte Rollen und Dateiumfänge, unveränderte historische Dokumentabschnitte und Produktgrenzen sowie leerer Staging-Bereich. origin/main darf nur auf die reale Basis oder einen vorhandenen Lifecycle-Vorfahren zeigen. Keine zukünftigen Commit-SHAs werden hartcodiert. Übersprungene, doppelte oder fremde Phasen, Merge-/Fremdcommits, Rückkehr aus der Closure zu AUTHORIZED und durch spätere Änderungen verdeckte Fremdänderungen werden abgewiesen.
+
+Das enge Nachfolgeprofil validiert zuerst die vollständige v27.37g-Closure. Der bisherige v27.37g-Checker und alle Regressionen bleiben erhalten und laufen gegen die unveränderten Quellen. Historische Einzelchecker werden nicht gelockert. Es gibt keine allgemeine zukünftige Taskfreigabe und keinen pauschalen Bypass.
+
+Im Gate enthält tools/preflight.py nur die v27.37h-Lifecycle-/Checker-Vorbereitung. Der spätere Implementierungschecker ist noch nicht vorhanden; ausschließlich der eindeutige Platzhalter V2737H_IMPLEMENTATION_CHECKER = None ist registriert. Kontinuitätschecker, isolierte Lifecycle-Tests, vollständiger Preflight, git diff --check und exakter Phasenscope bleiben verpflichtend. Beide Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE. Keine Produktänderung in diesem Gate, kein Commit, kein Push.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Abgeschlossener technischer Schritt v27.37g
 

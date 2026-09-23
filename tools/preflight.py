@@ -1660,7 +1660,8 @@ def check_participant_auth_session_browser_provider_v2737d():
         "v2737e_closure_prepared", "v2737e_closure_committed",
     } or (_V2737D_POST_COMMIT_CONTROL is not None
           and phase in (_V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]
-                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"])):
+                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"]
+                     | _V2737D_POST_COMMIT_CONTROL["V2737H_PHASES"])):
         _v2737e_provider_regression_profile()
         return
     code, stdout, stderr = run_command(
@@ -1697,7 +1698,8 @@ def _v2737e_provider_regression_profile():
             "v2737e_closure_prepared", "v2737e_closure_committed",
         } and not (_V2737D_POST_COMMIT_CONTROL is not None
                    and phase in (_V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]
-                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"])):
+                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"]
+                     | _V2737D_POST_COMMIT_CONTROL["V2737H_PHASES"])):
             raise ValueError("kein gültiges v27.37e-Implementierungs-/Abschlussprofil")
         control = _V2737D_POST_COMMIT_CONTROL
         root = Path(__file__).resolve().parents[1]
@@ -1740,7 +1742,8 @@ def check_participant_auth_session_browser_loader_v2737e():
     phase = _v2737d_post_commit_profile_phase()
     if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in (_V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]
-                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"])):
+                     | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"]
+                     | _V2737D_POST_COMMIT_CONTROL["V2737H_PHASES"])):
         _v2737f_historical_regression_profile()
         return
     if phase is None or not phase.startswith("v2737e_"):
@@ -1779,7 +1782,7 @@ def _v2737f_historical_regression_profile():
     try:
         phase = _v2737d_post_commit_profile_phase()
         control = _V2737D_POST_COMMIT_CONTROL
-        if control is None or phase not in (control["V2737F_PHASES"] | control["V2737G_PHASES"]):
+        if control is None or phase not in (control["V2737F_PHASES"] | control["V2737G_PHASES"] | control["V2737H_PHASES"]):
             raise ValueError("kein gültiges v27.37f-Nachfolgeprofil")
         root = Path(__file__).resolve().parents[1]
         node = shutil.which("node")
@@ -1857,7 +1860,7 @@ def _v2737f_historical_regression_profile():
 def check_participant_auth_session_app_entry_v2737f():
     phase = _v2737d_post_commit_profile_phase()
     control = _V2737D_POST_COMMIT_CONTROL
-    if control is not None and phase in control["V2737G_PHASES"]:
+    if control is not None and phase in (control["V2737G_PHASES"] | control["V2737H_PHASES"]):
         _v2737g_auth_entry_regression_profile()
         return
     if control is None or phase not in control["V2737F_PHASES"]:
@@ -1891,8 +1894,8 @@ def _v2737g_auth_entry_regression_profile():
     try:
         phase = _v2737d_post_commit_profile_phase()
         control = _V2737D_POST_COMMIT_CONTROL
-        if control is None or phase not in control["V2737G_PHASES"]:
-            raise ValueError("kein gültiges v27.37g-Nachfolgeprofil")
+        if control is None or phase not in (control["V2737G_PHASES"] | control["V2737H_PHASES"]):
+            raise ValueError("kein gültiges v27.37g-/v27.37h-Nachfolgeprofil")
         root = Path(__file__).resolve().parents[1]
         path = "tools/check-participant-auth-session-app-entry-v2737f.py"
         historical = (root / path).read_text(encoding="utf-8")
@@ -1950,6 +1953,9 @@ def _v2737g_auth_entry_regression_profile():
 def check_written_exam_completion_v2737g():
     phase = _v2737d_post_commit_profile_phase()
     control = _V2737D_POST_COMMIT_CONTROL
+    if control is not None and phase in control["V2737H_PHASES"]:
+        _v2737h_written_exam_regression_profile()
+        return
     if control is None or phase not in control["V2737G_PHASES"]:
         return
     if phase in {"v2737g_authorization_prepared", "v2737g_authorization_committed"}:
@@ -1967,6 +1973,61 @@ def check_written_exam_completion_v2737g():
         print(stderr)
     if code != 0:
         errors.append("v27.37g schriftlicher Prüfungsabschluss fehlgeschlagen")
+
+
+# Gate-only registration: implementation may replace only this assignment.
+V2737H_IMPLEMENTATION_CHECKER = None
+
+
+def _v2737h_written_exam_regression_profile():
+    """Run the unchanged v27.37g checker against the frozen h-base app."""
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        control = _V2737D_POST_COMMIT_CONTROL
+        if control is None or phase not in control["V2737H_PHASES"]:
+            raise ValueError("kein gültiges v27.37h-Nachfolgeprofil")
+        root = Path(__file__).resolve().parents[1]
+        checker = "tools/check-written-exam-completion-v2737g.py"
+        source = (root / checker).read_text(encoding="utf-8")
+        if source != control["read_v2735f_commit_document"](
+                control["V2737H_BASE_SHA"], checker):
+            raise ValueError("historischer v27.37g-Checker verändert")
+        app = (root / "app.js").read_text(encoding="utf-8")
+        if app != control["read_v2735f_commit_document"](
+                control["V2737H_BASE_SHA"], "app.js"):
+            raise ValueError("v27.37g-App-Abschlussgrenze verändert")
+        historical_checker = runpy.run_path(str(root / checker))
+        check_source = historical_checker.get("check_source")
+        if not callable(check_source):
+            raise ValueError("historische v27.37g-Prüffunktion fehlt")
+        check_source(app)
+        print("v27.37h-Nachfolgeprofil: unveränderte v27.37g-Prüffunktion, "
+              "alle Mutationen und App-Grenze / PASS")
+    except Exception as exc:
+        errors.append(f"v27.37h historische v27.37g-Regression fehlgeschlagen: {exc}")
+
+
+def check_dashboard_readiness_display_v2737h():
+    phase = _v2737d_post_commit_profile_phase()
+    control = _V2737D_POST_COMMIT_CONTROL
+    if control is None or phase not in control["V2737H_PHASES"]:
+        return
+    if phase in {"v2737h_authorization_prepared", "v2737h_authorization_committed"}:
+        if V2737H_IMPLEMENTATION_CHECKER is not None:
+            errors.append("v27.37h: Checker vor Implementation registriert")
+        return
+    expected = "tools/check-dashboard-readiness-display-v2737h.py"
+    if V2737H_IMPLEMENTATION_CHECKER != expected or not Path(expected).is_file():
+        errors.append("v27.37h: Checker fehlt oder ist nicht registriert")
+        return
+    code, stdout, stderr = run_command(f'"{sys.executable}" -X utf8 -B "{expected}"')
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr)
+    if code != 0:
+        errors.append("v27.37h Dashboard-Bereitschaftsanzeige fehlgeschlagen")
+
 
 
 def _git_paths(arguments):
@@ -5900,7 +5961,14 @@ def check_protected_core_files_v2356():
         and _v2737d_post_commit_profile_phase(changed_paths)
             == "v2737g_implementation_prepared"
     )
+    authorized_v2737h_index_scope = (
+        "index.html" in changed_protected
+        and _v2737d_post_commit_profile_phase(changed_paths)
+            == "v2737h_implementation_prepared"
+    )
     for protected in sorted(changed_protected):
+        if protected == "index.html" and authorized_v2737h_index_scope:
+            continue
         if protected == "app.js" and authorized_v2737g_app_scope:
             continue
         if protected == "app.js" and authorized_v2737f_app_scope:
@@ -6831,6 +6899,7 @@ def main():
     check_participant_auth_session_browser_loader_v2737e()
     check_participant_auth_session_app_entry_v2737f()
     check_written_exam_completion_v2737g()
+    check_dashboard_readiness_display_v2737h()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()
