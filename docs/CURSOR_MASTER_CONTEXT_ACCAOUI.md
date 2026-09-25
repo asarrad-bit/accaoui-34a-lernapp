@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37h
+Stand: v27.37i-AUTORISIERUNG
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,61 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Autorisierter Task v27.37i
+
+v27.37i – Mündlichen Fehlertrainer-Leerzustand nach letztem Fehler korrekt rendern
+
+Task-ID und Titel wurden vom Projekteigentümer und verbindlichen Projektchat ausdrücklich ausgewählt. Das Gate leitet keinen Task aus einer Versionsfolge ab.
+
+Technische Gate-Basis: db83bcc454bde15b252aa18dc6afb8929d185f74.
+Der vollständige v27.37h-Abschluss und die gesamte ältere Historie bleiben erhalten und werden weiter validiert. Dieses Gate bereitet ausschließlich die Autorisierung vor. Produktimplementation ist erst nach dem direkten Gate-Commit und einem ausdrücklichen Implementierungsauftrag zulässig. Commit und Push sind in diesem Gate gesperrt.
+
+Fachlicher Befund: markOralMistakeResolvedV2340(key) entfernt den Fehler aus localStorage und ruft showOralMistakeTrainingV2340() auf. Bei leerer Fehlerliste zeigt der Renderer derzeit nur optional einen Hinweis und kehrt ohne Neurendern von .main-content zurück. Dadurch bleiben die alte Fehlerkarte und der alte Zähler sichtbar, obwohl der Storage bereits leer ist.
+
+Späterer Implementierungsscope: exakt vier Dateien:
+
+- oral-exam.js
+- tools/check-oral-mistake-empty-state-v2737i.py
+- docs/ORAL_MISTAKE_EMPTY_STATE_V2737I.md
+- tools/preflight.py
+
+Keine fünfte Implementierungsdatei. In oral-exam.js darf ausschließlich der bestehende v23.4.0-Mündliche-Fehlertrainer-Block geändert werden, insbesondere showOralMistakeTrainingV2340() und nur falls zwingend nötig direkt zugehörige lokale Hilfslogik innerhalb desselben Blocks. Alle Bytes außerhalb dieses Blocks bleiben gegenüber der Implementierungsbasis unverändert. app.js, index.html, style.css, patch-v21.js, oral-exam.css, Testkopien, Fragenbanken, oral-sheets-Dateien, Auth-/Session-/Zugangsbausteine, Supabase, Config, SDK, SQL und Migrationen bleiben unverändert.
+
+Verbindlicher Abnahmevertrag:
+
+1. Bei mindestens einem gespeicherten mündlichen Fehler bleiben Karten, korrekter Zähler, Reveal, Noch üben und Als sicher markieren unverändert funktionsfähig.
+2. Beim Entfernen eines Fehlers bei weiteren Fehlern verschwinden nur die gelöschte Karte und ihr Zähleranteil; verbleibende Karten und Anzahl werden sofort korrekt neu gerendert.
+3. Beim Entfernen des letzten Fehlers enthält der Storage exakt eine leere Liste. .main-content zeigt sofort einen echten Leerzustand ohne alte Fehlerkarte und ohne alten Zähler.
+4. Der Leerzustand lautet klar und neutral Mündliche Fehler / Keine offenen mündlichen Fehler / Alle aktuell gespeicherten mündlichen Fehler wurden bearbeitet. Er enthält keine Fake-Zahl und bietet mindestens Zur Fehlerübersicht und Zurück zum Dashboard.
+5. Ein optionaler kleiner Hinweis darf erhalten bleiben, ersetzt aber niemals das Neurendern. Es gibt kein automatisches Wiederanlegen und keine erzwungene Navigation.
+6. Es entsteht kein zusätzlicher Storage-Key. Die Semantik von accaoui_oral_exam_mistakes_v2324 bleibt unverändert. Fehlerlisten mit 0, 1 und mehreren Einträgen funktionieren deterministisch.
+7. Ungültiges oder beschädigtes JSON behält das bestehende fail-safe Verhalten; v27.37i löscht oder migriert keine fremden Daten.
+8. P3 und die Herkunftsbezeichnung 15-Minuten-Simulation sind ausdrücklich nicht Teil dieses Tasks. Mündliche Fragen, Prüfungsbögen, Bewertung und Timerlogik bleiben unverändert.
+9. Es gibt keine Netzwerk-, Supabase-, Auth- oder Datenbankaktion. Supabase bleibt NICHT LIVE.
+
+Der spätere Checker tools/check-oral-mistake-empty-state-v2737i.py führt die tatsächliche JavaScript-Logik in einem isolierten synthetischen DOM-/Storage-Harness aus. Er prüft 0, 1 und mehrere Fehler, verbleibende Karten und Zähler, letztes Entfernen mit Storage [], erneutes Öffnen, Reveal/Collapse sowie semantische Mutationen gegen den alten Return ohne Rendern, stale Karte/Zähler, fehlendes Entfernen, Wiederanlegen, zusätzliche Storage-Keys, Änderungen an patch-v21.js oder app.js, Änderungen außerhalb des v23.4.0-Blocks und den ausgeschlossenen P3-Text. Bloße Textmarker und Syntaxfehler genügen nicht als semantischer PASS.
+
+Die spätere Dokumentation docs/ORAL_MISTAKE_EMPTY_STATE_V2737I.md hält Ursache, echten Leerzustand, Storage-Verhalten, 0/1/mehrere Fehler, den ausgeschlossenen P3-Fix, unveränderte Fragen-/Timer-/Bewertungslogik, fehlendes Supabase und den exakten Vier-Dateien-Scope fest.
+
+Alle sechs Lifecycle-Phasen sind von Anfang an verbindlich:
+
+- v2737i_authorization_prepared: Basis-HEAD, autorisierter Task, exakt sechs Gate-Dateien.
+- v2737i_authorization_committed: ein direkter Gate-Commit, autorisierter Task, sauberer Working Tree.
+- v2737i_implementation_prepared: Gate committet, autorisierter Task, exakt vier Implementierungsdateien.
+- v2737i_implementation_committed: eine direkte Implementation, autorisierter Task, sauberer Working Tree.
+- v2737i_closure_prepared: Implementation committet, NONE / BLOCKED / Autorisiert NEIN, exakt vier Steuerungsdokumente.
+- v2737i_closure_committed: eine direkte Closure, geschlossener Task, sauberer Working Tree.
+
+Gate-Dateien sind exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Closure-Dateien sind exakt die vier Steuerungsdokumente. v2737i_completion_documents verwendet den tatsächlichen Implementierungs-SHA, schließt v27.37i und autorisiert keinen Folgetask. Der funktionale Ausgangsstand bleibt v27.35g.
+
+Jeder Zwischencommit wird einzeln geprüft: direkte lineare Elternfolge, exakte Rollen und Dateiumfänge, unveränderte historische Dokumentabschnitte und Produktgrenzen sowie leerer Staging-Bereich. origin/main darf nur auf die reale Basis oder einen vorhandenen Lifecycle-Vorfahren zeigen. Keine zukünftigen Commit-SHAs werden hartcodiert. Übersprungene, doppelte oder fremde Phasen, Merge-/Fremdcommits, Rückkehr aus der Closure zu AUTHORIZED und durch spätere Änderungen verdeckte Fremdänderungen werden abgewiesen.
+
+Das enge Nachfolgeprofil validiert zuerst die vollständige v27.37h-Closure. Der v27.37h-Checker und alle älteren Regressionen bleiben erhalten. oral-exam.js bleibt außerhalb des v23.4.0-Blocks byte-identisch; app.js, index.html, style.css, patch-v21.js, Testkopien und alle fachfremden Produktgrenzen sind eingefroren. Historische Einzelchecker werden nicht gelockert. Es gibt keine allgemeine zukünftige Taskfreigabe und keinen pauschalen Bypass.
+
+Im Gate enthält tools/preflight.py nur die notwendige v27.37i-Lifecycle-/Checker-Vorbereitung. Der spätere Implementierungschecker ist noch nicht vorhanden; ausschließlich der eindeutige Platzhalter V2737I_IMPLEMENTATION_CHECKER = None ist registriert. Kontinuitätschecker, isolierte Lifecycle-Tests, vollständiger Preflight, git diff --check und exakter Phasenscope bleiben verpflichtend. Supabase bleibt NICHT LIVE. Keine Produktänderung in diesem Gate, kein Commit, kein Push.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Abgeschlossener technischer Schritt v27.37h
 
