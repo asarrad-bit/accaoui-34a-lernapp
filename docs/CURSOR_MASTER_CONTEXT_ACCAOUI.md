@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37i-AUTORISIERUNG
+Stand: v27.37i
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,18 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Abgeschlossener technischer Schritt v27.37i
+
+v27.37i – Mündlichen Fehlertrainer-Leerzustand nach letztem Fehler korrekt rendern ist abgeschlossen.
+
+Implementierungscommit: `6a0478efdf064b2d07f29eed75a813a4c4899685`.
+
+Nach dem Entfernen des letzten mündlichen Fehlers wird .main-content sofort als echter Leerzustand ohne alte Karte oder alten Zähler gerendert. Storage-Key und fail-safe Verhalten bleiben unverändert; P3 ist nicht Teil dieses Abschlusses. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37i
 

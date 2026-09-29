@@ -1,14 +1,26 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37i
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37i – Mündlichen Fehlertrainer-Leerzustand nach letztem Fehler korrekt rendern
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37h
-Erlaubte Implementierungsdateien: `oral-exam.js`, `tools/check-oral-mistake-empty-state-v2737i.py`, `docs/ORAL_MISTAKE_EMPTY_STATE_V2737I.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37i
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37i
+
+v27.37i – Mündlichen Fehlertrainer-Leerzustand nach letztem Fehler korrekt rendern ist abgeschlossen.
+
+Implementierungscommit: `6a0478efdf064b2d07f29eed75a813a4c4899685`.
+
+Nach dem Entfernen des letzten mündlichen Fehlers wird .main-content sofort als echter Leerzustand ohne alte Karte oder alten Zähler gerendert. Storage-Key und fail-safe Verhalten bleiben unverändert; P3 ist nicht Teil dieses Abschlusses. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37i
 
