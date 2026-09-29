@@ -404,6 +404,23 @@ if (!window.ACCAOUI_V2340_ORAL_MISTAKE_RENDERER) {
     const mistakes = readOralMistakesV2340();
 
     if (!mistakes.length) {
+      mainContent.innerHTML =
+        '<section class="result-wrapper oral-mistake-wrapper-v2324 oral-mistake-empty-v2737i">' +
+        '<div class="oral-mistake-hero-v2324">' +
+        '<p class="eyebrow">Mündliche Fehler</p>' +
+        "<h1>Keine offenen mündlichen Fehler</h1>" +
+        "<p>Alle aktuell gespeicherten mündlichen Fehler wurden bearbeitet.</p>" +
+        "</div>" +
+        '<div class="result-actions oral-mistake-actions-v2324">' +
+        '<button class="next-btn" onclick="showMistakeOverview()">' +
+        "Zur Fehlerübersicht" +
+        "</button>" +
+        '<button class="next-btn secondary-btn" onclick="location.reload()">' +
+        "Zurück zum Dashboard" +
+        "</button>" +
+        "</div>" +
+        "</section>";
+
       if (typeof showSmallNotice === "function") {
         showSmallNotice("Keine mündlichen Prüfungsfehler gespeichert.");
       }

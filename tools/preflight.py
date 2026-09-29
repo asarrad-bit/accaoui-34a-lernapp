@@ -2081,7 +2081,7 @@ def _v2737i_dashboard_readiness_regression_profile():
 
 
 # Gate-only registration: implementation may replace only this assignment.
-V2737I_IMPLEMENTATION_CHECKER = None
+V2737I_IMPLEMENTATION_CHECKER = "tools/check-oral-mistake-empty-state-v2737i.py"
 
 
 def check_oral_mistake_empty_state_v2737i():
