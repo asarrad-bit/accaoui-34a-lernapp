@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37i
+Stand: v27.37j-AUTORISIERUNG
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,62 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Autorisierter Task v27.37j
+
+v27.37j – Falschen Herkunftshinweis im mündlichen Fehlertraining korrigieren
+
+Task-ID und Titel wurden vom Projekteigentümer und verbindlichen Projektchat ausdrücklich ausgewählt. Das Gate leitet keinen Task aus einer Versionsfolge ab.
+
+Technische Gate-Basis: fec90f830cebefd7c4739636c1ca30d0e3c8c232.
+Der vollständige v27.37i-Abschluss und die gesamte ältere Historie bleiben erhalten und werden weiter validiert. Dieses Gate bereitet ausschließlich die Autorisierung vor. Produktimplementation ist erst nach dem direkten Gate-Commit und einem ausdrücklichen Implementierungsauftrag zulässig. Commits und Pushes bleiben in diesem Gate gesperrt.
+
+Fachlicher Befund: patch-v21.js behauptet im v23.2.4-Fehlertrainer, gespeicherte Fragen stammten aus der 15-Minuten-Simulation. Derselbe Storage-Key accaoui_oral_exam_mistakes_v2324 wird jedoch auch durch mündliche Themenübungen gespeist. oral-exam.js bezeichnet die Herkunft im v23.4.0-Renderer pauschal als mündliche Simulation. Die gespeicherten Einträge besitzen keine belastbare Provenienz. Deshalb darf keine konkrete Quelle erfunden werden; der neutrale Begriff lautet mündliche Vorbereitung.
+
+Späterer Implementierungsscope: exakt fünf Dateien:
+
+- patch-v21.js
+- oral-exam.js
+- tools/check-oral-mistake-origin-label-v2737j.py
+- docs/ORAL_MISTAKE_ORIGIN_LABEL_V2737J.md
+- tools/preflight.py
+
+Keine sechste Implementierungsdatei. In patch-v21.js darf ausschließlich der bestehende v23.2.4-Mündliche-Fehlertrainer-Block geändert werden, nur an der Herkunftsbeschriftung und zwingend direkt zugehöriger lokaler Textlogik. In oral-exam.js darf ausschließlich der bestehende v23.4.0-Mündliche-Fehlertrainer-Block geändert werden, ebenfalls nur an der Herkunftsbeschriftung. Alle Bytes außerhalb dieser beiden Blöcke bleiben gegenüber der Implementierungsbasis unverändert.
+
+v27.37j führt kein source-, mode- oder Provenienzfeld ein, erzeugt keinen neuen Storage-Key und migriert keine gespeicherten Daten. app.js, index.html, style.css, oral-exam.css, test/*, Fragenbanken, oral-sheets-Dateien, Bewertung, Timer, Auth-/Session-/Zugangsbausteine, Supabase, Config, SDK, SQL und Migrationen bleiben unverändert.
+
+Verbindlicher Abnahmevertrag:
+
+1. Die betroffenen Herkunftstexte verwenden neutral den Begriff mündliche Vorbereitung.
+2. Im v23.2.4- und v23.4.0-Herkunftskontext entfallen die ungesicherten Behauptungen 15-Minuten-Simulation und mündliche Simulation. Legitime Modusnamen außerhalb der beiden erlaubten Blöcke bleiben unverändert.
+3. Es wird keine Herkunft aus Themenübung, Prüfungsbogen oder einer anderen konkreten Quelle erfunden.
+4. Storage-Key, Datenformat sowie Lesen, Schreiben und Löschen bleiben unverändert. Es gibt keine neue Persistenz und keine Migration.
+5. Karten, Zähler, Reveal, Noch üben, Als sicher markieren und der v27.37i-Leerzustand bleiben unverändert funktionsfähig.
+6. Fragen, Prüfungsbögen, Bewertung und Timer bleiben unverändert.
+7. Es gibt keine Netzwerk-, Supabase-, Auth- oder Datenbankaktion. Supabase bleibt NICHT LIVE.
+
+Der spätere Checker tools/check-oral-mistake-origin-label-v2737j.py grenzt die v23.2.4- und v23.4.0-Blöcke strukturell ab, prüft den neutralen Text in der tatsächlichen lokalen Render- und Übersichtslogik und schützt alle Bytes außerhalb beider Blöcke. Seine synthetischen Negativfälle umfassen mindestens die alte 15-Minuten-Behauptung, die alte Bezeichnung mündliche Simulation, eine erfundene konkrete Herkunft, neue provenance-, source- oder mode-Daten, einen neuen Storage-Key, eine Migration, Verhaltensänderungen und fremde Dateiänderungen. Legitime Modusnamen außerhalb des Herkunftskontexts werden nicht global verboten.
+
+Die spätere Dokumentation docs/ORAL_MISTAKE_ORIGIN_LABEL_V2737J.md hält Ursache, fehlende Provenienz, neutralen Wortlaut, unverändertes Storage- und UI-Verhalten, Frozen-Grenzen, fehlendes Supabase und den exakten Fünf-Dateien-Scope fest.
+
+Alle sechs Lifecycle-Phasen sind von Anfang an verbindlich:
+
+- v2737j_authorization_prepared: Basis-HEAD, autorisierter Task, exakt sechs Gate-Dateien.
+- v2737j_authorization_committed: ein direkter Gate-Commit, autorisierter Task, sauberer Working Tree.
+- v2737j_implementation_prepared: Gate committet, autorisierter Task, exakt fünf Implementierungsdateien.
+- v2737j_implementation_committed: eine direkte Implementation, autorisierter Task, sauberer Working Tree.
+- v2737j_closure_prepared: Implementation committet, NONE / BLOCKED / Autorisiert NEIN, exakt vier Steuerungsdokumente.
+- v2737j_closure_committed: eine direkte Closure, geschlossener Task, sauberer Working Tree.
+
+Gate-Dateien sind exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Closure-Dateien sind exakt die vier Steuerungsdokumente. v2737j_completion_documents verwendet den tatsächlichen Implementierungs-SHA, schließt v27.37j, setzt CURRENT_TASK wieder auf NONE / BLOCKED / Autorisiert NEIN und autorisiert keinen Folgetask. Der funktionale Ausgangsstand bleibt v27.35g.
+
+Jeder Zwischencommit wird einzeln geprüft: direkte lineare Elternfolge, exakte Rollen und Dateiumfänge, unveränderte historische Dokumentabschnitte und Produktgrenzen sowie leerer Staging-Bereich. origin/main darf nur auf die reale Basis oder einen vorhandenen Lifecycle-Vorfahren zeigen. Keine zukünftigen Commit-SHAs werden hartcodiert. Übersprungene, doppelte oder fremde Phasen, Merge-/Fremdcommits, Rückkehr aus der Closure zu AUTHORIZED und durch spätere Änderungen verdeckte Fremdänderungen werden abgewiesen.
+
+Das enge Nachfolgeprofil validiert zuerst die vollständige v27.37i-Closure. Der v27.37i-Checker und alle älteren Regressionen bleiben erhalten. patch-v21.js bleibt außerhalb des v23.2.4-Blocks und oral-exam.js außerhalb des v23.4.0-Blocks byte-identisch; alle fachfremden Produktgrenzen sind eingefroren. Historische Einzelchecker werden nicht gelockert. Es gibt keine allgemeine zukünftige Taskfreigabe und keinen pauschalen Bypass.
+
+Im Gate enthält tools/preflight.py nur die notwendige v27.37j-Lifecycle-/Checker-Vorbereitung. Der spätere Implementierungschecker ist noch nicht vorhanden; ausschließlich der eindeutige Platzhalter V2737J_IMPLEMENTATION_CHECKER = None ist registriert. Kontinuitätschecker, isolierte Lifecycle-Tests, vollständiger Preflight, git diff --check und exakter Phasenscope bleiben verpflichtend. Keine Produktänderung in diesem Gate, kein Commit, kein Push.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Abgeschlossener technischer Schritt v27.37i
 
