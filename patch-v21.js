@@ -4574,7 +4574,7 @@ if (!window.ACCAOUI_V2324_ORAL_MISTAKE_TRAINER_PATCH) {
           <h1>Mündliche Fehler trainieren</h1>
 
           <p>
-            Hier erscheinen nur Fragen, die in der mündlichen Simulation mit
+            Hier erscheinen Fragen, die in der mündlichen Vorbereitung mit
             „Noch üben“ bewertet wurden.
           </p>
 
@@ -4668,7 +4668,7 @@ if (!window.ACCAOUI_V2324_ORAL_MISTAKE_TRAINER_PATCH) {
       <span>Mündliche Prüfung</span>
       <strong>${count} mündliche Prüfungsfehler</strong>
       <p>
-        Diese Fragen wurden in der 15-Minuten-Simulation mit „Noch üben“
+        Diese Fragen wurden in der mündlichen Vorbereitung mit „Noch üben“
         bewertet.
       </p>
 

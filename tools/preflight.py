@@ -2234,7 +2234,7 @@ def _v2737j_oral_mistake_empty_state_regression_profile():
         errors.append(f"v27.37j historische Regression fehlgeschlagen: {exc}")
 
 # Gate-only registration: implementation may replace only this assignment.
-V2737J_IMPLEMENTATION_CHECKER = None
+V2737J_IMPLEMENTATION_CHECKER = "tools/check-oral-mistake-origin-label-v2737j.py"
 
 
 def check_oral_mistake_origin_label_v2737j():

@@ -485,7 +485,7 @@ if (!window.ACCAOUI_V2340_ORAL_MISTAKE_RENDERER) {
       '<p class="eyebrow">Mündliche Prüfung</p>' +
       "<h1>Mündliche Fehler trainieren</h1>" +
       "<p>" +
-      "Hier erscheinen nur Fragen, die in der mündlichen Simulation mit " +
+      "Hier erscheinen Fragen, die in der mündlichen Vorbereitung mit " +
       "„Noch üben“ bewertet wurden. Die Musterantwort bleibt zuerst verdeckt." +
       "</p>" +
       '<div class="oral-mistake-count-v2324">' +
