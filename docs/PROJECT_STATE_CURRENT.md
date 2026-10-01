@@ -1,6 +1,6 @@
 # Aktueller Projektzustand
 
-Stand: v27.37j-AUTORISIERUNG
+Stand: v27.37j-GATE-REPAIR
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
@@ -10,7 +10,27 @@ Funktionsstatus: v27.35g abgeschlossen
 Weiterer funktionaler Schritt autorisiert: JA
 Aktuell autorisierter Task: v27.37j
 Aktuelle Taskart: v27.37j – Falschen Herkunftshinweis im mündlichen Fehlertraining korrigieren
-Aktueller Blocker: Implementation bleibt bis zum Commit dieses Autorisierungs-Gates gesperrt
+Aktueller Blocker: Implementation bleibt bis zum erfolgreichen Gate-Repair mit Post-Commit-Prüfung und Push gesperrt
+
+## Nichtfunktionaler Gate-Repair v27.37j
+
+Fehlerhafter Gate-Commit: 5a428cef9efd27c57815104ec035c80299e5aa4a.
+
+Der Projekteigentümer hat ausdrücklich einen direkten linearen Repair dieses Gates autorisiert. Der Gate-Preflight ersetzte snapshot, validate_document_and_preflight sowie runpy und die Phase des historischen v27.37i-Checkers. Dieser unzulässige Monkeypatch wird vollständig entfernt; kein Stub und kein künstlicher PASS bleibt bestehen. Keine Produktdatei war Teil des Gates oder dieses Repairs.
+
+Der unveränderte historische v27.37i-Checker läuft vollständig auf einem temporären echten lokalen Git-Checkout des realen v27.37i-Closure-Commits fec90f830cebefd7c4739636c1ca30d0e3c8c232. Seine Git-Historie, Dokumente, Preflight-Registrierung, Produktbytes, elf Positivfälle und zehn Mutationen bleiben real und unverändert. Der historische v27.37h-Strukturvertrag samt allen dreizehn Mutationen läuft auf demselben unveränderten Closure-Checkout. Die tatsächlich aktuelle v23.4.0-Logik wird zusätzlich mit dem unveränderten DOM-/Storage-Harness geprüft. Kein Modulkontext und kein Testergebnis wird ersetzt.
+
+Die Windows-Einstellung core.longpaths=true wird im temporären Clone dauerhaft lokal gespeichert; eine nur pro Befehl gesetzte Option führte bei späteren Git-Aufrufen zu scheinbaren Änderungen langer Dateipfade. core.autocrlf=false bleibt ebenfalls lokal gesetzt. Vor dem historischen Subprozess werden Branch main, die drei identischen Closure-Referenzen und ein leerer Working Tree ausdrücklich geprüft. Das echte Repository wird dabei nicht verändert.
+
+Der reale v27.34e-Adapter-Verhaltensvertrag läuft weiterhin unverändert gegen die tatsächlichen Projektdateien und blockiert insbesondere eine aufgehobene Commit-Sperre. Sämtliche älteren Prüfungen bleiben verbindlich. Die aktuelle Commit- und Push-Sperre steht ausschließlich im kanonischen Task-Kopf; historische Abschnitte erteilen keine Freigabe.
+
+Repair-Scope: exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Alle Produktdateien einschließlich patch-v21.js, oral-exam.js, app.js, index.html, style.css, oral-exam.css, test/*, Fragenbanken und oral-sheets-Dateien bleiben unverändert. Supabase bleibt NICHT LIVE.
+
+Die zusätzlichen Zustände sind v2737j_gate_repair_prepared und v2737j_gate_repair_committed. Nur ein direkter Repair-Commit mit exakt sechs Dateien darf dem genannten Gate folgen. CURRENT_TASK bleibt v27.37j / AUTHORIZED / Autorisiert JA. Produktimplementation bleibt bis zum vollständigen erfolgreichen Repair einschließlich Post-Commit-Prüfung und Push gesperrt. Der neue ausdrückliche Nutzerauftrag erlaubt die anschließende Implementation, deren geprüften Commit und die geprüfte Closure; er autorisiert keinen weiteren Task.
+
+Der nachfolgende Lifecycle erhält die historische Gate-Prüfung und prüft Gate, Repair, Implementation und Closure jeweils separat, linear und mit exaktem Scope. Die spätere Implementation ersetzt ausschließlich die drei betroffenen Herkunftstexte durch mündliche Vorbereitung. Nur diese Texte superseden die historische Frozen-P3-Beschriftung; alle übrigen Produktbytes bleiben unverändert. Die historische Prüfung wird weiterhin auf ihrem echten Abschlussstand ausgeführt, ohne Datenprojektion. Der aktuelle Produktvertrag und der neue Einzelchecker schützen das unveränderte Verhalten. Preflight darf nach dem Repair ausschließlich durch Aktivierung der vorbereiteten Checker-Registrierung verändert werden.
+
+Die ursprüngliche Autorisierung und sämtliche historischen Abschnitte folgen unverändert.
 
 ## Autorisierter Task v27.37j
 

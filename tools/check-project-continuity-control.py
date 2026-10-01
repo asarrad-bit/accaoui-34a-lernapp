@@ -18295,6 +18295,430 @@ def validate_v2737j_facts(
     return phase
 
 
+V2737J_BAD_GATE_SHA = "5a428cef9efd27c57815104ec035c80299e5aa4a"
+V2737J_REPAIR_PHASES = frozenset({
+    "v2737j_gate_repair_prepared", "v2737j_gate_repair_committed",
+})
+V2737J_PHASES = V2737J_PHASES | V2737J_REPAIR_PHASES
+V2737J_REPAIR_SECTION = """## Nichtfunktionaler Gate-Repair v27.37j
+
+Fehlerhafter Gate-Commit: 5a428cef9efd27c57815104ec035c80299e5aa4a.
+
+Der Projekteigentümer hat ausdrücklich einen direkten linearen Repair dieses Gates autorisiert. Der Gate-Preflight ersetzte snapshot, validate_document_and_preflight sowie runpy und die Phase des historischen v27.37i-Checkers. Dieser unzulässige Monkeypatch wird vollständig entfernt; kein Stub und kein künstlicher PASS bleibt bestehen. Keine Produktdatei war Teil des Gates oder dieses Repairs.
+
+Der unveränderte historische v27.37i-Checker läuft vollständig auf einem temporären echten lokalen Git-Checkout des realen v27.37i-Closure-Commits fec90f830cebefd7c4739636c1ca30d0e3c8c232. Seine Git-Historie, Dokumente, Preflight-Registrierung, Produktbytes, elf Positivfälle und zehn Mutationen bleiben real und unverändert. Der historische v27.37h-Strukturvertrag samt allen dreizehn Mutationen läuft auf demselben unveränderten Closure-Checkout. Die tatsächlich aktuelle v23.4.0-Logik wird zusätzlich mit dem unveränderten DOM-/Storage-Harness geprüft. Kein Modulkontext und kein Testergebnis wird ersetzt.
+
+Die Windows-Einstellung core.longpaths=true wird im temporären Clone dauerhaft lokal gespeichert; eine nur pro Befehl gesetzte Option führte bei späteren Git-Aufrufen zu scheinbaren Änderungen langer Dateipfade. core.autocrlf=false bleibt ebenfalls lokal gesetzt. Vor dem historischen Subprozess werden Branch main, die drei identischen Closure-Referenzen und ein leerer Working Tree ausdrücklich geprüft. Das echte Repository wird dabei nicht verändert.
+
+Der reale v27.34e-Adapter-Verhaltensvertrag läuft weiterhin unverändert gegen die tatsächlichen Projektdateien und blockiert insbesondere eine aufgehobene Commit-Sperre. Sämtliche älteren Prüfungen bleiben verbindlich. Die aktuelle Commit- und Push-Sperre steht ausschließlich im kanonischen Task-Kopf; historische Abschnitte erteilen keine Freigabe.
+
+Repair-Scope: exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Alle Produktdateien einschließlich patch-v21.js, oral-exam.js, app.js, index.html, style.css, oral-exam.css, test/*, Fragenbanken und oral-sheets-Dateien bleiben unverändert. Supabase bleibt NICHT LIVE.
+
+Die zusätzlichen Zustände sind v2737j_gate_repair_prepared und v2737j_gate_repair_committed. Nur ein direkter Repair-Commit mit exakt sechs Dateien darf dem genannten Gate folgen. CURRENT_TASK bleibt v27.37j / AUTHORIZED / Autorisiert JA. Produktimplementation bleibt bis zum vollständigen erfolgreichen Repair einschließlich Post-Commit-Prüfung und Push gesperrt. Der neue ausdrückliche Nutzerauftrag erlaubt die anschließende Implementation, deren geprüften Commit und die geprüfte Closure; er autorisiert keinen weiteren Task.
+
+Der nachfolgende Lifecycle erhält die historische Gate-Prüfung und prüft Gate, Repair, Implementation und Closure jeweils separat, linear und mit exaktem Scope. Die spätere Implementation ersetzt ausschließlich die drei betroffenen Herkunftstexte durch mündliche Vorbereitung. Nur diese Texte superseden die historische Frozen-P3-Beschriftung; alle übrigen Produktbytes bleiben unverändert. Die historische Prüfung wird weiterhin auf ihrem echten Abschlussstand ausgeführt, ohne Datenprojektion. Der aktuelle Produktvertrag und der neue Einzelchecker schützen das unveränderte Verhalten. Preflight darf nach dem Repair ausschließlich durch Aktivierung der vorbereiteten Checker-Registrierung verändert werden.
+
+Die ursprüngliche Autorisierung und sämtliche historischen Abschnitte folgen unverändert.
+
+"""
+V2737J_REAL_REGRESSION_SOURCE = r"""_V2737J_REAL_HISTORICAL_DONE = False
+
+
+def _v2737j_oral_mistake_empty_state_regression_profile():
+    '''Execute immutable historical contracts on their real Git closure checkout.'''
+    global _V2737J_REAL_HISTORICAL_DONE
+    if _V2737J_REAL_HISTORICAL_DONE:
+        return
+    import shutil
+    import tempfile
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        control = _V2737D_POST_COMMIT_CONTROL
+        if control is None or phase not in control["V2737J_PHASES"]:
+            raise ValueError("kein gültiges v27.37j-Nachfolgeprofil")
+        root = Path(__file__).resolve().parents[1]
+        historical_sha = control["V2737J_BASE_SHA"]
+        checker = "tools/check-oral-mistake-empty-state-v2737i.py"
+        frozen = (
+            checker, "docs/ORAL_MISTAKE_EMPTY_STATE_V2737I.md",
+            "tools/check-dashboard-readiness-display-v2737h.py",
+        )
+        for path in frozen:
+            if (root / path).read_bytes() != control["run_git_bytes"]([
+                    "show", historical_sha + ":" + path]):
+                raise ValueError("historischer Vertrag verändert: " + path)
+        if control["detect_v2737i_phase"](_closed_snapshot=historical_sha) != (
+                "v2737i_closure_committed"):
+            raise ValueError("historische v27.37i-Closure nicht vollständig validiert")
+        node = shutil.which("node")
+        if node is None:
+            raise ValueError("Node.js fehlt")
+
+        def execute(arguments, cwd):
+            result = subprocess.run(
+                arguments, cwd=cwd, capture_output=True, text=True,
+                encoding="utf-8", errors="strict", timeout=240, check=False,
+            )
+            if result.returncode != 0:
+                raise ValueError(result.stderr.strip() or result.stdout.strip()
+                                 or "historischer Prüfbefehl fehlgeschlagen")
+            return result.stdout
+
+        # This disposable local clone checks out the actual historical commit.
+        # Its phase is determined by the unmodified historical Git validator.
+        # No module, function, snapshot, assertion or result is replaced.
+        with tempfile.TemporaryDirectory(prefix="v2737j-real-history-") as directory:
+            checkout = Path(directory) / "checkout"
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "clone", "--shared", "--no-checkout", "--quiet",
+                     str(root), str(checkout)], root)
+            execute(["git", "config", "--local", "core.longpaths", "true"], checkout)
+            execute(["git", "config", "--local", "core.autocrlf", "false"], checkout)
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "checkout", "--quiet", "-B", "main", historical_sha], checkout)
+            execute(["git", "update-ref", "refs/remotes/origin/main", historical_sha],
+                    checkout)
+            for path in (*frozen, "tools/check-project-continuity-control.py",
+                         "tools/preflight.py"):
+                if (checkout / path).read_bytes() != control["run_git_bytes"]([
+                        "show", historical_sha + ":" + path]):
+                    raise ValueError("historischer Checkout ist nicht byte-identisch: " + path)
+            if execute(["git", "branch", "--show-current"], checkout).strip() != "main":
+                raise ValueError("historischer Checkout ist nicht auf main")
+            for reference in ("HEAD", "main", "origin/main"):
+                actual = execute(["git", "rev-parse", reference], checkout).strip()
+                if actual != historical_sha:
+                    raise ValueError("historischer Checkout: falsche Referenz " + reference)
+                print("Historischer Checkout " + reference + ": " + actual)
+            status = execute(["git", "status", "--porcelain"], checkout).strip()
+            if status:
+                raise ValueError("historischer Checkout ist nicht sauber: " + status)
+            print("Historischer Checkout: Working Tree sauber / PASS")
+            transcript = execute([sys.executable, "-X", "utf8", "-B", checker], checkout)
+            if ("Positivfälle: 11 / PASS" not in transcript
+                    or "Semantische Mutationen: 10 / vollständig blockiert" not in transcript
+                    or "Phase: v2737i_closure_committed" not in transcript):
+                raise ValueError("historische v27.37i-Prüfmatrix unvollständig")
+            print(transcript.strip())
+
+            h_contract = (
+                "import runpy\n"
+                "h = runpy.run_path('tools/check-dashboard-readiness-display-v2737h.py')\n"
+                "base = h['baselines']()\n"
+                "good = h['snapshot']()\n"
+                "h['validate'](good, base)\n"
+                "mutations = list(h['mutation_cases'](good, base))\n"
+                "assert len(mutations) == 13\n"
+                "for name, mutation in mutations:\n"
+                "    try:\n"
+                "        h['validate'](mutation, base)\n"
+                "    except h['ContractError']:\n"
+                "        continue\n"
+                "    raise RuntimeError('historische Mutation nicht blockiert: ' + name)\n"
+                "print('v27.37h: realer historischer Strukturvertrag / 13 Mutationen PASS')\n"
+            )
+            print(execute([sys.executable, "-X", "utf8", "-B", "-c", h_contract],
+                          checkout).strip())
+
+        # Exercise the real current oral source with the original i DOM/Storage
+        # harness, without changing that harness or its module globals.
+        historical = runpy.run_path(str(root / checker))
+        oral = (root / "oral-exam.js").read_text(encoding="utf-8")
+        historical["syntax_check"](node, oral, "reale aktuelle oral-exam.js")
+        result = historical["execute"](node, oral)
+        if result.returncode != 0 or json.loads(result.stdout) != {"positive": 11}:
+            raise ValueError("reale aktuelle v27.37i-UI/Storage-Regression fehlgeschlagen: "
+                             + result.stderr)
+        print("v27.37j: reale aktuelle v23.4.0-Logik / 11 Positivfälle PASS")
+        print("Historischer v27.37i-Vertrag: realer Git-Checkout, keine Ersetzungen / PASS")
+        _V2737J_REAL_HISTORICAL_DONE = True
+    except Exception as exc:
+        errors.append(f"v27.37j historische Regression fehlgeschlagen: {exc}")
+
+"""
+
+
+def v2737j_repair_documents(gate_documents: tuple[str, ...]) -> tuple[str, ...]:
+    require(len(gate_documents) == 4, "v27.37j-Repair: vier Gate-Dokumente erforderlich")
+    require(v2737a_current_task_header_fields(gate_documents[1])
+            == V2737J_AUTHORIZED_TASK_FIELDS, "v27.37j-Repair: Task nicht autorisiert")
+    result = []
+    for path, original in zip(V2737J_DOCUMENT_PATHS, gate_documents):
+        require(V2737J_REPAIR_SECTION not in original, "v27.37j-Repair: doppelte Reparatur")
+        fields = {} if path.endswith("CURRENT_TASK.md") else {"Stand": "v27.37j-GATE-REPAIR"}
+        if path == "docs/PROJECT_STATE_CURRENT.md":
+            fields["Aktueller Blocker"] = (
+                "Implementation bleibt bis zum erfolgreichen Gate-Repair mit "
+                "Post-Commit-Prüfung und Push gesperrt")
+        document = v2737e_replace_header(original, fields)
+        split = re.search(r"(?m)^## ", document)
+        require(split is not None, "v27.37j-Repair: Dokumentabschnitt fehlt")
+        result.append(document[:split.start()] + V2737J_REPAIR_SECTION
+                      + document[split.start():])
+    return tuple(result)
+
+
+def v2737j_expected_repair_preflight(gate_preflight: str) -> str:
+    start = "def _v2737j_oral_mistake_empty_state_regression_profile():"
+    end = "# Gate-only registration: implementation may replace only this assignment.\nV2737J_IMPLEMENTATION_CHECKER"
+    require(gate_preflight.count(start) == 1 and gate_preflight.count(end) == 1,
+            "v27.37j-Repair: ursprünglicher Bypass nicht eindeutig")
+    left, right = gate_preflight.index(start), gate_preflight.index(end)
+    require(left < right, "v27.37j-Repair: Regressionsgrenzen ungültig")
+    result = gate_preflight[:left] + V2737J_REAL_REGRESSION_SOURCE + gate_preflight[right:]
+    anchor = (
+        '            raise ValueError("kein gültiges v27.37i-Nachfolgeprofil")\n'
+        '        root = Path(__file__).resolve().parents[1]\n')
+    replacement = (
+        '            raise ValueError("kein gültiges v27.37i-Nachfolgeprofil")\n'
+        '        if phase in control["V2737J_PHASES"]:\n'
+        '            _v2737j_oral_mistake_empty_state_regression_profile()\n'
+        '            return\n'
+        '        root = Path(__file__).resolve().parents[1]\n')
+    require(result.count(anchor) == 1, "v27.37j-Repair: historische h-Route nicht eindeutig")
+    result = result.replace(anchor, replacement, 1)
+    phases = (
+        '    if phase in {"v2737j_authorization_prepared", "v2737j_authorization_committed"}:\n')
+    expanded = (
+        '    if phase in {"v2737j_authorization_prepared", "v2737j_authorization_committed",\n'
+        '                 "v2737j_gate_repair_prepared", "v2737j_gate_repair_committed"}:\n')
+    require(result.count(phases) == 1, "v27.37j-Repair: Registrierungsphase nicht eindeutig")
+    result = result.replace(phases, expanded, 1)
+    require("historical_globals" not in result
+            and "types.SimpleNamespace" not in result
+            and "projected_snapshot" not in result,
+            "v27.37j-Repair: historischer Monkeypatch nicht entfernt")
+    return result
+
+
+def v2737j_origin_label_sources(base_patch: bytes, base_oral: bytes) -> tuple[bytes, bytes]:
+    prefix, suffix = v2737j_patch_frozen_parts(base_patch)
+    block = base_patch[len(prefix):len(base_patch) - len(suffix)]
+    replacements = (
+        ("Diese Fragen wurden in der 15-Minuten-Simulation mit",
+         "Diese Fragen wurden in der mündlichen Vorbereitung mit"),
+        ("Hier erscheinen nur Fragen, die in der mündlichen Simulation mit",
+         "Hier erscheinen Fragen, die in der mündlichen Vorbereitung mit"),
+    )
+    for old, new in replacements:
+        require(block.count(old.encode("utf-8")) == 1, "v27.37j: Patch-Label nicht eindeutig")
+        block = block.replace(old.encode("utf-8"), new.encode("utf-8"), 1)
+    oral_prefix = v2737i_oral_remainder(base_oral)
+    oral_block = base_oral[len(oral_prefix):]
+    old, new = replacements[1]
+    require(oral_block.count(old.encode("utf-8")) == 1, "v27.37j: Oral-Label nicht eindeutig")
+    oral_block = oral_block.replace(old.encode("utf-8"), new.encode("utf-8"), 1)
+    return prefix + block + suffix, oral_prefix + oral_block
+
+
+def validate_v2737j_repair_facts(
+    base_documents: tuple[str, ...], base_patch: bytes, base_oral: bytes,
+    base_frozen: tuple[tuple[str, bytes], ...], bad_tools: tuple[str, str],
+    commits: tuple[dict, ...], current: dict,
+) -> str:
+    require(1 <= len(commits) <= 4 and commits[0]["sha"] == V2737J_BAD_GATE_SHA,
+            "v27.37j-Repair: exakter fehlerhafter Gate-Commit erforderlich")
+    gate = commits[0]
+    require((gate["preflight"], gate["checker"]) == bad_tools,
+            "v27.37j-Repair: historischer Gate-Inhalt verändert")
+    historical_gate = {**gate, "branch": "main", "head": gate["sha"],
+                       "origin": gate["sha"], "staged": frozenset(), "working": frozenset()}
+    require(validate_v2737j_facts(
+        base_documents, base_patch, base_oral, base_frozen, (gate,), historical_gate)
+            == "v2737j_authorization_committed",
+            "v27.37j-Repair: ursprünglicher Gate-Vertrag verletzt")
+    require(current["branch"] == "main" and not current["staged"],
+            "v27.37j-Repair: main und leerer Index erforderlich")
+    authorization = gate["documents"]
+    repaired = v2737j_repair_documents(authorization)
+    repair_preflight = v2737j_expected_repair_preflight(gate["preflight"])
+    if len(commits) == 1 and current["documents"] == authorization:
+        require(current["working"] == frozenset(),
+                "v27.37j-Repair: Implementation ohne Repair gesperrt")
+        return validate_v2737j_facts(
+            base_documents, base_patch, base_oral, base_frozen, commits, current)
+
+    scopes = (V2737J_GATE_FILES, V2737J_GATE_FILES,
+              V2737J_IMPLEMENTATION_FILES, V2737J_CLOSURE_FILES)
+    parent = gate["sha"]
+    repair_checker = None
+    for number, commit in enumerate(commits[1:], 1):
+        require(commit["parents"] == (parent,) and commit["paths"] == scopes[number],
+                "v27.37j-Repair: direkter linearer Rollen-/Dateiscope verletzt")
+        require(re.fullmatch(r"[0-9a-f]{40}", commit["sha"]) is not None
+                and commit["sha"] not in {V2737J_BASE_SHA, *(c["sha"] for c in commits[:number])},
+                "v27.37j-Repair: ungültiger oder doppelter Commit")
+        expected_documents = (repaired if number < 3 else
+                              v2737j_completion_documents(repaired, commits[2]["sha"]))
+        require(commit["documents"] == expected_documents,
+                "v27.37j-Repair: historische Dokumente oder Taskzustand verändert")
+        implemented = number >= 2
+        v2737j_validate_product_snapshot(commit, base_patch, base_oral, base_frozen, implemented)
+        require((commit["patch"], commit["oral"]) == (
+            v2737j_origin_label_sources(base_patch, base_oral) if implemented
+            else (base_patch, base_oral)), "v27.37j-Repair: unerlaubte Produkt-/Textänderung")
+        require(commit["preflight"] == (
+            v2737j_implementation_preflight(repair_preflight) if implemented else repair_preflight),
+            "v27.37j-Repair: Bypass oder zusätzliche Preflight-Änderung")
+        if number == 1:
+            require(commit["checker"] != gate["checker"],
+                    "v27.37j-Repair: Lifecycle-Repair fehlt")
+            repair_checker = commit["checker"]
+        else:
+            require(commit["checker"] == repair_checker,
+                    "v27.37j-Repair: Kontrollchecker nach Repair verändert")
+        if number == 3:
+            require(all(commit[key] == commits[2][key]
+                        for key in ("patch", "oral", "artifacts", "frozen")),
+                    "v27.37j-Repair: Produktänderung in Closure")
+        parent = commit["sha"]
+    require(current["head"] == parent
+            and current["origin"] in {V2737J_BASE_SHA, *(c["sha"] for c in commits)},
+            "v27.37j-Repair: HEAD/origin nicht reale Lifecycle-Historie")
+    cases = (
+        (1, V2737J_GATE_FILES, V2737J_AUTHORIZED_TASK_FIELDS, "gate_repair_prepared"),
+        (2, frozenset(), V2737J_AUTHORIZED_TASK_FIELDS, "gate_repair_committed"),
+        (2, V2737J_IMPLEMENTATION_FILES, V2737J_AUTHORIZED_TASK_FIELDS, "implementation_prepared"),
+        (3, frozenset(), V2737J_AUTHORIZED_TASK_FIELDS, "implementation_committed"),
+        (3, V2737J_CLOSURE_FILES, V2737J_CLOSED_TASK_FIELDS, "closure_prepared"),
+        (4, frozenset(), V2737J_CLOSED_TASK_FIELDS, "closure_committed"),
+    )
+    fields = v2737a_current_task_header_fields(current["documents"][1])
+    matches = [name for count, scope, task, name in cases
+               if len(commits) == count and current["working"] == scope and fields == task]
+    require(len(matches) == 1, "v27.37j-Repair: unzulässiger Phasenübergang")
+    phase = "v2737j_" + matches[0]
+    implemented = len(commits) >= 3 or phase == "v2737j_implementation_prepared"
+    closed = phase in {"v2737j_closure_prepared", "v2737j_closure_committed"}
+    require(current["documents"] == (
+        v2737j_completion_documents(repaired, commits[2]["sha"]) if closed else repaired),
+        "v27.37j-Repair: aktuelle Dokumente oder historische Abschnitte verändert")
+    v2737j_validate_product_snapshot(current, base_patch, base_oral, base_frozen, implemented)
+    require((current["patch"], current["oral"]) == (
+        v2737j_origin_label_sources(base_patch, base_oral) if implemented else (base_patch, base_oral)),
+        "v27.37j-Repair: Produktbytes außerhalb exakter Herkunftstexte verändert")
+    require(current["preflight"] == (
+        v2737j_implementation_preflight(repair_preflight) if implemented else repair_preflight),
+        "v27.37j-Repair: aktuelle historische Regression verändert")
+    if repair_checker is not None:
+        require(current["checker"] == repair_checker,
+                "v27.37j-Repair: Checker nach Repair verändert")
+    else:
+        require(current["checker"] != gate["checker"], "v27.37j-Repair: Lifecycle fehlt")
+    if len(commits) >= 3:
+        require(all(current[key] == commits[2][key]
+                    for key in ("patch", "oral", "artifacts", "frozen")),
+                "v27.37j-Repair: Implementierungsinhalt später verändert")
+    return phase
+
+
+def run_v2737j_repair_self_checks() -> tuple[int, int]:
+    import copy
+    base = tuple(read_v2735f_commit_document(V2737J_BASE_SHA, path)
+                 for path in V2737J_DOCUMENT_PATHS)
+    patch, oral = tuple(run_git_bytes(["show", f"{V2737J_BASE_SHA}:{path}"])
+                        for path in ("patch-v21.js", "oral-exam.js"))
+    frozen = tuple((path, run_git_bytes(["show", f"{V2737J_BASE_SHA}:{path}"]))
+                   for path in v2737j_frozen_product_paths())
+    bad_tools = tuple(read_v2735f_commit_document(V2737J_BAD_GATE_SHA, path)
+                      for path in ("tools/preflight.py", CHECKER_RELATIVE_PATH))
+    auth = v2737j_authorization_documents(base)
+    gate = dict(sha=V2737J_BAD_GATE_SHA, parents=(V2737J_BASE_SHA,), paths=V2737J_GATE_FILES,
+                documents=auth, patch=patch, oral=oral, frozen=frozen, artifacts=(None, None),
+                preflight=bad_tools[0], checker=bad_tools[1])
+    repaired = v2737j_repair_documents(auth)
+    preflight = v2737j_expected_repair_preflight(bad_tools[0])
+    identities = [hashlib.sha1(("isolated-v2737j-repair-" + role).encode()).hexdigest()
+                  for role in ("repair", "implementation", "closure")]
+    repair = {**gate, "sha": identities[0], "parents": (gate["sha"],),
+              "documents": repaired, "preflight": preflight,
+              "checker": gate["checker"] + "# isolated repair\n"}
+    changed_patch, changed_oral = v2737j_origin_label_sources(patch, oral)
+    implementation = {
+        **repair, "sha": identities[1], "parents": (repair["sha"],),
+        "paths": V2737J_IMPLEMENTATION_FILES, "patch": changed_patch, "oral": changed_oral,
+        "artifacts": ("# isolated checker\n", "# isolated document\n"),
+        "preflight": v2737j_implementation_preflight(preflight),
+    }
+    closure = {**implementation, "sha": identities[2], "parents": (implementation["sha"],),
+               "paths": V2737J_CLOSURE_FILES,
+               "documents": v2737j_completion_documents(repaired, implementation["sha"])}
+    states = []
+    for history, scope, snapshot, phase in (
+        ((gate,), V2737J_GATE_FILES, repair, "gate_repair_prepared"),
+        ((gate, repair), frozenset(), repair, "gate_repair_committed"),
+        ((gate, repair), V2737J_IMPLEMENTATION_FILES, implementation, "implementation_prepared"),
+        ((gate, repair, implementation), frozenset(), implementation, "implementation_committed"),
+        ((gate, repair, implementation), V2737J_CLOSURE_FILES, closure, "closure_prepared"),
+        ((gate, repair, implementation, closure), frozenset(), closure, "closure_committed"),
+    ):
+        current = {**snapshot, "branch": "main", "head": history[-1]["sha"],
+                   "origin": V2737J_BAD_GATE_SHA, "staged": frozenset(), "working": scope}
+        states.append((history, current, phase))
+    positive = negative = 0
+
+    def validate(history, current):
+        return validate_v2737j_repair_facts(
+            base, patch, oral, frozen, bad_tools, history, current)
+
+    def blocked(history, current):
+        nonlocal negative
+        try:
+            validate(history, current)
+        except ValidationError:
+            negative += 1
+        else:
+            raise ValidationError("v27.37j-Repair: Mutation nicht blockiert")
+
+    for history, current, phase in states:
+        require(validate(history, current) == "v2737j_" + phase,
+                "v27.37j-Repair: Positivphase falsch")
+        positive += 1
+        for ref in (V2737J_BASE_SHA, *(commit["sha"] for commit in history)):
+            validate(history, {**current, "origin": ref})
+            positive += 1
+        for change in (
+            {"branch": "other"}, {"head": "unrelated"}, {"origin": "unrelated"},
+            {"staged": frozenset({"tools/preflight.py"})},
+            {"working": current["working"] | {"foreign.txt"}},
+            {"preflight": current["preflight"] + "# bypass\n"},
+            {"checker": gate["checker"]},
+            {"patch": current["patch"] + b"// hidden change\n"},
+            {"oral": current["oral"] + b"// hidden change\n"},
+            {"documents": (current["documents"][0] + "drift\n", *current["documents"][1:])},
+            {"artifacts": ("# premature\n", None)},
+        ):
+            blocked(history, {**current, **change})
+        header = extract_v2737a_current_task_header(current["documents"][1])
+        for field in ("Commit erlaubt", "Push erlaubt"):
+            candidate = current["documents"][1].replace(
+                header, header.replace(field + ": NEIN", field + ": JA", 1), 1)
+            documents = list(current["documents"])
+            documents[1] = candidate
+            blocked(history, {**current, "documents": tuple(documents)})
+        for path in current["working"]:
+            blocked(history, {**current, "working": current["working"] - {path}})
+        for position in range(len(history)):
+            for key, value in (
+                ("parents", ("foreign",)),
+                ("paths", history[position]["paths"] | {"foreign.txt"}),
+                ("patch", history[position]["patch"] + b"// cancelled later\n"),
+                ("preflight", history[position]["preflight"] + "# old bypass\n"),
+            ):
+                altered = copy.deepcopy(list(history))
+                altered[position][key] = value
+                blocked(tuple(altered), current)
+    history, current, _ = states[0]
+    blocked(history, {**current, "patch": changed_patch})
+    blocked(history, {**current, "oral": changed_oral})
+    blocked(history, {**current, "artifacts": implementation["artifacts"]})
+    blocked((gate, implementation), states[3][1])
+    blocked((gate, repair, implementation, closure, closure), states[-1][1])
+    blocked(states[-1][0], {**states[-1][1], "documents": repaired,
+                           "working": V2737J_GATE_FILES})
+    return positive, negative
+
+
 def detect_v2737j_phase(expected_working_files: frozenset[str] | None = None) -> str | None:
     head = run_git(["rev-parse", "HEAD"]).strip()
     state = read_required_text(STATE_PATH)
@@ -18342,7 +18766,8 @@ def detect_v2737j_phase(expected_working_files: frozenset[str] | None = None) ->
         }
 
     refs = run_git(["rev-list", "--reverse", V2737J_BASE_SHA + ".." + head]).splitlines()
-    require(len(refs) <= 3, "v27.37j: mehr als Gate, Implementation und Closure")
+    require(len(refs) <= (4 if refs and refs[0] == V2737J_BAD_GATE_SHA else 3),
+            "v27.37j: mehr als Gate, Repair, Implementation und Closure")
     commits = []
     previous = V2737J_BASE_SHA
     for ref in refs:
@@ -18365,6 +18790,16 @@ def detect_v2737j_phase(expected_working_files: frozenset[str] | None = None) ->
         origin=run_git(["rev-parse", "origin/main"]).strip(),
         staged=paths(["diff", "--cached", "--name-only"]), working=working,
     )
+    if refs and refs[0] == V2737J_BAD_GATE_SHA:
+        return validate_v2737j_repair_facts(
+            tuple(content(V2737J_BASE_SHA, p) for p in V2737J_DOCUMENT_PATHS),
+            raw_content(V2737J_BASE_SHA, "patch-v21.js"),
+            raw_content(V2737J_BASE_SHA, "oral-exam.js"),
+            tuple((path, frozen_content(V2737J_BASE_SHA, path)) for path in frozen_paths),
+            (content(V2737J_BAD_GATE_SHA, "tools/preflight.py"),
+             content(V2737J_BAD_GATE_SHA, CHECKER_RELATIVE_PATH)),
+            tuple(commits), current,
+        )
     return validate_v2737j_facts(
         tuple(content(V2737J_BASE_SHA, p) for p in V2737J_DOCUMENT_PATHS),
         raw_content(V2737J_BASE_SHA, "patch-v21.js"),
@@ -18810,6 +19245,9 @@ def main() -> int:
 
         validate_agents_text(agents_text)
         validate_preflight_text(preflight_text)
+        v2737j_repair_self_checks = None
+        if "## Nichtfunktionaler Gate-Repair v27.37j" in state_text:
+            v2737j_repair_self_checks = run_v2737j_repair_self_checks()
         v2737j_self_checks = None
         if V2737J_AUTHORIZATION_HEADING in state_text:
             v2737j_self_checks = run_v2737j_lifecycle_self_checks()
@@ -19230,6 +19668,10 @@ def main() -> int:
             print(f"Aktuelle v27.37e-Phase: {v2737d_phase}")
         else:
             print(f"Aktuelle v27.37d-Phase: {v2737d_phase}")
+    if v2737j_repair_self_checks is not None:
+        print(f"v27.37j-Gate-Repair: {v2737j_repair_self_checks[0]} Positivtests / PASS; "
+              f"{v2737j_repair_self_checks[1]} Negativtests / vollständig blockiert; "
+              "Commit-/Push-Freigabemutationen blockiert; keine Git-Mutation")
     if v2737j_self_checks is not None:
         print(f"v27.37j isolierter Lifecycle: {v2737j_self_checks[0]} Positivtests / PASS; "
               f"{v2737j_self_checks[1]} Negativtests / vollständig blockiert; keine Git-Mutation")

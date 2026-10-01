@@ -2047,6 +2047,9 @@ def _v2737i_dashboard_readiness_regression_profile():
         if control is None or phase not in (
                 control["V2737I_PHASES"] | control["V2737J_PHASES"]):
             raise ValueError("kein gültiges v27.37i-Nachfolgeprofil")
+        if phase in control["V2737J_PHASES"]:
+            _v2737j_oral_mistake_empty_state_regression_profile()
+            return
         root = Path(__file__).resolve().parents[1]
         checker_path = "tools/check-dashboard-readiness-display-v2737h.py"
         source = (root / checker_path).read_text(encoding="utf-8")
@@ -2116,80 +2119,119 @@ def check_oral_mistake_empty_state_v2737i():
         errors.append("v27.37i mündlicher Fehlertrainer-Leerzustand fehlgeschlagen")
 
 
+_V2737J_REAL_HISTORICAL_DONE = False
+
+
 def _v2737j_oral_mistake_empty_state_regression_profile():
-    """Run the complete frozen v27.37i contract inside the exact j lifecycle."""
-    import contextlib
-    import io
-    import types
+    '''Execute immutable historical contracts on their real Git closure checkout.'''
+    global _V2737J_REAL_HISTORICAL_DONE
+    if _V2737J_REAL_HISTORICAL_DONE:
+        return
+    import shutil
+    import tempfile
     try:
         phase = _v2737d_post_commit_profile_phase()
         control = _V2737D_POST_COMMIT_CONTROL
         if control is None or phase not in control["V2737J_PHASES"]:
             raise ValueError("kein gültiges v27.37j-Nachfolgeprofil")
         root = Path(__file__).resolve().parents[1]
-        checker_path = "tools/check-oral-mistake-empty-state-v2737i.py"
-        document_path = "docs/ORAL_MISTAKE_EMPTY_STATE_V2737I.md"
-        for path in (checker_path, document_path):
-            current = (root / path).read_text(encoding="utf-8")
-            baseline = control["read_v2735f_commit_document"](
-                control["V2737J_BASE_SHA"], path)
-            if current != baseline:
-                raise ValueError("historischer v27.37i-Vertrag verändert: " + path)
+        historical_sha = control["V2737J_BASE_SHA"]
+        checker = "tools/check-oral-mistake-empty-state-v2737i.py"
+        frozen = (
+            checker, "docs/ORAL_MISTAKE_EMPTY_STATE_V2737I.md",
+            "tools/check-dashboard-readiness-display-v2737h.py",
+        )
+        for path in frozen:
+            if (root / path).read_bytes() != control["run_git_bytes"]([
+                    "show", historical_sha + ":" + path]):
+                raise ValueError("historischer Vertrag verändert: " + path)
+        if control["detect_v2737i_phase"](_closed_snapshot=historical_sha) != (
+                "v2737i_closure_committed"):
+            raise ValueError("historische v27.37i-Closure nicht vollständig validiert")
+        node = shutil.which("node")
+        if node is None:
+            raise ValueError("Node.js fehlt")
 
-        historical = runpy.run_path(str(root / checker_path))
-        original_snapshot = historical.get("snapshot")
-        baselines = historical.get("baselines")
-        historical_main = historical.get("main")
-        if not (callable(original_snapshot) and callable(baselines)
-                and callable(historical_main)):
-            raise ValueError("historischer v27.37i-Checker unvollständig")
-        historical_globals = getattr(historical_main, "__globals__", None)
-        if not isinstance(historical_globals, dict):
-            raise ValueError("historischer v27.37i-Modulkontext fehlt")
-        frozen_paths = historical.get("FROZEN_PATHS")
-        if not isinstance(frozen_paths, tuple):
-            raise ValueError("historischer v27.37i-Frozen-Scope fehlt")
-        base = baselines()
+        def execute(arguments, cwd):
+            result = subprocess.run(
+                arguments, cwd=cwd, capture_output=True, text=True,
+                encoding="utf-8", errors="strict", timeout=240, check=False,
+            )
+            if result.returncode != 0:
+                raise ValueError(result.stderr.strip() or result.stdout.strip()
+                                 or "historischer Prüfbefehl fehlgeschlagen")
+            return result.stdout
 
-        def projected_snapshot():
-            current = dict(original_snapshot())
-            # Preserve the historical byte contract across a Windows checkout
-            # only when CRLF-to-LF is the complete and exact difference.
-            for path in frozen_paths:
-                if path == "patch-v21.js":
-                    continue
-                current_bytes = current[path]
-                base_bytes = base[path]
-                if (current_bytes != base_bytes
-                        and current_bytes.replace(b"\r\n", b"\n") == base_bytes):
-                    current[path] = base_bytes
-            # v27.37j supersedes only the old origin label in this frozen path.
-            # The historical empty-state contract still sees its canonical base.
-            current["patch-v21.js"] = base["patch-v21.js"]
-            return current
+        # This disposable local clone checks out the actual historical commit.
+        # Its phase is determined by the unmodified historical Git validator.
+        # No module, function, snapshot, assertion or result is replaced.
+        with tempfile.TemporaryDirectory(prefix="v2737j-real-history-") as directory:
+            checkout = Path(directory) / "checkout"
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "clone", "--shared", "--no-checkout", "--quiet",
+                     str(root), str(checkout)], root)
+            execute(["git", "config", "--local", "core.longpaths", "true"], checkout)
+            execute(["git", "config", "--local", "core.autocrlf", "false"], checkout)
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "checkout", "--quiet", "-B", "main", historical_sha], checkout)
+            execute(["git", "update-ref", "refs/remotes/origin/main", historical_sha],
+                    checkout)
+            for path in (*frozen, "tools/check-project-continuity-control.py",
+                         "tools/preflight.py"):
+                if (checkout / path).read_bytes() != control["run_git_bytes"]([
+                        "show", historical_sha + ":" + path]):
+                    raise ValueError("historischer Checkout ist nicht byte-identisch: " + path)
+            if execute(["git", "branch", "--show-current"], checkout).strip() != "main":
+                raise ValueError("historischer Checkout ist nicht auf main")
+            for reference in ("HEAD", "main", "origin/main"):
+                actual = execute(["git", "rev-parse", reference], checkout).strip()
+                if actual != historical_sha:
+                    raise ValueError("historischer Checkout: falsche Referenz " + reference)
+                print("Historischer Checkout " + reference + ": " + actual)
+            status = execute(["git", "status", "--porcelain"], checkout).strip()
+            if status:
+                raise ValueError("historischer Checkout ist nicht sauber: " + status)
+            print("Historischer Checkout: Working Tree sauber / PASS")
+            transcript = execute([sys.executable, "-X", "utf8", "-B", checker], checkout)
+            if ("Positivfälle: 11 / PASS" not in transcript
+                    or "Semantische Mutationen: 10 / vollständig blockiert" not in transcript
+                    or "Phase: v2737i_closure_committed" not in transcript):
+                raise ValueError("historische v27.37i-Prüfmatrix unvollständig")
+            print(transcript.strip())
 
-        historical_globals["snapshot"] = projected_snapshot
-        historical_globals["validate_document_and_preflight"] = lambda: None
-        historical_globals["runpy"] = types.SimpleNamespace(run_path=lambda _path: {
-            "detect_v2737i_phase": lambda: "v2737i_closure_committed",
-            "v2737i_oral_remainder": control["v2737i_oral_remainder"],
-        })
-        output = io.StringIO()
-        diagnostics = io.StringIO()
-        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(diagnostics):
-            result = historical_main()
-        transcript = output.getvalue()
-        if result != 0:
-            raise ValueError("historischer v27.37i-Checker fehlgeschlagen: "
-                             + diagnostics.getvalue().strip())
-        if ("Positivfälle: 11 / PASS" not in transcript
-                or "Semantische Mutationen: 10 / vollständig blockiert" not in transcript):
-            raise ValueError("historische v27.37i-Prüfmatrix unvollständig")
-        print("v27.37j-Nachfolgeprofil: unveränderter v27.37i-Leerzustand, "
-              "11 Positivfälle und 10 Mutationen / PASS")
+            h_contract = (
+                "import runpy\n"
+                "h = runpy.run_path('tools/check-dashboard-readiness-display-v2737h.py')\n"
+                "base = h['baselines']()\n"
+                "good = h['snapshot']()\n"
+                "h['validate'](good, base)\n"
+                "mutations = list(h['mutation_cases'](good, base))\n"
+                "assert len(mutations) == 13\n"
+                "for name, mutation in mutations:\n"
+                "    try:\n"
+                "        h['validate'](mutation, base)\n"
+                "    except h['ContractError']:\n"
+                "        continue\n"
+                "    raise RuntimeError('historische Mutation nicht blockiert: ' + name)\n"
+                "print('v27.37h: realer historischer Strukturvertrag / 13 Mutationen PASS')\n"
+            )
+            print(execute([sys.executable, "-X", "utf8", "-B", "-c", h_contract],
+                          checkout).strip())
+
+        # Exercise the real current oral source with the original i DOM/Storage
+        # harness, without changing that harness or its module globals.
+        historical = runpy.run_path(str(root / checker))
+        oral = (root / "oral-exam.js").read_text(encoding="utf-8")
+        historical["syntax_check"](node, oral, "reale aktuelle oral-exam.js")
+        result = historical["execute"](node, oral)
+        if result.returncode != 0 or json.loads(result.stdout) != {"positive": 11}:
+            raise ValueError("reale aktuelle v27.37i-UI/Storage-Regression fehlgeschlagen: "
+                             + result.stderr)
+        print("v27.37j: reale aktuelle v23.4.0-Logik / 11 Positivfälle PASS")
+        print("Historischer v27.37i-Vertrag: realer Git-Checkout, keine Ersetzungen / PASS")
+        _V2737J_REAL_HISTORICAL_DONE = True
     except Exception as exc:
-        errors.append(f"v27.37j historische v27.37i-Regression fehlgeschlagen: {exc}")
-
+        errors.append(f"v27.37j historische Regression fehlgeschlagen: {exc}")
 
 # Gate-only registration: implementation may replace only this assignment.
 V2737J_IMPLEMENTATION_CHECKER = None
@@ -2201,7 +2243,8 @@ def check_oral_mistake_origin_label_v2737j():
     if control is None or phase not in control["V2737J_PHASES"]:
         return
     expected = "tools/check-oral-mistake-origin-label-v2737j.py"
-    if phase in {"v2737j_authorization_prepared", "v2737j_authorization_committed"}:
+    if phase in {"v2737j_authorization_prepared", "v2737j_authorization_committed",
+                 "v2737j_gate_repair_prepared", "v2737j_gate_repair_committed"}:
         if V2737J_IMPLEMENTATION_CHECKER is not None or Path(expected).exists():
             errors.append("v27.37j: Checker vor Implementation registriert oder vorhanden")
         return
