@@ -1,12 +1,24 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37j-GATE-REPAIR
+Stand: v27.37j
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Abgeschlossener technischer Schritt v27.37j
+
+v27.37j – Falschen Herkunftshinweis im mündlichen Fehlertraining korrigieren ist abgeschlossen.
+
+Implementierungscommit: `ffdb133caf8c5bccbb61d471fc96c1f4ad1c67d6`.
+
+Die Herkunftshinweise im mündlichen Fehlertraining verwenden neutral mündliche Vorbereitung. Storage-Key, Datenformat und Verhalten bleiben unverändert; Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commits und Pushes bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Nichtfunktionaler Gate-Repair v27.37j
 

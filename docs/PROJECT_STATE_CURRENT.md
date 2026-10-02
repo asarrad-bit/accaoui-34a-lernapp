@@ -1,16 +1,28 @@
 # Aktueller Projektzustand
 
-Stand: v27.37j-GATE-REPAIR
+Stand: v27.37j
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37j
-Aktuelle Taskart: v27.37j – Falschen Herkunftshinweis im mündlichen Fehlertraining korrigieren
-Aktueller Blocker: Implementation bleibt bis zum erfolgreichen Gate-Repair mit Post-Commit-Prüfung und Push gesperrt
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener technischer Schritt v27.37j
+
+v27.37j – Falschen Herkunftshinweis im mündlichen Fehlertraining korrigieren ist abgeschlossen.
+
+Implementierungscommit: `ffdb133caf8c5bccbb61d471fc96c1f4ad1c67d6`.
+
+Die Herkunftshinweise im mündlichen Fehlertraining verwenden neutral mündliche Vorbereitung. Storage-Key, Datenformat und Verhalten bleiben unverändert; Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commits und Pushes bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Nichtfunktionaler Gate-Repair v27.37j
 

@@ -1,14 +1,26 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37j
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37j – Falschen Herkunftshinweis im mündlichen Fehlertraining korrigieren
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37i
-Erlaubte Implementierungsdateien: `patch-v21.js`, `oral-exam.js`, `tools/check-oral-mistake-origin-label-v2737j.py`, `docs/ORAL_MISTAKE_ORIGIN_LABEL_V2737J.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37j
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37j
+
+v27.37j – Falschen Herkunftshinweis im mündlichen Fehlertraining korrigieren ist abgeschlossen.
+
+Implementierungscommit: `ffdb133caf8c5bccbb61d471fc96c1f4ad1c67d6`.
+
+Die Herkunftshinweise im mündlichen Fehlertraining verwenden neutral mündliche Vorbereitung. Storage-Key, Datenformat und Verhalten bleiben unverändert; Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commits und Pushes bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Nichtfunktionaler Gate-Repair v27.37j
 
