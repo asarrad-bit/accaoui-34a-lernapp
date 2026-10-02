@@ -18719,9 +18719,20 @@ def run_v2737j_repair_self_checks() -> tuple[int, int]:
     return positive, negative
 
 
-def detect_v2737j_phase(expected_working_files: frozenset[str] | None = None) -> str | None:
-    head = run_git(["rev-parse", "HEAD"]).strip()
-    state = read_required_text(STATE_PATH)
+def detect_v2737j_phase(
+    expected_working_files: frozenset[str] | None = None,
+    *, _closed_snapshot: str | None = None,
+) -> str | None:
+    require(_closed_snapshot in (None, V2737K_BASE_SHA),
+            "v27.37j: nur vollständiger historischer Abschluss als Snapshot erlaubt")
+    if _closed_snapshot is None:
+        successor = detect_v2737k_phase(expected_working_files)
+        if successor is not None:
+            return successor
+    head = _closed_snapshot or run_git(["rev-parse", "HEAD"]).strip()
+    state = (read_required_text(STATE_PATH) if _closed_snapshot is None
+             else read_v2735f_commit_document(_closed_snapshot,
+                                              "docs/PROJECT_STATE_CURRENT.md"))
     active = V2737J_AUTHORIZATION_HEADING in state
     if not git_is_ancestor(V2737J_BASE_SHA, head):
         require(not active, "v27.37j: falsche Git-Basis")
@@ -18779,16 +18790,18 @@ def detect_v2737j_phase(expected_working_files: frozenset[str] | None = None) ->
         )
         commits.append(commit)
         previous = ref
-    working = paths(["diff", "--name-only", "--no-renames"]) | paths([
-        "ls-files", "--others", "--exclude-standard"
-    ])
+    working = (frozenset() if _closed_snapshot else
+               paths(["diff", "--name-only", "--no-renames"]) | paths([
+                   "ls-files", "--others", "--exclude-standard"
+               ]))
     require(expected_working_files is None or working == expected_working_files,
             "v27.37j: Working-Tree-Erfassung widersprüchlich")
-    current = snapshot(None)
+    current = snapshot(_closed_snapshot)
     current.update(
         branch=run_git(["branch", "--show-current"]).strip(), head=head,
-        origin=run_git(["rev-parse", "origin/main"]).strip(),
-        staged=paths(["diff", "--cached", "--name-only"]), working=working,
+        origin=(head if _closed_snapshot else run_git(["rev-parse", "origin/main"]).strip()),
+        staged=(frozenset() if _closed_snapshot
+                else paths(["diff", "--cached", "--name-only"])), working=working,
     )
     if refs and refs[0] == V2737J_BAD_GATE_SHA:
         return validate_v2737j_repair_facts(
@@ -19234,6 +19247,597 @@ def validate_v2737d_gate_bootstrap_lifecycle(
     )
 
 
+
+# v27.37k is a closed, documentation-only browser acceptance lifecycle.
+V2737K_BASE_SHA = "84eebad64e290ff045dffd8ce6714cea44533818"
+V2737K_TITLE = "v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App"
+V2737K_AUTHORIZATION_HEADING = "## Autorisierter Task v27.37k"
+V2737K_DOCUMENT_PATHS = V2737J_DOCUMENT_PATHS
+V2737K_GATE_FILES = frozenset(V2737D_GATE_FILE_ORDER)
+V2737K_AUDIT_FILE = "docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md"
+V2737K_AUDIT_FILES = frozenset({V2737K_AUDIT_FILE})
+V2737K_CLOSURE_FILES = frozenset(V2737K_DOCUMENT_PATHS)
+V2737K_TOOL_PATHS = ("tools/preflight.py", CHECKER_RELATIVE_PATH)
+V2737K_AUTHORIZED_TASK_FIELDS = {
+    **V2737J_CLOSED_TASK_FIELDS,
+    "Task-ID": "v27.37k", "Status": "AUTHORIZED", "Autorisiert": "JA",
+    "Titel": V2737K_TITLE,
+    "Erlaubte Implementierungsdateien": "`docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`",
+}
+V2737K_CLOSED_TASK_FIELDS = {
+    **V2737J_CLOSED_TASK_FIELDS,
+    "Letzter abgeschlossener Kontrollschritt": "v27.37k",
+}
+V2737K_PHASES = frozenset("v2737k_" + role for role in (
+    "authorization_prepared", "authorization_committed", "audit_prepared",
+    "audit_committed", "closure_prepared", "closure_committed",
+))
+V2737K_COMMIT_SUBJECTS = (
+    "v27.37k authorize browser end-to-end acceptance audit",
+    "v27.37k document browser end-to-end acceptance audit",
+    "v27.37k close browser end-to-end acceptance audit",
+)
+V2737K_AUTHORIZATION_SECTION = """## Autorisierter Task v27.37k
+
+v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App ist ausschließlich ein reiner Browser-/Dokumentationsaudit.
+
+Technische Gate-Basis: `84eebad64e290ff045dffd8ce6714cea44533818`.
+Der tatsächliche vollständig geschlossene v27.37j-Verlauf einschließlich Gate-Repair und Implementation bleibt geschützt. Funktionaler Ausgangsstand bleibt v27.35g; letzter abgeschlossener Kontrollschritt bleibt bis zur Closure v27.37j.
+
+Ausschließlich erlaubt ist später:
+- `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`
+
+Keine Produktänderung, keine JavaScript-/CSS-/HTML-/Fragenbankänderung, kein Auth-/Supabase-Wiring, keine SQL-/Migrationsänderung, keine Live-Verbindung, keine echten Schlüssel und keine echten Teilnehmerdaten. Keine bestehenden Browser-Lernstände verwenden. Ausschließlich isolierter lokaler Test-Origin auf 127.0.0.1 mit leerem localStorage/sessionStorage und ohne relevante Cookies-/IndexedDB-Altlasten. Beide Supabase-Browser-Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Der echte Browser-Audit prüft Dashboard-Bereitschaft, schriftliche Vollsimulation mit 82 Fragen / 120 Punkten / 120 Minuten, stabile Versuchs-ID und Reihenfolge, Pause/Reload/Resume, Punkte-/Teilpunkte-Regression, unbeantwortete Fragen, 60/59-Punkte-Grenze soweit belastbar, Abschluss/Doppelzählung, neuen Versuch und Fehleranalyse/-training. Mündlich werden A–E, Zufallsprüfung mit 15 eindeutigen Fragen, 15-Minuten-Simulation und Fehlertrainer einschließlich neutraler Herkunft, Reveal/Collapse, Noch üben, Als sicher markieren und echtem Leerzustand nach letztem Fehler geprüft.
+
+Desktop ca. 1280 × 720 und Mobile ca. 390 × 844 sind Browser-Viewport-Tests, keine physischen iPhone-/Android-Tests. Timer-Start, sichtbares Herunterzählen und Persistenz sind getrennt vom natürlichen vollständigen Timeoutpfad nachzuweisen. Ohne belastbaren Test bleibt ein Punkt NOT VERIFIED. Konsole nicht künstlich leeren; relevante Fehler/Warnungen dokumentieren. Anschließend ausschließlich Storage des Test-Origin kontrolliert leeren und lokalen Testserver beenden.
+
+Audit-Ergebnis darf PASS, FAIL oder NOT VERIFIED enthalten. FAIL bedeutet NICHT automatisch Reparatur. Reproduzierbare Produktfehler bleiben unverändert dokumentiert; gefahrlos mögliche weitere Audit-Fälle werden fortgesetzt. Wenn ein Fehler belastbare Folgetests verhindert, STOPP. Reparaturen benötigen später einen neuen ausdrücklich autorisierten Task. Audit darf auch mit dokumentierten Produktfehlern abgeschlossen werden, solange der Audit selbst vollständig und reproduzierbar durchgeführt wurde. Verhindert die Testumgebung einen belastbaren Test, NOT VERIFIED dokumentieren und niemals einen PASS erfinden.
+
+Exakt sechs Phasen:
+- v2737k_authorization_prepared: Basis-HEAD, autorisierter Task, exakt sechs Gate-Dateien, Staging leer.
+- v2737k_authorization_committed: direkter Gate-Commit, autorisierter Task, Working Tree und Staging leer.
+- v2737k_audit_prepared: Gate erfolgreich geprüft und gepusht, exakt eine Audit-Datei, Staging leer.
+- v2737k_audit_committed: direkter Audit-Commit, autorisierter Task, Working Tree und Staging leer.
+- v2737k_closure_prepared: Audit erfolgreich geprüft und gepusht, NONE / BLOCKED / Autorisiert NEIN, exakt vier Steuerungsdokumente, Staging leer.
+- v2737k_closure_committed: direkte Closure, geschlossener Task, Working Tree und Staging leer.
+
+Gate-Scope exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Audit-Scope exakt eine genannte Datei. Closure-Scope exakt die vier Steuerungsdokumente. Keine zusätzliche Datei, kein übersprungener oder wiederholter Übergang, keine fremden Commits, keine Wiederöffnung, keine allgemeine zukünftige Taskfreigabe. Alle übrigen versionierten Dateien sind eingefroren.
+
+v2737k_completion_documents verwendet ausschließlich den tatsächlichen Audit-SHA und die unveränderte Gate-Dokumentfassung. Closure bedeutet ordnungsgemäß abgeschlossener Audit, NICHT automatisch fehlerfreies Produkt. Danach CURRENT_TASK = NONE / BLOCKED / Autorisiert NEIN, letzter Kontrollschritt v27.37k; kein Folgetask autorisiert.
+
+Historische Checks werden nicht gelockert. Der vollständige historische v27.37j-Verlauf wird an der realen Closure-Grenze validiert. Phasenabhängige d–j-Regressionen laufen unverändert im tatsächlichen temporären v27.37j-Closure-Checkout einschließlich realem v27.37i-Checker, vollständiger v27.37j-Mutationsmatrix und aktueller eingefrorener Produktbytes. Keine Fake-Phase, kein Stub, kein Monkeypatch, kein Fake-PASS. Alle übrigen Preflight-Prüfungen bleiben erhalten.
+
+Vor jedem vorgesehenen Commit und nach jedem Commit sind Continuity, vollständiger Preflight, git diff --check und exakter Git-Status verpflichtend. Staging nur nach vollständigem PASS mit exaktem Phasenscope; git diff --cached --check vor Commit. Push nur nach vollständigem Post-Commit-PASS und frischer Remote-Prüfung ohne fremde Commits. Bei Kontroll-/Prüf-FAIL sofort STOPP. Die Commit- und Push-Sperre im kanonischen Task-Kopf bleiben aktiv; ausschließlich dieser ausdrückliche Nutzerauftrag erlaubt die genannten geprüften Lifecycle-Commits und Pushes.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
+
+"""
+
+
+def v2737k_validate_task_safety_text(text: str) -> None:
+    """Exact safety markers belong only to the canonical current task head."""
+    header = text.split("\n## ", 1)[0]
+    for marker in ("Commit erlaubt: NEIN", "Push erlaubt: NEIN"):
+        require(text.count(marker) == 1
+                and re.search(r"(?m)^" + re.escape(marker) + r"$", header) is not None,
+                "v27.37k: eindeutige Sperrzeile im aktuellen Task-Kopf erforderlich: " + marker)
+
+
+def v2737k_authorization_documents(base_documents: tuple[str, ...]) -> tuple[str, ...]:
+    require(len(base_documents) == 4, "v27.37k: vier Basisdokumente erforderlich")
+    result = []
+    for path, original in zip(V2737K_DOCUMENT_PATHS, base_documents):
+        fields = (V2737K_AUTHORIZED_TASK_FIELDS if path.endswith("CURRENT_TASK.md")
+                  else {"Stand": "v27.37k-AUTORISIERUNG"})
+        if path == "docs/PROJECT_STATE_CURRENT.md":
+            fields = {**fields,
+                "Weiterer funktionaler Schritt autorisiert": "NEIN",
+                "Aktuell autorisierter Task": "v27.37k",
+                "Aktuelle Taskart": V2737K_TITLE,
+                "Aktueller Blocker": "Browser-Audit bleibt bis zum vollständig geprüften und gepushten Autorisierungs-Gate gesperrt",
+            }
+        document = v2737e_replace_header(original, fields)
+        split = re.search(r"(?m)^## ", document)
+        require(split is not None, "v27.37k: historische Abschnittsgrenze fehlt")
+        result.append(document[:split.start()] + V2737K_AUTHORIZATION_SECTION
+                      + document[split.start():])
+        if path.endswith("CURRENT_TASK.md"):
+            v2737k_validate_task_safety_text(result[-1])
+    return tuple(result)
+
+
+def v2737k_completion_documents(
+    authorization_documents: tuple[str, ...], audit_commit: str,
+) -> tuple[str, ...]:
+    require(re.fullmatch(r"[0-9a-f]{40}", audit_commit) is not None,
+            "v27.37k: tatsächlicher Audit-Commit erforderlich")
+    section = (
+        "## Abgeschlossener Audit v27.37k\n\n"
+        + V2737K_TITLE + " ist ordnungsgemäß abgeschlossen.\n\n"
+        + f"Audit-Commit: `{audit_commit}`.\n\n"
+        + "Befunde und NOT-VERIFIED-Punkte stehen in "
+        + "`docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`. "
+        + "Closure bestätigt den abgeschlossenen Audit, nicht ein fehlerfreies Produkt. "
+        + "Keine Produktreparatur; funktionaler Ausgangsstand bleibt v27.35g. "
+        + "Supabase bleibt NICHT LIVE.\n\n"
+        + "Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.\n\n"
+        + "Die folgenden Abschnitte dokumentieren historische Abschlüsse und "
+        + "Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.\n\n"
+    )
+    result = []
+    for path, original in zip(V2737K_DOCUMENT_PATHS, authorization_documents):
+        fields = (V2737K_CLOSED_TASK_FIELDS if path.endswith("CURRENT_TASK.md")
+                  else {"Stand": "v27.37k"})
+        if path == "docs/PROJECT_STATE_CURRENT.md":
+            fields = {**fields,
+                "Weiterer funktionaler Schritt autorisiert": "NEIN",
+                "Aktuell autorisierter Task": "NONE",
+                "Aktuelle Taskart": "Kein Task autorisiert",
+                "Aktueller Blocker": "Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat",
+            }
+        document = v2737e_replace_header(original, fields)
+        split = re.search(r"(?m)^## ", document)
+        require(split is not None, "v27.37k: historische Abschnittsgrenze fehlt")
+        result.append(document[:split.start()] + section + document[split.start():])
+        if path.endswith("CURRENT_TASK.md"):
+            v2737k_validate_task_safety_text(result[-1])
+    return tuple(result)
+
+
+V2737K_REGRESSION_FUNCTIONS = (
+    "check_participant_auth_session_browser_provider_v2737d",
+    "check_participant_auth_session_browser_loader_v2737e",
+    "check_participant_auth_session_app_entry_v2737f",
+    "check_written_exam_completion_v2737g",
+    "check_dashboard_readiness_display_v2737h",
+    "check_oral_mistake_empty_state_v2737i",
+    "check_oral_mistake_origin_label_v2737j",
+)
+V2737K_PREFLIGHT_REGRESSION_SOURCE = r"""_V2737K_REAL_HISTORICAL_DONE = False
+_V2737K_REAL_HISTORICAL_FAILED = False
+
+
+def _v2737k_real_closed_regression_profile():
+    # Real unchanged historical code, real historical Git facts, frozen product.
+    global _V2737K_REAL_HISTORICAL_DONE, _V2737K_REAL_HISTORICAL_FAILED
+    if _V2737K_REAL_HISTORICAL_DONE or _V2737K_REAL_HISTORICAL_FAILED:
+        return
+    import tempfile
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        control = _V2737D_POST_COMMIT_CONTROL
+        if control is None or phase not in control["V2737K_PHASES"]:
+            raise ValueError("kein gültiger v27.37k-Audit-Lifecycle")
+        root = Path(__file__).resolve().parents[1]
+        historical_sha = control["V2737K_BASE_SHA"]
+        if control["detect_v2737j_phase"](_closed_snapshot=historical_sha) != (
+                "v2737j_closure_committed"):
+            raise ValueError("historischer v27.37j-Abschluss nicht vollständig validiert")
+        frozen = control["v2737k_frozen_snapshot"](historical_sha)
+        if control["v2737k_frozen_snapshot"](None) != frozen:
+            raise ValueError("eingefrorene Dateien gegenüber v27.37j verändert")
+
+        def execute(arguments, cwd, timeout=240):
+            result = subprocess.run(
+                arguments, cwd=cwd, capture_output=True, text=True,
+                encoding="utf-8", errors="strict", timeout=timeout, check=False,
+            )
+            if result.returncode != 0:
+                raise ValueError(result.stderr.strip() or result.stdout.strip()
+                                 or "historischer Prüfbefehl fehlgeschlagen")
+            return result.stdout
+
+        with tempfile.TemporaryDirectory(prefix="v2737k-real-j-closure-") as directory:
+            checkout = Path(directory) / "checkout"
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "clone", "--shared", "--no-checkout", "--quiet",
+                     str(root), str(checkout)], root)
+            execute(["git", "config", "--local", "core.longpaths", "true"], checkout)
+            execute(["git", "config", "--local", "core.autocrlf", "false"], checkout)
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "checkout", "--quiet", "-B", "main", historical_sha], checkout)
+            execute(["git", "update-ref", "refs/remotes/origin/main", historical_sha],
+                    checkout)
+            for reference in ("HEAD", "main", "origin/main"):
+                if execute(["git", "rev-parse", reference], checkout).strip() != historical_sha:
+                    raise ValueError("historischer Checkout: falsche Referenz " + reference)
+            if execute(["git", "status", "--porcelain"], checkout).strip():
+                raise ValueError("historischer Checkout nicht sauber")
+            for path in (*control["V2737K_TOOL_PATHS"],
+                         "tools/check-oral-mistake-origin-label-v2737j.py",
+                         "tools/check-oral-mistake-empty-state-v2737i.py"):
+                if (checkout / path).read_bytes() != control["run_git_bytes"]([
+                        "show", historical_sha + ":" + path]):
+                    raise ValueError("historischer Checkout nicht byte-identisch: " + path)
+            code = (
+                "import runpy\n"
+                "p = runpy.run_path('tools/preflight.py')\n"
+                "names = " + repr(control["V2737K_REGRESSION_FUNCTIONS"]) + "\n"
+                "for name in names:\n"
+                "    p[name]()\n"
+                "if p['errors']:\n"
+                "    raise RuntimeError('\\n'.join(p['errors']))\n"
+            )
+            # These functions execute the actual d-j checks; nothing is patched.
+            transcript = execute([sys.executable, "-X", "utf8", "-B", "-c", code],
+                                 checkout, timeout=1200)
+            required = (
+                "Positivfälle: 11 / PASS",
+                "Semantische Mutationen: 10 / vollständig blockiert",
+                "Semantische Mutationen: 18 / vollständig blockiert",
+                "Phase: v2737j_closure_committed",
+            )
+            if any(marker not in transcript for marker in required):
+                raise ValueError("reale historische Prüfmatrizen unvollständig")
+            print(transcript.strip())
+            if execute(["git", "status", "--porcelain"], checkout).strip():
+                raise ValueError("historische Regression hat Checkout verändert")
+        print("v27.37k: realer v27.37j-Closure-Checkout; unveränderte d-j-Regressionen / PASS")
+        _V2737K_REAL_HISTORICAL_DONE = True
+    except Exception as exc:
+        _V2737K_REAL_HISTORICAL_FAILED = True
+        errors.append(f"v27.37k reale historische Regression fehlgeschlagen: {exc}")
+
+
+"""
+
+
+def v2737k_expected_preflight(base_preflight: str) -> str:
+    result = base_preflight
+    guard = (
+        '    if (_V2737D_POST_COMMIT_CONTROL is not None\n'
+        '            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):\n'
+        '        _v2737k_real_closed_regression_profile()\n'
+        '        return\n'
+    )
+    for name in V2737K_REGRESSION_FUNCTIONS:
+        anchor = ("def " + name + "():\n"
+                  "    phase = _v2737d_post_commit_profile_phase()\n")
+        require(result.count(anchor) == 1, "v27.37k: eindeutige Regression fehlt: " + name)
+        result = result.replace(anchor, anchor + guard, 1)
+    anchor = "def _git_paths(arguments):\n"
+    require(result.count(anchor) == 1 and "_V2737K_REAL_HISTORICAL_DONE" not in result,
+            "v27.37k: uneindeutige historische Registrierung")
+    return result.replace(anchor, V2737K_PREFLIGHT_REGRESSION_SOURCE + anchor, 1)
+
+
+# Every required audit category must have an explicit expectation/observation.
+V2737K_AUDIT_CASES = tuple(
+    ["W" + str(n).zfill(2) for n in range(1, 17)]
+    + ["O" + str(n).zfill(2) for n in range(1, 10)]
+    + ["T" + str(n).zfill(2) for n in range(1, 5)]
+    + ["R" + str(n).zfill(2) + "-" + viewport
+       for n in range(1, 8) for viewport in ("D", "M")]
+    + ["C01", "S01", "S02", "P01"]
+)
+V2737K_AUDIT_HEADINGS = (
+    "## Testumgebung", "## Schriftliche Prüfung", "## Mündliche Prüfung",
+    "## Timer", "## Responsive", "## Console", "## Storage",
+    "## Reproduzierbare Fehler", "## Nicht verifiziert", "## Gesamtfazit",
+)
+
+
+def v2737k_validate_audit_text(text: str, gate_commit: str) -> None:
+    require(isinstance(text, str) and text.startswith(
+        "# v27.37k – Browser-End-to-End-Abnahme\n"),
+        "v27.37k: Audit fehlt oder falscher Titel")
+    for marker in (f"Basis-Commit: `{V2737K_BASE_SHA}`",
+                   f"Gate-Commit: `{gate_commit}`",
+                   "Keine Produktänderung.", "Supabase NICHT LIVE.",
+                   *V2737K_AUDIT_HEADINGS):
+        require(text.count(marker) == 1, "v27.37k: Auditmarker fehlt/doppelt: " + marker)
+    origin = re.findall(r"(?m)^Test-Origin: `(http://127\.0\.0\.1:(\d+))`$", text)
+    require(len(origin) == 1 and 1024 <= int(origin[0][1]) <= 65535,
+            "v27.37k: kein eindeutiger isolierter Loopback-Origin")
+    require(re.search(r"(?m)^Testdatum: \d{4}-\d{2}-\d{2}$", text) is not None
+            and re.search(r"(?m)^Browser: \S.+$", text) is not None
+            and "1280" in text and "720" in text and "390" in text and "844" in text,
+            "v27.37k: Testumgebung/Viewports unvollständig")
+    rows = re.findall(
+        r"(?m)^\| ((?:[WOTR]\d{2}(?:-[DM])?|[CS]\d{2}|P01)) \| ([^|\n]+) \| ([^|\n]+) \| (PASS|FAIL|NOT VERIFIED) \|$",
+        text,
+    )
+    require(len(rows) == len(V2737K_AUDIT_CASES)
+            and {row[0] for row in rows} == set(V2737K_AUDIT_CASES),
+            "v27.37k: vollständige eindeutige Audit-Matrix erforderlich")
+    require(all(len(expected.strip()) >= 8 and len(observed.strip()) >= 12
+                for _, expected, observed, _ in rows),
+            "v27.37k: leere Erwartung/Beobachtung")
+    conclusion = re.findall(r"(?m)^Audit-Gesamtfazit: (PASS|FAIL|PASS mit NOT-VERIFIED-Punkten)$", text)
+    require(len(conclusion) == 1, "v27.37k: eindeutiges Audit-Fazit erforderlich")
+    statuses = {row[3] for row in rows}
+    expected = ("FAIL" if "FAIL" in statuses else
+                "PASS mit NOT-VERIFIED-Punkten" if "NOT VERIFIED" in statuses else "PASS")
+    require(conclusion[0] == expected, "v27.37k: Audit-Fazit beschönigt Prüffälle")
+
+
+def v2737k_frozen_snapshot(ref: str | None) -> tuple[tuple[str, str], ...]:
+    # Archive is read in memory, never extracted or executed. Ordinary Windows
+    # checkout line endings are canonicalized as in the historical contracts.
+    import io
+    import tarfile
+    excluded = V2737K_GATE_FILES | V2737K_AUDIT_FILES
+    baseline = run_git_bytes(["archive", ref or V2737K_BASE_SHA])
+    with tarfile.open(fileobj=io.BytesIO(baseline), mode="r:") as archive:
+        result = []
+        for member in archive.getmembers():
+            if not member.isfile() or member.name in excluded:
+                continue
+            raw = ((ROOT / member.name).read_bytes() if ref is None
+                   else archive.extractfile(member).read())
+            canonical = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+            result.append((member.name, hashlib.sha256(canonical).hexdigest()))
+        return tuple(sorted(result))
+
+
+def validate_v2737k_facts(
+    base_documents: tuple[str, ...], base_tools: tuple[str, str],
+    base_frozen: tuple[tuple[str, str], ...],
+    commits: tuple[dict, ...], current: dict,
+) -> str:
+    require(len(commits) <= 3, "v27.37k: mehr als Gate, Audit und Closure")
+    require(current["branch"] == "main" and not current["staged"],
+            "v27.37k: main und leerer Index erforderlich")
+    authorization = v2737k_authorization_documents(base_documents)
+    scopes = (V2737K_GATE_FILES, V2737K_AUDIT_FILES, V2737K_CLOSURE_FILES)
+    parent = V2737K_BASE_SHA
+    for number, commit in enumerate(commits):
+        require(commit["parents"] == (parent,) and commit["paths"] == scopes[number],
+                "v27.37k: direkter linearer Rollen-/Dateiscope verletzt")
+        require(re.fullmatch(r"[0-9a-f]{40}", commit["sha"]) is not None
+                and commit["sha"] not in {V2737K_BASE_SHA, *(c["sha"] for c in commits[:number])}
+                and commit["subject"] == V2737K_COMMIT_SUBJECTS[number],
+                "v27.37k: ungültiger/doppelter Commit oder falscher Titel")
+        expected_documents = (authorization if number < 2 else
+                              v2737k_completion_documents(authorization, commits[1]["sha"]))
+        require(commit["documents"] == expected_documents,
+                "v27.37k: historische Dokumente oder Taskzustand verändert")
+        v2737k_validate_task_safety_text(commit["documents"][1])
+        require(commit["frozen"] == base_frozen,
+                "v27.37k: eingefrorene Datei im Commit verändert")
+        if number == 0:
+            require(commit["tools"][0] == v2737k_expected_preflight(base_tools[0])
+                    and commit["tools"][1] != base_tools[1],
+                    "v27.37k: strikte Gate-Vorbereitung fehlt/Preflight gelockert")
+            require(commit["audit"] is None, "v27.37k: Audit vor gepushtem Gate")
+        else:
+            require(commit["tools"] == commits[0]["tools"],
+                    "v27.37k: Kontrolltools nach Gate verändert")
+            v2737k_validate_audit_text(commit["audit"], commits[0]["sha"])
+            if number == 2:
+                require(commit["audit"] == commits[1]["audit"],
+                        "v27.37k: Audit in Closure verändert")
+        parent = commit["sha"]
+    require(current["head"] == parent, "v27.37k: HEAD außerhalb Lifecycle")
+    fields = v2737a_current_task_header_fields(current["documents"][1])
+    v2737k_validate_task_safety_text(current["documents"][1])
+    cases = (
+        (0, V2737K_GATE_FILES, V2737K_AUTHORIZED_TASK_FIELDS, "authorization_prepared"),
+        (1, frozenset(), V2737K_AUTHORIZED_TASK_FIELDS, "authorization_committed"),
+        (1, V2737K_AUDIT_FILES, V2737K_AUTHORIZED_TASK_FIELDS, "audit_prepared"),
+        (2, frozenset(), V2737K_AUTHORIZED_TASK_FIELDS, "audit_committed"),
+        (2, V2737K_CLOSURE_FILES, V2737K_CLOSED_TASK_FIELDS, "closure_prepared"),
+        (3, frozenset(), V2737K_CLOSED_TASK_FIELDS, "closure_committed"),
+    )
+    matches = [name for count, scope, task_fields, name in cases
+               if len(commits) == count and current["working"] == scope and fields == task_fields]
+    require(len(matches) == 1, "v27.37k: ungültige Phase/Dateien/Taskkopf")
+    phase = matches[0]
+    allowed_origins = {
+        "authorization_prepared": {V2737K_BASE_SHA},
+        "authorization_committed": {V2737K_BASE_SHA, parent},
+        "audit_prepared": {parent},
+        "audit_committed": {commits[0]["sha"], parent} if commits else set(),
+        "closure_prepared": {parent},
+        "closure_committed": {commits[1]["sha"], parent} if len(commits) >= 2 else set(),
+    }
+    require(current["origin"] in allowed_origins[phase],
+            "v27.37k: falsches origin oder vorheriger Schritt noch nicht gepusht")
+    closed = phase.startswith("closure_")
+    audited = len(commits) >= 2 or phase == "audit_prepared"
+    expected_documents = (v2737k_completion_documents(authorization, commits[1]["sha"])
+                          if closed else authorization)
+    require(current["documents"] == expected_documents and current["frozen"] == base_frozen,
+            "v27.37k: aktuelle Dokumenthistorie oder eingefrorene Dateien verändert")
+    if commits:
+        require(current["tools"] == commits[0]["tools"],
+                "v27.37k: Kontrolltools nach Gate verändert")
+    else:
+        require(current["tools"][0] == v2737k_expected_preflight(base_tools[0])
+                and current["tools"][1] != base_tools[1], "v27.37k: Gate-Vorbereitung falsch")
+    if audited:
+        v2737k_validate_audit_text(current["audit"], commits[0]["sha"])
+        if len(commits) >= 2:
+            require(current["audit"] == commits[1]["audit"],
+                    "v27.37k: dokumentierter Audit später verändert")
+    else:
+        require(current["audit"] is None, "v27.37k: vorzeitiger Audit")
+    return "v2737k_" + phase
+
+
+def detect_v2737k_phase(expected_working_files: frozenset[str] | None = None) -> str | None:
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    active = V2737K_AUTHORIZATION_HEADING in read_required_text(STATE_PATH)
+    if not git_is_ancestor(V2737K_BASE_SHA, head):
+        require(not active, "v27.37k: falsche Git-Basis")
+        return None
+    if not active and head == V2737K_BASE_SHA:
+        return None
+    require(active, "v27.37k: unbekannter Nachfolgetask")
+    require(detect_v2737j_phase(_closed_snapshot=V2737K_BASE_SHA)
+            == "v2737j_closure_committed", "v27.37k: v27.37j nicht vollständig geschlossen")
+
+    def paths(arguments):
+        return frozenset(run_git(arguments).splitlines())
+
+    def content(ref, path):
+        return (read_required_text(ROOT / path) if ref is None
+                else read_v2735f_commit_document(ref, path))
+
+    def snapshot(ref):
+        existing = ((ROOT / V2737K_AUDIT_FILE).is_file() if ref is None
+                    else V2737K_AUDIT_FILE in paths(["ls-tree", "-r", "--name-only", ref]))
+        return {
+            "documents": tuple(content(ref, path) for path in V2737K_DOCUMENT_PATHS),
+            "tools": tuple(content(ref, path) for path in V2737K_TOOL_PATHS),
+            "frozen": v2737k_frozen_snapshot(ref),
+            "audit": content(ref, V2737K_AUDIT_FILE) if existing else None,
+        }
+
+    refs = run_git(["rev-list", "--reverse", V2737K_BASE_SHA + ".." + head]).splitlines()
+    require(len(refs) <= 3, "v27.37k: mehr als Gate, Audit und Closure")
+    commits = []
+    parent = V2737K_BASE_SHA
+    for ref in refs:
+        commit = snapshot(ref)
+        commit.update(
+            sha=ref, subject=run_git(["show", "-s", "--format=%s", ref]).strip(),
+            parents=tuple(run_git(["rev-list", "--parents", "-n", "1", ref]).split()[1:]),
+            paths=paths(["diff", "--name-only", "--no-renames", parent, ref]),
+        )
+        commits.append(commit)
+        parent = ref
+    working = paths(["diff", "--name-only", "--no-renames"]) | paths([
+        "ls-files", "--others", "--exclude-standard",
+    ])
+    require(expected_working_files is None or working == expected_working_files,
+            "v27.37k: Working-Tree-Erfassung widersprüchlich")
+    current = snapshot(None)
+    current.update(
+        branch=run_git(["branch", "--show-current"]).strip(), head=head,
+        origin=run_git(["rev-parse", "origin/main"]).strip(),
+        staged=paths(["diff", "--cached", "--name-only"]), working=working,
+    )
+    return validate_v2737k_facts(
+        tuple(content(V2737K_BASE_SHA, path) for path in V2737K_DOCUMENT_PATHS),
+        tuple(content(V2737K_BASE_SHA, path) for path in V2737K_TOOL_PATHS),
+        v2737k_frozen_snapshot(V2737K_BASE_SHA), tuple(commits), current,
+    )
+
+
+def run_v2737k_lifecycle_self_checks() -> tuple[int, int]:
+    import copy
+    base = tuple(read_v2735f_commit_document(V2737K_BASE_SHA, path)
+                 for path in V2737K_DOCUMENT_PATHS)
+    tools = tuple(read_v2735f_commit_document(V2737K_BASE_SHA, path)
+                  for path in V2737K_TOOL_PATHS)
+    frozen = v2737k_frozen_snapshot(V2737K_BASE_SHA)
+    auth = v2737k_authorization_documents(base)
+    identities = tuple(hashlib.sha1(("isolated-v2737k-" + role).encode()).hexdigest()
+                       for role in ("gate", "audit", "closure"))
+    report = (
+        "# v27.37k – Browser-End-to-End-Abnahme\n\n"
+        + f"Basis-Commit: `{V2737K_BASE_SHA}`\nGate-Commit: `{identities[0]}`\n"
+        + "Test-Origin: `http://127.0.0.1:18765`\nTestdatum: 2026-10-02\n"
+        + "Browser: Isolierte Vertragsfixture, KEIN tatsächlicher Browserbefund\n"
+        + "Viewports: 1280 × 720 / 390 × 844\n"
+        + "\n".join(V2737K_AUDIT_HEADINGS) + "\n"
+        + "\n".join(f"| {case} | Synthetische Vertragserwartung | "
+                    "Nur isolierter Matrixfall, kein echter Produktbefund | NOT VERIFIED |"
+                    for case in V2737K_AUDIT_CASES)
+        + "\nKeine Produktänderung.\nSupabase NICHT LIVE.\n"
+        + "Audit-Gesamtfazit: PASS mit NOT-VERIFIED-Punkten\n"
+    )
+    gate = dict(sha=identities[0], subject=V2737K_COMMIT_SUBJECTS[0],
+                parents=(V2737K_BASE_SHA,), paths=V2737K_GATE_FILES,
+                documents=auth, frozen=frozen, audit=None,
+                tools=(v2737k_expected_preflight(tools[0]), tools[1] + "# isolated gate\n"))
+    audit = {**gate, "sha": identities[1], "subject": V2737K_COMMIT_SUBJECTS[1],
+             "parents": (identities[0],), "paths": V2737K_AUDIT_FILES, "audit": report}
+    closure = {**audit, "sha": identities[2], "subject": V2737K_COMMIT_SUBJECTS[2],
+               "parents": (identities[1],), "paths": V2737K_CLOSURE_FILES,
+               "documents": v2737k_completion_documents(auth, identities[1])}
+    states = []
+    for history, scope, snapshot, origin, phase in (
+        ((), V2737K_GATE_FILES, gate, V2737K_BASE_SHA, "authorization_prepared"),
+        ((gate,), frozenset(), gate, V2737K_BASE_SHA, "authorization_committed"),
+        ((gate,), V2737K_AUDIT_FILES, audit, identities[0], "audit_prepared"),
+        ((gate, audit), frozenset(), audit, identities[0], "audit_committed"),
+        ((gate, audit), V2737K_CLOSURE_FILES, closure, identities[1], "closure_prepared"),
+        ((gate, audit, closure), frozenset(), closure, identities[1], "closure_committed"),
+    ):
+        current = {**snapshot, "branch": "main",
+                   "head": history[-1]["sha"] if history else V2737K_BASE_SHA,
+                   "origin": origin, "staged": frozenset(), "working": scope}
+        states.append((history, current, phase))
+    positives = negatives = 0
+
+    def validate(history, current):
+        return validate_v2737k_facts(base, tools, frozen, history, current)
+
+    def blocked(history, current):
+        nonlocal negatives
+        try:
+            validate(history, current)
+        except ValidationError:
+            negatives += 1
+        else:
+            raise ValidationError("v27.37k: isolierte Mutation nicht blockiert")
+
+    for history, current, phase in states:
+        require(validate(history, current) == "v2737k_" + phase,
+                "v27.37k: isolierte Positivphase falsch")
+        positives += 1
+        if not current["working"]:
+            validate(history, {**current, "origin": current["head"]})
+            positives += 1
+        for mutation in (
+            {"branch": "foreign"}, {"head": "f" * 40}, {"origin": "e" * 40},
+            {"staged": V2737K_AUDIT_FILES},
+            {"working": current["working"] | {"app.js"}},
+            {"working": current["working"] | {"unauthorized.md"}},
+            {"frozen": frozen[:-1]},
+            {"tools": (current["tools"][0] + "# bypass\n", current["tools"][1])},
+            {"tools": (current["tools"][0], tools[1])},
+        ):
+            blocked(history, {**current, **mutation})
+        for index, document in enumerate(current["documents"]):
+            changed = list(current["documents"])
+            changed[index] = document + "\nunauthorized historical change\n"
+            blocked(history, {**current, "documents": tuple(changed)})
+        for field, value in v2737a_current_task_header_fields(current["documents"][1]).items():
+            changed = list(current["documents"])
+            changed[1] = v2737e_replace_header(changed[1], {field: value + "-MUTATED"})
+            blocked(history, {**current, "documents": tuple(changed)})
+        if current["audit"] is not None:
+            for bad in (None, report.replace("127.0.0.1", "production.invalid"),
+                        report.replace(identities[0], identities[1]),
+                        report.replace("| W01 |", "| W02 |"),
+                        report.replace("| NOT VERIFIED |", "| SKIPPED |", 1),
+                        report.replace("PASS mit NOT-VERIFIED-Punkten", "PASS"),
+                        report.replace("Keine Produktänderung.", "Produktänderung erlaubt.")):
+                blocked(history, {**current, "audit": bad})
+        else:
+            blocked(history, {**current, "audit": report})
+        for number in range(len(history)):
+            for delta in (
+                {"parents": ("f" * 40,)}, {"parents": history[number]["parents"] + ("e" * 40,)},
+                {"paths": history[number]["paths"] | {"app.js"}},
+                {"subject": "unauthorized subject"}, {"sha": V2737K_BASE_SHA},
+                {"frozen": frozen[:-1]},
+                {"documents": tuple(d + "\nforeign\n" for d in history[number]["documents"])},
+            ):
+                altered = list(copy.deepcopy(history))
+                altered[number].update(delta)
+                blocked(tuple(altered), current)
+        if history:
+            blocked(history + (history[-1],), current)
+    # Product FAIL / genuinely unavailable browser cases are not control FAILs.
+    for status, conclusion in (("PASS", "PASS"), ("FAIL", "FAIL")):
+        altered = report.replace("NOT VERIFIED |", status + " |").replace(
+            "Audit-Gesamtfazit: PASS mit NOT-VERIFIED-Punkten", "Audit-Gesamtfazit: " + conclusion)
+        v2737k_validate_audit_text(altered, identities[0])
+        positives += 1
+    # Audit before push, closure before audit push, reopening/extra commit blocked.
+    for index in (2, 4, 5):
+        history, current, _ = states[index]
+        blocked(history, {**current, "origin": V2737K_BASE_SHA})
+    history, current, _ = states[-1]
+    blocked(history, {**current, "documents": auth, "working": V2737K_GATE_FILES})
+    return positives, negatives
+
 def main() -> int:
     try:
         state_text = read_required_text(STATE_PATH)
@@ -19245,6 +19849,9 @@ def main() -> int:
 
         validate_agents_text(agents_text)
         validate_preflight_text(preflight_text)
+        v2737k_self_checks = None
+        if V2737K_AUTHORIZATION_HEADING in state_text:
+            v2737k_self_checks = run_v2737k_lifecycle_self_checks()
         v2737j_repair_self_checks = None
         if "## Nichtfunktionaler Gate-Repair v27.37j" in state_text:
             v2737j_repair_self_checks = run_v2737j_repair_self_checks()
@@ -19648,7 +20255,10 @@ def main() -> int:
     print(f"Aktuelle v27.37b-Phase: {v2737b_phase}")
     print(f"Aktuelle v27.37c-Phase: {v2737c_phase}")
     if v2737d_phase is not None:
-        if v2737d_phase in V2737J_PHASES:
+        if v2737d_phase in V2737K_PHASES:
+            print("Historischer v27.37j-Abschluss: vollständig validiert / PASS")
+            print(f"Aktuelle v27.37k-Phase: {v2737d_phase}")
+        elif v2737d_phase in V2737J_PHASES:
             print("Historischer v27.37i-Abschluss: vollständig validiert / PASS")
             print(f"Aktuelle v27.37j-Phase: {v2737d_phase}")
         elif v2737d_phase in V2737I_PHASES:
@@ -19668,6 +20278,9 @@ def main() -> int:
             print(f"Aktuelle v27.37e-Phase: {v2737d_phase}")
         else:
             print(f"Aktuelle v27.37d-Phase: {v2737d_phase}")
+    if v2737k_self_checks is not None:
+        print(f"v27.37k isolierter Audit-Lifecycle: {v2737k_self_checks[0]} Positivtests / PASS; "
+              f"{v2737k_self_checks[1]} Negativtests / vollständig blockiert; keine Git-Mutation")
     if v2737j_repair_self_checks is not None:
         print(f"v27.37j-Gate-Repair: {v2737j_repair_self_checks[0]} Positivtests / PASS; "
               f"{v2737j_repair_self_checks[1]} Negativtests / vollständig blockiert; "

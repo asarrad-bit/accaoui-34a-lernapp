@@ -1655,6 +1655,10 @@ V2736E_AUTHORIZATION_HEAD = "ad6ccd8b8e010167f303cf0a24edfe8d8036fb81"
 
 def check_participant_auth_session_browser_provider_v2737d():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
+        _v2737k_real_closed_regression_profile()
+        return
     if phase in {
         "v2737e_implementation_prepared", "v2737e_implementation_committed",
         "v2737e_closure_prepared", "v2737e_closure_committed",
@@ -1744,6 +1748,10 @@ def _v2737e_provider_regression_profile():
 
 def check_participant_auth_session_browser_loader_v2737e():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
+        _v2737k_real_closed_regression_profile()
+        return
     if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in (_V2737D_POST_COMMIT_CONTROL["V2737F_PHASES"]
                      | _V2737D_POST_COMMIT_CONTROL["V2737G_PHASES"]
@@ -1865,6 +1873,10 @@ def _v2737f_historical_regression_profile():
 
 def check_participant_auth_session_app_entry_v2737f():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
+        _v2737k_real_closed_regression_profile()
+        return
     control = _V2737D_POST_COMMIT_CONTROL
     if control is not None and phase in (control["V2737G_PHASES"] | control["V2737H_PHASES"] | control["V2737I_PHASES"] | control["V2737J_PHASES"]):
         _v2737g_auth_entry_regression_profile()
@@ -1958,6 +1970,10 @@ def _v2737g_auth_entry_regression_profile():
 
 def check_written_exam_completion_v2737g():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
+        _v2737k_real_closed_regression_profile()
+        return
     control = _V2737D_POST_COMMIT_CONTROL
     if control is not None and phase in (control["V2737H_PHASES"] | control["V2737I_PHASES"] | control["V2737J_PHASES"]):
         _v2737h_written_exam_regression_profile()
@@ -2015,6 +2031,10 @@ def _v2737h_written_exam_regression_profile():
 
 def check_dashboard_readiness_display_v2737h():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
+        _v2737k_real_closed_regression_profile()
+        return
     control = _V2737D_POST_COMMIT_CONTROL
     if control is not None and phase in (
             control["V2737I_PHASES"] | control["V2737J_PHASES"]):
@@ -2094,6 +2114,10 @@ V2737I_IMPLEMENTATION_CHECKER = "tools/check-oral-mistake-empty-state-v2737i.py"
 
 def check_oral_mistake_empty_state_v2737i():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
+        _v2737k_real_closed_regression_profile()
+        return
     control = _V2737D_POST_COMMIT_CONTROL
     if control is not None and phase in control["V2737J_PHASES"]:
         _v2737j_oral_mistake_empty_state_regression_profile()
@@ -2239,6 +2263,10 @@ V2737J_IMPLEMENTATION_CHECKER = "tools/check-oral-mistake-origin-label-v2737j.py
 
 def check_oral_mistake_origin_label_v2737j():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
+        _v2737k_real_closed_regression_profile()
+        return
     control = _V2737D_POST_COMMIT_CONTROL
     if control is None or phase not in control["V2737J_PHASES"]:
         return
@@ -2261,6 +2289,92 @@ def check_oral_mistake_origin_label_v2737j():
     if code != 0:
         errors.append("v27.37j Herkunftshinweis im mündlichen Fehlertraining fehlgeschlagen")
 
+
+
+_V2737K_REAL_HISTORICAL_DONE = False
+_V2737K_REAL_HISTORICAL_FAILED = False
+
+
+def _v2737k_real_closed_regression_profile():
+    # Real unchanged historical code, real historical Git facts, frozen product.
+    global _V2737K_REAL_HISTORICAL_DONE, _V2737K_REAL_HISTORICAL_FAILED
+    if _V2737K_REAL_HISTORICAL_DONE or _V2737K_REAL_HISTORICAL_FAILED:
+        return
+    import tempfile
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        control = _V2737D_POST_COMMIT_CONTROL
+        if control is None or phase not in control["V2737K_PHASES"]:
+            raise ValueError("kein gültiger v27.37k-Audit-Lifecycle")
+        root = Path(__file__).resolve().parents[1]
+        historical_sha = control["V2737K_BASE_SHA"]
+        if control["detect_v2737j_phase"](_closed_snapshot=historical_sha) != (
+                "v2737j_closure_committed"):
+            raise ValueError("historischer v27.37j-Abschluss nicht vollständig validiert")
+        frozen = control["v2737k_frozen_snapshot"](historical_sha)
+        if control["v2737k_frozen_snapshot"](None) != frozen:
+            raise ValueError("eingefrorene Dateien gegenüber v27.37j verändert")
+
+        def execute(arguments, cwd, timeout=240):
+            result = subprocess.run(
+                arguments, cwd=cwd, capture_output=True, text=True,
+                encoding="utf-8", errors="strict", timeout=timeout, check=False,
+            )
+            if result.returncode != 0:
+                raise ValueError(result.stderr.strip() or result.stdout.strip()
+                                 or "historischer Prüfbefehl fehlgeschlagen")
+            return result.stdout
+
+        with tempfile.TemporaryDirectory(prefix="v2737k-real-j-closure-") as directory:
+            checkout = Path(directory) / "checkout"
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "clone", "--shared", "--no-checkout", "--quiet",
+                     str(root), str(checkout)], root)
+            execute(["git", "config", "--local", "core.longpaths", "true"], checkout)
+            execute(["git", "config", "--local", "core.autocrlf", "false"], checkout)
+            execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                     "checkout", "--quiet", "-B", "main", historical_sha], checkout)
+            execute(["git", "update-ref", "refs/remotes/origin/main", historical_sha],
+                    checkout)
+            for reference in ("HEAD", "main", "origin/main"):
+                if execute(["git", "rev-parse", reference], checkout).strip() != historical_sha:
+                    raise ValueError("historischer Checkout: falsche Referenz " + reference)
+            if execute(["git", "status", "--porcelain"], checkout).strip():
+                raise ValueError("historischer Checkout nicht sauber")
+            for path in (*control["V2737K_TOOL_PATHS"],
+                         "tools/check-oral-mistake-origin-label-v2737j.py",
+                         "tools/check-oral-mistake-empty-state-v2737i.py"):
+                if (checkout / path).read_bytes() != control["run_git_bytes"]([
+                        "show", historical_sha + ":" + path]):
+                    raise ValueError("historischer Checkout nicht byte-identisch: " + path)
+            code = (
+                "import runpy\n"
+                "p = runpy.run_path('tools/preflight.py')\n"
+                "names = " + repr(control["V2737K_REGRESSION_FUNCTIONS"]) + "\n"
+                "for name in names:\n"
+                "    p[name]()\n"
+                "if p['errors']:\n"
+                "    raise RuntimeError('\\n'.join(p['errors']))\n"
+            )
+            # These functions execute the actual d-j checks; nothing is patched.
+            transcript = execute([sys.executable, "-X", "utf8", "-B", "-c", code],
+                                 checkout, timeout=1200)
+            required = (
+                "Positivfälle: 11 / PASS",
+                "Semantische Mutationen: 10 / vollständig blockiert",
+                "Semantische Mutationen: 18 / vollständig blockiert",
+                "Phase: v2737j_closure_committed",
+            )
+            if any(marker not in transcript for marker in required):
+                raise ValueError("reale historische Prüfmatrizen unvollständig")
+            print(transcript.strip())
+            if execute(["git", "status", "--porcelain"], checkout).strip():
+                raise ValueError("historische Regression hat Checkout verändert")
+        print("v27.37k: realer v27.37j-Closure-Checkout; unveränderte d-j-Regressionen / PASS")
+        _V2737K_REAL_HISTORICAL_DONE = True
+    except Exception as exc:
+        _V2737K_REAL_HISTORICAL_FAILED = True
+        errors.append(f"v27.37k reale historische Regression fehlgeschlagen: {exc}")
 
 
 def _git_paths(arguments):

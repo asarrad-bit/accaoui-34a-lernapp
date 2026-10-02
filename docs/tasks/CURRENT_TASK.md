@@ -1,14 +1,50 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
+Task-ID: v27.37k
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App
 Funktionaler Ausgangsstand: v27.35g
 Letzter abgeschlossener Kontrollschritt: v27.37j
-Erlaubte Implementierungsdateien: KEINE
+Erlaubte Implementierungsdateien: `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Autorisierter Task v27.37k
+
+v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App ist ausschließlich ein reiner Browser-/Dokumentationsaudit.
+
+Technische Gate-Basis: `84eebad64e290ff045dffd8ce6714cea44533818`.
+Der tatsächliche vollständig geschlossene v27.37j-Verlauf einschließlich Gate-Repair und Implementation bleibt geschützt. Funktionaler Ausgangsstand bleibt v27.35g; letzter abgeschlossener Kontrollschritt bleibt bis zur Closure v27.37j.
+
+Ausschließlich erlaubt ist später:
+- `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`
+
+Keine Produktänderung, keine JavaScript-/CSS-/HTML-/Fragenbankänderung, kein Auth-/Supabase-Wiring, keine SQL-/Migrationsänderung, keine Live-Verbindung, keine echten Schlüssel und keine echten Teilnehmerdaten. Keine bestehenden Browser-Lernstände verwenden. Ausschließlich isolierter lokaler Test-Origin auf 127.0.0.1 mit leerem localStorage/sessionStorage und ohne relevante Cookies-/IndexedDB-Altlasten. Beide Supabase-Browser-Loader bleiben deaktiviert. Supabase bleibt NICHT LIVE.
+
+Der echte Browser-Audit prüft Dashboard-Bereitschaft, schriftliche Vollsimulation mit 82 Fragen / 120 Punkten / 120 Minuten, stabile Versuchs-ID und Reihenfolge, Pause/Reload/Resume, Punkte-/Teilpunkte-Regression, unbeantwortete Fragen, 60/59-Punkte-Grenze soweit belastbar, Abschluss/Doppelzählung, neuen Versuch und Fehleranalyse/-training. Mündlich werden A–E, Zufallsprüfung mit 15 eindeutigen Fragen, 15-Minuten-Simulation und Fehlertrainer einschließlich neutraler Herkunft, Reveal/Collapse, Noch üben, Als sicher markieren und echtem Leerzustand nach letztem Fehler geprüft.
+
+Desktop ca. 1280 × 720 und Mobile ca. 390 × 844 sind Browser-Viewport-Tests, keine physischen iPhone-/Android-Tests. Timer-Start, sichtbares Herunterzählen und Persistenz sind getrennt vom natürlichen vollständigen Timeoutpfad nachzuweisen. Ohne belastbaren Test bleibt ein Punkt NOT VERIFIED. Konsole nicht künstlich leeren; relevante Fehler/Warnungen dokumentieren. Anschließend ausschließlich Storage des Test-Origin kontrolliert leeren und lokalen Testserver beenden.
+
+Audit-Ergebnis darf PASS, FAIL oder NOT VERIFIED enthalten. FAIL bedeutet NICHT automatisch Reparatur. Reproduzierbare Produktfehler bleiben unverändert dokumentiert; gefahrlos mögliche weitere Audit-Fälle werden fortgesetzt. Wenn ein Fehler belastbare Folgetests verhindert, STOPP. Reparaturen benötigen später einen neuen ausdrücklich autorisierten Task. Audit darf auch mit dokumentierten Produktfehlern abgeschlossen werden, solange der Audit selbst vollständig und reproduzierbar durchgeführt wurde. Verhindert die Testumgebung einen belastbaren Test, NOT VERIFIED dokumentieren und niemals einen PASS erfinden.
+
+Exakt sechs Phasen:
+- v2737k_authorization_prepared: Basis-HEAD, autorisierter Task, exakt sechs Gate-Dateien, Staging leer.
+- v2737k_authorization_committed: direkter Gate-Commit, autorisierter Task, Working Tree und Staging leer.
+- v2737k_audit_prepared: Gate erfolgreich geprüft und gepusht, exakt eine Audit-Datei, Staging leer.
+- v2737k_audit_committed: direkter Audit-Commit, autorisierter Task, Working Tree und Staging leer.
+- v2737k_closure_prepared: Audit erfolgreich geprüft und gepusht, NONE / BLOCKED / Autorisiert NEIN, exakt vier Steuerungsdokumente, Staging leer.
+- v2737k_closure_committed: direkte Closure, geschlossener Task, Working Tree und Staging leer.
+
+Gate-Scope exakt docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py und tools/preflight.py. Audit-Scope exakt eine genannte Datei. Closure-Scope exakt die vier Steuerungsdokumente. Keine zusätzliche Datei, kein übersprungener oder wiederholter Übergang, keine fremden Commits, keine Wiederöffnung, keine allgemeine zukünftige Taskfreigabe. Alle übrigen versionierten Dateien sind eingefroren.
+
+v2737k_completion_documents verwendet ausschließlich den tatsächlichen Audit-SHA und die unveränderte Gate-Dokumentfassung. Closure bedeutet ordnungsgemäß abgeschlossener Audit, NICHT automatisch fehlerfreies Produkt. Danach CURRENT_TASK = NONE / BLOCKED / Autorisiert NEIN, letzter Kontrollschritt v27.37k; kein Folgetask autorisiert.
+
+Historische Checks werden nicht gelockert. Der vollständige historische v27.37j-Verlauf wird an der realen Closure-Grenze validiert. Phasenabhängige d–j-Regressionen laufen unverändert im tatsächlichen temporären v27.37j-Closure-Checkout einschließlich realem v27.37i-Checker, vollständiger v27.37j-Mutationsmatrix und aktueller eingefrorener Produktbytes. Keine Fake-Phase, kein Stub, kein Monkeypatch, kein Fake-PASS. Alle übrigen Preflight-Prüfungen bleiben erhalten.
+
+Vor jedem vorgesehenen Commit und nach jedem Commit sind Continuity, vollständiger Preflight, git diff --check und exakter Git-Status verpflichtend. Staging nur nach vollständigem PASS mit exaktem Phasenscope; git diff --cached --check vor Commit. Push nur nach vollständigem Post-Commit-PASS und frischer Remote-Prüfung ohne fremde Commits. Bei Kontroll-/Prüf-FAIL sofort STOPP. Die Commit- und Push-Sperre im kanonischen Task-Kopf bleiben aktiv; ausschließlich dieser ausdrückliche Nutzerauftrag erlaubt die genannten geprüften Lifecycle-Commits und Pushes.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Abgeschlossener technischer Schritt v27.37j
 
