@@ -1,12 +1,24 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37k-AUTORISIERUNG
+Stand: v27.37k
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Abgeschlossener Audit v27.37k
+
+v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App ist ordnungsgemäß abgeschlossen.
+
+Audit-Commit: `b07c2a3b9263bc4d385b43edd9b391db5c49fda5`.
+
+Befunde und NOT-VERIFIED-Punkte stehen in `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`. Closure bestätigt den abgeschlossenen Audit, nicht ein fehlerfreies Produkt. Keine Produktreparatur; funktionaler Ausgangsstand bleibt v27.35g. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37k
 

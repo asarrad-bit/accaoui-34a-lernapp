@@ -1,6 +1,6 @@
 # Aktueller Projektzustand
 
-Stand: v27.37k-AUTORISIERUNG
+Stand: v27.37k
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
@@ -8,9 +8,21 @@ Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: v27.37k
-Aktuelle Taskart: v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App
-Aktueller Blocker: Browser-Audit bleibt bis zum vollständig geprüften und gepushten Autorisierungs-Gate gesperrt
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener Audit v27.37k
+
+v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App ist ordnungsgemäß abgeschlossen.
+
+Audit-Commit: `b07c2a3b9263bc4d385b43edd9b391db5c49fda5`.
+
+Befunde und NOT-VERIFIED-Punkte stehen in `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`. Closure bestätigt den abgeschlossenen Audit, nicht ein fehlerfreies Produkt. Keine Produktreparatur; funktionaler Ausgangsstand bleibt v27.35g. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37k
 

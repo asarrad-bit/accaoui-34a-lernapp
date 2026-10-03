@@ -1,14 +1,26 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37k
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37j
-Erlaubte Implementierungsdateien: `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`
+Letzter abgeschlossener Kontrollschritt: v27.37k
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener Audit v27.37k
+
+v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App ist ordnungsgemäß abgeschlossen.
+
+Audit-Commit: `b07c2a3b9263bc4d385b43edd9b391db5c49fda5`.
+
+Befunde und NOT-VERIFIED-Punkte stehen in `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md`. Closure bestätigt den abgeschlossenen Audit, nicht ein fehlerfreies Produkt. Keine Produktreparatur; funktionaler Ausgangsstand bleibt v27.35g. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask ist autorisiert. Commit und Push bleiben gesperrt.
+
+Die folgenden Abschnitte dokumentieren historische Abschlüsse und Autorisierungen; sie erteilen keine weitere aktuelle Freigabe.
 
 ## Autorisierter Task v27.37k
 
