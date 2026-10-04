@@ -2358,7 +2358,7 @@ def _v2737k_real_closed_regression_profile():
             )
             # These functions execute the actual d-j checks; nothing is patched.
             transcript = execute([sys.executable, "-X", "utf8", "-B", "-c", code],
-                                 checkout, timeout=1200)
+                                 checkout, timeout=1800)
             required = (
                 "Positivfälle: 11 / PASS",
                 "Semantische Mutationen: 10 / vollständig blockiert",

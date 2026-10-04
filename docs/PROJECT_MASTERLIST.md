@@ -8,6 +8,32 @@ Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 
+## Nichtfunktionaler v27.37k-Closure-Verifikations-Repair
+
+Der Projekteigentümer hat ausschließlich diesen technischen Verifikations-Repair zur Vorbereitung autorisiert. Kein Produkt-Task wird geöffnet; CURRENT_TASK bleibt NONE / BLOCKED / Autorisiert NEIN.
+
+Closure-Commit: `6035c081816632b26569443ebe872eb48adb511b`. Er bleibt unverändert in der linearen Historie; kein Reset, Amend, Rebase oder History Rewrite.
+
+Der v27.37k-Audit bleibt abgeschlossen. Audit-Gesamtfazit bleibt FAIL; F01 bleibt offen und NICHT repariert. `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md` bleibt vollständig unverändert.
+
+Die unveränderte Post-Commit-Verifikation lief 2521,500 Sekunden und scheiterte ausschließlich am internen 1200-s-Ausführungsbudget des realen historischen d–j-Sammelprozesses. Alle sieben Einzelprüfungen d–j waren PASS; die gemessene Summe frischer Einzelprozesse beträgt 1327,813 s.
+
+Ausschließlich der Timeout dieses v27.37k-spezifischen Sammelprozesses wird technisch von 1200 auf exakt 1800 Sekunden erhöht. Keine Prüfung wird entfernt, übersprungen oder gelockert. d–j-Liste und Reihenfolge, V2737K_BASE_SHA `84eebad64e290ff045dffd8ce6714cea44533818`, realer v27.37j-Closure-Checkout, gemeinsame Cache-Semantik, core.longpaths=true, core.autocrlf=false, reale Checker, Transcript-Marker, errors-/Exit-Code-Auswertung, Frozen-Snapshot und Sauberkeitsprüfung bleiben unverändert. Kein Stub, Monkeypatch, Fake-PASS oder künstlicher Phase-Override.
+
+Repair-Scope exakt sechs Dateien:
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Zusätzlich zulässig sind ausschließlich v2737k_closure_verification_repair_prepared und v2737k_closure_verification_repair_committed. Ein später ausdrücklich freigegebener einmaliger Repair-Commit muss direkt auf den genannten Closure-Commit folgen und exakt diesen Sechs-Dateien-Scope enthalten. Keine siebte Datei, kein weiterer Commit-/Push-Pfad, keine zukünftige Taskfreigabe und keine Wiederöffnung zu AUTHORIZED.
+
+Kein Produktcode wird geändert. F01 und Audit-FAIL bleiben unverändert. Supabase bleibt NICHT LIVE. Keine echten Keys oder Teilnehmerdaten.
+
+Jetzt nur Vorbereitung, Continuity und isolierte strukturelle Lifecycle-/Repair-Self-Checks. Kein vollständiger Preflight in diesem Vorbereitungsauftrag. Kein Commit und kein Push. Eine spätere Commit-/Push-Freigabe benötigt weiterhin vollständigen Preflight vor und nach dem Commit sowie die bestehenden Git-/Remote-Prüfungen.
+
 ## Abgeschlossener Audit v27.37k
 
 v27.37k – Browser-End-to-End-Abnahme der aktuellen Lern-App ist ordnungsgemäß abgeschlossen.

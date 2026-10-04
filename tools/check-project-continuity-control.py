@@ -19271,6 +19271,7 @@ V2737K_CLOSED_TASK_FIELDS = {
 V2737K_PHASES = frozenset("v2737k_" + role for role in (
     "authorization_prepared", "authorization_committed", "audit_prepared",
     "audit_committed", "closure_prepared", "closure_committed",
+    "closure_verification_repair_prepared", "closure_verification_repair_committed",
 ))
 V2737K_COMMIT_SUBJECTS = (
     "v27.37k authorize browser end-to-end acceptance audit",
@@ -19572,7 +19573,7 @@ def v2737k_frozen_snapshot(ref: str | None) -> tuple[tuple[str, str], ...]:
         return tuple(sorted(result))
 
 
-def validate_v2737k_facts(
+def _validate_v2737k_audit_facts(
     base_documents: tuple[str, ...], base_tools: tuple[str, str],
     base_frozen: tuple[tuple[str, str], ...],
     commits: tuple[dict, ...], current: dict,
@@ -19687,7 +19688,7 @@ def detect_v2737k_phase(expected_working_files: frozenset[str] | None = None) ->
         }
 
     refs = run_git(["rev-list", "--reverse", V2737K_BASE_SHA + ".." + head]).splitlines()
-    require(len(refs) <= 3, "v27.37k: mehr als Gate, Audit und Closure")
+    require(len(refs) <= 4, "v27.37k: mehr als Gate, Audit, Closure und einmaliger Verifikations-Repair")
     commits = []
     parent = V2737K_BASE_SHA
     for ref in refs:
@@ -19838,6 +19839,412 @@ def run_v2737k_lifecycle_self_checks() -> tuple[int, int]:
     blocked(history, {**current, "documents": auth, "working": V2737K_GATE_FILES})
     return positives, negatives
 
+# BEGIN v27.37k closure verification repair
+V2737K_VERIFICATION_REPAIR_BASE_SHA = "6035c081816632b26569443ebe872eb48adb511b"
+V2737K_VERIFICATION_REPAIR_FILES = V2737K_GATE_FILES
+V2737K_VERIFICATION_REPAIR_HEADING = "## Nichtfunktionaler v27.37k-Closure-Verifikations-Repair"
+V2737K_VERIFICATION_REPAIR_SUBJECT = "v27.37k repair closure verification timeout"
+V2737K_VERIFICATION_REPAIR_SECTION = """## Nichtfunktionaler v27.37k-Closure-Verifikations-Repair
+
+Der Projekteigentümer hat ausschließlich diesen technischen Verifikations-Repair zur Vorbereitung autorisiert. Kein Produkt-Task wird geöffnet; CURRENT_TASK bleibt NONE / BLOCKED / Autorisiert NEIN.
+
+Closure-Commit: `6035c081816632b26569443ebe872eb48adb511b`. Er bleibt unverändert in der linearen Historie; kein Reset, Amend, Rebase oder History Rewrite.
+
+Der v27.37k-Audit bleibt abgeschlossen. Audit-Gesamtfazit bleibt FAIL; F01 bleibt offen und NICHT repariert. `docs/BROWSER_END_TO_END_ACCEPTANCE_V2737K.md` bleibt vollständig unverändert.
+
+Die unveränderte Post-Commit-Verifikation lief 2521,500 Sekunden und scheiterte ausschließlich am internen 1200-s-Ausführungsbudget des realen historischen d–j-Sammelprozesses. Alle sieben Einzelprüfungen d–j waren PASS; die gemessene Summe frischer Einzelprozesse beträgt 1327,813 s.
+
+Ausschließlich der Timeout dieses v27.37k-spezifischen Sammelprozesses wird technisch von 1200 auf exakt 1800 Sekunden erhöht. Keine Prüfung wird entfernt, übersprungen oder gelockert. d–j-Liste und Reihenfolge, V2737K_BASE_SHA `84eebad64e290ff045dffd8ce6714cea44533818`, realer v27.37j-Closure-Checkout, gemeinsame Cache-Semantik, core.longpaths=true, core.autocrlf=false, reale Checker, Transcript-Marker, errors-/Exit-Code-Auswertung, Frozen-Snapshot und Sauberkeitsprüfung bleiben unverändert. Kein Stub, Monkeypatch, Fake-PASS oder künstlicher Phase-Override.
+
+Repair-Scope exakt sechs Dateien:
+- `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`
+- `docs/PROJECT_MASTERLIST.md`
+- `docs/PROJECT_STATE_CURRENT.md`
+- `docs/tasks/CURRENT_TASK.md`
+- `tools/check-project-continuity-control.py`
+- `tools/preflight.py`
+
+Zusätzlich zulässig sind ausschließlich v2737k_closure_verification_repair_prepared und v2737k_closure_verification_repair_committed. Ein später ausdrücklich freigegebener einmaliger Repair-Commit muss direkt auf den genannten Closure-Commit folgen und exakt diesen Sechs-Dateien-Scope enthalten. Keine siebte Datei, kein weiterer Commit-/Push-Pfad, keine zukünftige Taskfreigabe und keine Wiederöffnung zu AUTHORIZED.
+
+Kein Produktcode wird geändert. F01 und Audit-FAIL bleiben unverändert. Supabase bleibt NICHT LIVE. Keine echten Keys oder Teilnehmerdaten.
+
+Jetzt nur Vorbereitung, Continuity und isolierte strukturelle Lifecycle-/Repair-Self-Checks. Kein vollständiger Preflight in diesem Vorbereitungsauftrag. Kein Commit und kein Push. Eine spätere Commit-/Push-Freigabe benötigt weiterhin vollständigen Preflight vor und nach dem Commit sowie die bestehenden Git-/Remote-Prüfungen.
+
+"""
+V2737K_VERIFICATION_REPAIR_CHECKER_EDITS = (
+    (
+        '    "audit_committed", "closure_prepared", "closure_committed",\n',
+        '    "audit_committed", "closure_prepared", "closure_committed",\n'
+        '    "closure_verification_repair_prepared", "closure_verification_repair_committed",\n',
+    ),
+    ("def validate_v2737k_facts(\n", "def _validate_v2737k_audit_facts(\n"),
+    (
+        '    require(len(refs) <= 3, "v27.37k: mehr als Gate, Audit und Closure")\n',
+        '    require(len(refs) <= 4, "v27.37k: mehr als Gate, Audit, Closure und einmaliger Verifikations-Repair")\n',
+    ),
+    (
+        "        v2737j_repair_self_checks = None\n",
+        "        v2737k_verification_repair_self_checks = None\n"
+        "        if V2737K_VERIFICATION_REPAIR_HEADING in state_text:\n"
+        "            v2737k_verification_repair_self_checks = run_v2737k_verification_repair_self_checks()\n"
+        "        v2737j_repair_self_checks = None\n",
+    ),
+    (
+        "    if v2737j_repair_self_checks is not None:\n",
+        "    if v2737k_verification_repair_self_checks is not None:\n"
+        '        print(f"v27.37k Closure-Verifikations-Repair: {v2737k_verification_repair_self_checks[0]} Positivtests / PASS; "\n'
+        '              f"{v2737k_verification_repair_self_checks[1]} Negativtests / vollständig blockiert; "\n'
+        '              "nur strukturelle Lifecycle-Prüfung, kein historischer d-j-Prüflauf")\n'
+        "    if v2737j_repair_self_checks is not None:\n",
+    ),
+)
+
+
+def v2737k_verification_repair_documents(
+    closure_documents: tuple[str, ...],
+) -> tuple[str, ...]:
+    require(len(closure_documents) == 4, "v27.37k Repair: vier Closure-Dokumente erforderlich")
+    result = []
+    for document in closure_documents:
+        split = re.search(r"(?m)^## ", document)
+        require(split is not None and V2737K_VERIFICATION_REPAIR_HEADING not in document,
+                "v27.37k Repair: eindeutige unveränderte Closure-Fassung erforderlich")
+        result.append(document[:split.start()] + V2737K_VERIFICATION_REPAIR_SECTION
+                      + document[split.start():])
+    return tuple(result)
+
+
+def v2737k_verification_repair_preflight(closure_preflight: str) -> str:
+    anchor = (
+        '            transcript = execute([sys.executable, "-X", "utf8", "-B", "-c", code],\n'
+        '                                 checkout, timeout=1200)\n'
+    )
+    require(closure_preflight.count(anchor) == 1,
+            "v27.37k Repair: eindeutiger ursprünglicher d-j-Timeoutanker erforderlich")
+    return closure_preflight.replace(anchor, anchor.replace("timeout=1200", "timeout=1800"), 1)
+
+
+def v2737k_validate_verification_repair_checker(
+    closure_checker: str, candidate: str,
+) -> None:
+    # Retain every historical checker byte (canonical LF), apart from these
+    # explicitly enumerated registration/dispatch edits and the new guard.
+    import ast
+    begin = "# BEGIN v27.37k closure verification repair\n"
+    end = "# END v27.37k closure verification repair\n\n"
+    require(candidate.count(begin) == 1 and candidate.count(end) == 1,
+            "v27.37k Repair: eindeutige Kontrollblock-Grenzen erforderlich")
+    prefix, rest = candidate.split(begin, 1)
+    block, suffix = rest.split(end, 1)
+    module = ast.parse(block, filename="v2737k-verification-repair")
+    assignments = {
+        "V2737K_VERIFICATION_REPAIR_BASE_SHA", "V2737K_VERIFICATION_REPAIR_FILES",
+        "V2737K_VERIFICATION_REPAIR_HEADING", "V2737K_VERIFICATION_REPAIR_SUBJECT",
+        "V2737K_VERIFICATION_REPAIR_SECTION", "V2737K_VERIFICATION_REPAIR_CHECKER_EDITS",
+    }
+    functions = {
+        "v2737k_verification_repair_documents", "v2737k_verification_repair_preflight",
+        "v2737k_validate_verification_repair_checker", "validate_v2737k_facts",
+        "run_v2737k_verification_repair_self_checks",
+    }
+    actual_assignments = []
+    actual_functions = []
+    for node in module.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            require(isinstance(node.targets[0], ast.Name),
+                    "v27.37k Repair: kein globaler Attribut-/Monkeypatch")
+            actual_assignments.append(node.targets[0].id)
+        elif isinstance(node, ast.FunctionDef):
+            actual_functions.append(node.name)
+        else:
+            raise ValidationError("v27.37k Repair: unerlaubter Top-Level-Eingriff")
+    require(set(actual_assignments) == assignments and len(actual_assignments) == len(assignments)
+            and set(actual_functions) == functions and len(actual_functions) == len(functions)
+            and not any(isinstance(node, ast.Global) for node in ast.walk(module)),
+            "v27.37k Repair: historische Globals/Checker dürfen nicht ersetzt werden")
+    restored = prefix + suffix
+    for original, replacement in V2737K_VERIFICATION_REPAIR_CHECKER_EDITS:
+        require(restored.count(replacement) == 1,
+                "v27.37k Repair: eindeutige eng begrenzte Kontrollregistrierung erforderlich")
+        restored = restored.replace(replacement, original, 1)
+    require(restored == closure_checker,
+            "v27.37k Repair: historische Prüfung außerhalb des erlaubten Kontrollblocks verändert")
+
+
+def validate_v2737k_facts(
+    base_documents: tuple[str, ...], base_tools: tuple[str, str],
+    base_frozen: tuple[tuple[str, str], ...],
+    commits: tuple[dict, ...], current: dict,
+) -> str:
+    is_repair = (len(commits) == 4 or
+                 (len(commits) == 3 and current["working"] == V2737K_VERIFICATION_REPAIR_FILES))
+    if not is_repair:
+        return _validate_v2737k_audit_facts(
+            base_documents, base_tools, base_frozen, commits, current)
+    require(len(commits) in (3, 4), "v27.37k Repair: einmaliger direkter Repair erforderlich")
+    closure_history = commits[:3]
+    closure = closure_history[-1]
+    require(closure["sha"] == V2737K_VERIFICATION_REPAIR_BASE_SHA,
+            "v27.37k Repair: direkte Basis muss der tatsächliche Closure-Commit sein")
+    # Validate real historical closure facts with the unchanged six-phase
+    # contract. This does not replace the current phase or any running checker.
+    historical_closure = {
+        **closure, "branch": "main", "head": closure["sha"], "origin": closure["sha"],
+        "staged": frozenset(), "working": frozenset(),
+    }
+    require(_validate_v2737k_audit_facts(
+        base_documents, base_tools, base_frozen, closure_history, historical_closure
+    ) == "v2737k_closure_committed", "v27.37k Repair: historischer Closure-Vertrag verletzt")
+    require(current["branch"] == "main" and not current["staged"],
+            "v27.37k Repair: main und leerer Index erforderlich")
+    require("Audit-Gesamtfazit: FAIL" in closure["audit"]
+            and "### F01 – " in closure["audit"],
+            "v27.37k Repair: realer Audit-FAIL/F01 muss erhalten bleiben")
+    expected_documents = v2737k_verification_repair_documents(closure["documents"])
+    expected_preflight = v2737k_verification_repair_preflight(closure["tools"][0])
+
+    def validate_snapshot(snapshot):
+        require(snapshot["documents"] == expected_documents
+                and v2737a_current_task_header_fields(snapshot["documents"][1])
+                    == V2737K_CLOSED_TASK_FIELDS,
+                "v27.37k Repair: nur Hinweis, kein geöffneter Task oder historische Textänderung")
+        v2737k_validate_task_safety_text(snapshot["documents"][1])
+        require(snapshot["audit"] == closure["audit"] and snapshot["frozen"] == base_frozen,
+                "v27.37k Repair: Audit/F01 oder Produktdatei verändert")
+        require(snapshot["tools"][0] == expected_preflight,
+                "v27.37k Repair: ausschließlich d-j-Timeout 1200 auf exakt 1800 erlaubt")
+        v2737k_validate_verification_repair_checker(
+            closure["tools"][1], snapshot["tools"][1])
+
+    allowed_origins = {closure_history[1]["sha"], closure["sha"]}
+    if len(commits) == 4:
+        repair = commits[3]
+        require(repair["parents"] == (V2737K_VERIFICATION_REPAIR_BASE_SHA,)
+                and repair["paths"] == V2737K_VERIFICATION_REPAIR_FILES
+                and repair["subject"] == V2737K_VERIFICATION_REPAIR_SUBJECT,
+                "v27.37k Repair: direkter einmaliger Sechs-Dateien-Commit erforderlich")
+        require(re.fullmatch(r"[0-9a-f]{40}", repair["sha"]) is not None
+                and repair["sha"] not in {V2737K_BASE_SHA, *(c["sha"] for c in closure_history)},
+                "v27.37k Repair: ungültiger/doppelter Repair-Commit")
+        validate_snapshot(repair)
+        require(current["head"] == repair["sha"] and not current["working"]
+                and current["tools"] == repair["tools"],
+                "v27.37k Repair: committeter Repair muss vollständig sauber sein")
+        allowed_origins.add(repair["sha"])
+        phase = "v2737k_closure_verification_repair_committed"
+    else:
+        require(current["head"] == V2737K_VERIFICATION_REPAIR_BASE_SHA
+                and current["working"] == V2737K_VERIFICATION_REPAIR_FILES,
+                "v27.37k Repair: Vorbereitung nur am Closure-HEAD mit exakt sechs Dateien")
+        phase = "v2737k_closure_verification_repair_prepared"
+    require(current["origin"] in allowed_origins,
+            "v27.37k Repair: fremder oder unzulässiger origin/main")
+    validate_snapshot(current)
+    return phase
+
+
+def run_v2737k_verification_repair_self_checks() -> tuple[int, int]:
+    """Isolated fact/source matrix only; never runs or replaces d-j checkers."""
+    import copy
+    base_documents = tuple(read_v2735f_commit_document(V2737K_BASE_SHA, path)
+                           for path in V2737K_DOCUMENT_PATHS)
+    base_tools = tuple(read_v2735f_commit_document(V2737K_BASE_SHA, path)
+                       for path in V2737K_TOOL_PATHS)
+    frozen = v2737k_frozen_snapshot(V2737K_BASE_SHA)
+    refs = run_git(["rev-list", "--reverse", V2737K_BASE_SHA + ".."
+                    + V2737K_VERIFICATION_REPAIR_BASE_SHA]).splitlines()
+    require(len(refs) == 3 and refs[-1] == V2737K_VERIFICATION_REPAIR_BASE_SHA,
+            "v27.37k Repair-Self-Check: reale vollständige Closure-Historie erforderlich")
+    history = []
+    parent = V2737K_BASE_SHA
+    for number, ref in enumerate(refs):
+        history.append({
+            "sha": ref, "subject": run_git(["show", "-s", "--format=%s", ref]).strip(),
+            "parents": tuple(run_git(["rev-list", "--parents", "-n", "1", ref]).split()[1:]),
+            "paths": frozenset(run_git(["diff", "--name-only", "--no-renames", parent, ref]).splitlines()),
+            "documents": tuple(read_v2735f_commit_document(ref, path)
+                               for path in V2737K_DOCUMENT_PATHS),
+            "tools": tuple(read_v2735f_commit_document(ref, path) for path in V2737K_TOOL_PATHS),
+            "frozen": v2737k_frozen_snapshot(ref),
+            "audit": None if number == 0 else read_v2735f_commit_document(ref, V2737K_AUDIT_FILE),
+        })
+        parent = ref
+    history = tuple(history)
+    closure = history[-1]
+    historical_closure = {
+        **closure, "branch": "main", "head": closure["sha"], "origin": history[1]["sha"],
+        "staged": frozenset(), "working": frozenset(),
+    }
+    require(_validate_v2737k_audit_facts(
+        base_documents, base_tools, frozen, history, historical_closure
+    ) == "v2737k_closure_committed", "v27.37k Repair-Self-Check: alte Closure nicht intakt")
+    tools = tuple(read_required_text(ROOT / path) for path in V2737K_TOOL_PATHS)
+    documents = v2737k_verification_repair_documents(closure["documents"])
+    prepared = {
+        **historical_closure, "tools": tools, "documents": documents,
+        "working": V2737K_VERIFICATION_REPAIR_FILES,
+    }
+    # Synthetic identities are confined to these pure lifecycle fact tests.
+    # No repository refs, module contexts, checker phases or results are patched.
+    identity = hashlib.sha1(b"isolated-v2737k-closure-verification-repair").hexdigest()
+    repair = {
+        **closure, "sha": identity, "subject": V2737K_VERIFICATION_REPAIR_SUBJECT,
+        "parents": (closure["sha"],), "paths": V2737K_VERIFICATION_REPAIR_FILES,
+        "tools": tools, "documents": documents,
+    }
+    committed = {
+        **repair, "branch": "main", "head": identity, "origin": history[1]["sha"],
+        "staged": frozenset(), "working": frozenset(),
+    }
+    states = (
+        (history, prepared, "v2737k_closure_verification_repair_prepared",
+         (history[1]["sha"], closure["sha"])),
+        (history + (repair,), committed, "v2737k_closure_verification_repair_committed",
+         (history[1]["sha"], closure["sha"], identity)),
+    )
+    positives, negatives = 1, 0
+
+    def validate(commits, current):
+        return validate_v2737k_facts(base_documents, base_tools, frozen, commits, current)
+
+    def blocked(commits, current):
+        nonlocal negatives
+        try:
+            validate(commits, current)
+        except ValidationError:
+            negatives += 1
+        else:
+            raise ValidationError("v27.37k Repair-Self-Check: Mutation nicht blockiert")
+
+    for commits, current, phase, origins in states:
+        for origin in origins:
+            require(validate(commits, {**current, "origin": origin}) == phase,
+                    "v27.37k Repair-Self-Check: falsche Positivphase")
+            positives += 1
+        for mutation in (
+            {"branch": "foreign"}, {"head": "f" * 40}, {"origin": V2737K_BASE_SHA},
+            {"origin": "e" * 40}, {"staged": V2737K_VERIFICATION_REPAIR_FILES},
+            {"working": (frozenset() if current["working"] else V2737K_VERIFICATION_REPAIR_FILES)},
+            {"frozen": frozen[:-1]}, {"audit": None},
+            {"audit": current["audit"].replace("F01", "F01-REPAIRED", 1)},
+            {"audit": current["audit"].replace("Audit-Gesamtfazit: FAIL", "Audit-Gesamtfazit: PASS", 1)},
+        ):
+            blocked(commits, {**current, **mutation})
+        for path in V2737K_VERIFICATION_REPAIR_FILES:
+            if current["working"]:
+                blocked(commits, {**current, "working": current["working"] - {path}})
+            if len(commits) == 4:
+                altered = list(copy.deepcopy(commits))
+                altered[-1]["paths"] -= {path}
+                blocked(tuple(altered), current)
+        for path in ("app.js", "index.html", "style.css", "patch-v21.js", "oral-exam.js",
+                     V2737K_AUDIT_FILE, "unauthorized.txt"):
+            blocked(commits, {**current, "working": current["working"] | {path}})
+            if len(commits) == 4:
+                altered = list(copy.deepcopy(commits))
+                altered[-1]["paths"] |= {path}
+                blocked(tuple(altered), current)
+        for index, document in enumerate(current["documents"]):
+            altered = list(current["documents"])
+            altered[index] = document + "\nunauthorized historical change\n"
+            blocked(commits, {**current, "documents": tuple(altered)})
+            altered[index] = closure["documents"][index]
+            blocked(commits, {**current, "documents": tuple(altered)})
+        for field, value in V2737K_CLOSED_TASK_FIELDS.items():
+            altered = list(current["documents"])
+            altered[1] = v2737e_replace_header(altered[1], {field: value + "-MUTATED"})
+            blocked(commits, {**current, "documents": tuple(altered)})
+        for header in (
+            current["documents"][1].replace("Task-ID: NONE\n", "Task-ID: NONE\nTask-ID: NONE\n", 1),
+            current["documents"][1].replace("Task-ID: NONE\n", "Task-ID: NONE\nUnknown: JA\n", 1),
+        ):
+            altered = list(current["documents"])
+            altered[1] = header
+            blocked(commits, {**current, "documents": tuple(altered)})
+        for number in range(3):
+            for mutation in (
+                {"parents": ("f" * 40,)}, {"paths": commits[number]["paths"] | {"app.js"}},
+                {"frozen": frozen[:-1]}, {"subject": "unauthorized historical commit"},
+                {"tools": (commits[number]["tools"][0] + "# removed check\n",
+                           commits[number]["tools"][1])},
+                {"documents": tuple(d + "\nforeign\n" for d in commits[number]["documents"])},
+            ):
+                altered = list(copy.deepcopy(commits))
+                altered[number].update(mutation)
+                blocked(tuple(altered), current)
+        if len(commits) == 4:
+            for mutation in (
+                {"parents": (history[1]["sha"],)}, {"parents": (closure["sha"], "e" * 40)},
+                {"sha": closure["sha"]}, {"sha": "invalid"}, {"subject": "authorize future task"},
+                {"audit": repair["audit"].replace("F01", "F01-REPAIRED", 1)},
+                {"documents": closure["documents"]}, {"frozen": frozen[:-1]},
+            ):
+                altered = list(copy.deepcopy(commits))
+                altered[-1].update(mutation)
+                blocked(tuple(altered), current)
+        blocked(commits + (commits[-1],), current)
+        blocked(commits[1:], current)
+
+        def blocked_tools(candidate, index):
+            # Invalid syntax is a test failure, not a successful negative case.
+            compile(candidate, "isolated-verification-repair-source", "exec")
+            altered_tools = list(tools)
+            altered_tools[index] = candidate
+            altered_history = list(copy.deepcopy(commits))
+            if len(commits) == 4:
+                altered_history[-1]["tools"] = tuple(altered_tools)
+            blocked(tuple(altered_history), {**current, "tools": tuple(altered_tools)})
+
+        start = tools[0].index("def _v2737k_real_closed_regression_profile():\n")
+        end = tools[0].index("def _git_paths(arguments):\n", start)
+        profile = tools[0][start:end]
+        for anchor, replacement in (
+            ("timeout=1800", "timeout=1200"), ("timeout=1800", "timeout=1799"),
+            ("timeout=1800", "timeout=1801"), ("timeout=1800", "timeout=None"),
+            ("timeout=240", "timeout=1800"),
+            ("p[name]()", "pass"), ("if p['errors']:", "if False:"),
+            ("if result.returncode != 0:", "if False:"),
+            ("if any(marker not in transcript for marker in required):", "if False:"),
+            ('raise ValueError("historischer Checkout nicht sauber")', "pass"),
+            ('control["v2737k_frozen_snapshot"](None) != frozen', "False"),
+            ('"core.longpaths", "true"', '"core.longpaths", "false"'),
+            ('"Positivfälle: 11 / PASS"', '"removed transcript marker"'),
+            ('historical_sha = control["V2737K_BASE_SHA"]', 'historical_sha = "f" * 40'),
+        ):
+            require(profile.count(anchor) == 1,
+                    "v27.37k Repair-Self-Check: eindeutiger echter Negativanker fehlt: " + anchor)
+            changed = profile.replace(anchor, replacement, 1)
+            blocked_tools(tools[0][:start] + changed + tools[0][end:], 0)
+        list_start = tools[1].index("V2737K_REGRESSION_FUNCTIONS = (\n")
+        list_end = tools[1].index("\n)\n", list_start) + 3
+        regression_list = tools[1][list_start:list_end]
+        for name in V2737K_REGRESSION_FUNCTIONS:
+            anchor = '"' + name + '"'
+            require(regression_list.count(anchor) == 1,
+                    "v27.37k Repair-Self-Check: reale d-j-Funktionsliste uneindeutig")
+            changed = regression_list.replace(anchor, '"' + name + "_SKIPPED" + '"', 1)
+            blocked_tools(tools[1][:list_start] + changed + tools[1][list_end:], 1)
+        first, second = V2737K_REGRESSION_FUNCTIONS[:2]
+        changed = regression_list.replace(first, "ORDER_PLACEHOLDER", 1).replace(
+            second, first, 1).replace("ORDER_PLACEHOLDER", second, 1)
+        blocked_tools(tools[1][:list_start] + changed + tools[1][list_end:], 1)
+        for anchor, replacement in (
+            ('V2737K_BASE_SHA = "' + V2737K_BASE_SHA + '"',
+             'V2737K_BASE_SHA = "' + "f" * 40 + '"'),
+            ('    require(len(commits) <= 3, "v27.37k: mehr als Gate, Audit und Closure")\n', ""),
+            ("# END v27.37k closure verification repair\n",
+             'V2737K_BASE_SHA = "' + "f" * 40 + '"\n# END v27.37k closure verification repair\n'),
+        ):
+            require(tools[1].count(anchor) == 1,
+                    "v27.37k Repair-Self-Check: eindeutiger historischer Quellanker fehlt")
+            blocked_tools(tools[1].replace(anchor, replacement, 1), 1)
+        blocked_tools(tools[0] + "# unauthorized preflight change\n", 0)
+        blocked_tools(tools[1] + "# unauthorized historical checker change\n", 1)
+    return positives, negatives
+
+
+# END v27.37k closure verification repair
+
 def main() -> int:
     try:
         state_text = read_required_text(STATE_PATH)
@@ -19852,6 +20259,9 @@ def main() -> int:
         v2737k_self_checks = None
         if V2737K_AUTHORIZATION_HEADING in state_text:
             v2737k_self_checks = run_v2737k_lifecycle_self_checks()
+        v2737k_verification_repair_self_checks = None
+        if V2737K_VERIFICATION_REPAIR_HEADING in state_text:
+            v2737k_verification_repair_self_checks = run_v2737k_verification_repair_self_checks()
         v2737j_repair_self_checks = None
         if "## Nichtfunktionaler Gate-Repair v27.37j" in state_text:
             v2737j_repair_self_checks = run_v2737j_repair_self_checks()
@@ -20281,6 +20691,10 @@ def main() -> int:
     if v2737k_self_checks is not None:
         print(f"v27.37k isolierter Audit-Lifecycle: {v2737k_self_checks[0]} Positivtests / PASS; "
               f"{v2737k_self_checks[1]} Negativtests / vollständig blockiert; keine Git-Mutation")
+    if v2737k_verification_repair_self_checks is not None:
+        print(f"v27.37k Closure-Verifikations-Repair: {v2737k_verification_repair_self_checks[0]} Positivtests / PASS; "
+              f"{v2737k_verification_repair_self_checks[1]} Negativtests / vollständig blockiert; "
+              "nur strukturelle Lifecycle-Prüfung, kein historischer d-j-Prüflauf")
     if v2737j_repair_self_checks is not None:
         print(f"v27.37j-Gate-Repair: {v2737j_repair_self_checks[0]} Positivtests / PASS; "
               f"{v2737j_repair_self_checks[1]} Negativtests / vollständig blockiert; "
