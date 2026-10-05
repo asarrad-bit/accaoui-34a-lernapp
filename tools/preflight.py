@@ -1656,6 +1656,10 @@ V2736E_AUTHORIZATION_HEAD = "ad6ccd8b8e010167f303cf0a24edfe8d8036fb81"
 def check_participant_auth_session_browser_provider_v2737d():
     phase = _v2737d_post_commit_profile_phase()
     if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL.get("V2737L_PHASES", frozenset())):
+        _v2737l_real_closed_regression_profile()
+        return
+    if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
         _v2737k_real_closed_regression_profile()
         return
@@ -1748,6 +1752,10 @@ def _v2737e_provider_regression_profile():
 
 def check_participant_auth_session_browser_loader_v2737e():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL.get("V2737L_PHASES", frozenset())):
+        _v2737l_real_closed_regression_profile()
+        return
     if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
         _v2737k_real_closed_regression_profile()
@@ -1874,6 +1882,10 @@ def _v2737f_historical_regression_profile():
 def check_participant_auth_session_app_entry_v2737f():
     phase = _v2737d_post_commit_profile_phase()
     if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL.get("V2737L_PHASES", frozenset())):
+        _v2737l_real_closed_regression_profile()
+        return
+    if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
         _v2737k_real_closed_regression_profile()
         return
@@ -1971,6 +1983,10 @@ def _v2737g_auth_entry_regression_profile():
 def check_written_exam_completion_v2737g():
     phase = _v2737d_post_commit_profile_phase()
     if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL.get("V2737L_PHASES", frozenset())):
+        _v2737l_real_closed_regression_profile()
+        return
+    if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
         _v2737k_real_closed_regression_profile()
         return
@@ -2031,6 +2047,10 @@ def _v2737h_written_exam_regression_profile():
 
 def check_dashboard_readiness_display_v2737h():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL.get("V2737L_PHASES", frozenset())):
+        _v2737l_real_closed_regression_profile()
+        return
     if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
         _v2737k_real_closed_regression_profile()
@@ -2114,6 +2134,10 @@ V2737I_IMPLEMENTATION_CHECKER = "tools/check-oral-mistake-empty-state-v2737i.py"
 
 def check_oral_mistake_empty_state_v2737i():
     phase = _v2737d_post_commit_profile_phase()
+    if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL.get("V2737L_PHASES", frozenset())):
+        _v2737l_real_closed_regression_profile()
+        return
     if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
         _v2737k_real_closed_regression_profile()
@@ -2264,6 +2288,10 @@ V2737J_IMPLEMENTATION_CHECKER = "tools/check-oral-mistake-origin-label-v2737j.py
 def check_oral_mistake_origin_label_v2737j():
     phase = _v2737d_post_commit_profile_phase()
     if (_V2737D_POST_COMMIT_CONTROL is not None
+            and phase in _V2737D_POST_COMMIT_CONTROL.get("V2737L_PHASES", frozenset())):
+        _v2737l_real_closed_regression_profile()
+        return
+    if (_V2737D_POST_COMMIT_CONTROL is not None
             and phase in _V2737D_POST_COMMIT_CONTROL["V2737K_PHASES"]):
         _v2737k_real_closed_regression_profile()
         return
@@ -2290,6 +2318,58 @@ def check_oral_mistake_origin_label_v2737j():
         errors.append("v27.37j Herkunftshinweis im mündlichen Fehlertraining fehlgeschlagen")
 
 
+
+# BEGIN v27.37l preflight profile
+V2737L_IMPLEMENTATION_CHECKER = None
+_V2737L_REAL_HISTORICAL_DONE = False
+_V2737L_REAL_HISTORICAL_FAILED = False
+
+
+def _v2737l_real_closed_regression_profile():
+    global _V2737L_REAL_HISTORICAL_DONE, _V2737L_REAL_HISTORICAL_FAILED
+    if _V2737L_REAL_HISTORICAL_DONE or _V2737L_REAL_HISTORICAL_FAILED:
+        return
+    try:
+        phase = _v2737d_post_commit_profile_phase()
+        control = _V2737D_POST_COMMIT_CONTROL
+        if control is None or phase not in control["V2737L_PHASES"]:
+            raise ValueError("kein gültiger v27.37l-Lifecycle")
+        transcript = control["v2737l_historical_check"]("regressions")
+        print(transcript.strip())
+        print("v27.37l: realer v27.37k-Repair-Checkout; unveränderter d-j-Sammellauf / PASS; "
+              "ursprüngliches internes v27.37k-Budget 1800 Sekunden")
+        _V2737L_REAL_HISTORICAL_DONE = True
+    except Exception as exc:
+        _V2737L_REAL_HISTORICAL_FAILED = True
+        errors.append("v27.37l reale historische Regression fehlgeschlagen: " + str(exc))
+        print(errors[-1])
+        raise SystemExit(1)
+
+
+def check_written_exam_submit_doubleclick_v2737l():
+    phase = _v2737d_post_commit_profile_phase()
+    control = _V2737D_POST_COMMIT_CONTROL
+    if control is None or phase not in control.get("V2737L_PHASES", frozenset()):
+        return
+    expected = "tools/check-written-exam-submit-doubleclick-v2737l.py"
+    report = Path("docs/WRITTEN_EXAM_SUBMIT_DOUBLECLICK_V2737L.md")
+    if phase in {"v2737l_authorization_prepared", "v2737l_authorization_committed"}:
+        if V2737L_IMPLEMENTATION_CHECKER is not None or Path(expected).exists() or report.exists():
+            errors.append("v27.37l: Implementierungschecker/Bericht vorzeitig vorhanden")
+        else:
+            print("v27.37l: reines Autorisierungs-Gate; Produktimplementation gesperrt / PASS")
+        return
+    if V2737L_IMPLEMENTATION_CHECKER != expected or not Path(expected).is_file() or not report.is_file():
+        errors.append("v27.37l: realer Implementierungschecker/Bericht fehlt")
+        return
+    code, stdout, stderr = run_command(f'"{sys.executable}" -X utf8 -B "{expected}"')
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr)
+    if code != 0:
+        errors.append("v27.37l: echter Abgabe-Doppelklick-Checker fehlgeschlagen")
+# END v27.37l preflight profile
 
 _V2737K_REAL_HISTORICAL_DONE = False
 _V2737K_REAL_HISTORICAL_FAILED = False
@@ -6324,6 +6404,10 @@ def check_protected_core_files_v2356():
             == "v2737j_implementation_prepared"
     )
     for protected in sorted(changed_protected):
+        if (protected == "app.js"
+                and _v2737d_post_commit_profile_phase(changed_paths)
+                    == "v2737l_implementation_prepared"):
+            continue
         if (protected in {"patch-v21.js", "oral-exam.js"}
                 and authorized_v2737j_oral_scope):
             continue
@@ -7264,6 +7348,7 @@ def main():
     check_dashboard_readiness_display_v2737h()
     check_oral_mistake_empty_state_v2737i()
     check_oral_mistake_origin_label_v2737j()
+    check_written_exam_submit_doubleclick_v2737l()
     check_participant_access_app_entry_v2736d()
     check_v2736f_regression_profile_scope_logic()
     check_v2737a_successor_profile_scope_logic()

@@ -1,14 +1,60 @@
 # Verbindlicher aktueller Task
 
-Task-ID: NONE
-Status: BLOCKED
-Autorisiert: NEIN
-Titel: Kein Task autorisiert
+Task-ID: v27.37l
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: v27.37l – Doppelklick bei schriftlicher Prüfungsabgabe darf Antworten nicht verändern
 Funktionaler Ausgangsstand: v27.35g
 Letzter abgeschlossener Kontrollschritt: v27.37k
-Erlaubte Implementierungsdateien: KEINE
+Erlaubte Implementierungsdateien: `app.js`, `tools/check-written-exam-submit-doubleclick-v2737l.py`, `docs/WRITTEN_EXAM_SUBMIT_DOUBLECLICK_V2737L.md`, `tools/preflight.py`
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Autorisierter Task v27.37l
+
+Der Projekteigentümer autorisiert ausschließlich v27.37l – Doppelklick bei schriftlicher Prüfungsabgabe darf Antworten nicht verändern. Ausgangsstand: `b0c45dfec62802258b1811794e8bfda0b4954e62`; v27.37k einschließlich Closure-Verifikations-Repair ist abgeschlossen. Letzter funktionaler Ausgangsstand bleibt v27.35g.
+
+### Jetzt ausschließlich Autorisierungs-Gate
+
+Gate-Scope exakt sechs Dateien: `docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md`, `docs/PROJECT_MASTERLIST.md`, `docs/PROJECT_STATE_CURRENT.md`, `docs/tasks/CURRENT_TASK.md`, `tools/check-project-continuity-control.py`, `tools/preflight.py`. Keine siebte Datei. Keine Produktimplementation, kein app.js-Edit, kein neuer Implementierungschecker und keine Reparatur von F01 in diesem Auftrag. Implementation bleibt bis zum vollständig geprüften Gate-Commit und Push sowie einem ausdrücklichen Implementierungsauftrag gesperrt.
+
+### Historischer Befund und Diagnosegrenze
+
+Der reale Browser-Audit v27.37k dokumentiert F01: schneller Doppelklick auf „Prüfung jetzt abgeben“, gerenderte Abgabewarnung und beobachtete Antwortänderung von [2,0] auf [2] noch vor „Trotzdem abgeben“; Bewertung dadurch 0 auf 1 Punkt. Ein durch UI-/DOM-Reflow möglicher zweiter Klick auf eine Antwortoption ist zu untersuchen. Die genaue technische Ursache wird erst in der Implementation endgültig festgestellt; keine unbelegte Ursache ist ein bestätigter Fakt.
+
+### Späterer Implementierungsscope und eingefrorene Bereiche
+
+Exakt vier Dateien: `app.js`, `tools/check-written-exam-submit-doubleclick-v2737l.py`, `docs/WRITTEN_EXAM_SUBMIT_DOUBLECLICK_V2737L.md`, `tools/preflight.py`. Keine fünfte Datei. In app.js nur die wirksamen handleExamSubmitRequest(), showExamSubmitWarning(), das zugehörige Binding/Handling von finishExamNowBtn und unmittelbar zugehörige kleine Schutzlogik, soweit zwingend nötig. Historische doppelte Funktionsdefinitionen bleiben eingefroren. finishExamMode() bleibt unverändert; falls dessen Änderung nachweislich zwingend erforderlich wäre: STOPP und Scope-Entscheidung anfordern.
+
+index.html, style.css, patch-v21.js, oral-exam.js, oral-exam.css, Testkopien einschließlich test/*, Fragenbanken einschließlich questions.json, oral-sheets*, Herkunftsbezeichnungen, „15-Minuten-Simulation“, Auth-/Session-/Zugangsdateien, Supabase, Config, SDK, SQL und Migrationen bleiben unverändert. Kein neuer Storage-Key, keine Migration und kein Supabase-/Auth-/Session-Eingriff. Supabase bleibt NICHT LIVE.
+
+### Verbindliche Abnahme nach Implementation
+
+Ein schneller Doppelklick verändert keine bereits gewählte Antwort und fällt nicht durch einen Reflow auf eine Antwortoption. [2,0] bleibt byte-/wertgleich [2,0]: unmittelbar vor dem ersten Klick, beim Rendern der Warnung, nach dem schnellen zweiten Klick und vor „Trotzdem abgeben“. Normaler Einfachklick, bestehende Warnung bei offenen Fragen, „Trotzdem abgeben“ genau einmal und „Offene Fragen nachholen“ bleiben funktionsfähig; wiederholter Abschluss bleibt geschützt.
+
+Mischantwort richtig + falsch bleibt 0 Punkte. Teilpunkte, 2-Punkte-Fragen, unbeantwortete Fragen und 60/59-Grenze bleiben unverändert. Pause/Reload/Resume, Versuchs-ID, Fragenreihenfolge, Timer, Verlauf, Fehleranalyse und Fehlertraining bleiben unverändert.
+
+### Späterer realer Checker und Browser-Nachweis
+
+Der spätere Checker führt die echte aktuelle app.js-Logik aus: Einfachklick, schneller Doppelklick, Antwortkonstanz [2,0], Warnung ohne Antwortmutation, Bestätigung, Abschluss genau einmal, wiederholter Abschluss, konsistente Punkte, Mischantwort 0, Teilpunkte, unbeantwortete Frage und Pause/Resume. Bloße Textmarker reichen nicht.
+
+Mindestens elf semantische Negativfälle: zweiter Klick auf Antwort durchgelassen; Antwortmutation beim Warnungsrendern; Doppelklickschutz entfernt; Einfachklick defekt; Warnung übersprungen; automatischer Direktabschluss; Doppelverbuchung; Punkteberechnung verändert; neuer Storage-Key; Änderung außerhalb erlaubter app.js-Grenzen; fremde Produktdateiänderung. Syntaxfehler zählen nicht als semantisch bestandene Mutation.
+
+Zusätzlich echter Browser-Smoke-Test auf isoliertem 127.0.0.1-Origin ohne vorhandene echte Lernstände: neue Vollsimulation, richtig + falsch als [2,0] auswählen, Zustand vor Klick lesen, schneller Doppelklick, Zustand vor Bestätigung erneut [2,0], „Trotzdem abgeben“, Mischantwort 0 Punkte; außerdem Einfachklick. Kein Browser-/Produkt-Smoke in diesem Gate-Auftrag.
+
+### Strenger Lifecycle und historische Prüfungen
+
+Sechs Phasen: v2737l_authorization_prepared, v2737l_authorization_committed, v2737l_implementation_prepared, v2737l_implementation_committed, v2737l_closure_prepared, v2737l_closure_committed. Lineare direkte Parents, genaue Rollen-/Dateimengen, dynamische tatsächliche Commit-SHAs; keine vorweggenommenen zukünftigen SHAs. Closure nur vier Steuerdokumente mit tatsächlichem Implementation-SHA, danach CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN; kein Folgetask automatisch autorisiert.
+
+Historischer v27.37k-Audit, Audit-Gesamtfazit FAIL und F01 bleiben unverändert. Der v27.37k-Verification-Repair und dessen interner 1800-Sekunden-Timeout bleiben byte-identisch. Alle älteren Kontrollen bleiben erhalten und laufen auf realen historischen Git-Checkout-Ständen, ohne Fake-Phase, Stub, Monkeypatch oder Bypass. Der spätere erfolgreiche Repair darf nur separat dokumentieren: F01 in v27.37l repariert und separat nachgetestet; der historische Audit wird nicht nachträglich zu PASS.
+
+### Prüfung, Commit und Push dieses Gates
+
+Vor und nach dem Gate-Commit: vollständige Continuity, vollständiger Preflight mit realem unverändertem d–j-Sammellauf, v27.37k-Repair-Matrix, v27.37l-Lifecycle-Matrix, git diff --check und exakter Git-Status. Im vorbereiteten Gate exakt sechs Dateien, Index leer; nach Commit Working Tree und Index leer. Bei irgendeinem FAIL sofort STOPP, kein Commit/Push und keine weitere Reparatur.
+
+Nur nach vollständigem PASS genau sechs Dateien stagen und git diff --cached --check prüfen. Gate-Commit-Titel exakt: `v27.37l authorize written exam submit double-click repair`. Vor Push git fetch origin main; origin/main muss weiterhin exakt `b0c45dfec62802258b1811794e8bfda0b4954e62` sein. Nur nach vollständigem Post-Commit-PASS pushen, anschließend HEAD = origin/main und GitHub direkt bestätigen. Danach STOPP, keine Implementation und kein neuer Task.
+
+Die Commit- und Push-Sperre im kanonischen Task-Kopf bleiben aktiv. Ausschließlich der ausdrückliche Nutzerauftrag erlaubt diesen vollständig geprüften Gate-Commit und Push, keine automatische Freigabe weiterer Schritte. Die folgenden Abschnitte sind historische Nachweise und keine zusätzliche aktuelle Autorisierung.
 
 ## Nichtfunktionaler v27.37k-Closure-Verifikations-Repair
 
