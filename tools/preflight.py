@@ -2320,7 +2320,7 @@ def check_oral_mistake_origin_label_v2737j():
 
 
 # BEGIN v27.37l preflight profile
-V2737L_IMPLEMENTATION_CHECKER = None
+V2737L_IMPLEMENTATION_CHECKER = "tools/check-written-exam-submit-doubleclick-v2737l.py"
 _V2737L_REAL_HISTORICAL_DONE = False
 _V2737L_REAL_HISTORICAL_FAILED = False
 

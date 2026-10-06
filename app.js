@@ -3956,7 +3956,30 @@ function nextExamQuestion() {
   saveActiveExamSession();
 }
 
+// BEGIN v27.37l submit protection
+function protectExamSubmitPointerSequenceV2737L() {
+  const area = document.getElementById("examQuestionArea");
+  if (!area) return;
+
+  // Warning insertion/scrolling can move a different control under the pointer.
+  // Capture the remainder of this gesture before any answer/inline handler runs.
+  const events = ["pointerdown", "pointerup", "mousedown", "mouseup", "click", "dblclick"];
+  const until = Date.now() + 600;
+  const stopPointer = event => {
+    if (Date.now() >= until || (event.type === "click" && event.detail === 0)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+  events.forEach(type => area.addEventListener(type, stopPointer, true));
+  setTimeout(() => {
+    events.forEach(type => area.removeEventListener(type, stopPointer, true));
+  }, 600);
+}
+// END v27.37l submit protection
 function handleExamSubmitRequest() {
+  if (currentMode !== "exam" || !writtenExamAttemptV2737G ||
+      writtenExamAttemptV2737G.status !== "active") return;
+  protectExamSubmitPointerSequenceV2737L();
   const firstUnansweredIndex = getFirstUnansweredQuestionIndex();
 
   if (firstUnansweredIndex !== -1) {
