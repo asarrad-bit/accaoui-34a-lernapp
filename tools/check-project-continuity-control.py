@@ -20554,6 +20554,9 @@ def v2737l_snapshot(ref: str | None) -> dict:
 
 
 def detect_v2737l_phase(expected_working_files: frozenset[str] | None = None) -> str | None:
+    successor = detect_v2737m_phase(expected_working_files)
+    if successor is not None:
+        return successor
     state = read_required_text(STATE_PATH)
     head = run_git(["rev-parse", "HEAD"]).strip()
     active = V2737L_AUTHORIZATION_HEADING in state
@@ -20744,7 +20747,497 @@ def run_v2737l_control() -> int:
         return 1
 # END v27.37l authorization lifecycle
 
+# BEGIN v27.37m natural timeout audit lifecycle
+V2737M_BASE_SHA = "0f6f8a2c26998abf094315996b83d28fb4f9818a"
+V2737M_TITLE = "v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren"
+V2737M_HEADING = "## Autorisierter Task v27.37m"
+V2737M_DOCUMENT_PATHS = V2737L_DOCUMENT_PATHS
+V2737M_GATE_FILES = V2737L_GATE_FILES
+V2737M_AUDIT_FILE = "docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md"
+V2737M_AUDIT_FILES = frozenset({V2737M_AUDIT_FILE})
+V2737M_CLOSURE_FILES = frozenset(V2737M_DOCUMENT_PATHS)
+V2737M_AUTHORIZED_FIELDS = {
+    **V2737L_CLOSED_TASK_FIELDS,
+    "Task-ID": "v27.37m", "Status": "AUTHORIZED", "Autorisiert": "JA",
+    "Titel": V2737M_TITLE,
+    "Erlaubte Implementierungsdateien": V2737M_AUDIT_FILE,
+}
+V2737M_CLOSED_FIELDS = {
+    **V2737L_CLOSED_TASK_FIELDS, "Letzter abgeschlossener Kontrollschritt": "v27.37m",
+}
+V2737M_PHASES = frozenset("v2737m_" + role for role in (
+    "authorization_prepared", "authorization_committed", "audit_prepared",
+    "audit_committed", "closure_prepared", "closure_committed",
+))
+V2737M_SUBJECTS = (
+    "v27.37m authorize oral exam natural timeout browser audit",
+    "v27.37m document oral exam natural timeout browser audit",
+    "v27.37m close oral exam natural timeout browser audit",
+)
+V2737M_SECTION = """## Autorisierter Task v27.37m
+
+Der Projekteigentümer autorisiert ausschließlich v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren. Reiner Browser-/Dokumentationsaudit; keine Produktänderung. Ausgangsstand: 0f6f8a2c26998abf094315996b83d28fb4f9818a, vollständig abgeschlossene v27.37l-Closure. Funktionaler Ausgangsstand bleibt v27.35g; letzter Kontrollschritt bis zur Closure v27.37l.
+
+### Exakte Rollen und Dateigrenzen
+
+Autorisierungs-Gate exakt sechs Dateien: docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py, tools/preflight.py. Erst nach vollständig geprüftem Gate-Commit und Push darf der Browser-Audit beginnen.
+
+Audit-Scope exakt eine Datei: docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md. Keine zweite Audit-Datei. Closure-Scope exakt die vier Steuerdokumente aus dem Gate, ausschließlich nach geprüftem und gepushtem Audit mit dessen tatsächlichem SHA. Kein zukünftiger Commit-SHA wird vorweggenommen.
+
+Alle anderen versionierten Dateien bleiben eingefroren: insbesondere app.js, patch-v21.js, oral-exam.js, HTML/CSS, Testkopien, Fragenbanken, oral-sheets*, Herkunftsbezeichnungen, Auth/Session/Zugang, Supabase, Config, SDK, SQL und Migrationen. Auch der historische v27.37k-Audit bleibt unverändert mit Gesamtfazit FAIL; F01 wurde separat in v27.37l behoben. Supabase bleibt NICHT LIVE. Keine echten Keys oder Teilnehmerdaten.
+
+### Verbindlicher Echtzeit-Audit
+
+Neuer isolierter 127.0.0.1-Origin mit sauberem localStorage/sessionStorage und ohne Cookies-/IndexedDB-Altlasten; beide Supabase-Loader deaktiviert. Echte mündliche 15-Minuten-Simulation durch die reguläre Oberfläche starten. Keine beschleunigte Uhr, keine manipulierten Timer, keine Fake-Clock, kein Überspringen der 900 Sekunden. Vollständige natürliche 15 Minuten tatsächlich verstreichen lassen.
+
+Von Beginn an fortlaufend protokollieren: Zeitstempel, Countdown und relevante Ereignisse, Konsole und Storage. Kernnachweise rechtzeitig sichern; ein späterer Console-/Event-Pufferverlust darf nicht als vollständiger Nachweis ausgegeben werden. Beobachtung darf weder App-Funktionen ersetzen noch Timer, Uhr oder Abschlussbedingungen verändern.
+
+Pflichtnachweise: Start bei 15:00; natürlicher Countdown; kein unerwarteter Reset; Erreichen von 00:00; vorgesehener automatischer Timeout-Abschluss; korrekter Ergebnis-/Endzustand; kein doppelter Abschluss; keine doppelte Verbuchung; keine falsche Fortsetzung; keine uncaught App-Ausnahme; konsistenter Storage-/Prüfungszustand. Erforderliche Nutzerinteraktion ausdrücklich vom natürlichen Timeout unterscheiden. Manueller Abschluss zählt niemals als Timeout-PASS.
+
+Testdatum, Browser, Test-Origin, Gate-SHA, Startzeitpunkt, 00:00-Zeitpunkt, reale verstrichene Zeit, konkrete Erwartungen/Beobachtungen, Ergebniszustand, Verlauf, Console/Storage, Einschränkungen und Gesamtfazit nachvollziehbar dokumentieren. PASS, FAIL oder NOT VERIFIED ehrlich unterscheiden; ohne Kernnachweis kein PASS. Produktfehler reproduzierbar dokumentieren, niemals reparieren. Bei echtem FAIL sofort STOPP; keine weitere Reparatur, kein Commit/Push nach fehlgeschlagener Pflichtprüfung.
+
+### Strenger Lifecycle und Prüfungen
+
+Sechs Phasen: v2737m_authorization_prepared, v2737m_authorization_committed, v2737m_audit_prepared, v2737m_audit_committed, v2737m_closure_prepared, v2737m_closure_committed. Direkte lineare Parents, exakt drei Rollencommits mit den festgelegten Titeln, keine Wiederholung, keine übersprungene Rolle, keine fremden Dateien, keine Wiederöffnung und kein Folgetask.
+
+Historische Prüfungen bleiben unverändert. Die vollständige reale v27.37l-Closure samt aller historischen Kontrollen wird im echten byte-identischen Git-Checkout des Ausgangsstands geprüft. Der vollständige historische Preflight einschließlich realem d–j-Sammellauf, v27.34e, v27.37k-Verification-Repair und v27.37l-Abgabechecker läuft ohne Stub, Monkeypatch, Fake-Phase oder Fake-PASS. Der vorhandene interne v27.37k-Timeout bleibt 1800 Sekunden; d–j-Namen, Reihenfolge und V2737K_BASE_SHA bleiben unverändert.
+
+Vor und nach jedem Commit: Continuity, vollständiger Preflight, git diff --check, exakter Scope und Git-Status. Vor Commit nur bei vollständigem PASS exakt den Rollenscope stagen und git diff --cached --check prüfen. Push ausschließlich nach vollständigem Post-Commit-PASS und frischer origin/main-Prüfung; bei Remote-Konflikt STOPP. Keine Prüfung umgehen; kein reset/restore, Force-Push, Rebase oder History Rewrite.
+
+Gate-Titel: v27.37m authorize oral exam natural timeout browser audit
+Audit-Titel: v27.37m document oral exam natural timeout browser audit
+Closure-Titel: v27.37m close oral exam natural timeout browser audit
+
+Die Sperrzeilen im kanonischen CURRENT_TASK-Kopf bleiben eindeutig. Der ausdrückliche Nutzerauftrag autorisiert ausschließlich die vollständig geprüften Lifecycle-Commits und Pushes sowie den Audit. Keine zusätzliche Freigabe für normale Zwischenschritte erforderlich. Nach Closure CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN, HEAD = origin/main, Working Tree und Staging leer; danach STOPP.
+
+Die folgenden Abschnitte sind historische Nachweise und keine weitere aktuelle Autorisierung.
+
+"""
+V2737M_AUDIT_CASES = tuple("T" + str(n).zfill(2) for n in range(1, 12))
+
+
+def v2737m_documents(base: tuple[str, ...], audit_sha: str | None = None) -> tuple[str, ...]:
+    require(len(base) == 4, "v27.37m: vier Basisdokumente erforderlich")
+    if audit_sha is not None:
+        require(re.fullmatch(r"[0-9a-f]{40}", audit_sha) is not None,
+                "v27.37m: tatsächlicher Audit-SHA erforderlich")
+    section = (V2737M_SECTION if audit_sha is None else (
+        "## Abgeschlossener Audit v27.37m\n\n" + V2737M_TITLE + " ist abgeschlossen.\n\n"
+        "Audit-Commit: " + chr(96) + audit_sha + chr(96) + ".\n\n"
+        "Befunde und Grenzen stehen in docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md. "
+        "Closure bestätigt den abgeschlossenen Audit, nicht pauschal ein fehlerfreies Produkt. "
+        "Keine Produktänderung; historischer v27.37k-Audit unverändert FAIL, F01 separat in v27.37l behoben. "
+        "Supabase bleibt NICHT LIVE.\n\n"
+        "Kein Folgetask autorisiert. CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN. "
+        "Die folgenden Abschnitte sind historische Nachweise, keine weitere Freigabe.\n\n"))
+    result = []
+    for path, original in zip(V2737M_DOCUMENT_PATHS, base):
+        fields = ((V2737M_AUTHORIZED_FIELDS if audit_sha is None else V2737M_CLOSED_FIELDS)
+                  if path.endswith("CURRENT_TASK.md") else
+                  {"Stand": "v27.37m-AUTORISIERUNG" if audit_sha is None else "v27.37m"})
+        if path == "docs/PROJECT_STATE_CURRENT.md":
+            fields = {**fields, "Weiterer funktionaler Schritt autorisiert": "NEIN",
+                      "Aktuell autorisierter Task": "v27.37m" if audit_sha is None else "NONE",
+                      "Aktuelle Taskart": V2737M_TITLE if audit_sha is None else "Kein Task autorisiert",
+                      "Aktueller Blocker": (
+                          "Browser-Audit bleibt bis zum vollständig geprüften und gepushten Autorisierungs-Gate gesperrt"
+                          if audit_sha is None else "Neue Taskauswahl und ausdrückliche Autorisierung "
+                          "durch Projekteigentümer und verbindlichen Projektchat")}
+        document = v2737e_replace_header(original, fields)
+        split = re.search(r"(?m)^## ", document)
+        require(split is not None, "v27.37m: Abschnittsgrenze fehlt")
+        result.append(document[:split.start()] + section + document[split.start():])
+    v2737k_validate_task_safety_text(result[1])
+    return tuple(result)
+
+
+def v2737m_completion_documents(authorization: tuple[str, ...], audit_sha: str) -> tuple[str, ...]:
+    return v2737m_documents(authorization, audit_sha)
+
+
+def v2737m_strip_tools(source: str, label: str) -> str:
+    import ast
+    start = "# BEGIN v27.37m " + label + "\n"
+    end = "# END v27.37m " + label + "\n\n"
+    require(source.count(start) == source.count(end) == 1,
+            "v27.37m: Kontrollblock fehlt oder doppelt")
+    left, tail = source.split(start)
+    block, right = tail.split(end)
+    try:
+        tree = ast.parse(block)
+    except SyntaxError as exc:
+        raise ValidationError("v27.37m: ungültiger Kontrollblock") from exc
+    for node in tree.body:
+        require(isinstance(node, (ast.FunctionDef, ast.Assign)),
+                "v27.37m: ausführbarer Top-Level-Eingriff")
+        names = ([node.name] if isinstance(node, ast.FunctionDef) else
+                 [target.id for target in node.targets if isinstance(target, ast.Name)])
+        require(names and all(name.startswith(("V2737M_", "v2737m_", "detect_v2737m_",
+                                               "run_v2737m_", "validate_v2737m_", "_v2737m_"))
+                              for name in names), "v27.37m: historischer Name überschrieben")
+        if isinstance(node, ast.FunctionDef):
+            require(not node.decorator_list, "v27.37m: ausführbarer Dekorator")
+        else:
+            require(len(names) == len(node.targets), "v27.37m: Top-Level-Monkeypatch")
+    result = left + right
+    entry = ("def main()" + (" -> int:" if label.endswith("lifecycle") else ":") + "\n")
+    added = (entry + ("    if detect_v2737m_phase() is not None:\n"
+                     "        return run_v2737m_control()\n" if label.endswith("lifecycle") else
+                     "    if _v2737m_preflight():\n        return\n"))
+    require(result.count(added) == 1, "v27.37m: enger Kontrollaufruf fehlt")
+    result = result.replace(added, entry, 1)
+    if label.endswith("lifecycle"):
+        entry = "def detect_v2737l_phase(expected_working_files: frozenset[str] | None = None) -> str | None:\n"
+        added = (entry + "    successor = detect_v2737m_phase(expected_working_files)\n"
+                 "    if successor is not None:\n        return successor\n")
+        require(result.count(added) == 1, "v27.37m: enger Nachfolgedispatch fehlt")
+        result = result.replace(added, entry, 1)
+    return result
+
+
+def v2737m_tree(ref: str) -> tuple[tuple[str, str], ...]:
+    excluded = V2737M_GATE_FILES | V2737M_AUDIT_FILES
+    result = []
+    for line in run_git(["ls-tree", "-r", ref]).splitlines():
+        meta, path = line.split("\t", 1)
+        require(meta.split()[1] == "blob", "v27.37m: Submodul gesperrt")
+        if path not in excluded:
+            result.append((path, meta))
+    return tuple(sorted(result))
+
+
+def v2737m_snapshot(ref: str | None) -> dict:
+    paths = frozenset(run_git(["ls-tree", "-r", "--name-only", ref or "HEAD"]).splitlines())
+    def text(path):
+        if ref is None:
+            return read_required_text(ROOT / path) if (ROOT / path).is_file() else None
+        return read_v2735f_commit_document(ref, path) if path in paths else None
+    frozen = dict(v2737m_tree(ref or "HEAD"))
+    if ref is None:
+        for path in run_git(["diff", "--name-only", "--no-renames", "HEAD"]).splitlines():
+            if path in frozen:
+                frozen[path] = "working-tree-change"
+    return dict(documents=tuple(text(path) for path in V2737M_DOCUMENT_PATHS),
+                tools=(text("tools/preflight.py"), text(CHECKER_RELATIVE_PATH)),
+                frozen=tuple(sorted(frozen.items())), audit=text(V2737M_AUDIT_FILE))
+
+
+def v2737m_validate_audit(text: str, gate: str) -> None:
+    require(isinstance(text, str) and text.startswith("# v27.37m – Natürlicher mündlicher 15-Minuten-Abschluss\n"),
+            "v27.37m: Audit fehlt oder falscher Titel")
+    for marker in ("Basis-Commit: " + V2737M_BASE_SHA, "Gate-Commit: " + gate,
+                   "Keine Produktänderung.", "Supabase NICHT LIVE.",
+                   "## Testumgebung", "## Zeitprotokoll", "## Prüffälle", "## Endzustand",
+                   "## Console und Storage", "## Grenzen und Befunde", "## Gesamtfazit"):
+        require(text.count(marker) == 1, "v27.37m: Auditmarker fehlt/doppelt: " + marker)
+    origins = re.findall(r"(?m)^Test-Origin: (http://127\.0\.0\.1:(\d+))$", text)
+    require(len(origins) == 1 and 1024 <= int(origins[0][1]) <= 65535,
+            "v27.37m: isolierter Loopback-Origin erforderlich")
+    require(re.search(r"(?m)^Testdatum: \d{4}-\d{2}-\d{2}$", text) is not None
+            and re.search(r"(?m)^Browser: \S.+$", text) is not None,
+            "v27.37m: Testumgebung unvollständig")
+    rows = re.findall(r"(?m)^\| (T\d{2}) \| ([^|\n]+) \| ([^|\n]+) \| (PASS|FAIL|NOT VERIFIED) \|$", text)
+    require(len(rows) == 11 and tuple(row[0] for row in rows) == V2737M_AUDIT_CASES
+            and all(len(row[1].strip()) >= 8 and len(row[2].strip()) >= 12 for row in rows),
+            "v27.37m: vollständige eindeutige Erwartungs-/Beobachtungsmatrix erforderlich")
+    conclusion = re.findall(r"(?m)^Audit-Gesamtfazit: (PASS|FAIL|NOT VERIFIED)$", text)
+    status = {row[3] for row in rows}
+    require(conclusion == ["FAIL" if "FAIL" in status else
+                           "NOT VERIFIED" if "NOT VERIFIED" in status else "PASS"],
+            "v27.37m: Gesamtfazit beschönigt Befunde")
+    timing = re.findall(r"(?m)^(Start-UTC|Null-UTC|Reale-Sekunden): (.+)$", text)
+    require(len(timing) == 3 and {key for key, _ in timing} == {"Start-UTC", "Null-UTC", "Reale-Sekunden"},
+            "v27.37m: Zeit-/Unsicherheitsfelder fehlen")
+    if all(row[3] == "PASS" for row in rows[:5]):
+        from datetime import datetime
+        values = dict(timing)
+        try:
+            start = datetime.strptime(values["Start-UTC"], "%Y-%m-%dT%H:%M:%S.%fZ")
+            zero = datetime.strptime(values["Null-UTC"], "%Y-%m-%dT%H:%M:%S.%fZ")
+            elapsed = float(values["Reale-Sekunden"])
+        except (ValueError, OverflowError) as exc:
+            raise ValidationError("v27.37m: PASS ohne reale Zeitnachweise") from exc
+        require(900 <= elapsed < 1200 and abs((zero - start).total_seconds() - elapsed) <= 2,
+                "v27.37m: natürliche 900 Sekunden nicht nachgewiesen")
+        require("Zeitmanipulation: NEIN\n" in text and "Manueller Abschluss: NEIN\n" in text,
+                "v27.37m: manipulierter/manueller Abschluss ist kein Timeout-PASS")
+
+
+def validate_v2737m_facts(base: dict, commits: tuple[dict, ...], current: dict) -> str:
+    require(len(commits) <= 3 and current["branch"] == "main" and not current["staged"],
+            "v27.37m: drei Rollen, main und leerer Index erforderlich")
+    auth = v2737m_documents(base["documents"])
+    scopes = (V2737M_GATE_FILES, V2737M_AUDIT_FILES, V2737M_CLOSURE_FILES)
+    parent = V2737M_BASE_SHA
+    for number, commit in enumerate(commits):
+        require(commit["parents"] == (parent,) and commit["paths"] == scopes[number]
+                and commit["subject"] == V2737M_SUBJECTS[number]
+                and re.fullmatch(r"[0-9a-f]{40}", commit["sha"]) is not None
+                and commit["sha"] not in {V2737M_BASE_SHA, *(c["sha"] for c in commits[:number])},
+                "v27.37m: Commitrolle/Parent/Dateiscope/Titel verletzt")
+        expected = auth if number < 2 else v2737m_completion_documents(auth, commits[1]["sha"])
+        require(commit["documents"] == expected and commit["frozen"] == base["frozen"],
+                "v27.37m: historische Dokumente oder eingefrorene Dateien verändert")
+        if number == 0:
+            for source, original, label in zip(commit["tools"], base["tools"],
+                                               ("preflight profile", "natural timeout audit lifecycle")):
+                require(v2737m_strip_tools(source, label) == original,
+                        "v27.37m: historische Kontrolllogik verändert")
+            require(commit["audit"] is None, "v27.37m: Audit vor gepushtem Gate")
+        else:
+            require(commit["tools"] == commits[0]["tools"], "v27.37m: Tools nach Gate verändert")
+            v2737m_validate_audit(commit["audit"], commits[0]["sha"])
+            if number == 2:
+                require(commit["audit"] == commits[1]["audit"], "v27.37m: Audit in Closure verändert")
+        parent = commit["sha"]
+    fields = v2737a_current_task_header_fields(current["documents"][1])
+    v2737k_validate_task_safety_text(current["documents"][1])
+    cases = (
+        (0, V2737M_GATE_FILES, V2737M_AUTHORIZED_FIELDS, "authorization_prepared"),
+        (1, frozenset(), V2737M_AUTHORIZED_FIELDS, "authorization_committed"),
+        (1, V2737M_AUDIT_FILES, V2737M_AUTHORIZED_FIELDS, "audit_prepared"),
+        (2, frozenset(), V2737M_AUTHORIZED_FIELDS, "audit_committed"),
+        (2, V2737M_CLOSURE_FILES, V2737M_CLOSED_FIELDS, "closure_prepared"),
+        (3, frozenset(), V2737M_CLOSED_FIELDS, "closure_committed"),
+    )
+    matches = [role for count, scope, task, role in cases
+               if len(commits) == count and current["working"] == scope and fields == task]
+    require(len(matches) == 1 and current["head"] == parent, "v27.37m: ungültige Phase/HEAD/Scope/Taskkopf")
+    role = matches[0]
+    origins = (
+        {V2737M_BASE_SHA} if not commits else
+        {parent} if current["working"] else {commits[-1]["parents"][0], parent})
+    require(current["origin"] in origins, "v27.37m: Remote-Konflikt oder vorherige Rolle noch nicht gepusht")
+    expected = v2737m_completion_documents(auth, commits[1]["sha"]) if role.startswith("closure") else auth
+    require(current["documents"] == expected and current["frozen"] == base["frozen"],
+            "v27.37m: aktuelle Historie/Produktdateien verändert")
+    if commits:
+        require(current["tools"] == commits[0]["tools"], "v27.37m: Kontrolltools nach Gate verändert")
+    else:
+        for source, original, label in zip(current["tools"], base["tools"],
+                                           ("preflight profile", "natural timeout audit lifecycle")):
+            require(v2737m_strip_tools(source, label) == original, "v27.37m: historische Prüfung gelockert")
+    if len(commits) >= 2 or role == "audit_prepared":
+        v2737m_validate_audit(current["audit"], commits[0]["sha"])
+        if len(commits) >= 2:
+            require(current["audit"] == commits[1]["audit"], "v27.37m: Audit nach Commit verändert")
+    else:
+        require(current["audit"] is None, "v27.37m: vorzeitige Audit-Datei")
+    return "v2737m_" + role
+def detect_v2737m_phase(expected_working_files: frozenset[str] | None = None) -> str | None:
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    active = V2737M_HEADING in read_required_text(STATE_PATH)
+    if not git_is_ancestor(V2737M_BASE_SHA, head):
+        require(not active, "v27.37m: falsche Basis")
+        return None
+    if not active and head == V2737M_BASE_SHA:
+        return None
+    require(active, "v27.37m: unbekannter Nachfolgetask")
+    refs = run_git(["rev-list", "--reverse", V2737M_BASE_SHA + ".." + head]).splitlines()
+    require(len(refs) <= 3, "v27.37m: mehr als drei Rollencommits")
+    commits = []
+    parent = V2737M_BASE_SHA
+    for ref in refs:
+        snapshot = v2737m_snapshot(ref)
+        snapshot.update(sha=ref, subject=run_git(["show", "-s", "--format=%s", ref]).strip(),
+                        parents=tuple(run_git(["rev-list", "--parents", "-n", "1", ref]).split()[1:]),
+                        paths=frozenset(run_git(["diff", "--name-only", "--no-renames", parent, ref]).splitlines()))
+        commits.append(snapshot)
+        parent = ref
+    working = frozenset(run_git(["diff", "--name-only", "--no-renames"]).splitlines()) | frozenset(
+        run_git(["ls-files", "--others", "--exclude-standard"]).splitlines())
+    require(expected_working_files is None or working == expected_working_files,
+            "v27.37m: widersprüchliche Working-Tree-Erfassung")
+    current = v2737m_snapshot(None)
+    current.update(branch=run_git(["branch", "--show-current"]).strip(), head=head,
+                   origin=run_git(["rev-parse", "origin/main"]).strip(), working=working,
+                   staged=frozenset(run_git(["diff", "--cached", "--name-only"]).splitlines()))
+    return validate_v2737m_facts(v2737m_snapshot(V2737M_BASE_SHA), tuple(commits), current)
+
+
+def v2737m_historical_check(kind: str) -> str:
+    """Run untouched historical code with its genuine refs and frozen product."""
+    import sys
+    import tempfile
+    require(kind in {"continuity", "preflight"}, "v27.37m: unbekannte historische Prüfung")
+    def execute(arguments, cwd):
+        result = subprocess.run(arguments, cwd=cwd, capture_output=True, text=True,
+                                encoding="utf-8", errors="strict", check=False)
+        require(result.returncode == 0, result.stderr.strip() or result.stdout.strip()
+                or "v27.37m: realer historischer Prozess fehlgeschlagen")
+        return result.stdout
+    with tempfile.TemporaryDirectory(prefix="v2737m-real-l-closure-") as directory:
+        checkout = Path(directory) / "checkout"
+        execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                 "clone", "--shared", "--no-checkout", "--quiet", str(ROOT), str(checkout)], ROOT)
+        execute(["git", "config", "--local", "core.longpaths", "true"], checkout)
+        execute(["git", "config", "--local", "core.autocrlf", "false"], checkout)
+        execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                 "checkout", "--quiet", "-B", "main", V2737M_BASE_SHA], checkout)
+        execute(["git", "update-ref", "refs/remotes/origin/main", V2737M_BASE_SHA], checkout)
+        for reference in ("HEAD", "main", "origin/main"):
+            require(execute(["git", "rev-parse", reference], checkout).strip() == V2737M_BASE_SHA,
+                    "v27.37m: falsche historische Git-Referenz")
+        require(not execute(["git", "status", "--porcelain"], checkout).strip(),
+                "v27.37m: historischer Checkout unsauber")
+        require(v2737m_snapshot(None)["frozen"] == v2737m_snapshot(V2737M_BASE_SHA)["frozen"],
+                "v27.37m: aktuelle Produktbytes nicht mehr historisch identisch")
+        for path in run_git(["ls-tree", "-r", "--name-only", V2737M_BASE_SHA]).splitlines():
+            require((checkout / path).read_bytes() == run_git_bytes(["show", V2737M_BASE_SHA + ":" + path]),
+                    "v27.37m: historischer Checkout nicht byte-identisch: " + path)
+        target = CHECKER_RELATIVE_PATH if kind == "continuity" else "tools/preflight.py"
+        # No outer timeout extends or replaces the original internal k budget.
+        transcript = execute([sys.executable, "-X", "utf8", "-B", target], checkout)
+        required = (("Aktuelle v27.37l-Phase: v2737l_closure_committed",
+                     "v27.37l isolierter Lifecycle:", "v27.37k Closure-Verifikations-Repair:")
+                    if kind == "continuity" else
+                    ("OK: Preflight bestanden.",
+                     "unveränderter d-j-Sammellauf / PASS", "1800 Sekunden",
+                     "v27.37l written exam submit double-click: PASS",
+                     "POSITIVES PASS: 18;", "SEMANTIC MUTATIONS PASS: 11;"))
+        require(all(marker in transcript for marker in required),
+                "v27.37m: vollständige reale historische Prüfungen nicht nachgewiesen")
+        require(not execute(["git", "status", "--porcelain"], checkout).strip(),
+                "v27.37m: historische Prüfung hat Checkout verändert")
+        return transcript
+
+
+def run_v2737m_lifecycle_self_checks() -> tuple[int, int]:
+    import copy
+    base = v2737m_snapshot(V2737M_BASE_SHA)
+    tools = v2737m_snapshot(None)["tools"]
+    auth = v2737m_documents(base["documents"])
+    ids = tuple(hashlib.sha1(("isolated-v2737m-" + role).encode()).hexdigest()
+                for role in ("gate", "audit", "closure"))
+    report = (
+        "# v27.37m – Natürlicher mündlicher 15-Minuten-Abschluss\n\n"
+        "Basis-Commit: " + V2737M_BASE_SHA + "\nGate-Commit: " + ids[0] + "\n"
+        "Test-Origin: http://127.0.0.1:18766\nTestdatum: 2026-10-06\n"
+        "Browser: Isolierte Vertragsfixture, KEIN echter Browserbefund\n"
+        "## Testumgebung\n## Zeitprotokoll\n## Prüffälle\n## Endzustand\n"
+        "## Console und Storage\n## Grenzen und Befunde\n## Gesamtfazit\n"
+        "Start-UTC: NOT VERIFIED\nNull-UTC: NOT VERIFIED\nReale-Sekunden: NOT VERIFIED\n"
+        "Zeitmanipulation: NEIN\nManueller Abschluss: NEIN\n"
+        + "\n".join("| " + case + " | Synthetische Vertragserwartung | "
+                    "Nur isolierter Matrixfall, kein tatsächlicher Produktnachweis | NOT VERIFIED |"
+                    for case in V2737M_AUDIT_CASES)
+        + "\nKeine Produktänderung.\nSupabase NICHT LIVE.\nAudit-Gesamtfazit: NOT VERIFIED\n")
+    gate = dict(sha=ids[0], subject=V2737M_SUBJECTS[0], parents=(V2737M_BASE_SHA,),
+                paths=V2737M_GATE_FILES, documents=auth, tools=tools, frozen=base["frozen"], audit=None)
+    audit = {**gate, "sha": ids[1], "subject": V2737M_SUBJECTS[1],
+             "parents": (ids[0],), "paths": V2737M_AUDIT_FILES, "audit": report}
+    closure = {**audit, "sha": ids[2], "subject": V2737M_SUBJECTS[2],
+               "parents": (ids[1],), "paths": V2737M_CLOSURE_FILES,
+               "documents": v2737m_completion_documents(auth, ids[1])}
+    states = []
+    for history, scope, snapshot, origin, role in (
+        ((), V2737M_GATE_FILES, gate, V2737M_BASE_SHA, "authorization_prepared"),
+        ((gate,), frozenset(), gate, V2737M_BASE_SHA, "authorization_committed"),
+        ((gate,), V2737M_AUDIT_FILES, audit, ids[0], "audit_prepared"),
+        ((gate, audit), frozenset(), audit, ids[0], "audit_committed"),
+        ((gate, audit), V2737M_CLOSURE_FILES, closure, ids[1], "closure_prepared"),
+        ((gate, audit, closure), frozenset(), closure, ids[1], "closure_committed"),
+    ):
+        current = {**snapshot, "branch": "main", "head": history[-1]["sha"] if history else V2737M_BASE_SHA,
+                   "origin": origin, "staged": frozenset(), "working": scope}
+        states.append((history, current, role))
+    positives = negatives = 0
+    def blocked(history, current):
+        nonlocal negatives
+        try:
+            validate_v2737m_facts(base, history, current)
+        except ValidationError:
+            negatives += 1
+        else:
+            raise ValidationError("v27.37m: isolierte Mutation nicht blockiert")
+    for history, current, role in states:
+        require(validate_v2737m_facts(base, history, current) == "v2737m_" + role,
+                "v27.37m: isolierte Positivphase falsch")
+        positives += 1
+        if not current["working"]:
+            validate_v2737m_facts(base, history, {**current, "origin": current["head"]})
+            positives += 1
+        for delta in ({"branch": "foreign"}, {"head": "f" * 40}, {"origin": "e" * 40},
+                      {"staged": V2737M_AUDIT_FILES}, {"working": current["working"] | {"app.js"}},
+                      {"working": current["working"] | {"unauthorized.md"}}, {"frozen": base["frozen"][:-1]},
+                      {"tools": (current["tools"][0] + "# bypass\n", current["tools"][1])},
+                      {"tools": (current["tools"][0], base["tools"][1])}):
+            blocked(history, {**current, **delta})
+        for index, document in enumerate(current["documents"]):
+            altered = list(current["documents"])
+            altered[index] = document + "\nforeign historical change\n"
+            blocked(history, {**current, "documents": tuple(altered)})
+        for field, value in v2737a_current_task_header_fields(current["documents"][1]).items():
+            altered = list(current["documents"])
+            altered[1] = v2737e_replace_header(altered[1], {field: value + "-MUTATED"})
+            blocked(history, {**current, "documents": tuple(altered)})
+        if current["audit"] is None:
+            blocked(history, {**current, "audit": report})
+        else:
+            for bad in (None, report.replace("127.0.0.1", "production.invalid"),
+                        report.replace(ids[0], ids[1]), report.replace("| T01 |", "| T02 |"),
+                        report.replace("| NOT VERIFIED |", "| SKIPPED |", 1),
+                        report.replace("Audit-Gesamtfazit: NOT VERIFIED", "Audit-Gesamtfazit: PASS"),
+                        report.replace("Keine Produktänderung.", "Produktänderung erlaubt.")):
+                blocked(history, {**current, "audit": bad})
+        for number in range(len(history)):
+            for delta in ({"parents": ("f" * 40,)}, {"parents": history[number]["parents"] + ("e" * 40,)},
+                          {"paths": history[number]["paths"] | {"app.js"}}, {"subject": "foreign"},
+                          {"sha": V2737M_BASE_SHA}, {"frozen": base["frozen"][:-1]},
+                          {"documents": tuple(d + "\nforeign\n" for d in history[number]["documents"])}):
+                altered = list(copy.deepcopy(history))
+                altered[number].update(delta)
+                blocked(tuple(altered), current)
+        if history:
+            blocked(history + (history[-1],), current)
+    passed = report.replace(" | NOT VERIFIED |", " | PASS |").replace(
+        "Audit-Gesamtfazit: NOT VERIFIED", "Audit-Gesamtfazit: PASS").replace(
+        "Start-UTC: NOT VERIFIED", "Start-UTC: 2026-10-06T10:00:00.000Z").replace(
+        "Null-UTC: NOT VERIFIED", "Null-UTC: 2026-10-06T10:15:00.000Z").replace(
+        "Reale-Sekunden: NOT VERIFIED", "Reale-Sekunden: 900.000")
+    for valid in (passed, report.replace(" | NOT VERIFIED |", " | FAIL |").replace(
+            "Audit-Gesamtfazit: NOT VERIFIED", "Audit-Gesamtfazit: FAIL")):
+        v2737m_validate_audit(valid, ids[0])
+        positives += 1
+    for bad in (passed.replace("900.000", "899.000"), passed.replace("10:15:00", "10:14:00"),
+                passed.replace("Zeitmanipulation: NEIN", "Zeitmanipulation: JA"),
+                passed.replace("Manueller Abschluss: NEIN", "Manueller Abschluss: JA"),
+                passed.replace("10:00:00.000Z", "NOT VERIFIED")):
+        try:
+            v2737m_validate_audit(bad, ids[0])
+        except ValidationError:
+            negatives += 1
+        else:
+            raise ValidationError("v27.37m: falscher Timeout-PASS nicht blockiert")
+    for index in (2, 4, 5):
+        history, current, _ = states[index]
+        blocked(history, {**current, "origin": V2737M_BASE_SHA})
+    history, current, _ = states[-1]
+    blocked(history, {**current, "documents": auth, "working": V2737M_GATE_FILES})
+    return positives, negatives
+
+
+def run_v2737m_control() -> int:
+    try:
+        phase = detect_v2737m_phase()
+        require(phase in V2737M_PHASES, "v27.37m: Lifecycle fehlt")
+        validate_agents_text(read_required_text(AGENTS_PATH))
+        validate_preflight_text(read_required_text(PREFLIGHT_PATH))
+        positive, negative = run_v2737m_lifecycle_self_checks()
+        print(v2737m_historical_check("continuity").strip())
+        print(f"v27.37m isolierter Audit-Lifecycle: {positive} Positivtests / PASS; "
+              f"{negative} Negativtests / vollständig blockiert")
+        print(f"Aktuelle v27.37m-Phase: {phase}")
+        print("Keine Produktänderung. Supabase bleibt NICHT LIVE.")
+        return 0
+    except (ValidationError, OSError, UnicodeError) as exc:
+        print("STOPP: v27.37m-Kontinuitätsprüfung fehlgeschlagen: " + str(exc))
+        return 1
+# END v27.37m natural timeout audit lifecycle
+
 def main() -> int:
+    if detect_v2737m_phase() is not None:
+        return run_v2737m_control()
     if detect_v2737l_phase() is not None:
         return run_v2737l_control()
     try:

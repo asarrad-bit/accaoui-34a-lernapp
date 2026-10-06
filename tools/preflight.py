@@ -7010,7 +7010,34 @@ def check_exam_result_history_outer_domain_mutation_e2e_audit():
         )
 
 
+# BEGIN v27.37m preflight profile
+def _v2737m_preflight():
+    control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+    try:
+        phase = control["detect_v2737m_phase"]()
+        if phase is None:
+            return False
+        if phase not in control["V2737M_PHASES"]:
+            raise ValueError("kein gültiger v27.37m-Lifecycle")
+        if control["run_v2737m_control"]() != 0:
+            raise ValueError("v27.37m-Kontinuitätsprüfung fehlgeschlagen")
+        print("v27.37m: vollständiger unveränderter Preflight im realen v27.37l-Closure-Checkout", flush=True)
+        transcript = control["v2737m_historical_check"]("preflight")
+        print(transcript.strip())
+        if control["detect_v2737m_phase"]() != phase:
+            raise ValueError("v27.37m: Zustand während des Prüflaufs verändert")
+        print("v27.37m: alle historischen Prüfungen einschließlich realem d-j-Sammellauf / PASS; "
+              "ursprüngliches internes v27.37k-Budget 1800 Sekunden")
+        print("OK: Preflight bestanden.")
+        return True
+    except Exception as exc:
+        print("STOPP: v27.37m-Preflight fehlgeschlagen: " + str(exc))
+        raise SystemExit(1)
+# END v27.37m preflight profile
+
 def main():
+    if _v2737m_preflight():
+        return
     print("Accaoui Preflight läuft...\n")
 
     required_files = [

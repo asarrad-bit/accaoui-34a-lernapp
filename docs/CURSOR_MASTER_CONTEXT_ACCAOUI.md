@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37l
+Stand: v27.37m-AUTORISIERUNG
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,44 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Autorisierter Task v27.37m
+
+Der Projekteigentümer autorisiert ausschließlich v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren. Reiner Browser-/Dokumentationsaudit; keine Produktänderung. Ausgangsstand: 0f6f8a2c26998abf094315996b83d28fb4f9818a, vollständig abgeschlossene v27.37l-Closure. Funktionaler Ausgangsstand bleibt v27.35g; letzter Kontrollschritt bis zur Closure v27.37l.
+
+### Exakte Rollen und Dateigrenzen
+
+Autorisierungs-Gate exakt sechs Dateien: docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py, tools/preflight.py. Erst nach vollständig geprüftem Gate-Commit und Push darf der Browser-Audit beginnen.
+
+Audit-Scope exakt eine Datei: docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md. Keine zweite Audit-Datei. Closure-Scope exakt die vier Steuerdokumente aus dem Gate, ausschließlich nach geprüftem und gepushtem Audit mit dessen tatsächlichem SHA. Kein zukünftiger Commit-SHA wird vorweggenommen.
+
+Alle anderen versionierten Dateien bleiben eingefroren: insbesondere app.js, patch-v21.js, oral-exam.js, HTML/CSS, Testkopien, Fragenbanken, oral-sheets*, Herkunftsbezeichnungen, Auth/Session/Zugang, Supabase, Config, SDK, SQL und Migrationen. Auch der historische v27.37k-Audit bleibt unverändert mit Gesamtfazit FAIL; F01 wurde separat in v27.37l behoben. Supabase bleibt NICHT LIVE. Keine echten Keys oder Teilnehmerdaten.
+
+### Verbindlicher Echtzeit-Audit
+
+Neuer isolierter 127.0.0.1-Origin mit sauberem localStorage/sessionStorage und ohne Cookies-/IndexedDB-Altlasten; beide Supabase-Loader deaktiviert. Echte mündliche 15-Minuten-Simulation durch die reguläre Oberfläche starten. Keine beschleunigte Uhr, keine manipulierten Timer, keine Fake-Clock, kein Überspringen der 900 Sekunden. Vollständige natürliche 15 Minuten tatsächlich verstreichen lassen.
+
+Von Beginn an fortlaufend protokollieren: Zeitstempel, Countdown und relevante Ereignisse, Konsole und Storage. Kernnachweise rechtzeitig sichern; ein späterer Console-/Event-Pufferverlust darf nicht als vollständiger Nachweis ausgegeben werden. Beobachtung darf weder App-Funktionen ersetzen noch Timer, Uhr oder Abschlussbedingungen verändern.
+
+Pflichtnachweise: Start bei 15:00; natürlicher Countdown; kein unerwarteter Reset; Erreichen von 00:00; vorgesehener automatischer Timeout-Abschluss; korrekter Ergebnis-/Endzustand; kein doppelter Abschluss; keine doppelte Verbuchung; keine falsche Fortsetzung; keine uncaught App-Ausnahme; konsistenter Storage-/Prüfungszustand. Erforderliche Nutzerinteraktion ausdrücklich vom natürlichen Timeout unterscheiden. Manueller Abschluss zählt niemals als Timeout-PASS.
+
+Testdatum, Browser, Test-Origin, Gate-SHA, Startzeitpunkt, 00:00-Zeitpunkt, reale verstrichene Zeit, konkrete Erwartungen/Beobachtungen, Ergebniszustand, Verlauf, Console/Storage, Einschränkungen und Gesamtfazit nachvollziehbar dokumentieren. PASS, FAIL oder NOT VERIFIED ehrlich unterscheiden; ohne Kernnachweis kein PASS. Produktfehler reproduzierbar dokumentieren, niemals reparieren. Bei echtem FAIL sofort STOPP; keine weitere Reparatur, kein Commit/Push nach fehlgeschlagener Pflichtprüfung.
+
+### Strenger Lifecycle und Prüfungen
+
+Sechs Phasen: v2737m_authorization_prepared, v2737m_authorization_committed, v2737m_audit_prepared, v2737m_audit_committed, v2737m_closure_prepared, v2737m_closure_committed. Direkte lineare Parents, exakt drei Rollencommits mit den festgelegten Titeln, keine Wiederholung, keine übersprungene Rolle, keine fremden Dateien, keine Wiederöffnung und kein Folgetask.
+
+Historische Prüfungen bleiben unverändert. Die vollständige reale v27.37l-Closure samt aller historischen Kontrollen wird im echten byte-identischen Git-Checkout des Ausgangsstands geprüft. Der vollständige historische Preflight einschließlich realem d–j-Sammellauf, v27.34e, v27.37k-Verification-Repair und v27.37l-Abgabechecker läuft ohne Stub, Monkeypatch, Fake-Phase oder Fake-PASS. Der vorhandene interne v27.37k-Timeout bleibt 1800 Sekunden; d–j-Namen, Reihenfolge und V2737K_BASE_SHA bleiben unverändert.
+
+Vor und nach jedem Commit: Continuity, vollständiger Preflight, git diff --check, exakter Scope und Git-Status. Vor Commit nur bei vollständigem PASS exakt den Rollenscope stagen und git diff --cached --check prüfen. Push ausschließlich nach vollständigem Post-Commit-PASS und frischer origin/main-Prüfung; bei Remote-Konflikt STOPP. Keine Prüfung umgehen; kein reset/restore, Force-Push, Rebase oder History Rewrite.
+
+Gate-Titel: v27.37m authorize oral exam natural timeout browser audit
+Audit-Titel: v27.37m document oral exam natural timeout browser audit
+Closure-Titel: v27.37m close oral exam natural timeout browser audit
+
+Die Sperrzeilen im kanonischen CURRENT_TASK-Kopf bleiben eindeutig. Der ausdrückliche Nutzerauftrag autorisiert ausschließlich die vollständig geprüften Lifecycle-Commits und Pushes sowie den Audit. Keine zusätzliche Freigabe für normale Zwischenschritte erforderlich. Nach Closure CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN, HEAD = origin/main, Working Tree und Staging leer; danach STOPP.
+
+Die folgenden Abschnitte sind historische Nachweise und keine weitere aktuelle Autorisierung.
 
 ## Abgeschlossener technischer Schritt v27.37l
 
