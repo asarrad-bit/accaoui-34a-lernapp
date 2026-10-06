@@ -1,14 +1,24 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37l
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37l – Doppelklick bei schriftlicher Prüfungsabgabe darf Antworten nicht verändern
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37k
-Erlaubte Implementierungsdateien: `app.js`, `tools/check-written-exam-submit-doubleclick-v2737l.py`, `docs/WRITTEN_EXAM_SUBMIT_DOUBLECLICK_V2737L.md`, `tools/preflight.py`
+Letzter abgeschlossener Kontrollschritt: v27.37l
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener technischer Schritt v27.37l
+
+v27.37l – Doppelklick bei schriftlicher Prüfungsabgabe darf Antworten nicht verändern ist abgeschlossen.
+
+Implementierungscommit: `6e4332f061151915c76f38ec2da9780b64e71644`.
+
+F01 wurde in v27.37l repariert und separat nachgetestet. Der historische v27.37k-Audit bleibt unverändert FAIL. Keine Änderung an Auth/Session/Supabase oder Storage-Keys; Supabase bleibt NICHT LIVE.
+
+Kein Folgetask autorisiert. CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN. Die folgenden Abschnitte sind historische Nachweise, keine weitere Freigabe.
 
 ## Autorisierter Task v27.37l
 

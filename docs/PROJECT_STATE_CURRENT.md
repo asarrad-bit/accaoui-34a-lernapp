@@ -1,16 +1,26 @@
 # Aktueller Projektzustand
 
-Stand: v27.37l-AUTORISIERUNG
+Stand: v27.37l
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
-Weiterer funktionaler Schritt autorisiert: JA
-Aktuell autorisierter Task: v27.37l
-Aktuelle Taskart: v27.37l – Doppelklick bei schriftlicher Prüfungsabgabe darf Antworten nicht verändern
-Aktueller Blocker: Implementation bleibt bis zum vollständig geprüften Gate-Commit und Push sowie ausdrücklichem Implementierungsauftrag gesperrt
+Weiterer funktionaler Schritt autorisiert: NEIN
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener technischer Schritt v27.37l
+
+v27.37l – Doppelklick bei schriftlicher Prüfungsabgabe darf Antworten nicht verändern ist abgeschlossen.
+
+Implementierungscommit: `6e4332f061151915c76f38ec2da9780b64e71644`.
+
+F01 wurde in v27.37l repariert und separat nachgetestet. Der historische v27.37k-Audit bleibt unverändert FAIL. Keine Änderung an Auth/Session/Supabase oder Storage-Keys; Supabase bleibt NICHT LIVE.
+
+Kein Folgetask autorisiert. CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN. Die folgenden Abschnitte sind historische Nachweise, keine weitere Freigabe.
 
 ## Autorisierter Task v27.37l
 

@@ -1,12 +1,22 @@
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
-Stand: v27.37l-AUTORISIERUNG
+Stand: v27.37l
 Branch: `main`
 Arbeits-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Arbeits-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Zuhause-Laptop: `C:\xampp\htdocs\accaoui\v4-dashboard`
 Git Bash Zuhause-Laptop: `/c/xampp/htdocs/accaoui/v4-dashboard`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
+
+## Abgeschlossener technischer Schritt v27.37l
+
+v27.37l – Doppelklick bei schriftlicher Prüfungsabgabe darf Antworten nicht verändern ist abgeschlossen.
+
+Implementierungscommit: `6e4332f061151915c76f38ec2da9780b64e71644`.
+
+F01 wurde in v27.37l repariert und separat nachgetestet. Der historische v27.37k-Audit bleibt unverändert FAIL. Keine Änderung an Auth/Session/Supabase oder Storage-Keys; Supabase bleibt NICHT LIVE.
+
+Kein Folgetask autorisiert. CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN. Die folgenden Abschnitte sind historische Nachweise, keine weitere Freigabe.
 
 ## Autorisierter Task v27.37l
 
