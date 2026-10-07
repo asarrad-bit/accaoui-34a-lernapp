@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37m
+Stand: v27.37n-AUTORISIERUNG
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,44 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Autorisierter Task v27.37n
+
+Der Projekteigentümer autorisiert ausschließlich v27.37n – Natürlichen 120-Minuten-Abschluss der schriftlichen Prüfung im echten Browser verifizieren. Reiner Browser-/Dokumentationsaudit; keine Produktänderung. Ausgangsstand: f47e3705e2cdfdca88dec4f2feefb68216468324, vollständig abgeschlossene v27.37m-Closure. Funktionaler Ausgangsstand bleibt v27.35g; letzter Kontrollschritt bis zur Closure v27.37m.
+
+### Exakte Rollen und Dateigrenzen
+
+Autorisierungs-Gate exakt sechs Dateien: docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py, tools/preflight.py. Erst nach vollständig geprüftem Gate-Commit und Push darf der Browser-Audit beginnen.
+
+Audit-Scope exakt eine Datei: docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md. Keine zweite Audit-Datei. Closure-Scope exakt die vier Steuerdokumente aus dem Gate, ausschließlich nach geprüftem und gepushtem Audit mit dessen tatsächlichem SHA. Kein zukünftiger Commit-SHA wird vorweggenommen.
+
+Alle anderen versionierten Dateien bleiben eingefroren: insbesondere app.js, patch-v21.js, oral-exam.js, HTML/CSS, Testkopien, Fragenbanken, oral-sheets*, Herkunftsbezeichnungen, Auth/Session/Zugang, Supabase, Config, SDK, SQL und Migrationen. Historische v27.37k-/v27.37m-Audits bleiben unverändert; v27.37k behält sein Gesamtfazit FAIL, F01 wurde separat in v27.37l behoben. Supabase bleibt NICHT LIVE. Keine echten Keys oder Teilnehmerdaten.
+
+### Verbindlicher Echtzeit-Audit
+
+Neuer isolierter 127.0.0.1-Origin mit sauberem localStorage/sessionStorage und ohne Cookies-/IndexedDB-Altlasten; beide Supabase-Loader deaktiviert. Echte schriftliche Vollsimulation durch die reguläre Oberfläche starten. Vor Start exakt 82 Fragen, 120 Maximalpunkte, Starttimer 120:00 beziehungsweise 7200 Sekunden, neue Attempt-ID und Ausgangs-Storage nachweisen. Keine beschleunigte Uhr, keine manipulierten Timer, keine Fake-Clock, kein Überspringen der 7200 Sekunden. Vollständige natürliche 120 Minuten tatsächlich verstreichen lassen.
+
+Von vor dem Start an fortlaufend protokollieren: UTC- und monotone Zeitstempel, DOM-Countdown, relevante Ereignisse, Konsole und Storage. Kernnachweise regelmäßig außerhalb des Repositorys sichern; ein späterer Console-/Event-Pufferverlust darf nicht als vollständiger Nachweis ausgegeben werden. Ausschließlich passive Beobachtung; weder App-Funktionen ersetzen noch Timer, Uhr, Antworten, Storage oder Abschlussbedingungen manipulieren. Antworten ausschließlich durch reguläre UI-Interaktion, keine künstliche Abgabe.
+
+Pflichtnachweise T01–T15: Start bei 120:00; natürlicher Countdown; kein unerwarteter Reset; Erreichen von 00:00; vorgesehener automatischer Timeout-Abschluss; Abschluss genau einmal; Verlauf genau einmal; keine falsche Fortsetzung; korrekter Ergebniszustand; korrekter Attempt-Zustand; konsistenter Storage; nach Reload keine falsche Fortsetzung; keine uncaught App-Ausnahme; unverändert 82 Fragen / 120 Maximalpunkte; Antworten und Punkte durch Timeout unverändert korrekt. Erforderliche Nutzerinteraktion ausdrücklich vom natürlichen Timeout unterscheiden. Manueller Abschluss zählt niemals als Timeout-PASS.
+
+Testdatum, Browser, Test-Origin, Gate-SHA, Attempt-ID, Start-/00:00-Zeitpunkt, reale verstrichene Zeit, konkrete Erwartungen/Beobachtungen, Ergebniszustand, Verlauf, Console/Storage, gesicherte Zeitspur, Einschränkungen und Gesamtfazit nachvollziehbar dokumentieren. PASS, FAIL oder NOT VERIFIED ehrlich unterscheiden; ohne Kernnachweis kein PASS. Produktfehler reproduzierbar dokumentieren, niemals reparieren. Bei echtem FAIL sofort STOPP; kein Commit/Push nach fehlgeschlagener Pflichtprüfung.
+
+### Strenger Lifecycle und Prüfungen
+
+Sechs Phasen: v2737n_authorization_prepared, v2737n_authorization_committed, v2737n_audit_prepared, v2737n_audit_committed, v2737n_closure_prepared, v2737n_closure_committed. Direkte lineare Parents, exakt drei Rollencommits mit den festgelegten Titeln, keine Wiederholung, keine übersprungene Rolle, keine fremden Dateien, keine Wiederöffnung und kein Folgetask.
+
+Historische Prüfungen bleiben unverändert. Die vollständige reale v27.37m-Closure samt aller historischen Kontrollen wird im echten byte-identischen Git-Checkout des Ausgangsstands geprüft, mit core.longpaths=true und core.autocrlf=false vor Checkout. Der vollständige historische Preflight einschließlich realem d–j-Sammellauf, v27.34e, v27.37k-Verification-Repair, v27.37l-Abgabechecker und v27.37m-Auditvertrag läuft ohne Stub, Monkeypatch, Fake-Phase oder Fake-PASS. Der vorhandene interne v27.37k-Timeout bleibt 1800 Sekunden; d–j-Namen, Reihenfolge und V2737K_BASE_SHA bleiben unverändert.
+
+Vor und nach jedem Commit: Continuity, vollständiger Preflight, git diff --check, exakter Scope und Git-Status. Vor Commit nur bei vollständigem PASS exakt den Rollenscope stagen und git diff --cached --check prüfen. Push ausschließlich nach vollständigem Post-Commit-PASS und frischer origin/main-Prüfung; bei Remote-Konflikt STOPP. Keine Prüfung umgehen; kein reset/restore, Force-Push, Rebase oder History Rewrite.
+
+Gate-Titel: v27.37n authorize written exam natural timeout browser audit
+Audit-Titel: v27.37n document written exam natural timeout browser audit
+Closure-Titel: v27.37n close written exam natural timeout browser audit
+
+Die Sperrzeilen im kanonischen CURRENT_TASK-Kopf bleiben eindeutig. Der ausdrückliche Nutzerauftrag autorisiert ausschließlich die vollständig geprüften Lifecycle-Commits und Pushes sowie den Audit. Keine zusätzliche Freigabe für normale Zwischenschritte erforderlich. Nach Closure CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN, HEAD = origin/main, Working Tree und Staging leer; danach STOPP.
+
+Die folgenden Abschnitte sind historische Nachweise und keine weitere aktuelle Autorisierung.
 
 ## Abgeschlossener Audit v27.37m
 
