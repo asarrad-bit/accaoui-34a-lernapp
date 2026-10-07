@@ -1,6 +1,6 @@
 # Aktueller Projektzustand
 
-Stand: v27.37m-AUTORISIERUNG
+Stand: v27.37m
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Branch: `main`
 Letzter abgeschlossener funktionaler Stand: v27.35g
@@ -8,9 +8,19 @@ Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
 Aktueller HEAD: DYNAMISCH ZU PRÜFEN
 Funktionsstatus: v27.35g abgeschlossen
 Weiterer funktionaler Schritt autorisiert: NEIN
-Aktuell autorisierter Task: v27.37m
-Aktuelle Taskart: v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren
-Aktueller Blocker: Browser-Audit bleibt bis zum vollständig geprüften und gepushten Autorisierungs-Gate gesperrt
+Aktuell autorisierter Task: NONE
+Aktuelle Taskart: Kein Task autorisiert
+Aktueller Blocker: Neue Taskauswahl und ausdrückliche Autorisierung durch Projekteigentümer und verbindlichen Projektchat
+
+## Abgeschlossener Audit v27.37m
+
+v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren ist abgeschlossen.
+
+Audit-Commit: `6441008e17a551f7579c643ce72ddd2fbc851438`.
+
+Befunde und Grenzen stehen in docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md. Closure bestätigt den abgeschlossenen Audit, nicht pauschal ein fehlerfreies Produkt. Keine Produktänderung; historischer v27.37k-Audit unverändert FAIL, F01 separat in v27.37l behoben. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask autorisiert. CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN. Die folgenden Abschnitte sind historische Nachweise, keine weitere Freigabe.
 
 ## Autorisierter Task v27.37m
 

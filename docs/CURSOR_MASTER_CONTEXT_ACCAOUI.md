@@ -1,6 +1,6 @@
 # Accaoui §34a Lern-App – Cursor Master Context
 
-Stand: v27.37m-AUTORISIERUNG
+Stand: v27.37m
 Projekt: Accaoui §34a Lern-App
 Arbeit: `C:\a34a`
 Zuhause: `C:\xampp\htdocs\accaoui\v4-dashboard`
@@ -8,6 +8,16 @@ Branch: `main`
 Repository: `asarrad-bit/accaoui-34a-lernapp`
 Letzter abgeschlossener funktionaler Stand: v27.35g
 Abschlusscommit: `f5f261fee67fc17c170ee714ae23761ff1668f17`
+
+## Abgeschlossener Audit v27.37m
+
+v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren ist abgeschlossen.
+
+Audit-Commit: `6441008e17a551f7579c643ce72ddd2fbc851438`.
+
+Befunde und Grenzen stehen in docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md. Closure bestätigt den abgeschlossenen Audit, nicht pauschal ein fehlerfreies Produkt. Keine Produktänderung; historischer v27.37k-Audit unverändert FAIL, F01 separat in v27.37l behoben. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask autorisiert. CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN. Die folgenden Abschnitte sind historische Nachweise, keine weitere Freigabe.
 
 ## Autorisierter Task v27.37m
 

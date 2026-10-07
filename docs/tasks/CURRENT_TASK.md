@@ -1,14 +1,24 @@
 # Verbindlicher aktueller Task
 
-Task-ID: v27.37m
-Status: AUTHORIZED
-Autorisiert: JA
-Titel: v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren
+Task-ID: NONE
+Status: BLOCKED
+Autorisiert: NEIN
+Titel: Kein Task autorisiert
 Funktionaler Ausgangsstand: v27.35g
-Letzter abgeschlossener Kontrollschritt: v27.37l
-Erlaubte Implementierungsdateien: docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md
+Letzter abgeschlossener Kontrollschritt: v27.37m
+Erlaubte Implementierungsdateien: KEINE
 Commit erlaubt: NEIN
 Push erlaubt: NEIN
+
+## Abgeschlossener Audit v27.37m
+
+v27.37m – Natürlichen 15-Minuten-Abschluss der mündlichen Prüfung im echten Browser verifizieren ist abgeschlossen.
+
+Audit-Commit: `6441008e17a551f7579c643ce72ddd2fbc851438`.
+
+Befunde und Grenzen stehen in docs/ORAL_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737M.md. Closure bestätigt den abgeschlossenen Audit, nicht pauschal ein fehlerfreies Produkt. Keine Produktänderung; historischer v27.37k-Audit unverändert FAIL, F01 separat in v27.37l behoben. Supabase bleibt NICHT LIVE.
+
+Kein Folgetask autorisiert. CURRENT_TASK NONE / BLOCKED / Autorisiert NEIN. Die folgenden Abschnitte sind historische Nachweise, keine weitere Freigabe.
 
 ## Autorisierter Task v27.37m
 
