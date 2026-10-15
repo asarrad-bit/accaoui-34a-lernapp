@@ -1,3 +1,47 @@
+# Verbindliche Projekt-Masterliste
+
+Task-ID: ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: Phase A – sicherer Commit-Übergangsvertrag für das Fehlertraining-Gate
+Funktionaler Ausgangsstand: v27.35g
+Letzter abgeschlossener Kontrollschritt: v27.37m
+Erlaubte Implementierungsdateien: docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md, docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md, tools/check-project-continuity-control.py, tools/preflight.py
+Commit erlaubt: JA
+Push erlaubt: JA
+Freigabestufe: phase_a_commit_authorized
+Commit-/Push-Freigabe: SEPARATE AUSDRÜCKLICHE EIGENTÜMERFREIGABE ERTEILT
+
+## Ausschließlich autorisierter Phase-A-Vertrag
+
+Die ausdrückliche einmalige Eigentümerfreigabe vom 14.10.2026 in dieser WORK-ZENTRALE erlaubt ausschließlich die Vorbereitung und Implementierung dieses sicheren Commit-Übergangsvertrags innerhalb der sechs Gate-Dateien. Grundlage: STOPP-Bericht 10BYdNmf7__NfhQP9w3Msbkx0PH3_vA05jQhPuj5Ynes. Gewöhnliche Fehler innerhalb dieses Scopes dürfen nachvollziehbar korrigiert werden. Keine parallelen Aufträge. Vorherige gestoppte Versuche bleiben STOPP und werden nicht wiederaufgenommen.
+
+Bei Freigabestufe phase_a_prepared gilt: noch kein Staging, Commit oder Push freigegeben. Eine spätere neue ausdrückliche Eigentümerfreigabe für genau dieses Gate ist erforderlich. Erst danach dürfen in exakt diesen vier Steuerdokumenten gemeinsam und ausschließlich die vier Freigabezeilen auf Commit erlaubt: JA, Push erlaubt: JA, Freigabestufe: phase_a_commit_authorized und Commit-/Push-Freigabe: SEPARATE AUSDRÜCKLICHE EIGENTÜMERFREIGABE ERTEILT geändert werden. Der Checker akzeptiert nur die beiden vollständig definierten Präfixe; einzelne Flagwechsel, fremde Task-IDs oder andere Berechtigungen bleiben gesperrt. Die neue Vertragsvorbereitung selbst ist keine Commit-/Push-Freigabe.
+
+Ausgangs-HEAD und einziger zulässiger Gate-Parent: 842ab751a02ef402bbd24a33a016da27541614fc. Branch main, korrektes origin und frisch direkt bestätigter GitHub-main sind Pflicht. Kein zukünftiger Commit-SHA. Der neue HEAD wird ausschließlich aus dem tatsächlichen Git-Commit ermittelt. Ein einziger linearer Gate-Commit ist erlaubt, mit genau einem Parent gleich der Basis und dem exakten Titel ACCAOUI phase A authorize last-exam-mistakes partial-result gate. Keine Merge-, Folge-, Audit-, Produkt- oder Closure-Commits.
+
+Zustände: phase_a_prepared (Basis, Index leer, exakt sechs unstaged Gate-Dateien); phase_a_commit_authorized (gleiche Git-Grenzen, alle vier Freigabepräfixe ausdrücklich umgestellt); phase_a_commit_staged (Basis, exakt sechs vollständig gestagte Gate-Dateien, keine unstaged Reständerung); phase_a_gate_committed (tatsächlicher einzelner Gate-Commit, Working Tree und Index für versionierte Dateien leer, Remote und origin/main noch Basis); phase_a_gate_pushed (derselbe Gate-Commit, Remote und origin/main gleich tatsächlichem HEAD). Unbekannte Remote- oder origin/main-SHAs und gemischte Pushzustände sind STOPP. Die Übergangs-Selbsttests sind ausdrücklich In-Memory-Vertragstests; sie stagen oder committen nichts und sind kein Nachweis eines tatsächlich ausgeführten Commits.
+
+Vor Commit: frische direkte GitHub-Kontrolle, unveränderte Audit-/Produktschutzgrenzen, tatsächliche Kontinuität mit Negativtests, vollständiger unverfälschter Preflight und git diff --check. Nach ausdrücklicher Freigabe ausschließlich die sechs Gate-Dateien stagen; komplette Index-Blobs und Modi müssen mit den geprüften Working-Tree-Bytes übereinstimmen. Dann Kontinuität, vollständigen Preflight und git diff --cached --check im staged-Zustand erneut prüfen. Nur bei vollständigem PASS den einen Gate-Commit ausführen. Nach Commit tatsächlichen Parent, Titel, exakt sechs M-Dateien, Dateimodi, sämtliche Commit-Blobs und eingefrorenen Restbaum prüfen; Kontinuität, vollständigen Preflight und git diff --check erneut ausführen. Push nur nach diesem Post-Commit-PASS und frischer Remote-Prüfung, ohne Force. Anschließend GitHub-HEAD direkt bestätigen sowie Kontinuität, vollständigen Preflight, Scope und finalen Git-Status prüfen. Kein Preflight-PASS allein ersetzt die menschliche Freigabe.
+
+Geschützter unversionierter Altbestand: docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md; exakt 10336 Bytes; SHA-256 DA23A1D052684FC3646A5A01E06C4520555053CADDB67C7FF3AD06A5C1C78B00. Einzige erlaubte unversionierte Datei; reguläre Datei, niemals ändern, löschen, verschieben, stagen, committen oder übertragen. Alle übrigen versionierten Dateien und Dateimodi bleiben bytegleich zur Basis, insbesondere AGENTS.md und docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md. v27.37n bleibt STOPP / NOT VERIFIED, nicht abgeschlossen und nicht wiederaufgenommen; keine fingierte Closure oder PASS-Erklärung. Funktionaler Stand v27.35g und letzter abgeschlossener Kontrollschritt v27.37m bleiben unverändert.
+
+Produktimplementation: NEIN. Phase B: NEIN. patch-v21.js, app.js, HTML/CSS, Fragenbanken, Prüfungslogik, Speicherung, Auth/Session/Zugang, Supabase, SQL/Migrationen und sämtliche übrigen Produktdateien bleiben eingefroren. Supabase bleibt NICHT LIVE; keine echten Keys oder Teilnehmerdaten. Keine Installation, Rechteänderung, reset/restore, Rebase, Force-Push, Browser-Dauertests oder Folgetasks.
+
+Die vollständigen bisherigen 64 Phase-A-Negativfälle bleiben erhalten. Hinzu kommen gezielte Zustands-/Index-/Parent-/Commit-/Remote-/Blob-/Modi-Manipulationen und gültige Übergangsfixtures. Ursprüngliche historische Dokumentbytes, Kontrollquellen und Dispatch außerhalb genau dieses Phase-A-Profils bleiben unverändert SHA-geprüft. Vollständige originale n-, m- und ältere Kontrollen laufen im echten byte-identischen Checkout des tatsächlichen n-Gate-Commits 842ab751a02ef402bbd24a33a016da27541614fc. Dort ausschließlich die historische authorization_committed-Phase; keine n-Closure. Keine Stubs, Monkeypatches, Fake-Phasen oder Fake-PASS für historische Kontrollen. Bestehender interner k-Timeout 1800 Sekunden und d–j-Basis, Reihenfolge und Prüfungen bleiben unverändert; kein äußerer Ersatztimeout.
+
+Verbindlicher Interpreter: C:\Users\asarr\AppData\Local\Programs\Python\Python313\python.exe; frisch Python 3.13.3 und Exitcode 0 bestätigen. Vor und nach jeder tatsächlichen Prüfung Git-Zustand, geschützte Datei-/Scopegrenzen und alle sechs Gate-Bytes unverändert bestätigen. Laufender historischer Unterprozess wird ohne Codeänderung an den historischen Tools durch PID-/Zeitstatus des neuen Wrappers sichtbar gemacht; kein Timeout oder Test wird verkürzt.
+
+Bei Sicherheitskonflikten, Fremdänderungen, Remote-Abweichung, Auditänderung oder Verletzung verbindlicher Regeln sofort STOPP. Gewöhnliche Implementierungsfehler nur innerhalb dieses ausdrücklich genehmigten Scopes korrigieren und dokumentieren; keine globale Lockerung und keine abgeschwächten Prüfungen. Bei nicht vollständig bestandener Pflichtprüfung kein Staging, Commit oder Push.
+
+Diese Vertragsvorbereitung endet mit genau einem vollständigen privaten Ergebnisbericht samt Diff, tatsächlichen Prüfergebnissen und sicherer späterer Commit-Reihenfolge. Bei Freigabestufe phase_a_prepared ist kein Git-Schreibschritt freigegeben. Eine spätere Gate-Freigabe schließt v27.37n nicht ab und autorisiert weder Phase B noch einen weiteren Task.
+
+## Historischer Stand vor dieser Phase A
+
+Die nachfolgenden ursprünglichen Dokumentbytes bleiben unverändert als historische Nachweise erhalten. Ihre alten Autorisierungs- und Commit-/Push-Ausnahmen erteilen keine aktuelle Freigabe; v27.37n bleibt STOPP / NOT VERIFIED.
+
+---
+
 # Accaoui §34a Lern-App – Projekt-Masterliste
 
 Stand: v27.37n-AUTORISIERUNG

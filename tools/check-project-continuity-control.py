@@ -21768,7 +21768,446 @@ def run_v2737n_control() -> int:
 # END v27.37n natural written timeout audit lifecycle
 
 
+
+# BEGIN ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_a continuity
+
+V1_PHASE_A_TASK = "ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT"
+V1_PHASE_A_BASE = "842ab751a02ef402bbd24a33a016da27541614fc"
+V1_PHASE_A_PYTHON = r"C:\Users\asarr\AppData\Local\Programs\Python\Python313\python.exe"
+V1_PHASE_A_AUDIT = "docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md"
+V1_PHASE_A_AUDIT_SHA = "da23a1d052684fc3646a5a01e06c4520555053caddb67c7ff3ad06a5c1c78b00"
+V1_PHASE_A_ORIGINAL = {
+    "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md": "c8baa6c87e7076964e99335e4a82b7feb6286aaf46e6f83b436dfe5857fc8aaa",
+    "docs/PROJECT_MASTERLIST.md": "98b7f0223dc652b875637169947b419547bcbaF3fa808d20f53b00dce725a1c9".lower(),
+    "docs/PROJECT_STATE_CURRENT.md": "303086f07efa217c423e57d8133b4f8b3e96fa9127cd6b1e0a310c1c9d1f1d49",
+    "docs/tasks/CURRENT_TASK.md": "7390bf2b2ee684b1e2eedf3d08c56e4175f5a34df4e0920b26542f7f21c6b21a",
+    "tools/check-project-continuity-control.py": "db993316e7c47d49c484f4fa65ab857b028b9b19ea6708927e907436591f54f4",
+    "tools/preflight.py": "4950a2e746859975dceb5968a4fccff6212ac47273ed227b181a086cb1d4cb0b",
+}
+V1_PHASE_A_PREFIX_SHA = {'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md': 'b6fdd71b796bb55bbaf2ec194f5c66bad3e087d8562e22dd383fee29e06c0109', 'docs/PROJECT_MASTERLIST.md': '653c4c971ea493912b2e201bdea8a7d2e9c2d3661ef4943ceaaf825fa1642d90', 'docs/PROJECT_STATE_CURRENT.md': '937b9907f50cddec4e196447bd6fbe960b98ab5c6ce1b137d8fc69f24d6f983d', 'docs/tasks/CURRENT_TASK.md': 'e7cf1f522d45c6694d997afd5aa83250f7ef3372ea6aa16ebffb6ed6805e73ca'}
+V1_PHASE_A_AUTH_PREFIX_SHA = {'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md': '96a6dd80a01aebdfabe7707c9d68e6fbb74eccccd6312d892eb3fb812fd0fa96', 'docs/PROJECT_MASTERLIST.md': '18831f0214bff046ef60287a5fecaad087362851e19f442c40f03c4d0cbee8ec', 'docs/PROJECT_STATE_CURRENT.md': 'b27d8969b1c779e2d8b74e12660dccc67fd4bae86ba2c25651821b0737728f74', 'docs/tasks/CURRENT_TASK.md': '55bcab579da7c1cdcd753d3404f004b8ba4e76d82c525e6ebe9c29623c0a69ad'}
+V1_PHASE_A_COMMIT_TITLE = 'ACCAOUI phase A authorize last-exam-mistakes partial-result gate'
+V1_PHASE_A_PERMISSION_REPLACEMENTS = ((b'Commit erlaubt: NEIN\n', b'Commit erlaubt: JA\n'), (b'Push erlaubt: NEIN\n', b'Push erlaubt: JA\n'), (b'Freigabestufe: phase_a_prepared\n', b'Freigabestufe: phase_a_commit_authorized\n'), (b'Commit-/Push-Freigabe: NICHT ERTEILT\n', b'Commit-/Push-Freigabe: SEPARATE AUSDR\xc3\x9cCKLICHE EIGENT\xc3\x9cMERFREIGABE ERTEILT\n'))
+V1_PHASE_A_FILES = frozenset(V1_PHASE_A_ORIGINAL)
+V1_PHASE_A_HEADINGS = {
+    "tools/check-project-continuity-control.py": "continuity",
+    "tools/preflight.py": "preflight",
+}
+V1_PHASE_A_DISPATCH = {
+    "tools/check-project-continuity-control.py":
+        b"    if v1_phase_a_requested():\n        return run_v1_phase_a_control()\n",
+    "tools/preflight.py":
+        b"    if _v1_phase_a_preflight():\n        return\n",
+}
+
+
+def v1_phase_a_requested() -> bool:
+    head = TASK_PATH.read_text(encoding="utf-8")[:1000]
+    return V1_PHASE_A_TASK in head
+
+
+def v1_phase_a_original_tool(path: str, source: bytes) -> bytes:
+    role = V1_PHASE_A_HEADINGS[path]
+    begin = ("\n# BEGIN " + V1_PHASE_A_TASK + " phase_a " + role + "\n").encode()
+    end = ("# END " + V1_PHASE_A_TASK + " phase_a " + role + "\n").encode()
+    require(source.count(begin) == 1 and source.count(end) == 1,
+            "Phase A: uneindeutiger Kontrollprofilblock: " + path)
+    start = source.index(begin)
+    stop = source.index(end, start) + len(end)
+    original = source[:start] + source[stop:]
+    dispatch = V1_PHASE_A_DISPATCH[path]
+    require(original.count(dispatch) == 1, "Phase A: falscher Dispatch: " + path)
+    return original.replace(dispatch, b"", 1)
+
+
+def v1_phase_a_validate_facts(facts: dict) -> str:
+    require(facts["branch"] == "main", "Phase A: falscher Branch")
+    require(facts["origin_url"] in {
+        "https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+        "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+        "git@github.com:asarrad-bit/accaoui-34a-lernapp.git",
+    }, "Phase A: falsches Repository")
+    require(facts["untracked"] == frozenset({V1_PHASE_A_AUDIT}),
+            "Phase A: unbekannter oder fehlender unversionierter Altbestand")
+    require(not facts["audit_tracked"] and facts["audit_regular"],
+            "Phase A: Audit muss unversionierte reguläre Datei bleiben")
+    require(facts["audit_bytes"] == 10336 and facts["audit_sha"] == V1_PHASE_A_AUDIT_SHA,
+            "Phase A: geschützter Audit verändert")
+    require(facts["agents_sha"] == "b85cbf52ef90e83a13c45d9347d4252c54f10684fb5762d80257faa00b09a7bc",
+            "Phase A: AGENTS verändert")
+    require(facts["plan_sha"].lower() == "de88f6680c0323031eedb7680de787b83b8fb8bdf5161bfdabbe124178a47766",
+            "Phase A: Supabase-Plan verändert")
+    require(facts["python"] == str(Path(V1_PHASE_A_PYTHON).resolve()),
+            "Phase A: nicht der freigegebene Python-Interpreter")
+    require(set(facts["sources"]) == set(V1_PHASE_A_FILES) and facts["sources_regular"],
+            "Phase A: Gatequellen fehlen oder sind keine regulären Dateien")
+    grants = set()
+    for path, original_sha in V1_PHASE_A_ORIGINAL.items():
+        source = facts["sources"][path]
+        if path in V1_PHASE_A_PREFIX_SHA:
+            marker = b"## Historischer Stand vor dieser Phase A\n"
+            require(source.count(marker) == 1, "Phase A: historische Dokumentgrenze ungültig")
+            separator = source.find(b"\n---\n\n", source.index(marker))
+            require(separator >= 0, "Phase A: Dokumenttrenner fehlt")
+            boundary = separator + len(b"\n---\n\n")
+            prefix_sha = hashlib.sha256(source[:boundary]).hexdigest()
+            if prefix_sha == V1_PHASE_A_PREFIX_SHA[path]:
+                grants.add("prepared")
+            elif prefix_sha == V1_PHASE_A_AUTH_PREFIX_SHA[path]:
+                grants.add("authorized")
+            else:
+                raise ValidationError("Phase A: Autorisierung, Scope oder Sperren verändert: " + path)
+            original = source[boundary:]
+        else:
+            original = v1_phase_a_original_tool(path, source)
+        require(hashlib.sha256(original).hexdigest() == original_sha,
+                "Phase A: historische Bytes/Kontrollen verändert: " + path)
+    require(len(grants) == 1, "Phase A: widersprüchliche Freigabestufen")
+    authorized = grants == {"authorized"}
+    head, origin, remote = facts["head"], facts["origin_ref"], facts["remote_main"]
+    require(re.fullmatch(r"[0-9a-f]{40}", head) and head != "0" * 40,
+            "Phase A: ungültiger tatsächlicher HEAD")
+    working, staged = facts["working"], facts["staged"]
+    require(facts["index_modes"] == {path: "100644" for path in staged},
+            "Phase A: unerlaubte Index-Dateimodi")
+    if head == V1_PHASE_A_BASE:
+        require(origin == remote == V1_PHASE_A_BASE, "Phase A: Remote/oder origin/main abweichend")
+        require(facts["commit"] is None, "Phase A: unerwarteter Gate-Commit")
+        if not staged:
+            require(working == V1_PHASE_A_FILES, "Phase A: nicht exakt sechs Gate-Dateien")
+            require(not facts["index_sources"], "Phase A: unerwartete Index-Blobs")
+            return "phase_a_commit_authorized" if authorized else "phase_a_prepared"
+        require(authorized, "Phase A: Index muss ohne gesonderte Freigabe leer bleiben")
+        require(staged == V1_PHASE_A_FILES and not working,
+                "Phase A: Index muss exakt sechs vollständige Gate-Dateien enthalten")
+        require(facts["index_sources"] == facts["sources"],
+                "Phase A: Index-Blobs entsprechen nicht den geprüften Quellen")
+        return "phase_a_commit_staged"
+    require(authorized, "Phase A: HEAD oder neue Commitphase ohne gesonderte Freigabe gesperrt")
+    require(not working and not staged and not facts["index_sources"],
+            "Phase A: nach Commit dürfen keine versionierten Änderungen verbleiben")
+    commit = facts["commit"]
+    require(isinstance(commit, dict) and commit["sha"] == head,
+            "Phase A: tatsächlicher Gate-Commit fehlt")
+    require(commit["parents"] == (V1_PHASE_A_BASE,), "Phase A: falscher oder zusätzlicher Parent")
+    require(commit["subject"] == V1_PHASE_A_COMMIT_TITLE, "Phase A: falscher Gate-Commit-Titel")
+    require(commit["changes"] == {path: "M" for path in V1_PHASE_A_FILES},
+            "Phase A: Commit enthält nicht exakt die sechs Gate-Dateien")
+    require(commit["modes"] == {path: ("100644", "100644") for path in V1_PHASE_A_FILES},
+            "Phase A: Commit enthält unerlaubte Dateimodi")
+    require(commit["sources"] == facts["sources"], "Phase A: Commit-Blobs/Working Tree abweichend")
+    require(origin == remote and origin in {V1_PHASE_A_BASE, head},
+            "Phase A: fremder Remote-HEAD oder gemischter Pushzustand")
+    return "phase_a_gate_pushed" if remote == head else "phase_a_gate_committed"
+
+
+def v1_phase_a_validate_current() -> dict:
+    import sys
+    head = run_git(["rev-parse", "HEAD"]).strip()
+    origin_url = run_git(["remote", "get-url", "origin"]).strip()
+    require(origin_url in {"https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+                          "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+                          "git@github.com:asarrad-bit/accaoui-34a-lernapp.git"},
+            "Phase A: falsches Repository vor Remote-Zugriff")
+    staged = frozenset(run_git(["diff", "--cached", "--name-only", "--no-renames"]).splitlines())
+    remote_lines = run_git(["ls-remote", "--exit-code", "origin", "refs/heads/main"]).splitlines()
+    require(len(remote_lines) == 1 and remote_lines[0].split()[1:] == ["refs/heads/main"],
+            "Phase A: Remote-main nicht eindeutig direkt bestätigt")
+    audit_path = ROOT / V1_PHASE_A_AUDIT
+    audit = audit_path.read_bytes()
+    sources = {path: (ROOT / path).read_bytes() for path in V1_PHASE_A_FILES}
+    index_sources = {path: run_git_bytes(["show", ":" + path])
+                     for path in staged if path in V1_PHASE_A_FILES}
+    index_modes = {}
+    for path in staged:
+        entries = run_git(["ls-files", "--stage", "--", path]).splitlines()
+        require(len(entries) == 1 and entries[0].split()[2] == "0",
+                "Phase A: mehrdeutiger oder unmerged Index")
+        index_modes[path] = entries[0].split()[0]
+    commit = None
+    if head != V1_PHASE_A_BASE:
+        changes = {}
+        for line in run_git(["diff-tree", "--no-commit-id", "--name-status",
+                             "--no-renames", "-r", V1_PHASE_A_BASE, head]).splitlines():
+            fields = line.split("\t")
+            require(len(fields) == 2 and fields[1] not in changes,
+                    "Phase A: uneindeutige Commit-Dateiliste")
+            changes[fields[1]] = fields[0]
+        modes = {}
+        for path in set(changes) & V1_PHASE_A_FILES:
+            rows = [run_git(["ls-tree", ref, "--", path]).splitlines()
+                    for ref in (V1_PHASE_A_BASE, head)]
+            require(all(len(row) == 1 and row[0].split()[1] == "blob" for row in rows),
+                    "Phase A: fehlender Commit-Blob")
+            modes[path] = tuple(row[0].split()[0] for row in rows)
+        commit = {
+            "sha": head, "parents": tuple(run_git(["show", "-s", "--format=%P", head]).strip().split()),
+            "subject": run_git(["show", "-s", "--format=%s", head]).strip(),
+            "changes": changes, "modes": modes,
+            "sources": {path: run_git_bytes(["show", head + ":" + path])
+                        for path in set(changes) & V1_PHASE_A_FILES},
+        }
+    facts = {
+        "head": head, "origin_ref": run_git(["rev-parse", "origin/main"]).strip(),
+        "remote_main": remote_lines[0].split()[0],
+        "branch": run_git(["branch", "--show-current"]).strip(),
+        "origin_url": origin_url,
+        "working": frozenset(run_git(["diff", "--name-only", "--no-renames"]).splitlines()),
+        "staged": staged, "index_sources": index_sources, "index_modes": index_modes, "commit": commit,
+        "untracked": frozenset(run_git(["ls-files", "--others", "--exclude-standard"]).splitlines()),
+        "audit_tracked": bool(run_git(["ls-files", "--", V1_PHASE_A_AUDIT]).strip()),
+        "audit_regular": audit_path.is_file() and not audit_path.is_symlink(),
+        "audit_bytes": len(audit), "audit_sha": hashlib.sha256(audit).hexdigest(),
+        "agents_sha": hashlib.sha256(AGENTS_PATH.read_bytes()).hexdigest(),
+        "plan_sha": hashlib.sha256((ROOT / "docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md").read_bytes()).hexdigest(),
+        "python": str(Path(sys.executable).resolve()), "sources": sources,
+        "sources_regular": all((ROOT / path).is_file() and not (ROOT / path).is_symlink()
+                               for path in V1_PHASE_A_FILES),
+    }
+    require(sys.version_info.major == 3, "Phase A: Python 3 erforderlich")
+    v1_phase_a_validate_facts(facts)
+    return facts
+
+
+def v1_phase_a_permission_sources(sources: dict, authorized: bool) -> dict:
+    result = dict(sources)
+    for path in V1_PHASE_A_PREFIX_SHA:
+        source = result[path]
+        boundary = source.index(b"\n---\n\n", source.index(b"## Historischer Stand vor dieser Phase A\n")) + len(b"\n---\n\n")
+        prefix = source[:boundary]
+        for prepared, granted in V1_PHASE_A_PERMISSION_REPLACEMENTS:
+            old, new = (prepared, granted) if authorized else (granted, prepared)
+            prefix = prefix.replace(old, new)
+        result[path] = prefix + source[boundary:]
+    return result
+
+
+def v1_phase_a_prepared_fixture(facts: dict) -> dict:
+    import copy
+    fixture = copy.deepcopy(facts)
+    fixture.update(head=V1_PHASE_A_BASE, origin_ref=V1_PHASE_A_BASE, remote_main=V1_PHASE_A_BASE,
+                   working=V1_PHASE_A_FILES, staged=frozenset(), index_sources={}, index_modes={}, commit=None)
+    fixture["sources"] = v1_phase_a_permission_sources(fixture["sources"], False)
+    return fixture
+
+
+def v1_phase_a_self_checks(facts: dict) -> tuple[int, int]:
+    import copy
+    v1_phase_a_validate_facts(facts)
+    facts = v1_phase_a_prepared_fixture(facts)
+    positive, negative = 1, 0
+
+    def blocked(change):
+        nonlocal negative
+        mutated = copy.deepcopy(facts)
+        change(mutated)
+        try:
+            v1_phase_a_validate_facts(mutated)
+        except ValidationError:
+            negative += 1
+            return
+        raise ValidationError("Phase A: isolierte Negativmutation nicht blockiert")
+
+    scalar_changes = {
+        "head": "0" * 40, "origin_ref": "0" * 40, "branch": "other",
+        "origin_url": "https://github.com/other/repo.git",
+        "audit_tracked": True, "audit_bytes": 10335, "audit_sha": "0" * 64,
+        "agents_sha": "0" * 64, "plan_sha": "0" * 64, "python": "unapproved-python",
+    }
+    for key, value in scalar_changes.items():
+        blocked(lambda f, k=key, v=value: f.__setitem__(k, v))
+    for path in V1_PHASE_A_FILES:
+        blocked(lambda f, p=path: f.__setitem__("working", f["working"] - {p}))
+        blocked(lambda f, p=path: f.__setitem__("staged", frozenset({p})))
+    for path in ("patch-v21.js", "app.js", "questions.json", "tools/unapproved.py"):
+        blocked(lambda f, p=path: f.__setitem__("working", f["working"] | {p}))
+    for paths in (frozenset(), frozenset({V1_PHASE_A_AUDIT, "unexpected.txt"})):
+        blocked(lambda f, p=paths: f.__setitem__("untracked", p))
+    for path in V1_PHASE_A_PREFIX_SHA:
+        blocked(lambda f, p=path: f["sources"].__setitem__(p, f["sources"][p] + b"changed-history"))
+        for old, new in (
+            (b"Status: AUTHORIZED", b"Status: COMPLETED"),
+            (b"Autorisiert: JA", b"Autorisiert: NEIN"),
+            (b"Commit erlaubt: NEIN", b"Commit erlaubt: JA"),
+            (b"Push erlaubt: NEIN", b"Push erlaubt: JA"),
+            (b"Phase B: NEIN", b"Phase B: JA"),
+            (b"STOPP / NOT VERIFIED", b"PASS / COMPLETED"),
+            (V1_PHASE_A_TASK.encode(), b"UNAUTHORIZED_NEXT_TASK"),
+        ):
+            blocked(lambda f, p=path, a=old, b=new:
+                    f["sources"].__setitem__(p, f["sources"][p].replace(a, b, 1)))
+    for path in V1_PHASE_A_HEADINGS:
+        blocked(lambda f, p=path: f["sources"].__setitem__(p, f["sources"][p] + b"# changed historical tool\n"))
+        blocked(lambda f, p=path: f["sources"].__setitem__(p,
+                f["sources"][p].replace(V1_PHASE_A_DISPATCH[p], b"", 1)))
+    print(f"Phase A Gategrenzen: {positive} Positivtest / PASS; {negative} Negativtests / blockiert",
+          flush=True)
+    # Keep all 64 original negative cases above; add only narrowly scoped transition fixtures.
+    require(positive == 1 and negative == 64, "Phase A: ursprüngliche 64 Negativtests fehlen")
+    fixtures = []
+    prepared = copy.deepcopy(facts)
+    fixtures.append(("phase_a_prepared", prepared))
+    authorized = copy.deepcopy(prepared)
+    authorized["sources"] = v1_phase_a_permission_sources(authorized["sources"], True)
+    fixtures.append(("phase_a_commit_authorized", authorized))
+    staged = copy.deepcopy(authorized)
+    staged.update(working=frozenset(), staged=V1_PHASE_A_FILES,
+                  index_sources=dict(staged["sources"]),
+                  index_modes={path: "100644" for path in V1_PHASE_A_FILES})
+    fixtures.append(("phase_a_commit_staged", staged))
+    committed = copy.deepcopy(authorized)
+    fixture_sha = "a" * 40  # Contract fixture only; no Git object or commit is created.
+    committed.update(head=fixture_sha, working=frozenset(), commit={
+        "sha": fixture_sha, "parents": (V1_PHASE_A_BASE,), "subject": V1_PHASE_A_COMMIT_TITLE,
+        "changes": {path: "M" for path in V1_PHASE_A_FILES},
+        "modes": {path: ("100644", "100644") for path in V1_PHASE_A_FILES},
+        "sources": dict(committed["sources"]),
+    })
+    fixtures.append(("phase_a_gate_committed", committed))
+    pushed = copy.deepcopy(committed)
+    pushed.update(origin_ref=fixture_sha, remote_main=fixture_sha)
+    fixtures.append(("phase_a_gate_pushed", pushed))
+    for expected_phase, fixture in fixtures:
+        require(v1_phase_a_validate_facts(fixture) == expected_phase,
+                "Phase A: gültiger enger Übergang nicht akzeptiert: " + expected_phase)
+    transition_negative = 0
+
+    def transition_blocked(base, change):
+        nonlocal transition_negative
+        mutated = copy.deepcopy(base)
+        change(mutated)
+        try:
+            v1_phase_a_validate_facts(mutated)
+        except ValidationError:
+            transition_negative += 1
+            return
+        raise ValidationError("Phase A: unerlaubte Übergangsmutation nicht blockiert")
+
+    for key, value in (("audit_regular", False), ("sources_regular", False),
+                       ("remote_main", "b" * 40), ("head", "0" * 40)):
+        transition_blocked(prepared, lambda f, k=key, v=value: f.__setitem__(k, v))
+    unauthorized_staged = copy.deepcopy(staged)
+    unauthorized_staged["sources"] = prepared["sources"]
+    transition_blocked(unauthorized_staged, lambda f: None)
+    unauthorized_committed = copy.deepcopy(committed)
+    unauthorized_committed["sources"] = prepared["sources"]
+    transition_blocked(unauthorized_committed, lambda f: None)
+    for path in V1_PHASE_A_FILES:
+        transition_blocked(staged, lambda f, p=path: f.__setitem__("staged", f["staged"] - {p}))
+        transition_blocked(staged, lambda f, p=path: f["index_sources"].__setitem__(p, b"changed"))
+        transition_blocked(staged, lambda f, p=path: f["index_modes"].__setitem__(p, "120000"))
+        transition_blocked(committed, lambda f, p=path: f["commit"]["changes"].pop(p))
+        transition_blocked(committed, lambda f, p=path: f["commit"]["changes"].__setitem__(p, "A"))
+        transition_blocked(committed, lambda f, p=path: f["commit"]["sources"].__setitem__(p, b"changed"))
+        transition_blocked(committed, lambda f, p=path: f["commit"]["modes"].__setitem__(p, ("100644", "100755")))
+        transition_blocked(staged, lambda f, p=path: f.__setitem__("working", frozenset({p})))
+    for foreign in (V1_PHASE_A_AUDIT, "app.js", "patch-v21.js", "tools/unapproved.py"):
+        transition_blocked(staged, lambda f, p=foreign: f.__setitem__("staged", f["staged"] | {p}))
+        transition_blocked(committed, lambda f, p=foreign: f["commit"]["changes"].__setitem__(p, "M"))
+    for parents in ((), ("b" * 40,), (V1_PHASE_A_BASE, "b" * 40)):
+        transition_blocked(committed, lambda f, p=parents: f["commit"].__setitem__("parents", p))
+    for key, value in (("subject", "foreign"), ("sha", "b" * 40)):
+        transition_blocked(committed, lambda f, k=key, v=value: f["commit"].__setitem__(k, v))
+    for base in (committed, pushed):
+        transition_blocked(base, lambda f: f.__setitem__("staged", V1_PHASE_A_FILES))
+        transition_blocked(base, lambda f: f.__setitem__("working", frozenset({"app.js"})))
+        transition_blocked(base, lambda f: f.__setitem__("origin_ref", "b" * 40))
+        transition_blocked(base, lambda f: f.__setitem__("remote_main", "b" * 40))
+    transition_blocked(committed, lambda f: f.__setitem__("remote_main", fixture_sha))
+    transition_blocked(pushed, lambda f: f.__setitem__("origin_ref", V1_PHASE_A_BASE))
+    for path in V1_PHASE_A_PREFIX_SHA:
+        transition_blocked(authorized, lambda f, p=path:
+            f["sources"].__setitem__(p, prepared["sources"][p]))
+        transition_blocked(authorized, lambda f, p=path:
+            f["sources"].__setitem__(p, f["sources"][p].replace(b"Phase B: NEIN", b"Phase B: JA", 1)))
+    for path in V1_PHASE_A_PREFIX_SHA:
+        transition_blocked(authorized, lambda f, p=path:
+            f["sources"].__setitem__(p, f["sources"][p].replace(
+                b"Bei Freigabestufe phase_a_prepared gilt: noch kein Staging, Commit oder Push freigegeben.",
+                b"Aktueller Zustand: phase_a_prepared; noch kein Staging, Commit oder Push freigegeben.", 1)))
+    for path in V1_PHASE_A_PREFIX_SHA:
+        for prepared_line, authorized_line in V1_PHASE_A_PERMISSION_REPLACEMENTS:
+            transition_blocked(authorized, lambda f, p=path, a=authorized_line, b=prepared_line:
+                f["sources"].__setitem__(p, f["sources"][p].replace(a, b, 1)))
+    print(f"Phase A Commit-Übergang: {len(fixtures)} In-Memory-Positivtests / PASS; "
+          f"{transition_negative} gezielte Negativtests / vollständig blockiert", flush=True)
+    return positive + len(fixtures) - 1, negative + transition_negative
+
+
+def v1_phase_a_historical_check(kind: str) -> str:
+    import sys
+    import tempfile
+    require(kind in {"continuity", "preflight"}, "Phase A: unbekannte historische Prüfung")
+
+    def execute(arguments, cwd):
+        import time
+        started = time.monotonic()
+        with subprocess.Popen(arguments, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              text=True, encoding="utf-8", errors="strict") as process:
+            while True:
+                try:
+                    stdout, stderr = process.communicate(timeout=30)
+                    break
+                except subprocess.TimeoutExpired:
+                    print(f"Phase A: historischer Unterprozess PID {process.pid} läuft seit "
+                          f"{time.monotonic() - started:.0f} Sekunden; kein Prüftimeout geändert",
+                          flush=True)
+            require(process.returncode == 0, stderr.strip() or stdout.strip()
+                    or "Phase A: originale historische Prüfung fehlgeschlagen")
+            return stdout
+
+    with tempfile.TemporaryDirectory(prefix="accaoui-phase-a-original-n-gate-") as directory:
+        checkout = Path(directory) / "checkout"
+        execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                 "clone", "--shared", "--no-checkout", "--quiet", str(ROOT), str(checkout)], ROOT)
+        execute(["git", "config", "--local", "core.longpaths", "true"], checkout)
+        execute(["git", "config", "--local", "core.autocrlf", "false"], checkout)
+        execute(["git", "-c", "core.autocrlf=false", "-c", "core.longpaths=true",
+                 "checkout", "--quiet", "-B", "main", V1_PHASE_A_BASE], checkout)
+        execute(["git", "update-ref", "refs/remotes/origin/main", V1_PHASE_A_BASE], checkout)
+        for ref in ("HEAD", "main", "origin/main"):
+            require(execute(["git", "rev-parse", ref], checkout).strip() == V1_PHASE_A_BASE,
+                    "Phase A: falsche reale historische Referenz")
+        require(not execute(["git", "status", "--porcelain"], checkout).strip(),
+                "Phase A: originaler historischer Checkout unsauber")
+        for path in run_git(["ls-tree", "-r", "--name-only", V1_PHASE_A_BASE]).splitlines():
+            require((checkout / path).read_bytes() == run_git_bytes(["show", V1_PHASE_A_BASE + ":" + path]),
+                    "Phase A: historische Quelle nicht byte-identisch: " + path)
+        target = CHECKER_RELATIVE_PATH if kind == "continuity" else "tools/preflight.py"
+        print("Phase A: originale " + kind + "-Prüfung im realen n-Gate-Checkout läuft",
+              flush=True)
+        transcript = execute([sys.executable, "-X", "utf8", "-B", target], checkout)
+        markers = ("Aktuelle v27.37n-Phase: v2737n_authorization_committed",
+                   "v27.37n isolierter Audit-Lifecycle:",
+                   "Aktuelle v27.37m-Phase: v2737m_closure_committed")
+        require(all(marker in transcript for marker in markers),
+                "Phase A: originale n-/m-Kontrollen nicht vollständig nachgewiesen")
+        if kind == "preflight":
+            require("OK: Preflight bestanden." in transcript and "1800 Sekunden" in transcript
+                    and "unveränderter d-j-Sammellauf / PASS" in transcript,
+                    "Phase A: vollständiger historischer Preflight fehlt")
+        require(not execute(["git", "status", "--porcelain"], checkout).strip(),
+                "Phase A: historische Prüfung hat Checkout verändert")
+        return transcript
+
+
+def run_v1_phase_a_control() -> int:
+    try:
+        before = v1_phase_a_validate_current()
+        v1_phase_a_self_checks(before)
+        print(v1_phase_a_historical_check("continuity").strip(), flush=True)
+        require(v1_phase_a_validate_current() == before, "Phase A: Zustand während Prüfung verändert")
+        print("Aktuelle Phase: " + v1_phase_a_validate_facts(before) + ". v27.37n bleibt STOPP / NOT VERIFIED.", flush=True)
+        print("Keine Produktänderung oder Phase B. Operative Git-Freigabe nur gemäß exakter Freigabestufe.", flush=True)
+        return 0
+    except (ValidationError, OSError, UnicodeError) as exc:
+        print("STOPP: Phase-A-Kontinuität fehlgeschlagen: " + str(exc), flush=True)
+        return 1
+
+# END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_a continuity
 def main() -> int:
+    if v1_phase_a_requested():
+        return run_v1_phase_a_control()
     if detect_v2737n_phase() is not None:
         return run_v2737n_control()
     if detect_v2737m_phase() is not None:

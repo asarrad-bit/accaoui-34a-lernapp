@@ -7061,7 +7061,33 @@ def _v2737n_preflight():
 # END v27.37n preflight profile
 
 
+
+# BEGIN ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_a preflight
+
+def _v1_phase_a_preflight():
+    try:
+        control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+        if not control["v1_phase_a_requested"]():
+            return False
+        before = control["v1_phase_a_validate_current"]()
+        control["v1_phase_a_self_checks"](before)
+        print(control["v1_phase_a_historical_check"]("preflight").strip(), flush=True)
+        if control["v1_phase_a_validate_current"]() != before:
+            raise ValueError("Phase-A-Zustand während Preflight verändert")
+        print("Phase A: vollständiger originaler Preflight und alle historischen Prüfungen ausgeführt.", flush=True)
+        print("Aktuelle Phase: " + control["v1_phase_a_validate_facts"](before), flush=True)
+        print("v27.37n bleibt STOPP / NOT VERIFIED. Produktcode und Phase B gesperrt; "
+              "Git-Freigabe nur gemäß exakter Freigabestufe.", flush=True)
+        print("OK: Preflight bestanden.", flush=True)
+        return True
+    except Exception as exc:
+        print("STOPP: Phase-A-Preflight fehlgeschlagen: " + str(exc), flush=True)
+        raise SystemExit(1)
+
+# END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_a preflight
 def main():
+    if _v1_phase_a_preflight():
+        return
     if _v2737n_preflight():
         return
     if _v2737m_preflight():
