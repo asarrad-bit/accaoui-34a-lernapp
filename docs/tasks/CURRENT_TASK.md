@@ -1,3 +1,124 @@
+# ACCAOUI §34a – Phase B – Aktueller autorisierter Task – freigegebener Veröffentlichungsübergang
+
+Task-ID: ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT
+Status: AUTHORIZED
+Autorisiert: JA
+Freigabestufe: phase_b_release_authorized
+Staging erlaubt: JA – ausschließlich nach den unten genannten tatsächlichen Prüfungen
+Commit erlaubt: JA – genau ein linearer Implementierungscommit im geprüften staged-Zustand
+Push erlaubt: JA – nach allen Post-Commit-Pflichten, normal ohne Force
+
+## Direkte persönliche Freigabe und enges Ziel
+
+Der Projekteigentümer bestätigt am 16.10.2026 direkt in der bestehenden WORK-ZENTRALE: „Ich bestätige direkt hier die Fortsetzung des bereits genehmigten Phase-B-Abschlusses. Die frühere Ausführungs- und Berichtssperre hebe ich ausschließlich für diesen Auftrag auf.“ Die anschließende ausdrückliche Freigabe nennt frischen Schutzabgleich, private synthetische JSON-Belegablage, Ergänzung des bestehenden Berichts, sechs enge Steuer-/Kontrolländerungen, alle Pflichtprüfungen, exakt acht Staging-Dateien, genau einen linearen Commit sowie normalen Push und unmittelbare direkte GitHub-Bestätigung. Keine weitere Routinezwischenfreigabe innerhalb dieses Pakets. Automatische Ablehnungen niemals umgehen.
+
+Diese neue Freigabe erweitert ausschließlich den bestehenden B-Veröffentlichungsübergang. Der vollständige frühere B-Implementierungsvertrag folgt unten ausdrücklich HISTORISCH und wird weiterhin bytegenau sowie in seinen unveränderten Vertragsfixtures geprüft. Seine damaligen Gitverbote beschreiben den Zustand vor dieser konkreten neuen Eigentümerfreigabe. Kein neuer Produkttask und keine Umdeutung einer früheren A-/n-Freigabe.
+
+Basis P und einziger zulässiger Commit-Parent:
+b33fd46b35c619a12a03b55f7c2dddfcc9ef679f
+Exakter Commit-Titel:
+ACCAOUI phase B fix last-exam-mistakes partial-result
+Branch main; origin ausschließlich asarrad-bit/accaoui-34a-lernapp.
+
+## Exakt acht Commit-Dateien, ausschließlich sechs davon hier veränderbar
+
+- docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
+- docs/PROJECT_MASTERLIST.md
+- docs/PROJECT_STATE_CURRENT.md
+- docs/tasks/CURRENT_TASK.md
+- tools/check-project-continuity-control.py
+- tools/preflight.py
+- patch-v21.js
+- tools/check-last-exam-mistakes-partial-result.py
+
+Nur die ersten sechs erhalten diese additive B-Veröffentlichungsschicht. Vollständige historische B-, b33-, A- und ältere Bytes, Dispatcher, Prüfungen und Zeitbudgets bleiben erhalten. Nur die ausdrücklich abgegrenzten neuen B-Schichten dürfen beim historischen Bytevergleich entfernt werden. Produktfix unverändert: patch-v21.js SHA-256 7DBBA6E97D855E8641B9AC10E9CAFDFF2146B43FF7993A67007B1DEA26B6B30A. Regressionstest unverändert: tools/check-last-exam-mistakes-partial-result.py SHA-256 F96FBF7F26EB3DC1C7A18AF05B5C53AAA5959057DD561D4FD81ACCA8BF90B197. Kein weiterer Produkt-, Auth-, Prüfungslogik-, Fragenbank- oder Supabase-Eingriff.
+
+## Geschlossener, tatsächlich aus Git abgeleiteter Zustandsablauf
+
+phase_b_implementation_prepared bleibt unverändert für den früheren Vertrag ohne Gitfreigabe akzeptiert.
+phase_b_release_authorized: diese konsistente neue Freigabe, HEAD/origin/main/direktes Remote P, unveränderter physischer Basisindex, sieben erwartete M, neuer Test und geschützter Audit unversioniert.
+phase_b_release_staged: HEAD/origin/Remote P; exakt acht vollständige Manifestblobs, sieben M und ein A, Modus 100644. Alle übrigen Indexblobs/Modi entsprechen P. Keine Teilstages, Sonderflags, Filter, Fremdänderungen oder unstaged Reste. Nur der Audit unversioniert.
+phase_b_implementation_committed: tatsächlicher H mit genau einem Parent P und genau einem Commit seit P; exakter Titel; Commitbaum exakt acht Manifestblobs und vollständiger unveränderter P-Restbaum. Index gleich H, versionierter Arbeitsbaum sauber, nur Audit unversioniert; origin und direktes Remote noch P.
+phase_b_implementation_pushed: derselbe tatsächliche H und derselbe vollständige Baum, HEAD/origin/main/direktes GitHub-main H; versionierter Arbeitsbaum und Index sauber, nur Audit unversioniert. Kein zusätzlicher Commit oder Quellennachtrag.
+
+H niemals erfinden oder nachträglich in Quellen schreiben. Commitobjekt-SHA, Treeobjekt-SHA, Parent, Titel, acht Blobs/Modi sowie ganzer Restbaum werden aus tatsächlichen Gitobjekten geprüft. Synthetische positive/negative Zustandsfixtures sind ausdrücklich Vertragstests, keine behaupteten echten Commits. Unbekannte/mischende Remotezustände, zweiter Commit, Merge, falscher Parent/Titel/Scope, nachträgliche Änderungen oder fehlende Schutzdatei bedeuten STOPP.
+
+Vor Staging wird extern release-20261016.manifest.json mit den vollständigen acht Pfaden, Bytezahlen, SHA-256, Gitblob-SHA und Modus 100644 eingefroren. Sein eigenständiger SHA-256 wird separat extern protokolliert und für jeden Aufruf über ACCAOUI_PHASE_B_RELEASE_MANIFEST_SHA256 unverändert vorgegeben; ACCAOUI_PHASE_B_RELEASE_MANIFEST benennt ausschließlich diese Datei im bestehenden externen Phase-B-Belegordner. Keine ACL-/Rechteänderung, kein stilles Ersetzen des Manifests nach Staging. Manifest, Browserbelege und Berichte niemals stagen oder committen.
+
+## Vollständige zustandsabhängige Pflichtprüfungen
+
+Vor jeder Mutation und vor/nach jedem Prüflauf: direkte persönliche Freigabe, kanonische Pflichtlektüre, Branch/origin/HEAD/direktes Remote, vollständiger Arbeitsbaum/Index/Modi/Flags, Manifest und alle Schutzhashes frisch bestätigen. Bereits vollständig gelesene identische Inhalte nur mit bestätigt identischen vollständigen Hashes wiederverwenden. Ein technischer Ausführer, keine Unteragenten oder parallelen Tests.
+
+Nach dieser Sechs-Dateien-Erweiterung im release_authorized-Zustand: vollständiger Diff; tatsächliche Kontinuität einschließlich unveränderter 82 B- und 169 A-Negativfälle, neuer gezielter Übergangsfälle, echtem unverändertem 26-Fall-Produkttest und echten historischen Kontinuitätskontrollen; git diff --check.
+Danach exakt acht ausgeschriebene Pfade stagen. Im tatsächlichen release_staged-Zustand: vollständige Index-/Manifest-/Scopekontrolle; tatsächliche vollständige Kontinuität samt Negativ-/Produkt-/historischen Kontrollen; vollständiger unveränderter ORIGINAL-Preflight mit Python 3.13.3 und tatsächlichem Exitcode 0; git diff --cached --check und git diff --check. Alter PASS ersetzt keinen neuen Pflichtlauf.
+Nach dem einen Commit vor Push: tatsächliche Objekt-/Parent-/Titel-/Restbaum-/Manifest-/Index-/Auditkontrolle und reale Kontinuität einschließlich aller Negativ-, Produkt- und historischen Kontrollen. Voller Preflight bleibt in jedem neuen Zustand unterstützt; der obligatorische tatsächliche komplette Lauf erfolgt vor Commit im staged-Zustand.
+Nur danach bei direkt unverändertem Remote P normal nach origin HEAD:refs/heads/main pushen; unmittelbar unabhängige direkte GitHub-main-Bestätigung H. Danach gepushte tatsächliche Kontinuität samt Schutz-/Negativ-/Produkt-/historischen Kontrollen und finaler Git-Status. Erfolg erst nach direktem GitHub-Nachweis. Bei unklarem Push nur lesend feststellen, niemals blind wiederholen.
+
+Keine Prüfungen/Timeouts lockern oder überspringen. Historische A-Vertragsfixtures ausdrücklich IN MEMORY aus echten b33-Blobs/-Metadaten. Historische n-/m-/ältere Prüfungen weiterhin tatsächlich im unveränderten 842-Ausgangscheckout, einschließlich originalem d–j-Sammellauf und unverändertem internem 1800-Sekunden-Budget. Keine Audit-Kopie, Stubs oder Fake-PASS-Ausgaben.
+
+## Unveränderte Schutzgrenzen und Bericht
+
+v27.37n bleibt STOPP / NOT VERIFIED. docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md bleibt regulär, ausschließlich unversioniert, 10336 Bytes, SHA-256 DA23A1D052684FC3646A5A01E06C4520555053CADDB67C7FF3AD06A5C1C78B00. Niemals verändern, verschieben, löschen, stagen, committen oder übertragen. Keine Audit-Suche, Closure oder Wiederholung des 120-Minuten-Tests. AGENTS.md und Supabase-Plan unverändert. Supabase NICHT LIVE. Keine echten Teilnehmerdaten/Schlüssel/Zugangsdaten. Kein Reset, Restore, Amend, Rebase, Merge, Force oder weiterer Gate-/Closure-/Reparaturcommit.
+
+Der vorhandene echte Browsernachweis vom 16.10.2026 umfasst neun abgegrenzte UI-Fälle mit validiertem markiertem synthetischem Fehlerbestand, keine vorgeschaltete vollständige Prüfung. Ursprünglicher Nutzerzustand wurde wiederhergestellt. Acht JPGs und beide JSON-Dateien sind im privaten Work-Berichtsordner byte-/hashgenau gesichert; kein unnötiger neuer Browserlauf.
+
+Genau den bestehenden privaten Bericht 1w604QkV94Vnw9QCNAJ2T_olnjBsV8ObLqwhuU5P-FHA im Ordner 1cAUo9UgaOhxPrcQvINCHcqfm88jvmVFI ergänzen: menschliche Freigabe, vollständiger Diff, Manifest, alle tatsächlichen Tests/Versuche/Exitcodes/Laufzeiten, erreichte Git-Zustände, Commitobjekt/Parent/Titel, Pushausgabe, direkte GitHub-Bestätigung, Beleglinks und Grenzen. Vollständigen Inhalt, Ablage und private Berechtigungen zurücklesen. Echte Test-/Schutzfehler und automatische Ablehnungen bleiben STOPP; kein Erfolg aus alten Ausgaben ableiten.
+
+## Historischer B-Implementierungsvertrag vor dieser Freigabe
+
+---
+
+# ACCAOUI §34a – Phase B – Aktueller autorisierter Task
+
+Task-ID: ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT
+Status: AUTHORIZED
+Autorisiert: JA
+Titel: Phase B – Zwischenauswertung im Fehlertraining aus der letzten Prüfung
+Freigabestufe: phase_b_implementation_authorized
+Produktimplementation: JA – ausschließlich die nachstehende Guard-Erweiterung
+Staging erlaubt: NEIN
+Commit erlaubt: NEIN
+Push erlaubt: NEIN
+
+## Persönliche Freigabe und Ausgangsbasis
+
+Die persönliche Eigentümerzustimmung „ok machen wir so InshaAllah“ im Steuerchat „Accaoui-Chat v4-dashboard zuordnen“ (Thread 01a13bb5-4447-72c3-84d4-55246679ce0d, menschlicher Turn 01a140bc-e036-7631-b075-eab8050a780e, Nachricht 01a140bc-e15f-77e3-8309-380e14827bc3) bestätigt den unmittelbar vorausgehenden konkreten Phase-B-Vorschlag (Turn 01a14074-e412-7511-9013-cf453435fecb). Freigegeben sind das verbindliche Festlegen dieses engen B-Vertrags, die fehlende Modusfreigabe und die zugehörigen gezielten sowie vollständigen Pflichtprüfungen. Die bestehende WORK-ZENTRALE führt genau diesen Auftrag aus. Kein paralleler Auftrag und kein zusätzlicher Gate-Commit.
+
+Der abgeschlossene A-Gate-Commit ist b33fd46b35c619a12a03b55f7c2dddfcc9ef679f, alleiniger Parent 842ab751a02ef402bbd24a33a016da27541614fc. Branch main, origin asarrad-bit/accaoui-34a-lernapp; tatsächlicher lokaler HEAD, origin/main und direkt geprüftes GitHub-main müssen vor und nach den Prüfungen exakt auf b33 stehen. Index bleibt vollständig unverändert und enthält keine gestagten Änderungen. Die früheren A-Freigaben gelten ausschließlich für A und erteilen keine B-Gitfreigabe.
+
+## Exakter zulässiger Dateiumfang
+
+- docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
+- docs/PROJECT_MASTERLIST.md
+- docs/PROJECT_STATE_CURRENT.md
+- docs/tasks/CURRENT_TASK.md
+- tools/check-project-continuity-control.py
+- tools/preflight.py
+- patch-v21.js
+- tools/check-last-exam-mistakes-partial-result.py
+
+Die vier Steuerdateien erhalten ausschließlich diesen konsistenten neuen B-Präfix; ihre vollständigen b33-Bytes bleiben unter der ausdrücklich historischen Grenze unverändert. Die beiden Kontrollskripte erhalten eine getrennte strikte B-Schicht mit Vorrang vor A. Ausschließlich diese Schicht und ihr einmaliger Dispatcher dürfen beim historischen Bytevergleich entfernt werden; der vollständige verbleibende b33-Code einschließlich aller A- und älteren Prüfungen muss bytegenau erhalten bleiben.
+
+Produktumfang ist ausschließlich isLearningSessionActiveV2311() in patch-v21.js: Nach den bestehenden fünf erlaubten Modi wird das eine Listenelement "last-exam-mistakes" ergänzt, einschließlich des notwendigen Kommas. Der gesamte übrige Produktcode bleibt bytegleich zur B-Basis. app.js, HTML/CSS, Fragenbanken, Lernkartendaten, Bewertungs-/Abgabe-/Zeitlogik, Fehlerauswahl, Speicherung/Fortsetzung, Teilnehmerzugang/Auth/Session und Supabase werden nicht geändert.
+
+Die einzige neue Testdatei führt den tatsächlichen aktuellen Produktionsblock und passende unveränderte App-Pfade aus. Kein nachgebauter Guard als Ersatztest. Abnahme: last-exam-mistakes und alle fünf bestehenden Lernmodi akzeptiert; Prüfungs-, mündliche und Lernkartenmodi gesperrt; vor erster Antwort bestehender Hinweis; nach Antworten korrekte Bearbeitet/Richtig/Falsch/Offen-Zahlen und Prozent bezogen auf beantwortete Fragen; leerer Fehlerbestand und bestehende Aktionen/Endzustände; vorhandene Fortsetzung und lokale Speicherung unverändert. Vorherbefund und aktueller PASS werden getrennt ausgewiesen. Ein verfügbarer enger Browsernachweis darf diesen Fall ergänzen; kein Dauertest und keine Behauptung eines Browser-PASS ohne tatsächliche Beobachtung.
+
+## Geschützte Altstände und Prüfung
+
+v27.37n bleibt STOPP / NOT VERIFIED. Keine Closure, keine nachträgliche PASS-Erklärung, keine Suche oder Wiederholung des 120-Minuten-Laufs. docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md bleibt ausschließlich unversioniert, regulär, 10336 Bytes, SHA-256 DA23A1D052684FC3646A5A01E06C4520555053CADDB67C7FF3AD06A5C1C78B00. Nie ändern, löschen, verschieben, stagen, committen oder übertragen. AGENTS.md und docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md bleiben unverändert. Supabase NICHT LIVE. Keine echten Schlüssel, Zugangsdaten oder Teilnehmerdaten.
+
+Vor und nach jedem tatsächlichen Prüflauf werden Scope, physischer Index, Dateimodi/Flags, geschützte Hashes und HEAD/Remote frisch geprüft. Python ist ausschließlich C:\Users\asarr\AppData\Local\Programs\Python\Python313\python.exe, Version 3.13.3. Keine parallelen technischen Prüfläufe. Die Kontinuitätsprüfung führt neue B-Negativfälle und die unveränderten 64 ursprünglichen sowie 105 zusätzlichen A-Negativfälle aus; A wird dabei ausdrücklich als historische In-Memory-Vertragsfixture aus echten b33-Commitblobs/-Metadaten und aktuellen Audit-Metadaten geprüft, nicht als heutiger B-Git-Zustand. Keine Audit-Kopie.
+
+Die unveränderte v1_phase_a_historical_check-Funktion führt Kontinuität bzw. den vollständigen originalen Preflight im echten byteidentischen 842-n-Gate-Checkout aus, einschließlich n-/m-/aller älteren Kontrollen, unverändertem d–j-Sammellauf und internem 1800-Sekunden-Budget. Zusätzlich wird der echte aktuelle B-Produkttest ausgeführt. Keine Stubs, keine gefälschten aktuellen Gitphasen, keine geänderten Timeouts und kein Überspringen historischer Checks. Historische Gitfreigabe-Ausgaben sind keine B-Gitfreigabe. Abschließend git diff --check.
+
+Ein eindeutig nachgewiesener Werkzeug-/Prozess-/Netzwerkfehler darf im bestehenden Routineumfang nach frischem unverändertem Zustands-/Schutzabgleich höchstens zweimal für genau den betroffenen Schritt korrigiert wiederholt werden. Bei echtem Test-/Schutzfehler, unbekannter Ursache, Fremdänderung, Remote-Abweichung oder Sicherheitskonflikt STOPP. Keine Installation, Rechteänderung, Umgehung einer nativen Ablehnung, reset, restore, rebase oder force. Staging, Commit und Push bleiben in jedem Fall gesperrt.
+
+Abschluss ist genau ein vollständiger privater nativer Google-Dokument-Bericht im bestehenden Work-Berichtsordner, mit Freigabe, vollständigem Diff, tatsächlichen Prüfergebnissen/Exitcodes/Laufzeiten/Versuchen, Scope-/Hashnachweisen und offen ausgewiesenen Grenzen. Vollständigen Inhalt, privaten Ablageort und Berechtigungen nachlesen. Keine weitere Taskauswahl.
+
+## Historischer Stand vor dieser Phase B
+
+---
+
 # Verbindlicher aktueller Task
 
 Task-ID: ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT

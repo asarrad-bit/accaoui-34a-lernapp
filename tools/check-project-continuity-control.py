@@ -22205,7 +22205,785 @@ def run_v1_phase_a_control() -> int:
         return 1
 
 # END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_a continuity
+
+# BEGIN ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b continuity
+
+V1_PHASE_B_BASE = "b33fd46b35c619a12a03b55f7c2dddfcc9ef679f"
+V1_PHASE_B_TEST = "tools/check-last-exam-mistakes-partial-result.py"
+V1_PHASE_B_PREFIX_SHA = {'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md': 'e662350327aeac42e50966d8500b0d8741e92064a4b2fbe03ae9c83444f40012', 'docs/PROJECT_MASTERLIST.md': '97559d4699934877973f57a451241b71426759ca869ec23ad067592d29e72cb9', 'docs/PROJECT_STATE_CURRENT.md': '83db24642e4a2cb2ff0e753865bfed5e628ae08e29408a3dfec70fa9597c8a9a', 'docs/tasks/CURRENT_TASK.md': '491d97b5a175dd228884701868fc87b49f42c6e407f49c001e330dcb561172de'}
+V1_PHASE_B_TEST_SHA = "f96fbf7f26eb3dc1c7a18af05b5c53aaa5959057dd561d4fd81acca8bf90b197"
+V1_PHASE_B_BASE_SOURCE_SHA = {"patch-v21.js":"91500ce2a192a26c7c6643a3771d46248a3113f810346ffd2d9e1c4ea901d281","docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md":"a83a8391318bfd4f9eb71c1f30051cc7bffa59bd230d217ab2b432e149ec09b1","docs/PROJECT_MASTERLIST.md":"fdccac60c0c44716725cb14d2beee51f8c948fc37db6d4d614bc03e6b8472a79","docs/PROJECT_STATE_CURRENT.md":"f90174b5355e67dcbf94080a74a9a9cd7145ea5db7ac67415755c7546e632302","docs/tasks/CURRENT_TASK.md":"9de7142c7ff2b3984b62e55bced4eca542faad090db6ae3dd795b52d428ee299","tools/check-project-continuity-control.py":"e0f5d4f0ab5c589597a18a45500cf8003ded3e57f7954c3d0a95871bf6f1437e","tools/preflight.py":"aeaa49b5cb1e1bf1a6c2ed7c39f7a7590b9cc5793dbccd736ab82b991a926c2f"}
+V1_PHASE_B_FILES = V1_PHASE_A_FILES | {"patch-v21.js", V1_PHASE_B_TEST}
+V1_PHASE_B_BOUNDARY = b"## Historischer Stand vor dieser Phase B\n\n---\n\n"
+V1_PHASE_B_INDEX_SHA = "15a700c0bc517014a53487803228ac728bcb5a0a3bb7ad7678114e9dde2bac20"
+V1_PHASE_B_OLD_LIST = b'        "topic-mistakes",\n        "all-mistakes"\n'
+V1_PHASE_B_NEW_LIST = b'        "topic-mistakes",\n        "all-mistakes",\n        "last-exam-mistakes"\n'
+V1_PHASE_B_DISPATCH = {
+    CHECKER_RELATIVE_PATH: b"    if v1_phase_b_requested():\n        return run_v1_phase_b_control()\n",
+    "tools/preflight.py": b"    if _v1_phase_b_preflight():\n        return\n",
+}
+
+
+def v1_phase_b_git_bytes(args: list[str]) -> bytes:
+    return run_git_bytes(["--no-optional-locks", "--no-replace-objects", *args])
+
+
+def v1_phase_b_git(args: list[str]) -> str:
+    return decode_git_stdout(v1_phase_b_git_bytes(args))
+
+
+def v1_phase_b_requested() -> bool:
+    # Any new B header routes to the closed B validator, never to historical PASS.
+    header = TASK_PATH.read_text(encoding="utf-8")[:1000]
+    return "phase_b_" in header or "Phase B" in header
+
+
+def v1_phase_b_original_tool(path: str, source: bytes) -> bytes:
+    role = V1_PHASE_A_HEADINGS[path]
+    begin = ("\n# BEGIN " + V1_PHASE_A_TASK + " phase_b " + role + "\n").encode()
+    end = ("# END " + V1_PHASE_A_TASK + " phase_b " + role + "\n").encode()
+    require(source.count(begin) == source.count(end) == 1,
+            "Phase B: mehrdeutige Kontrollschicht: " + path)
+    start = source.index(begin)
+    stop = source.index(end, start) + len(end)
+    original = source[:start] + source[stop:]
+    dispatch = V1_PHASE_B_DISPATCH[path]
+    require(original.count(dispatch) == 1, "Phase B: falscher Dispatcher: " + path)
+    return original.replace(dispatch, b"", 1)
+
+
+def v1_phase_b_target_patch(original: bytes) -> bytes:
+    require(original.count(V1_PHASE_B_OLD_LIST) == 1,
+            "Phase B: ursprüngliche Guard-Liste nicht eindeutig")
+    return original.replace(V1_PHASE_B_OLD_LIST, V1_PHASE_B_NEW_LIST, 1)
+
+
+def v1_phase_b_validate_facts(facts: dict, *, require_product: bool = True) -> str:
+    require(facts["cwd"] == str(ROOT.resolve()), "Phase B: falscher Arbeitsordner")
+    require(facts["branch"] == "main", "Phase B: falscher Branch")
+    require(facts["origin_url"] in {
+        "https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+        "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+        "git@github.com:asarrad-bit/accaoui-34a-lernapp.git",
+    }, "Phase B: falsches Repository")
+    require(facts["head"] == facts["origin_ref"] == facts["remote_main"] == V1_PHASE_B_BASE,
+            "Phase B: lokaler oder direkt geprüfter Remote-HEAD abweichend")
+    require(not facts["staged"] and facts["index_matches_base"]
+            and facts["index_sha"] == V1_PHASE_B_INDEX_SHA,
+            "Phase B: Staging/Indexänderung nicht freigegeben")
+    require(facts["tracked_count"] == 577 and not facts["frozen_changes"]
+            and not facts["mode_or_flag_changes"],
+            "Phase B: Fremdänderungen, Dateimodi oder Indexflags")
+    require(facts["untracked"] == frozenset({V1_PHASE_A_AUDIT, V1_PHASE_B_TEST}),
+            "Phase B: unzulässige oder fehlende unversionierte Datei")
+    require(not facts["audit_tracked"] and facts["audit_regular"]
+            and facts["audit_bytes"] == 10336 and facts["audit_sha"] == V1_PHASE_A_AUDIT_SHA,
+            "Phase B: geschützter Audit verändert")
+    require(facts["agents_sha"] == "b85cbf52ef90e83a13c45d9347d4252c54f10684fb5762d80257faa00b09a7bc",
+            "Phase B: AGENTS verändert")
+    require(facts["plan_sha"].lower() == "de88f6680c0323031eedb7680de787b83b8fb8bdf5161bfdabbe124178a47766",
+            "Phase B: Supabase-Plan verändert")
+    require(facts["python"] == str(Path(V1_PHASE_A_PYTHON).resolve())
+            and facts["python_version"] == (3, 13, 3), "Phase B: falscher Python-Interpreter")
+    require(facts["sources_regular"] and set(facts["sources"]) == set(V1_PHASE_B_FILES),
+            "Phase B: Scopequellen fehlen oder sind nicht regulär")
+    require(set(facts["base_sources"]) == set(V1_PHASE_B_BASE_SOURCE_SHA),
+            "Phase B: unvollständige historische Quellenbasis")
+    for path, expected_sha in V1_PHASE_B_BASE_SOURCE_SHA.items():
+        require(hashlib.sha256(facts["base_sources"][path]).hexdigest() == expected_sha,
+                "Phase B: b33-Ausgangsblob verfälscht: " + path)
+    for path in V1_PHASE_A_FILES:
+        source = facts["sources"][path]
+        if path in V1_PHASE_B_PREFIX_SHA:
+            require(source.count(V1_PHASE_B_BOUNDARY) == 1, "Phase B: Dokumentgrenze ungültig")
+            boundary = source.index(V1_PHASE_B_BOUNDARY) + len(V1_PHASE_B_BOUNDARY)
+            require(hashlib.sha256(source[:boundary]).hexdigest() == V1_PHASE_B_PREFIX_SHA[path],
+                    "Phase B: Autorisierung/Dateiscope/Sperren verändert: " + path)
+            original = source[boundary:]
+        else:
+            original = v1_phase_b_original_tool(path, source)
+        require(original == facts["base_sources"][path],
+                "Phase B: historische b33-Bytes verändert: " + path)
+    require(hashlib.sha256(facts["sources"][V1_PHASE_B_TEST]).hexdigest() == V1_PHASE_B_TEST_SHA,
+            "Phase B: gezielter Regressionstest nicht der geprüfte Vertrag")
+    patch = facts["sources"]["patch-v21.js"]
+    original_patch = facts["base_sources"]["patch-v21.js"]
+    target = v1_phase_b_target_patch(original_patch)
+    require(patch == target or (not require_product and patch == original_patch),
+            "Phase B: nur die eine Guard-Erweiterung ist freigegeben")
+    expected = V1_PHASE_A_FILES | ({"patch-v21.js"} if patch == target else set())
+    require(facts["working"] == expected, "Phase B: tatsächliche Dateimenge abweichend")
+    return "phase_b_implementation_prepared" if patch == target else "phase_b_authorized"
+
+
+def v1_phase_b_validate_current(*, require_product: bool = True) -> dict:
+    import os
+    import sys
+    os.environ["GIT_OPTIONAL_LOCKS"] = "0"
+    os.environ["GIT_NO_REPLACE_OBJECTS"] = "1"
+    origin = v1_phase_b_git(["remote", "get-url", "origin"]).strip()
+    require(origin in {"https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+                       "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+                       "git@github.com:asarrad-bit/accaoui-34a-lernapp.git"},
+            "Phase B: falsches Repository vor Remote-Abfrage")
+    remote = v1_phase_b_git(["ls-remote", "--exit-code", "origin", "refs/heads/main"]).splitlines()
+    require(len(remote) == 1 and remote[0].split()[1:] == ["refs/heads/main"],
+            "Phase B: direktes Remote-main nicht eindeutig")
+    tree = {}
+    for row in v1_phase_b_git_bytes(["ls-tree", "-rz", "--full-tree", V1_PHASE_B_BASE]).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, kind, blob = meta.decode().split()
+            require(kind == "blob", "Phase B: Nicht-Blob in Basis")
+            tree[name.decode()] = (mode, blob)
+    index = {}
+    for row in v1_phase_b_git_bytes(["ls-files", "--stage", "-z"]).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, blob, stage = meta.decode().split()
+            require(stage == "0" and name.decode() not in index, "Phase B: unmerged Index")
+            index[name.decode()] = (mode, blob)
+    flags = {row[2:].decode(): row[:1] for row in
+             v1_phase_b_git_bytes(["ls-files", "-v", "-z"]).split(b"\0") if row}
+    def regular(path):
+        return (path.is_file() and not path.is_symlink() and not path.is_junction()
+                and not (getattr(path.stat(), "st_file_attributes", 0) & 1024))
+    frozen_changes, mode_changes = [], []
+    for name, entry in tree.items():
+        path = ROOT / name
+        require(regular(path), "Phase B: keine reguläre Datei: " + name)
+        raw = path.read_bytes()
+        blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        if name not in V1_PHASE_B_FILES and blob != entry[1]:
+            frozen_changes.append(name)
+        if index.get(name) != entry or flags.get(name) != b"H":
+            mode_changes.append(name)
+    audit_path = ROOT / V1_PHASE_A_AUDIT
+    audit = audit_path.read_bytes()  # Metadata/hash only; never copied or transferred.
+    index_path = Path(v1_phase_b_git(["rev-parse", "--git-path", "index"]).strip())
+    if not index_path.is_absolute():
+        index_path = ROOT / index_path
+    sources = {p: (ROOT / p).read_bytes() for p in V1_PHASE_B_FILES}
+    facts = {
+        "cwd": str(Path.cwd().resolve()), "branch": v1_phase_b_git(["branch", "--show-current"]).strip(),
+        "origin_url": origin, "head": v1_phase_b_git(["rev-parse", "HEAD"]).strip(),
+        "origin_ref": v1_phase_b_git(["rev-parse", "origin/main"]).strip(),
+        "remote_main": remote[0].split()[0],
+        "working": frozenset(v1_phase_b_git(["diff", "--name-only", "--no-renames"]).splitlines()),
+        "staged": frozenset(v1_phase_b_git(["diff", "--cached", "--name-only", "--no-renames"]).splitlines()),
+        "untracked": frozenset(v1_phase_b_git(["ls-files", "--others", "--exclude-standard"]).splitlines()),
+        "index_sha": hashlib.sha256(index_path.read_bytes()).hexdigest(),
+        "index_matches_base": index == tree, "tracked_count": len(tree),
+        "frozen_changes": tuple(sorted(frozen_changes)), "mode_or_flag_changes": tuple(sorted(mode_changes)),
+        "audit_tracked": bool(v1_phase_b_git(["ls-files", "--", V1_PHASE_A_AUDIT]).strip()),
+        "audit_regular": regular(audit_path), "audit_bytes": len(audit),
+        "audit_sha": hashlib.sha256(audit).hexdigest(),
+        "agents_sha": hashlib.sha256(AGENTS_PATH.read_bytes()).hexdigest(),
+        "plan_sha": hashlib.sha256((ROOT / "docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md").read_bytes()).hexdigest(),
+        "python": str(Path(sys.executable).resolve()), "python_version": tuple(sys.version_info[:3]),
+        "sources": sources, "sources_regular": all(regular(ROOT / p) for p in sources),
+        "base_sources": {p: v1_phase_b_git_bytes(["show", V1_PHASE_B_BASE + ":" + p])
+                         for p in V1_PHASE_A_FILES | {"patch-v21.js"}},
+    }
+    v1_phase_b_validate_facts(facts, require_product=require_product)
+    return facts
+
+
+def v1_phase_b_a_contract_fixture(facts: dict) -> dict:
+    # Explicit historical IN-MEMORY contract fixture, NOT current B Git state.
+    sources = {p: facts["base_sources"][p] for p in V1_PHASE_A_FILES}
+    changes = {}
+    for row in v1_phase_b_git(["diff-tree", "--no-commit-id", "--name-status", "--no-renames",
+                        "-r", V1_PHASE_A_BASE, V1_PHASE_B_BASE]).splitlines():
+        status, path = row.split("\t")
+        changes[path] = status
+    commit = {
+        "sha": V1_PHASE_B_BASE,
+        "parents": tuple(v1_phase_b_git(["show", "-s", "--format=%P", V1_PHASE_B_BASE]).strip().split()),
+        "subject": v1_phase_b_git(["show", "-s", "--format=%s", V1_PHASE_B_BASE]).strip(),
+        "changes": changes, "sources": sources,
+        "modes": {p: tuple(v1_phase_b_git(["ls-tree", ref, "--", p]).split()[0]
+                           for ref in (V1_PHASE_A_BASE, V1_PHASE_B_BASE))
+                  for p in V1_PHASE_A_FILES},
+    }
+    fixture = {k: facts[k] for k in ("branch", "origin_url", "audit_tracked", "audit_regular",
+               "audit_bytes", "audit_sha", "agents_sha", "plan_sha", "python", "sources_regular")}
+    fixture.update(head=V1_PHASE_B_BASE, origin_ref=V1_PHASE_B_BASE, remote_main=V1_PHASE_B_BASE,
+                   untracked=frozenset({V1_PHASE_A_AUDIT}), working=frozenset(),
+                   staged=frozenset(), index_sources={}, index_modes={}, sources=sources, commit=commit)
+    return fixture
+
+
+def v1_phase_b_self_checks(facts: dict) -> tuple[int, int]:
+    import copy
+    v1_phase_b_validate_facts(facts)
+    authorized = copy.deepcopy(facts)
+    authorized["sources"]["patch-v21.js"] = authorized["base_sources"]["patch-v21.js"]
+    authorized["working"] = V1_PHASE_A_FILES
+    require(v1_phase_b_validate_facts(authorized, require_product=False) == "phase_b_authorized",
+            "Phase B: gültiger Vorproduktvertrag nicht akzeptiert")
+    try:
+        v1_phase_b_validate_facts(authorized)
+    except ValidationError:
+        pass
+    else:
+        raise ValidationError("Phase B: Vorproduktvertrag fälschlich als Produkt-PASS akzeptiert")
+    negative = 1
+    def blocked(change):
+        nonlocal negative
+        mutated = copy.deepcopy(facts)
+        change(mutated)
+        try:
+            v1_phase_b_validate_facts(mutated)
+        except ValidationError:
+            negative += 1
+            return
+        raise ValidationError("Phase B: unerlaubte Negativmutation nicht blockiert")
+    scalar = {
+        "cwd": "foreign", "branch": "other", "origin_url": "https://github.com/other/repo.git",
+        "head": "0" * 40, "origin_ref": "0" * 40, "remote_main": "0" * 40,
+        "index_sha": "0" * 64, "index_matches_base": False, "tracked_count": 576,
+        "frozen_changes": ("app.js",), "mode_or_flag_changes": ("patch-v21.js",),
+        "audit_tracked": True, "audit_regular": False, "audit_bytes": 10335,
+        "audit_sha": "0" * 64, "agents_sha": "0" * 64, "plan_sha": "0" * 64,
+        "python": "unapproved", "python_version": (3, 13, 2), "sources_regular": False,
+    }
+    for key, value in scalar.items():
+        blocked(lambda f, k=key, v=value: f.__setitem__(k, v))
+    for path in V1_PHASE_B_FILES | {V1_PHASE_A_AUDIT, "app.js"}:
+        blocked(lambda f, p=path: f.__setitem__("staged", frozenset({p})))
+    for paths in (frozenset(), frozenset({V1_PHASE_A_AUDIT}),
+                  facts["untracked"] | {"foreign.txt"}):
+        blocked(lambda f, p=paths: f.__setitem__("untracked", p))
+    for path in facts["working"]:
+        blocked(lambda f, p=path: f.__setitem__("working", f["working"] - {p}))
+    blocked(lambda f: f.__setitem__("working", f["working"] | {"app.js"}))
+    for path in V1_PHASE_A_FILES:
+        blocked(lambda f, p=path: f["sources"].__setitem__(p, f["sources"][p] + b"foreign-history"))
+    for path in V1_PHASE_B_PREFIX_SHA:
+        for old, new in ((b"Commit erlaubt: NEIN", b"Commit erlaubt: JA"),
+                         (b"Push erlaubt: NEIN", b"Push erlaubt: JA"),
+                         (b"Staging erlaubt: NEIN", b"Staging erlaubt: JA"),
+                         (b"Autorisiert: JA", b"Autorisiert: NEIN"),
+                         (b"STOPP / NOT VERIFIED", b"PASS / COMPLETED"),
+                         (b"phase_b_implementation_authorized", b"phase_a_commit_authorized")):
+            blocked(lambda f, p=path, a=old, b=new: f["sources"].__setitem__(
+                p, f["sources"][p].replace(a, b, 1)))
+    for path in V1_PHASE_B_BASE_SOURCE_SHA:
+        blocked(lambda f, p=path: f["base_sources"].__setitem__(p, f["base_sources"][p] + b"foreign-base"))
+    for path in ("patch-v21.js", V1_PHASE_B_TEST):
+        blocked(lambda f, p=path: f["sources"].__setitem__(p, f["sources"][p] + b"\n//foreign"))
+    blocked(lambda f: f["sources"].__setitem__("patch-v21.js", f["base_sources"]["patch-v21.js"]))
+    require(negative == 82, "Phase B: erwartete 82 Negativfälle nicht vollständig")
+    print(f"Phase B: 2 aktuelle Vertragspositivtests / PASS; {negative} Negativtests / blockiert", flush=True)
+    print("Phase A: unveränderte historische IN-MEMORY-Vertragsfälle; kein B-Git-PASS.", flush=True)
+    old_positive, old_negative = v1_phase_a_self_checks(v1_phase_b_a_contract_fixture(facts))
+    require(old_positive == 5 and old_negative == 169, "Phase B: unveränderte A-Selbsttests fehlen")
+    return 2, negative
+
+
+def v1_phase_b_product_check() -> None:
+    import sys
+    result = subprocess.run([sys.executable, "-X", "utf8", "-B", str(ROOT / V1_PHASE_B_TEST)],
+                            cwd=ROOT, capture_output=True, text=True, encoding="utf-8")
+    if result.stdout:
+        print(result.stdout.rstrip(), flush=True)
+    require(result.returncode == 0 and not result.stderr.strip()
+            and "LAST_EXAM_MISTAKES_PARTIAL_RESULT PASS" in result.stdout,
+            "Phase B: tatsächlicher gezielter Produkttest fehlgeschlagen: "
+            + (result.stderr.strip() or result.stdout.strip()))
+
+
+def run_v1_phase_b_control() -> int:
+    try:
+        before = v1_phase_b_validate_current()
+        v1_phase_b_self_checks(before)
+        v1_phase_b_product_check()
+        print(v1_phase_a_historical_check("continuity").strip(), flush=True)
+        require(v1_phase_b_validate_current() == before, "Phase B: Zustand während Kontrolle verändert")
+        print("Aktuelle Phase: phase_b_implementation_prepared. Kontinuität / PASS.", flush=True)
+        print("v27.37n bleibt STOPP / NOT VERIFIED. Staging, Commit und Push: NEIN.", flush=True)
+        return 0
+    except (ValidationError, OSError, UnicodeError, ValueError) as exc:
+        print("STOPP: Phase-B-Kontinuität fehlgeschlagen: " + str(exc), flush=True)
+        return 1
+
+
+# BEGIN ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b_release continuity
+# Additive release contract. The complete original B/A/n/m checks remain above.
+_B_RELEASE_BOUNDARY = b"## Historischer B-Implementierungsvertrag vor dieser Freigabe\n\n---\n\n"
+_B_RELEASE_PREFIX_SHA = {'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md': '11433a02cce0d8874b23de0b287c4a2fd742c2b6ab9bc760acbbd2baaf34d35a', 'docs/PROJECT_MASTERLIST.md': '808caf6749248cfdf185da74ef860d3a791c1f076132de9a775aef0fa6fa7c1d', 'docs/PROJECT_STATE_CURRENT.md': '7a6a6ddaeb6916123b3c5970d6d5ee5ab73291666918ed80ccbf0c3db58d4380', 'docs/tasks/CURRENT_TASK.md': 'c485002f3c9dadad2761618f0fa81cc1c6ab75ca705189b3f456e84f5172e730'}
+_B_RELEASE_OLD_SHA = {'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md': '1779db3d833803bff3a2d5bf8ac1eb68863538a5ee1ac0b42a2687c4ac25f79c', 'docs/PROJECT_MASTERLIST.md': '5620f8b3739e5e17c9fb0947a76bcadf6ab5425e4b77480f0f6a571e1c96928f', 'docs/PROJECT_STATE_CURRENT.md': '396bf9b1f498d99f56f086ccc97d445b4b20ea74d47bb8914900ddb0d59137bd', 'docs/tasks/CURRENT_TASK.md': '408e10ff443f731c334cc08502e1b8e35e68fe947c793427bd4d4e2c82ba4dba', 'tools/check-project-continuity-control.py': '82fbb8094dea99b28df6bbfd8b80ac0dfd721cb239f9c37f348b0d28d1145c52', 'tools/preflight.py': 'e3b45de44481f3aecd495229ab52a5ff63d7937497238e01c4fcdb4d82b4a2aa'}
+_B_RELEASE_MANIFEST = r"C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\phase-b-last-exam-mistakes-20261015-01a140bc\release-20261016.manifest.json"
+_B_RELEASE_SUBJECT = "ACCAOUI phase B fix last-exam-mistakes partial-result"
+_B_RELEASE_PATCH_SHA = "7dbba6e97d855e8641b9ac10e9cafdff2146b43ff7993a67007b1dea26b6b30a"
+_b_legacy_validate_facts = v1_phase_b_validate_facts
+_b_legacy_validate_current = v1_phase_b_validate_current
+_b_legacy_self_checks = v1_phase_b_self_checks
+_b_legacy_run = run_v1_phase_b_control
+
+
+def _b_release_blob(raw):
+    return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+
+
+def _b_release_tree_oid(entries):
+    root = {}
+    for path, entry in entries.items():
+        parts = path.split("/")
+        require(all(p not in {"", ".", ".."} for p in parts), "release/tree-path")
+        node = root
+        for part in parts[:-1]:
+            node = node.setdefault(part, {})
+            require(isinstance(node, dict), "release/tree-conflict")
+        require(parts[-1] not in node, "release/tree-duplicate")
+        node[parts[-1]] = entry
+    def encode(node):
+        raw = b""
+        for name, value in sorted(node.items(), key=lambda pair:
+                (pair[0]+("/" if isinstance(pair[1],dict) else "")).encode("utf-8")):
+            mode, oid = ("40000", encode(value)) if isinstance(value,dict) else value
+            raw += mode.encode()+b" "+name.encode("utf-8")+b"\0"+bytes.fromhex(oid)
+        return hashlib.sha1(b"tree "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
+    return encode(root)
+
+
+def _b_release_head_identity(facts):
+    raw = facts["head_commit"]
+    oid = hashlib.sha1(b"commit "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
+    require(oid == facts["head"] and facts["head_tree_sha"] == _b_release_tree_oid(facts["head_tree"]),
+            "release/head-identity")
+    headers, separator, body = raw.partition(b"\n\n")
+    lines = headers.splitlines()
+    require(separator and lines[0] == b"tree "+facts["head_tree_sha"].encode()
+            and tuple(line[7:].decode() for line in lines if line.startswith(b"parent "))
+                == facts["head_parents"]
+            and body.splitlines()[0].decode("utf-8") == facts["head_subject"],
+            "release/head-identity: metadata")
+
+
+def _b_release_strip_tool(path, source):
+    role = V1_PHASE_A_HEADINGS[path]
+    begin = ("\n# BEGIN " + V1_PHASE_A_TASK + " phase_b_release " + role + "\n").encode()
+    end = ("# END " + V1_PHASE_A_TASK + " phase_b_release " + role + "\n").encode()
+    require(source.count(begin) == source.count(end) == 1, "release/history: layer count")
+    start = source.index(begin)
+    stop = source.index(end, start) + len(end)
+    return source[:start] + source[stop:]
+
+
+def _b_release_legacy_fixture(facts):
+    # Explicit historical IN-MEMORY fixture only. Never represents current Git.
+    import copy
+    fixture = copy.deepcopy(facts)
+    fixture.pop("release_schema", None)
+    for path in V1_PHASE_A_FILES:
+        source = fixture["sources"][path]
+        if path in _B_RELEASE_PREFIX_SHA:
+            require(source.count(_B_RELEASE_BOUNDARY) == 1, "release/document: boundary")
+            end = source.index(_B_RELEASE_BOUNDARY) + len(_B_RELEASE_BOUNDARY)
+            require(hashlib.sha256(source[:end]).hexdigest() == _B_RELEASE_PREFIX_SHA[path],
+                    "release/document: authorization prefix " + path)
+            source = source[end:]
+        else:
+            source = _b_release_strip_tool(path, source)
+        require(hashlib.sha256(source).hexdigest() == _B_RELEASE_OLD_SHA[path],
+                "release/history: complete prepared source " + path)
+        fixture["sources"][path] = source
+    fixture.update(head=V1_PHASE_B_BASE, origin_ref=V1_PHASE_B_BASE, remote_main=V1_PHASE_B_BASE,
+                   working=V1_PHASE_A_FILES | {"patch-v21.js"}, staged=frozenset(),
+                   untracked=frozenset({V1_PHASE_A_AUDIT, V1_PHASE_B_TEST}),
+                   index_sha=V1_PHASE_B_INDEX_SHA, index_matches_base=True,
+                   mode_or_flag_changes=(), tracked_count=577)
+    _b_legacy_validate_facts(fixture)
+    return fixture
+
+
+def _b_release_expected_tree(facts):
+    expected = dict(facts["base_tree"])
+    for path, raw in facts["sources"].items():
+        expected[path] = ("100644", _b_release_blob(raw))
+    return expected
+
+
+def v1_phase_b_validate_facts(facts, *, require_product=True):
+    if "release_schema" not in facts:
+        return _b_legacy_validate_facts(facts, require_product=require_product)
+    require(facts["release_schema"] == 1, "release/schema")
+    require(require_product, "release/product: release requires actual fixed product")
+    require(facts["cwd"] == str(ROOT.resolve()), "release/cwd")
+    require(facts["branch"] == "main", "release/branch")
+    require(facts["origin_url"] in {
+        "https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+        "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+        "git@github.com:asarrad-bit/accaoui-34a-lernapp.git"}, "release/origin")
+    require(facts["python"] == str(Path(V1_PHASE_A_PYTHON).resolve())
+            and facts["python_version"] == (3, 13, 3), "release/python")
+    require(facts["tracked_count"] == 577 and len(facts["base_tree"]) == 577,
+            "release/base-count")
+    require(not facts["frozen_changes"], "release/foreign-working")
+    require(not facts["mode_or_flag_changes"] and not facts["attribute_changes"],
+            "release/flags-attributes")
+    require(not facts["audit_tracked"] and facts["audit_regular"]
+            and facts["audit_bytes"] == 10336 and facts["audit_sha"] == V1_PHASE_A_AUDIT_SHA,
+            "release/audit")
+    require(facts["agents_sha"] == "b85cbf52ef90e83a13c45d9347d4252c54f10684fb5762d80257faa00b09a7bc"
+            and facts["plan_sha"].lower() == "de88f6680c0323031eedb7680de787b83b8fb8bdf5161bfdabbe124178a47766",
+            "release/protected-documents")
+    require(facts["sources_regular"] and set(facts["sources"]) == set(V1_PHASE_B_FILES),
+            "release/sources")
+    require(hashlib.sha256(facts["sources"]["patch-v21.js"]).hexdigest() == _B_RELEASE_PATCH_SHA,
+            "release/product")
+    require(hashlib.sha256(facts["sources"][V1_PHASE_B_TEST]).hexdigest() == V1_PHASE_B_TEST_SHA,
+            "release/test")
+    require(set(facts["base_sources"]) == set(V1_PHASE_B_BASE_SOURCE_SHA)
+            and all(hashlib.sha256(facts["base_sources"][p]).hexdigest() == h
+                    for p, h in V1_PHASE_B_BASE_SOURCE_SHA.items()), "release/history: base sources")
+    _b_release_legacy_fixture(facts)
+    import json
+    import re
+    require(facts["manifest_regular"] and facts["manifest_path"] == _B_RELEASE_MANIFEST,
+            "release/manifest: file")
+    require(bool(re.fullmatch(r"[0-9a-f]{64}", facts["manifest_sha"]))
+            and hashlib.sha256(facts["manifest_bytes"]).hexdigest() == facts["manifest_sha"],
+            "release/manifest: frozen digest")
+    manifest = json.loads(facts["manifest_bytes"].decode("utf-8"))
+    require(set(manifest) == {"schema", "task", "parent", "subject", "files"}
+            and manifest["schema"] == 1 and manifest["task"] == V1_PHASE_A_TASK
+            and manifest["parent"] == V1_PHASE_B_BASE and manifest["subject"] == _B_RELEASE_SUBJECT,
+            "release/manifest: contract")
+    rows = manifest["files"]
+    require(isinstance(rows, list) and len(rows) == 8
+            and all(isinstance(row, dict) and set(row) == {"path", "bytes", "sha256", "blob", "mode"}
+                    for row in rows)
+            and {row["path"] for row in rows} == set(V1_PHASE_B_FILES),
+            "release/manifest: exact paths")
+    for row in rows:
+        raw = facts["sources"][row["path"]]
+        require(row["mode"] == "100644" and row["bytes"] == len(raw)
+                and row["sha256"] == hashlib.sha256(raw).hexdigest()
+                and row["blob"] == _b_release_blob(raw), "release/manifest: frozen bytes")
+    expected = _b_release_expected_tree(facts)
+    require(facts["index_matches_base"] == (facts["index_tree"] == facts["base_tree"]),
+            "release/index-consistency")
+    require(bool(re.fullmatch(r"[0-9a-f]{64}", facts["index_sha"])), "release/index-digest")
+    if facts["head"] == V1_PHASE_B_BASE:
+        require(facts["origin_ref"] == facts["remote_main"] == V1_PHASE_B_BASE,
+                "release/precommit-remote")
+        require(facts["head_tree"] == facts["base_tree"] and facts["new_count"] == 0,
+                "release/precommit-tree")
+        if not facts["staged"]:
+            require(facts["index_tree"] == facts["base_tree"]
+                    and facts["index_sha"] == V1_PHASE_B_INDEX_SHA,
+                    "release/authorized-index")
+            require(facts["working"] == V1_PHASE_A_FILES | {"patch-v21.js"}
+                    and facts["untracked"] == frozenset({V1_PHASE_A_AUDIT, V1_PHASE_B_TEST}),
+                    "release/authorized-scope")
+            _b_release_head_identity(facts)
+            return "phase_b_release_authorized"
+        require(facts["staged"] == V1_PHASE_B_FILES and facts["index_tree"] == expected,
+                "release/staged-index")
+        require(not facts["working"] and facts["untracked"] == frozenset({V1_PHASE_A_AUDIT}),
+                "release/staged-working")
+        _b_release_head_identity(facts)
+        return "phase_b_release_staged"
+    require(bool(re.fullmatch(r"[0-9a-f]{40}", facts["head"]))
+            and facts["head_parents"] == (V1_PHASE_B_BASE,) and facts["new_count"] == 1,
+            "release/commit-parent-count")
+    require(facts["head_subject"] == _B_RELEASE_SUBJECT, "release/commit-title")
+    require(facts["head_changes"] == {
+        p: ("A" if p == V1_PHASE_B_TEST else "M") for p in V1_PHASE_B_FILES},
+        "release/commit-scope")
+    require(facts["head_tree"] == expected, "release/commit-tree")
+    require(facts["index_tree"] == expected and not facts["working"] and not facts["staged"]
+            and facts["untracked"] == frozenset({V1_PHASE_A_AUDIT}),
+            "release/committed-working-index")
+    _b_release_head_identity(facts)
+    if facts["origin_ref"] == facts["remote_main"] == V1_PHASE_B_BASE:
+        return "phase_b_implementation_committed"
+    require(facts["origin_ref"] == facts["remote_main"] == facts["head"], "release/postcommit-remote")
+    return "phase_b_implementation_pushed"
+
+
+def v1_phase_b_validate_current(*, require_product=True):
+    if _B_RELEASE_BOUNDARY not in TASK_PATH.read_bytes():
+        return _b_legacy_validate_current(require_product=require_product)
+    import os
+    import sys
+    os.environ["GIT_OPTIONAL_LOCKS"] = "0"
+    os.environ["GIT_NO_REPLACE_OBJECTS"] = "1"
+    def regular(path):
+        return (path.is_file() and not path.is_symlink() and not path.is_junction()
+                and not (getattr(path.stat(), "st_file_attributes", 0) & 1024))
+    def tree(ref):
+        result = {}
+        for row in v1_phase_b_git_bytes(["ls-tree", "-rz", "--full-tree", ref]).split(b"\0"):
+            if row:
+                meta, name = row.split(b"\t", 1)
+                mode, kind, blob = meta.decode().split()
+                require(kind == "blob" and name.decode() not in result, "release/tree-kind")
+                result[name.decode()] = (mode, blob)
+        return result
+    origin = v1_phase_b_git(["remote", "get-url", "origin"]).strip()
+    require(origin in {"https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+                       "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+                       "git@github.com:asarrad-bit/accaoui-34a-lernapp.git"}, "release/origin")
+    remote = v1_phase_b_git(["ls-remote", "--exit-code", "origin", "refs/heads/main"]).splitlines()
+    require(len(remote) == 1 and remote[0].split()[1:] == ["refs/heads/main"], "release/remote-read")
+    base_tree = tree(V1_PHASE_B_BASE)
+    head = v1_phase_b_git(["rev-parse", "HEAD"]).strip()
+    index, flags = {}, {}
+    for row in v1_phase_b_git_bytes(["ls-files", "--stage", "-z"]).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, blob, stage = meta.decode().split()
+            require(stage == "0" and name.decode() not in index, "release/unmerged-index")
+            index[name.decode()] = (mode, blob)
+    for row in v1_phase_b_git_bytes(["ls-files", "-v", "-z"]).split(b"\0"):
+        if row:
+            flags[row[2:].decode()] = row[:1]
+    frozen = []
+    for path, entry in base_tree.items():
+        target = ROOT / path
+        require(regular(target), "release/regular-base: " + path)
+        if path not in V1_PHASE_B_FILES and _b_release_blob(target.read_bytes()) != entry[1]:
+            frozen.append(path)
+    attributes = v1_phase_b_git_bytes(["check-attr", "-z", "filter", "working-tree-encoding",
+                                       "--", *sorted(V1_PHASE_B_FILES)]).split(b"\0")
+    require(attributes[-1:] == [b""] and (len(attributes)-1) % 3 == 0, "release/attribute-read")
+    bad_attributes = tuple(attributes[i].decode() + ":" + attributes[i+1].decode()
+                           for i in range(0, len(attributes)-1, 3)
+                           if attributes[i+2] != b"unspecified")
+    audit_path = ROOT / V1_PHASE_A_AUDIT
+    require(regular(audit_path), "release/audit")
+    audit = audit_path.read_bytes()  # Hash/metadata only. Never copied or transferred.
+    index_path = Path(v1_phase_b_git(["rev-parse", "--git-path", "index"]).strip())
+    if not index_path.is_absolute():
+        index_path = ROOT / index_path
+    manifest_path = Path(os.environ.get("ACCAOUI_PHASE_B_RELEASE_MANIFEST", ""))
+    require(str(manifest_path) == _B_RELEASE_MANIFEST and regular(manifest_path), "release/manifest: file")
+    sources = {p: (ROOT/p).read_bytes() for p in V1_PHASE_B_FILES}
+    changes = {}
+    for row in v1_phase_b_git(["diff-tree", "--no-commit-id", "--name-status", "--no-renames",
+                               "-r", V1_PHASE_B_BASE, head]).splitlines():
+        status, path = row.split("\t")
+        require(path not in changes, "release/duplicate-change")
+        changes[path] = status
+    facts = {
+        "release_schema": 1, "cwd": str(Path.cwd().resolve()),
+        "branch": v1_phase_b_git(["branch", "--show-current"]).strip(), "origin_url": origin,
+        "head": head, "origin_ref": v1_phase_b_git(["rev-parse", "origin/main"]).strip(),
+        "remote_main": remote[0].split()[0],
+        "working": frozenset(v1_phase_b_git(["diff", "--name-only", "--no-renames"]).splitlines()),
+        "staged": frozenset(v1_phase_b_git(["diff", "--cached", "--name-only", "--no-renames"]).splitlines()),
+        "untracked": frozenset(v1_phase_b_git(["ls-files", "--others", "--exclude-standard"]).splitlines()),
+        "index_sha": hashlib.sha256(index_path.read_bytes()).hexdigest(),
+        "index_matches_base": index == base_tree, "tracked_count": len(base_tree),
+        "index_tree": index, "base_tree": base_tree, "head_tree": tree(head),
+        "head_tree_sha": v1_phase_b_git(["rev-parse", head+"^{tree}"]).strip(),
+        "head_commit": v1_phase_b_git_bytes(["cat-file", "commit", head]),
+        "base_commit": v1_phase_b_git_bytes(["cat-file", "commit", V1_PHASE_B_BASE]),
+        "head_parents": tuple(v1_phase_b_git(["show", "-s", "--format=%P", head]).strip().split()),
+        "head_subject": v1_phase_b_git(["show", "-s", "--format=%s", head]).strip(),
+        "head_changes": changes,
+        "new_count": int(v1_phase_b_git(["rev-list", "--count", V1_PHASE_B_BASE+".."+head]).strip()),
+        "frozen_changes": tuple(sorted(frozen)),
+        "mode_or_flag_changes": tuple(sorted(p for p in index if flags.get(p) != b"H")),
+        "attribute_changes": bad_attributes,
+        "audit_tracked": bool(v1_phase_b_git(["ls-files", "--", V1_PHASE_A_AUDIT]).strip()),
+        "audit_regular": regular(audit_path), "audit_bytes": len(audit),
+        "audit_sha": hashlib.sha256(audit).hexdigest(),
+        "agents_sha": hashlib.sha256(AGENTS_PATH.read_bytes()).hexdigest(),
+        "plan_sha": hashlib.sha256((ROOT/"docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md").read_bytes()).hexdigest(),
+        "python": str(Path(sys.executable).resolve()), "python_version": tuple(sys.version_info[:3]),
+        "sources": sources, "sources_regular": all(regular(ROOT/p) for p in sources),
+        "base_sources": {p: v1_phase_b_git_bytes(["show", V1_PHASE_B_BASE+":"+p])
+                         for p in V1_PHASE_A_FILES | {"patch-v21.js"}},
+        "manifest_path": str(manifest_path), "manifest_regular": regular(manifest_path),
+        "manifest_bytes": manifest_path.read_bytes(),
+        "manifest_sha": os.environ.get("ACCAOUI_PHASE_B_RELEASE_MANIFEST_SHA256", "").lower(),
+    }
+    v1_phase_b_validate_facts(facts, require_product=require_product)
+    return facts
+
+
+def _b_release_transition_checks(facts):
+    # Synthetic contract fixtures only; actual state separately comes from real Git.
+    import copy
+    import json
+    prepared = _b_release_legacy_fixture(facts)
+    require(_b_legacy_validate_facts(prepared) == "phase_b_implementation_prepared",
+            "release/tests: historical prepared")
+    p = copy.deepcopy(facts)
+    p.update(head=V1_PHASE_B_BASE, origin_ref=V1_PHASE_B_BASE, remote_main=V1_PHASE_B_BASE,
+             index_tree=dict(p["base_tree"]), index_matches_base=True,
+             index_sha=V1_PHASE_B_INDEX_SHA, working=V1_PHASE_A_FILES|{"patch-v21.js"},
+             staged=frozenset(), untracked=frozenset({V1_PHASE_A_AUDIT,V1_PHASE_B_TEST}),
+             head_tree=dict(p["base_tree"]), new_count=0)
+    p["head_commit"] = p["base_commit"]
+    base_headers, _, base_body = p["base_commit"].partition(b"\n\n")
+    p["head_parents"] = tuple(line[7:].decode() for line in base_headers.splitlines()
+                              if line.startswith(b"parent "))
+    p["head_subject"] = base_body.splitlines()[0].decode("utf-8")
+    p["head_tree_sha"] = _b_release_tree_oid(p["base_tree"])
+    s = copy.deepcopy(p)
+    s.update(index_tree=_b_release_expected_tree(s), index_matches_base=False,
+             index_sha="a"*64, staged=V1_PHASE_B_FILES, working=frozenset(),
+             untracked=frozenset({V1_PHASE_A_AUDIT}))
+    c = copy.deepcopy(s)
+    c.update(head="c"*40, head_parents=(V1_PHASE_B_BASE,), head_subject=_B_RELEASE_SUBJECT,
+             head_changes={q:("A" if q==V1_PHASE_B_TEST else "M") for q in V1_PHASE_B_FILES},
+             head_tree=_b_release_expected_tree(c), new_count=1, staged=frozenset())
+    c["head_tree_sha"] = _b_release_tree_oid(c["head_tree"])
+    c["head_commit"] = (b"tree "+c["head_tree_sha"].encode()+b"\nparent "
+        +V1_PHASE_B_BASE.encode()+b"\nauthor Fixture <fixture@example.invalid> 0 +0000"
+        +b"\ncommitter Fixture <fixture@example.invalid> 0 +0000\n\n"
+        +_B_RELEASE_SUBJECT.encode()+b"\n")
+    c["head"] = hashlib.sha1(b"commit "+str(len(c["head_commit"])).encode()
+                            +b"\0"+c["head_commit"]).hexdigest()
+    u = copy.deepcopy(c)
+    u.update(origin_ref=u["head"], remote_main=u["head"])
+    cases = [(p,"phase_b_release_authorized"),(s,"phase_b_release_staged"),
+             (c,"phase_b_implementation_committed"),(u,"phase_b_implementation_pushed")]
+    for fixture, state in cases:
+        require(v1_phase_b_validate_facts(fixture) == state, "release/tests: positive "+state)
+    negative = 0
+    def blocked(fixture, mutate, expected):
+        nonlocal negative
+        bad = copy.deepcopy(fixture)
+        mutate(bad)
+        try:
+            v1_phase_b_validate_facts(bad)
+        except ValidationError as exc:
+            require(expected in str(exc), "release/tests: wrong rejection: "+str(exc)+" expected "+expected)
+            negative += 1
+            return
+        raise ValidationError("release/tests: mutation accepted: "+expected)
+    for key, value, reason in (
+        ("release_schema",2,"release/schema"),("cwd","foreign","release/cwd"),
+        ("branch","other","release/branch"),("origin_url","https://github.com/foreign/repo","release/origin"),
+        ("python","foreign","release/python"),("python_version",(3,13,2),"release/python"),
+        ("tracked_count",576,"release/base-count"),("frozen_changes",("app.js",),"release/foreign-working"),
+        ("mode_or_flag_changes",("app.js",),"release/flags-attributes"),
+        ("attribute_changes",("patch-v21.js:filter",),"release/flags-attributes"),
+        ("audit_tracked",True,"release/audit"),("audit_regular",False,"release/audit"),
+        ("audit_bytes",0,"release/audit"),("audit_sha","0"*64,"release/audit"),
+        ("agents_sha","0"*64,"release/protected-documents"),
+        ("plan_sha","0"*64,"release/protected-documents"),("sources_regular",False,"release/sources"),
+        ("manifest_regular",False,"release/manifest: file"),("manifest_path","foreign","release/manifest: file"),
+        ("manifest_sha","0"*64,"release/manifest: frozen digest"),
+        ("index_sha","invalid","release/index-digest"),
+        ("remote_main","0"*40,"release/precommit-remote"),
+        ("origin_ref","0"*40,"release/precommit-remote"),
+        ("new_count",1,"release/precommit-tree")):
+        blocked(p, lambda f,k=key,v=value:f.__setitem__(k,v), reason)
+    for path in V1_PHASE_B_FILES:
+        blocked(p,lambda f,q=path:f["sources"].pop(q),"release/sources")
+    for path in _B_RELEASE_PREFIX_SHA:
+        blocked(p,lambda f,q=path:f["sources"].__setitem__(q,b"foreign"+f["sources"][q]),
+                "release/document")
+        blocked(p,lambda f,q=path:f["sources"].__setitem__(q,f["sources"][q].replace(
+            b"Staging erlaubt: JA",b"Staging erlaubt: NEIN",1)),"release/document")
+        blocked(p,lambda f,q=path:f["sources"].__setitem__(q,f["sources"][q]+b"foreign"),
+                "release/history")
+    for path in V1_PHASE_A_FILES - set(_B_RELEASE_PREFIX_SHA):
+        blocked(p,lambda f,q=path:f["sources"].__setitem__(q,f["sources"][q]+b"foreign"),
+                "release/history")
+    for path, reason in (("patch-v21.js","release/product"),(V1_PHASE_B_TEST,"release/test")):
+        blocked(p,lambda f,q=path:f["sources"].__setitem__(q,f["sources"][q]+b"foreign"),reason)
+    for path in V1_PHASE_B_BASE_SOURCE_SHA:
+        blocked(p,lambda f,q=path:f["base_sources"].__setitem__(q,f["base_sources"][q]+b"foreign"),
+                "release/history")
+    def manifest_mutation(f, mutate):
+        value=json.loads(f["manifest_bytes"])
+        mutate(value)
+        f["manifest_bytes"]=json.dumps(value,sort_keys=True).encode()
+        f["manifest_sha"]=hashlib.sha256(f["manifest_bytes"]).hexdigest()
+    for key, value in (("schema",2),("task","foreign"),("parent","0"*40),("subject","foreign")):
+        blocked(p,lambda f,k=key,v=value:manifest_mutation(f,lambda m:m.__setitem__(k,v)),
+                "release/manifest: contract")
+    blocked(p,lambda f:manifest_mutation(f,lambda m:m["files"].pop()),"release/manifest: exact paths")
+    for key,value in (("bytes",0),("sha256","0"*64),("blob","0"*40),("mode","100755")):
+        blocked(p,lambda f,k=key,v=value:manifest_mutation(f,lambda m:m["files"][0].__setitem__(k,v)),
+                "release/manifest: frozen bytes")
+    blocked(p,lambda f:f.__setitem__("index_sha","b"*64),"release/authorized-index")
+    blocked(p,lambda f:f.__setitem__("working",f["working"]|{"app.js"}),"release/authorized-scope")
+    blocked(p,lambda f:f.__setitem__("untracked",frozenset({V1_PHASE_A_AUDIT})),
+            "release/authorized-scope")
+    for path in V1_PHASE_B_FILES:
+        blocked(s,lambda f,q=path:f.__setitem__("staged",f["staged"]-{q}),"release/staged-index")
+        def wrong_blob(f,q=path):
+            f["index_tree"][q]=("100644","0"*40)
+        blocked(s,wrong_blob,"release/staged-index")
+    for path in ("foreign.txt",V1_PHASE_A_AUDIT):
+        blocked(s,lambda f,q=path:f.__setitem__("staged",f["staged"]|{q}),"release/staged-index")
+    blocked(s,lambda f:f["index_tree"].__setitem__("patch-v21.js",("100755","0"*40)),
+            "release/staged-index")
+    blocked(s,lambda f:f.__setitem__("working",frozenset({"patch-v21.js"})),"release/staged-working")
+    blocked(s,lambda f:f.__setitem__("untracked",f["untracked"]|{"foreign.txt"}),
+            "release/staged-working")
+    for key,value,reason in (
+        ("head","not-a-sha","release/commit-parent-count"),
+        ("head_parents",("0"*40,),"release/commit-parent-count"),
+        ("head_parents",(V1_PHASE_B_BASE,"0"*40),"release/commit-parent-count"),
+        ("new_count",2,"release/commit-parent-count"),("head_subject","foreign","release/commit-title"),
+        ("working",frozenset({"patch-v21.js"}),"release/committed-working-index"),
+        ("staged",frozenset({"patch-v21.js"}),"release/committed-working-index"),
+        ("untracked",frozenset(),"release/committed-working-index"),
+        ("remote_main","0"*40,"release/postcommit-remote"),
+        ("origin_ref","c"*40,"release/postcommit-remote")):
+        blocked(c,lambda f,k=key,v=value:f.__setitem__(k,v),reason)
+    for path in V1_PHASE_B_FILES:
+        blocked(c,lambda f,q=path:f["head_changes"].pop(q),"release/commit-scope")
+        blocked(c,lambda f,q=path:f["head_tree"].__setitem__(q,("100644","0"*40)),"release/commit-tree")
+    blocked(c,lambda f:f["head_changes"].__setitem__("app.js","M"),"release/commit-scope")
+    blocked(c,lambda f:f["head_tree"].__setitem__("app.js",("100644","0"*40)),"release/commit-tree")
+    blocked(c,lambda f:f["index_tree"].__setitem__("patch-v21.js",("100755","0"*40)),
+            "release/committed-working-index")
+    blocked(u,lambda f:f.__setitem__("remote_main",V1_PHASE_B_BASE),"release/postcommit-remote")
+    blocked(c,lambda f:f.__setitem__("head","d"*40),"release/head-identity")
+    blocked(c,lambda f:f.__setitem__("head_commit",f["head_commit"]+b"foreign"),"release/head-identity")
+    blocked(c,lambda f:f.__setitem__("head_tree_sha","0"*40),"release/head-identity")
+    require(negative >= 100, "release/tests: incomplete transition-negative groups")
+    print(f"Phase B release: 5 explicit contract fixture positives / PASS; {negative} targeted negatives / blocked.",
+          flush=True)
+    return 5, negative
+
+
+def v1_phase_b_self_checks(facts):
+    if "release_schema" not in facts:
+        return _b_legacy_self_checks(facts)
+    v1_phase_b_validate_facts(facts)
+    fixture = _b_release_legacy_fixture(facts)
+    print("Original B tests: historical IN-MEMORY prepared contract, not current Git.", flush=True)
+    old_positive, old_negative = _b_legacy_self_checks(fixture)
+    require((old_positive,old_negative)==(2,82), "release/tests: original B checks absent")
+    positive, negative = _b_release_transition_checks(facts)
+    return old_positive+positive, old_negative+negative
+
+
+def run_v1_phase_b_control():
+    if _B_RELEASE_BOUNDARY not in TASK_PATH.read_bytes():
+        return _b_legacy_run()
+    try:
+        before = v1_phase_b_validate_current()
+        state = v1_phase_b_validate_facts(before)
+        v1_phase_b_self_checks(before)
+        v1_phase_b_product_check()
+        print(v1_phase_a_historical_check("continuity").strip(), flush=True)
+        require(v1_phase_b_validate_current() == before, "release/state changed during continuity")
+        print("Actual current Git phase: "+state+". Continuity / PASS.", flush=True)
+        print("v27.37n STOPP / NOT VERIFIED. No next product task. Release only under the fixed contract.",
+              flush=True)
+        return 0
+    except (ValidationError,OSError,UnicodeError,ValueError,KeyError,TypeError) as exc:
+        print("STOPP: Phase-B-release continuity: "+str(exc), flush=True)
+        return 1
+# END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b_release continuity
+# END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b continuity
 def main() -> int:
+    if v1_phase_b_requested():
+        return run_v1_phase_b_control()
     if v1_phase_a_requested():
         return run_v1_phase_a_control()
     if detect_v2737n_phase() is not None:

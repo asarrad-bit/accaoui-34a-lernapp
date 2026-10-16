@@ -7085,7 +7085,63 @@ def _v1_phase_a_preflight():
         raise SystemExit(1)
 
 # END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_a preflight
+
+# BEGIN ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b preflight
+
+def _v1_phase_b_preflight():
+    try:
+        control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+        if not control["v1_phase_b_requested"]():
+            return False
+        before = control["v1_phase_b_validate_current"]()
+        control["v1_phase_b_self_checks"](before)
+        control["v1_phase_b_product_check"]()
+        print(control["v1_phase_a_historical_check"]("preflight").strip(), flush=True)
+        if control["v1_phase_b_validate_current"]() != before:
+            raise ValueError("Phase-B-Zustand während vollständigem Preflight verändert")
+        print("Phase B: aktueller Produkttest und vollständiger originaler historischer Preflight / PASS.",
+              flush=True)
+        print("Aktuelle Phase: phase_b_implementation_prepared.", flush=True)
+        print("v27.37n bleibt STOPP / NOT VERIFIED. Keine B-Gitfreigabe aus historischen Ausgaben.",
+              flush=True)
+        print("Staging erlaubt: NEIN. Commit erlaubt: NEIN. Push erlaubt: NEIN.", flush=True)
+        print("OK: Preflight bestanden.", flush=True)
+        return True
+    except Exception as exc:
+        print("STOPP: Phase-B-Preflight fehlgeschlagen: " + str(exc), flush=True)
+        raise SystemExit(1)
+
+
+# BEGIN ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b_release preflight
+_b_legacy_release_preflight = _v1_phase_b_preflight
+
+
+def _v1_phase_b_preflight():
+    control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+    if control["_B_RELEASE_BOUNDARY"] not in control["TASK_PATH"].read_bytes():
+        return _b_legacy_release_preflight()
+    try:
+        before = control["v1_phase_b_validate_current"]()
+        state = control["v1_phase_b_validate_facts"](before)
+        control["v1_phase_b_self_checks"](before)
+        control["v1_phase_b_product_check"]()
+        print(control["v1_phase_a_historical_check"]("preflight").strip(), flush=True)
+        if control["v1_phase_b_validate_current"]() != before:
+            raise ValueError("Release state changed during complete original preflight")
+        print("Actual current Git phase: "+state, flush=True)
+        print("Phase B release: actual product checks and complete unchanged original historical preflight / PASS.",
+              flush=True)
+        print("v27.37n STOPP / NOT VERIFIED. No Git permission from historical PASS output.", flush=True)
+        print("OK: Preflight bestanden.", flush=True)
+        return True
+    except Exception as exc:
+        print("STOPP: Phase-B-release preflight: "+str(exc), flush=True)
+        raise SystemExit(1)
+# END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b_release preflight
+# END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b preflight
 def main():
+    if _v1_phase_b_preflight():
+        return
     if _v1_phase_a_preflight():
         return
     if _v2737n_preflight():

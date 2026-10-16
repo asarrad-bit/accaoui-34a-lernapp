@@ -2512,7 +2512,8 @@ if (!window.ACCAOUI_V2311_LEARNING_PARTIAL_RESULT_PATCH) {
         "category",
         "open-questions",
         "topic-mistakes",
-        "all-mistakes"
+        "all-mistakes",
+        "last-exam-mistakes"
       ].includes(String(currentMode || ""));
     } catch (error) {
       return false;
