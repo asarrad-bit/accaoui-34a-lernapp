@@ -23807,7 +23807,460 @@ def run_exam_dates_release_control(kind):
 
 # END ACCAOUI_EXAM_DATES_RELEASE continuity
 
+# BEGIN ACCAOUI_EXAM_DATES_STATUS_CLOSURE
+# Reviewable draft. No new product work and no authority from this source alone.
+_CS_TASK = "ACCAOUI_EXAM_DATES_STATUS_CLOSURE"
+_CS_BASE = "71862566d2cb96b14864715b337471df3a134472"
+_CS_BASE_TREE = "c9b059ddc489fa249b9eb6bb0eb4eda2f6899915"
+_CS_SUBJECT = "ACCAOUI close exam dates control status"
+_CS_DOCS = frozenset({"docs/PROJECT_STATE_CURRENT.md", "docs/PROJECT_MASTERLIST.md",
+                      "docs/tasks/CURRENT_TASK.md", "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"})
+_CS_FILES = _CS_DOCS | {CHECKER_RELATIVE_PATH, "tools/preflight.py"}
+_CS_DIR = EXAM_DATES_EVIDENCE.parent / "next-status-closure-planning-20261018-run1"
+_CS_OUT = EXAM_DATES_EVIDENCE.parent / "exam-dates-status-closure-20261018-run1"
+_CS_BOUNDARY = b"## Historie bis zum veroeffentlichten Pruefungstermin-Commit 71862566\n\n---\n\n"
+_CS_INVENTORY_PIN = "12f842085b5be2dbe06815cb400086004ca1b1c0d3bcfe116067dfc91e2c2616"
+_CS_DISPATCH = {
+    CHECKER_RELATIVE_PATH: b'    if exam_dates_status_closure_requested():\n        return run_exam_dates_status_closure("continuity")\n',
+    "tools/preflight.py": b'    if _exam_dates_status_closure_preflight():\n        return\n',
+}
+
+
+def exam_dates_status_closure_requested():
+    import os
+    return (_CS_TASK in TASK_PATH.read_text(encoding="utf-8")[:2400]
+            or "ACCAOUI_EXAM_CLOSURE_PROPOSAL_SHA256" in os.environ)
+
+
+def cs_meta(raw):
+    return {"bytes": len(raw), "sha256": xr_sha(raw), "blob": _b_release_blob(raw), "mode": "100644"}
+
+
+def cs_tree_oid(entries):
+    tree = {}
+    for path, (mode, oid) in entries.items():
+        node = tree
+        parts = path.split("/")
+        for part in parts[:-1]:
+            node = node.setdefault(part, {})
+        require(parts[-1] not in node, "CS/duplicate-tree-path")
+        node[parts[-1]] = (mode, oid)
+    def digest(node):
+        result = []
+        for name in sorted(node, key=lambda n: (n + ("/" if isinstance(node[n], dict) else "")).encode("utf-8")):
+            value = node[name]
+            mode, oid = ("40000", digest(value)) if isinstance(value, dict) else value
+            result.append(mode.encode("ascii") + b" " + name.encode("utf-8") + b"\0" + bytes.fromhex(oid))
+        raw = b"".join(result)
+        return hashlib.sha1(b"tree " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
+    return digest(tree)
+
+
+def cs_peel(path, raw):
+    if path in _CS_DOCS:
+        require(raw.count(_CS_BOUNDARY) == 1, "CS/document-history-boundary")
+        return raw.split(_CS_BOUNDARY, 1)[1]
+    role = "continuity" if path == CHECKER_RELATIVE_PATH else "preflight"
+    begin = ("\n# BEGIN ACCAOUI_EXAM_DATES_STATUS_CLOSURE" + ("" if role == "continuity" else " preflight") + "\n").encode()
+    end = ("# END ACCAOUI_EXAM_DATES_STATUS_CLOSURE" + ("" if role == "continuity" else " preflight") + "\n").encode()
+    require(raw.count(begin) == raw.count(end) == 1, "CS/tool-history-boundary")
+    start = raw.index(begin)
+    finish = raw.index(end, start) + len(end)
+    old = raw[:start] + raw[finish:]
+    require(old.count(_CS_DISPATCH[path]) == 1, "CS/single-new-dispatch")
+    return old.replace(_CS_DISPATCH[path], b"", 1)
+
+
+def cs_package():
+    import os
+    original_pin = os.environ.get("ACCAOUI_EXAM_CLOSURE_ORIGINAL_PROPOSAL_SHA256", "")
+    proposal_pin = os.environ.get("ACCAOUI_EXAM_CLOSURE_PROPOSAL_SHA256", "")
+    original = xr_json(_CS_DIR / "proposal-manifest.json", original_pin)
+    require(not set(original) & {"revision", "previous_proposal_sha256", "correction_record_sha256"},
+            "CS/original-is-not-a-silent-revision")
+    revision = os.environ.get("ACCAOUI_EXAM_CLOSURE_REVISION", "0")
+    require(revision in {"0", "1", "2"}, "CS/at-most-two-correction-revisions")
+    active_dir, m, previous_pin = _CS_DIR, original, original_pin
+    seen_causes, seen_attempts = set(), set()
+    for number in range(1, int(revision)+1):
+        active_dir = _CS_OUT / "revisions" / ("revision-"+str(number))
+        revision_pin = os.environ.get("ACCAOUI_EXAM_CLOSURE_REVISION_"+str(number)+"_SHA256", "")
+        current = xr_json(active_dir / "proposal-manifest.json", revision_pin)
+        additions = {"revision", "previous_proposal_sha256", "correction_record_sha256"}
+        require(set(current) == set(original) | additions and current["revision"] == number
+                and current["previous_proposal_sha256"] == previous_pin
+                and all(current[k] == original[k] for k in set(original)-{"draft_files", "complete_diff_sha256", "auxiliary_files"})
+                and set(current["auxiliary_files"]) == set(original["auxiliary_files"])
+                and set(current["draft_files"]) == _CS_FILES, "CS/transparent-bounded-revision-chain")
+        record = xr_json(active_dir / "correction-record.json", current["correction_record_sha256"])
+        require(set(record) == {"task", "revision", "previous_proposal_sha256", "original_proposal_sha256",
+                               "failed_attempt", "failure_evidence", "failure_evidence_sha256", "cause", "precise_correction",
+                               "fresh_protection_evidence", "fresh_protection_evidence_sha256", "scope_and_expectations_unchanged"}
+                and record["task"] == _CS_TASK and record["revision"] == number
+                and record["previous_proposal_sha256"] == previous_pin
+                and record["original_proposal_sha256"] == original_pin
+                and record["failed_attempt"].strip() and record["cause"].strip()
+                and record["precise_correction"].strip() and record["scope_and_expectations_unchanged"] is True
+                and re.fullmatch("[0-9a-f]{64}", record["failure_evidence_sha256"])
+                and re.fullmatch("[0-9a-f]{64}", record["fresh_protection_evidence_sha256"]),
+                "CS/documented-cause-and-preserved-failure")
+        require(record["cause"] not in seen_causes and record["failed_attempt"] not in seen_attempts,
+                "CS/one-corrected-attempt-per-concrete-cause")
+        seen_causes.add(record["cause"])
+        seen_attempts.add(record["failed_attempt"])
+        for key in ("failure_evidence", "fresh_protection_evidence"):
+            path = _CS_OUT / record[key]
+            require(path.resolve().is_relative_to(_CS_OUT.resolve()) and xr_regular(path)
+                    and xr_sha(path.read_bytes()) == record[key+"_sha256"], "CS/real-correction-evidence-pin")
+        m, previous_pin = current, revision_pin
+    require(proposal_pin == previous_pin, "CS/active-revision-independent-pin")
+    base_keys = set(m)-{"revision", "previous_proposal_sha256", "correction_record_sha256"}
+    require(base_keys == {"schema", "task", "status", "base", "subject", "base_tree", "base_tree_oid",
+                      "before_files", "draft_files", "history_inventory_sha256", "approval_text_sha256",
+                      "complete_diff_sha256", "auxiliary_files"}
+            and m["schema"] == 1 and m["task"] == _CS_TASK
+            and m["status"] == "DRAFT_NOT_AUTHORIZED" and m["base"] == _CS_BASE
+            and m["subject"] == _CS_SUBJECT and m["base_tree_oid"] == _CS_BASE_TREE
+            and set(m["draft_files"]) == set(m["before_files"]) == _CS_FILES
+            and m["history_inventory_sha256"] == _CS_INVENTORY_PIN, "CS/exact-proposal-contract")
+    require(xr_sha((active_dir / "proposed-six-files.diff").read_bytes()) == m["complete_diff_sha256"],
+            "CS/reviewable-complete-diff")
+    for relative, row in m["auxiliary_files"].items():
+        path = active_dir / relative
+        require(path.resolve().is_relative_to(active_dir.resolve()) and xr_regular(path)
+                and set(row) == {"bytes", "sha256"} and path.stat().st_size == row["bytes"]
+                and xr_sha(path.read_bytes()) == row["sha256"], "CS/pinned-review-and-case-helpers")
+    inventory = xr_json(_CS_DIR / "historical-inventory.json", _CS_INVENTORY_PIN)
+    require(inventory["schema"] == 1 and inventory["base"] == _CS_BASE
+            and inventory["files"] and inventory["audit_content_included"] is False, "CS/history-inventory")
+    for relative, row in inventory["files"].items():
+        path = EXAM_DATES_EVIDENCE / relative
+        require(path.resolve().is_relative_to(EXAM_DATES_EVIDENCE.resolve())
+                and relative != V1_PHASE_A_AUDIT and xr_regular(path), "CS/history-artifact-location")
+        raw = path.read_bytes()
+        require(set(row) == {"bytes", "sha256"} and len(raw) == row["bytes"]
+                and xr_sha(raw) == row["sha256"], "CS/unchanged-history-artifact")
+    text_path = _CS_DIR / "PERSONAL_APPROVAL_DRAFT.md"
+    require(xr_regular(text_path) and xr_sha(text_path.read_bytes()) == m["approval_text_sha256"],
+            "CS/exact-approval-text")
+    receipt = xr_json(_CS_OUT / "personal-approval.json",
+                      os.environ.get("ACCAOUI_EXAM_CLOSURE_APPROVAL_SHA256", ""))
+    require(set(receipt) == {"schema", "task", "proposal_sha256", "confirmed_text_sha256", "source_thread",
+                            "human_turn", "human_message", "confirmation_text", "explicit_closure_publication"}
+            and receipt["schema"] == 1 and receipt["task"] == _CS_TASK
+            and receipt["proposal_sha256"] == original_pin
+            and receipt["confirmed_text_sha256"] == m["approval_text_sha256"]
+            and receipt["source_thread"] in {"01a11cc6-ee66-7890-9520-7fd190f6e687",
+                                            "01a13bb5-4447-72c3-84d4-55246679ce0d"}
+            and re.fullmatch("[0-9a-f-]{36}", receipt["human_turn"])
+            and re.fullmatch("[0-9a-f-]{36}", receipt["human_message"])
+            and receipt["human_turn"] not in {"01a14e51-c62a-7f02-99b3-ae59fa384540",
+                                              "01a14e2c-44bc-7b33-ac18-6e97ae2d868f"}
+            and receipt["confirmation_text"].strip()
+            and receipt["explicit_closure_publication"] is True, "CS/new-personal-authority")
+    # Executor MUST also read the actual new human message and immediately confirmed
+    # full package directly through read_thread. This local receipt is not permission.
+    base = {p: tuple(row) for p, row in m["base_tree"].items()}
+    require(len(base) == 579 and V1_PHASE_A_AUDIT not in base
+            and cs_tree_oid(base) == _CS_BASE_TREE and base == xr_tree(_CS_BASE), "CS/pinned-complete-baseline")
+    import difflib
+    prefixes, diff_parts = set(), []
+    for p in sorted(_CS_FILES):
+        draft_path = active_dir / "proposed-sources" / p
+        require(xr_regular(draft_path) and xr_regular(ROOT / p), "CS/regular-current-and-draft")
+        raw = (ROOT / p).read_bytes()
+        old = v1_phase_b_git_bytes(["show", _CS_BASE + ":" + p])
+        require(cs_meta(raw) == m["draft_files"][p] and draft_path.read_bytes() == raw
+                and cs_meta(old) == m["before_files"][p] and cs_peel(p, raw) == old,
+                "CS/exact-six-source-and-complete-history")
+        diff_parts.extend(difflib.unified_diff(old.decode("utf-8").splitlines(keepends=True),
+                          raw.decode("utf-8").splitlines(keepends=True), fromfile="a/"+p, tofile="b/"+p))
+        if p in _CS_DOCS:
+            prefixes.add(raw.split(_CS_BOUNDARY, 1)[0])
+    require(len(prefixes) == 1 and all(token in next(iter(prefixes)) for token in
+            (b"Task-ID: ACCAOUI_EXAM_DATES_STATUS_CLOSURE\n", b"Status: GESCHLOSSENER_ABSCHLUSSVERTRAG\n",
+             b"Neuer Produkttask: KEINER\n", b"v27.37n und Audit: STOPP / NOT VERIFIED\n", b"Supabase: NICHT LIVE\n")),
+            "CS/consistent-active-documents")
+    require(xr_sha("".join(diff_parts).encode("utf-8")) == m["complete_diff_sha256"],
+            "CS/complete-diff-matches-actual-six-sources")
+    return m
+
+
+def cs_validate(f, m):
+    require(f["cwd"] == str(ROOT.resolve()) and f["branch"] == "main"
+            and f["origin_valid"] and f["python"] == str(Path(V1_PHASE_A_PYTHON).resolve())
+            and f["python_version"] == (3, 13, 3), "CS/root-branch-origin-python")
+    require(f["regular"] and not f["flags"] and not f["attributes"]
+            and not f["shallow"] and not f["replacements"] and f["provenance_ok"], "CS/protections")
+    require(f["agents_sha"] == "b85cbf52ef90e83a13c45d9347d4252c54f10684fb5762d80257faa00b09a7bc"
+            and f["plan_sha"] == "de88f6680c0323031eedb7680de787b83b8fb8bdf5161bfdabbe124178a47766",
+            "CS/rules-frozen")
+    require(f["audit_regular"] and not f["audit_tracked"] and f["audit_bytes"] == 10336
+            and f["audit_sha"] == V1_PHASE_A_AUDIT_SHA
+            and f["untracked"] == frozenset({V1_PHASE_A_AUDIT}), "CS/protected-audit-only")
+    base = {p: tuple(v) for p, v in m["base_tree"].items()}
+    expected = dict(base)
+    expected.update({p: (r["mode"], r["blob"]) for p, r in m["draft_files"].items()})
+    require(f["base_tree"] == base and len(base) == 579 and f["working_tree"] == expected
+            and set(f["sources"]) == _CS_FILES, "CS/full-579-path-scope")
+    require(all(cs_meta(raw) == m["draft_files"][p] for p, raw in f["sources"].items()),
+            "CS/exact-source-hashes")
+    require(re.fullmatch("[0-9a-f]{64}", f["index_sha"] or ""), "CS/index-digest")
+    raw = f["head_commit"]
+    require(hashlib.sha1(b"commit " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == f["head"],
+            "CS/real-commit-object-identity")
+    header, separator, message = raw.partition(b"\n\n")
+    require(separator and [x[7:].decode() for x in header.splitlines() if x.startswith(b"parent ")]
+            == list(f["head_parents"]) and header.splitlines()[0] == b"tree " + f["head_tree_sha"].encode()
+            and message.splitlines()[0].decode() == f["head_subject"]
+            and cs_tree_oid(f["head_tree"]) == f["head_tree_sha"], "CS/commit-tree-parent-title-consistency")
+    if f["head"] == _CS_BASE:
+        require(f["new_count"] == 0 and f["head_tree"] == base
+                and f["origin_ref"] == f["remote_main"] == _CS_BASE and f["changes"] == {},
+                "CS/uncommitted-base-remote")
+        if not f["staged"]:
+            require(f["index_tree"] == base and f["working"] == _CS_FILES
+                    and f["index_sha"] == "39f2a5835a269316c38c6cbf258c5101877aa7c6c0beb281c912b170519b263f",
+                    "CS/prepared-exact-index")
+            return "closure_prepared"
+        require(f["staged"] == _CS_FILES and not f["working"] and f["index_tree"] == expected,
+                "CS/exact-six-staged")
+        return "closure_staged"
+    require(f["new_count"] == 1 and f["head_parents"] == (_CS_BASE,)
+            and f["head_subject"] == _CS_SUBJECT and f["head_tree"] == expected
+            and f["index_tree"] == expected and not f["working"] and not f["staged"]
+            and f["changes"] == {p: "M" for p in _CS_FILES}, "CS/one-new-linear-six-file-commit")
+    if f["origin_ref"] == f["remote_main"] == _CS_BASE:
+        return "closure_committed"
+    require(f["origin_ref"] == f["remote_main"] == f["head"], "CS/direct-push-confirmation")
+    return "closure_pushed"
+
+
+def cs_snapshot():
+    import sys
+    g = v1_phase_b_git_bytes
+    m = cs_package()
+    allowed = {"https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+               "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+               "git@github.com:asarrad-bit/accaoui-34a-lernapp.git"}
+    urls = [g(args).decode().splitlines() for args in
+            (["remote", "get-url", "--all", "origin"], ["remote", "get-url", "--push", "--all", "origin"])]
+    require(all(len(x) == 1 and x[0] in allowed for x in urls), "CS/single-fixed-origin")
+    remote = g(["ls-remote", "--exit-code", "origin", "refs/heads/main"]).decode().splitlines()
+    require(len(remote) == 1 and remote[0].split()[1:] == ["refs/heads/main"], "CS/direct-main")
+    base = xr_tree(_CS_BASE)
+    head = g(["rev-parse", "HEAD"]).decode().strip()
+    g(["merge-base", "--is-ancestor", _CS_BASE, head])
+    index = {}
+    for row in g(["ls-files", "--stage", "-z"]).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, oid, stage = meta.decode().split()
+            require(stage == "0" and name.decode() not in index, "CS/index-entry")
+            index[name.decode()] = (mode, oid)
+    flags = tuple(r for r in g(["ls-files", "-v", "-z"]).split(b"\0") if r and r[:1] != b"H")
+    attr = xc_check_attributes(sorted(base))
+    attributes = tuple(tuple(attr[i:i+3]) for i in range(0, len(attr)-1, 3) if attr[i+2] != b"unspecified")
+    working, staged, untracked = set(), set(), set()
+    for row in g(["status", "--porcelain=v1", "-z", "--untracked-files=all"]).split(b"\0"):
+        if row:
+            require(row[:2] in {b" M", b"M ", b"??"}, "CS/no-renames-additions-or-partial-staging")
+            {b" M": working, b"M ": staged, b"??": untracked}[row[:2]].add(row[3:].decode())
+    sources, full_work = {}, {}
+    for p, (mode, oid) in base.items():
+        require(xr_regular(ROOT / p), "CS/regular-complete-source")
+        raw = (ROOT / p).read_bytes()
+        full_work[p] = (mode, _b_release_blob(raw))
+        if p in _CS_FILES:
+            sources[p] = raw
+    audit = ROOT / V1_PHASE_A_AUDIT
+    require(xr_regular(audit), "CS/regular-audit")
+    changes = {}
+    for row in g(["diff-tree", "--no-commit-id", "--name-status", "--no-renames", "-r", _CS_BASE, head]).decode().splitlines():
+        code, p = row.split("\t")
+        require(p not in changes, "CS/duplicate-change")
+        changes[p] = code
+    index_path = Path(g(["rev-parse", "--git-path", "index"]).decode().strip())
+    if not index_path.is_absolute():
+        index_path = ROOT / index_path
+    f = {"cwd": str(Path.cwd().resolve()), "branch": g(["branch", "--show-current"]).decode().strip(),
+         "origin_valid": True, "head": head, "origin_ref": g(["rev-parse", "origin/main"]).decode().strip(),
+         "remote_main": remote[0].split()[0], "base_tree": base, "head_tree": xr_tree(head),
+         "head_tree_sha": g(["rev-parse", head+"^{tree}"]).decode().strip(),
+         "head_commit": g(["cat-file", "commit", head]),
+         "head_parents": tuple(g(["show", "-s", "--format=%P", head]).decode().split()),
+         "head_subject": g(["show", "-s", "--format=%s", head]).decode().strip(),
+         "new_count": int(g(["rev-list", "--count", _CS_BASE+".."+head])), "changes": changes,
+         "index_tree": index, "index_sha": xr_sha(index_path.read_bytes()), "working_tree": full_work,
+         "working": frozenset(working), "staged": frozenset(staged), "untracked": frozenset(untracked),
+         "sources": sources, "regular": True, "flags": flags, "attributes": attributes,
+         "shallow": g(["rev-parse", "--is-shallow-repository"]).strip() != b"false",
+         "replacements": g(["for-each-ref", "--format=%(refname)", "refs/replace"]).strip(),
+         "audit_regular": True, "audit_tracked": bool(g(["ls-files", "--", V1_PHASE_A_AUDIT]).strip()),
+         "audit_bytes": audit.stat().st_size, "audit_sha": xr_sha(audit.read_bytes()),
+         "agents_sha": xr_sha(AGENTS_PATH.read_bytes()),
+         "plan_sha": xr_sha((ROOT / "docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md").read_bytes()),
+         "python": str(Path(sys.executable).resolve()), "python_version": tuple(sys.version_info[:3]),
+         "provenance_ok": True}
+    cs_validate(f, m)
+    return f, m
+
+
+def cs_cases(actual, m):
+    import copy
+    base = {p: tuple(v) for p, v in m["base_tree"].items()}
+    expected = dict(base)
+    expected.update({p: (r["mode"], r["blob"]) for p, r in m["draft_files"].items()})
+    prepared = copy.deepcopy(actual)
+    prepared.update(head=_CS_BASE, head_tree=base, head_tree_sha=_CS_BASE_TREE,
+                    head_commit=v1_phase_b_git_bytes(["cat-file", "commit", _CS_BASE]),
+                    head_parents=(EXAM_DATES_PARENT,), head_subject=_XR_SUBJECT, new_count=0, changes={},
+                    index_tree=base, index_sha="39f2a5835a269316c38c6cbf258c5101877aa7c6c0beb281c912b170519b263f",
+                    origin_ref=_CS_BASE, remote_main=_CS_BASE, working=_CS_FILES, staged=frozenset())
+    staged = copy.deepcopy(prepared)
+    staged.update(index_tree=expected, index_sha="a"*64, working=frozenset(), staged=_CS_FILES)
+    committed = copy.deepcopy(staged)
+    raw = ("tree "+cs_tree_oid(expected)+"\nparent "+_CS_BASE+
+           "\nauthor Synthetic Fixture <fixture@example.invalid> 1 +0000\n"
+           "committer Synthetic Fixture <fixture@example.invalid> 1 +0000\n\n"+_CS_SUBJECT+"\n").encode()
+    oid = hashlib.sha1(b"commit "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
+    committed.update(head=oid, head_tree=expected, head_tree_sha=cs_tree_oid(expected), head_commit=raw,
+                     head_parents=(_CS_BASE,), head_subject=_CS_SUBJECT, new_count=1,
+                     changes={p:"M" for p in _CS_FILES}, staged=frozenset())
+    pushed = copy.deepcopy(committed)
+    pushed.update(origin_ref=oid, remote_main=oid)
+    count = 0
+    def blocked(fixture, change):
+        nonlocal count
+        candidate = copy.deepcopy(fixture)
+        change(candidate)
+        try:
+            cs_validate(candidate, m)
+        except ValidationError:
+            count += 1
+            return
+        raise ValidationError("CS/forbidden-synthetic-mutation-accepted")
+    for fixture, phase in ((prepared,"closure_prepared"), (staged,"closure_staged"),
+                           (committed,"closure_committed"), (pushed,"closure_pushed")):
+        require(cs_validate(fixture, m) == phase, "CS/positive-synthetic-state")
+        for key, value in {"cwd":"foreign", "branch":"other", "origin_valid":False, "python":"foreign",
+                           "python_version":(3,13,2), "regular":False, "flags":(b"S app.js",),
+                           "attributes":(b"filter",), "shallow":True, "replacements":b"replace",
+                           "provenance_ok":False, "agents_sha":"0"*64, "plan_sha":"0"*64,
+                           "audit_regular":False, "audit_tracked":True, "audit_bytes":10335,
+                           "audit_sha":"0"*64, "untracked":frozenset(), "index_sha":"bad",
+                           "head_commit":b"invalid", "new_count":2, "remote_main":"0"*40}.items():
+            blocked(fixture, lambda f,k=key,v=value:f.__setitem__(k,v))
+        for p in _CS_FILES:
+            blocked(fixture, lambda f,p=p:f["sources"].__setitem__(p,b"changed"))
+        for key in ("base_tree","working_tree","index_tree","head_tree"):
+            blocked(fixture, lambda f,k=key:f[k].__setitem__("foreign.txt",("100644","0"*40)))
+        blocked(fixture, lambda f:f.__setitem__("untracked",f["untracked"]|{"evidence.json"}))
+    blocked(staged, lambda f:f.__setitem__("staged",_CS_FILES-{"tools/preflight.py"}))
+    blocked(staged, lambda f:f.__setitem__("staged",_CS_FILES|{V1_PHASE_A_AUDIT}))
+    blocked(prepared, lambda f:f.__setitem__("index_sha","0"*64))
+    blocked(committed, lambda f:f.__setitem__("head_parents",(_CS_BASE,"0"*40)))
+    blocked(pushed, lambda f:f.__setitem__("origin_ref",_CS_BASE))
+    require(count == 137, "CS/complete-fixed-negative-case-count")
+    print("CS: 4 explicitly SYNTHETIC state positives; "+str(count)+" mutations rejected.", flush=True)
+
+
+def cs_preserved_contracts():
+    import os, tempfile, sys, types
+    # The exact H code and sources are a labelled HISTORICAL ARTIFACT FIXTURE.
+    # They do not inspect or claim the current closure Git state.
+    old_code = v1_phase_b_git_bytes(["show", _CS_BASE+":"+CHECKER_RELATIVE_PATH])
+    module_name = "accaoui_closure_historical_contract"
+    require(module_name not in sys.modules, "CS/single-historical-module")
+    module = types.ModuleType(module_name)
+    module.__file__ = str(ROOT/CHECKER_RELATIVE_PATH)
+    ns = module.__dict__
+    saved_env = dict(os.environ)
+    sys.modules[module_name] = module
+    try:
+        # Preserve normal module registration required by original dataclasses.
+        exec(compile(old_code, str(ROOT/CHECKER_RELATIVE_PATH), "exec"), ns)
+        old_files = {p:v1_phase_b_git_bytes(["show",_CS_BASE+":"+p]) for p in EXAM_DATES_FILES}
+        _CS_OUT.mkdir(parents=True, exist_ok=True)
+        os.environ.update(ACCAOUI_EXAM_DATES_MANIFEST_SHA256=_XR_ORIGINAL_PIN,
+            ACCAOUI_EXAM_DATES_RELEASE_PROPOSAL_SHA256=_XC_PREVIOUS_PROPOSAL_PIN,
+            ACCAOUI_EXAM_DATES_RELEASE_MANIFEST=str(_XR_APPLIED_DIR/"release-manifest.json"),
+            ACCAOUI_EXAM_DATES_RELEASE_MANIFEST_SHA256=_XC_PREVIOUS_PIN,
+            ACCAOUI_EXAM_DATES_CORRECTION_PROPOSAL_SHA256="5b8107ee1ae0e6d40335e3a585b9dd9056163d5528901dc52cd0f0120498ab6f",
+            ACCAOUI_EXAM_DATES_CORRECTION_MANIFEST=str(_XC_APPLIED_DIR/"release-manifest.json"),
+            ACCAOUI_EXAM_DATES_CORRECTION_MANIFEST_SHA256="b90e8de8bec26bc57544f2ea5c838ca400726758fa96e6e3b52d2bbda1c7408e")
+        with tempfile.TemporaryDirectory(prefix="historical-nine-source-fixture-", dir=_CS_OUT) as directory:
+            fixture = Path(directory)
+            require(fixture.resolve().is_relative_to(_CS_OUT.resolve()), "CS/fixture-location")
+            for p, raw in old_files.items():
+                path = fixture/p
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+            saved_root = ns["ROOT"]
+            try:
+                ns["ROOT"] = fixture
+                old_manifest, original = ns["xc_package"]()
+            finally:
+                ns["ROOT"] = saved_root
+        old_tree = xr_tree(_CS_BASE)
+        # Explicitly SYNTHETIC transition fixtures using independently pinned H objects.
+        facts = {"schema":1, "cwd":str(ROOT.resolve()), "branch":"main", "origin_valid":True,
+                 "python":str(Path(V1_PHASE_A_PYTHON).resolve()), "python_version":(3,13,3),
+                 "provenance_ok":True, "regular":True, "flags":(), "attributes":(),
+                 "history_complete":True, "shallow":False, "replacements":b"",
+                 "audit_sha":V1_PHASE_A_AUDIT_SHA, "audit_bytes":10336, "audit_tracked":False,
+                 "agents_sha":"b85cbf52ef90e83a13c45d9347d4252c54f10684fb5762d80257faa00b09a7bc",
+                 "plan_sha":"de88f6680c0323031eedb7680de787b83b8fb8bdf5161bfdabbe124178a47766",
+                 "index_sha":"39f2a5835a269316c38c6cbf258c5101877aa7c6c0beb281c912b170519b263f",
+                 "base_tree":xr_tree(EXAM_DATES_PARENT), "head":_CS_BASE, "origin_ref":_CS_BASE,
+                 "remote_main":_CS_BASE, "head_tree":old_tree, "working_tree":old_tree, "index_tree":old_tree,
+                 "head_tree_sha":_CS_BASE_TREE, "head_commit":v1_phase_b_git_bytes(["cat-file","commit",_CS_BASE]),
+                 "base_commit":v1_phase_b_git_bytes(["cat-file","commit",EXAM_DATES_PARENT]),
+                 "head_parents":(EXAM_DATES_PARENT,), "head_subject":_XR_SUBJECT, "new_count":1,
+                 "head_changes":{p:("A" if p==EXAM_DATES_TEST else "M") for p in EXAM_DATES_FILES},
+                 "sources":old_files, "working":frozenset(), "staged":frozenset(),
+                 "untracked":frozenset({V1_PHASE_A_AUDIT})}
+        print("CS: preserved original approval/artifact chain verified as HISTORICAL; no current Git claim.", flush=True)
+        ns["xr_transition_checks"](facts, old_manifest)
+        ns["xr_original_contract_checks"](old_manifest)
+    finally:
+        os.environ.clear()
+        os.environ.update(saved_env)
+        if sys.modules.get(module_name) is module:
+            del sys.modules[module_name]
+
+
+def run_exam_dates_status_closure(kind):
+    import sys
+    try:
+        require(kind in {"continuity", "preflight"}, "CS/control-kind")
+        before, manifest = cs_snapshot()
+        phase = cs_validate(before, manifest)
+        cs_cases(before, manifest)
+        cs_preserved_contracts()
+        v1_phase_b_product_check()
+        result = subprocess.run([sys.executable,"-X","utf8","-B",str(ROOT/EXAM_DATES_TEST)],
+                                cwd=ROOT,capture_output=True,text=True,encoding="utf-8",timeout=180)
+        if result.stdout:
+            print(result.stdout.rstrip(),flush=True)
+        require(result.returncode==0 and not result.stderr.strip() and "EXAM_DATES_CURRENT_PASS" in result.stdout,
+                "CS/unchanged-original-product-regression: "+(result.stderr.strip() or result.stdout.strip()))
+        # Unchanged full historical n/m and real d-j collector, including original 1800s budget.
+        print(v1_phase_a_historical_check(kind).strip(),flush=True)
+        require(cs_snapshot() == (before, manifest), "CS/state-changed-during-original-checks")
+        print("Actual closure phase: "+phase+" / "+kind+" PASS.",flush=True)
+        print("No new product task. v27.37n STOPP / NOT VERIFIED. Supabase NICHT LIVE.",flush=True)
+        if kind == "preflight":
+            print("OK: Preflight bestanden.",flush=True)
+        return 0
+    except Exception as exc:
+        print("STOPP: exam-date status closure "+kind+": "+str(exc),flush=True)
+        return 1
+# END ACCAOUI_EXAM_DATES_STATUS_CLOSURE
+
 def main() -> int:
+    if exam_dates_status_closure_requested():
+        return run_exam_dates_status_closure("continuity")
     if exam_dates_release_requested():
         return run_exam_dates_release_control("continuity")
     if exam_dates_requested():

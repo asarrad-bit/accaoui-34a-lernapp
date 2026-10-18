@@ -7162,7 +7162,20 @@ def _exam_dates_release_preflight():
     return True
 # END ACCAOUI_EXAM_DATES_RELEASE preflight
 
+# BEGIN ACCAOUI_EXAM_DATES_STATUS_CLOSURE preflight
+def _exam_dates_status_closure_preflight():
+    control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+    if not control["exam_dates_status_closure_requested"]():
+        return False
+    result = control["run_exam_dates_status_closure"]("preflight")
+    if result != 0:
+        raise SystemExit(result)
+    return True
+# END ACCAOUI_EXAM_DATES_STATUS_CLOSURE preflight
+
 def main():
+    if _exam_dates_status_closure_preflight():
+        return
     if _exam_dates_release_preflight():
         return
     if _exam_dates_preflight():

@@ -1,3 +1,94 @@
+# ACCAOUI - eindeutiger Abschluss des Pruefungstermin-Auftrags
+Task-ID: ACCAOUI_EXAM_DATES_STATUS_CLOSURE
+Status: GESCHLOSSENER_ABSCHLUSSVERTRAG
+Ausfuehrungsbefugnis: NUR_MIT_NEUER_PERSOENLICHER_PAKETFREIGABE
+Abgeschlossener Produkttask: ACCAOUI_V1_DASHBOARD_EXAM_DATES
+Produktabschluss: implementation_pushed / COMPLETE_AUTHORIZED_SCOPE
+Veroeffentlichter Produktcommit: 71862566d2cb96b14864715b337471df3a134472
+Einziger Produktcommit-Parent: 60e510eb53fac8e650053014c4313a2f8e0c50d6
+Produktcommit-Titel: ACCAOUI add dashboard exam dates pilot
+Neuer Produkttask: KEINER
+v27.37n und Audit: STOPP / NOT VERIFIED
+Supabase: NICHT LIVE
+
+## Aktiver Status und Geltungsgrenze
+
+Der Pruefungstermin-Produkttask wurde abgeschlossen und auf GitHub-main bestaetigt.
+Der lokale vollstaendige Abschlussbericht und seine Fehler-/Pruefnachweise liegen unter
+exam-dates-pilot-20261017/release-correction-applied-20261018-run1/FINAL-report.md
+im privaten externen Belegbereich dieser WORK-ZENTRALE. Bericht-SHA256:
+842c5fc0c1e49c7f474925b45d961881a7ebea9c48886202afb3ceec189fb714.
+Die historischen Freigaben fuer genau einen Implementierungscommit sind verbraucht.
+Sie erlauben weder diesen zusaetzlichen Abschlusscommit noch eine Produktfolgeaufgabe.
+
+Diese aktive Ebene regelt nur den nichtfunktionalen Konsistenzabschluss. Ihre
+Ausfuehrung erfordert die neue tatsaechliche persoenliche Bestaetigung des externen
+Pakets next-status-closure-planning-20261018-run1 mit passender Provenienz und Pins.
+Ein JSON-Beleg allein ist keine Freigabe. Die Quelle muss direkt nachgelesen werden.
+Der tatsaechliche Stand dieses Abschlussauftrags wird durch das geschlossene Profil
+als closure_prepared, closure_staged, closure_committed oder closure_pushed ermittelt.
+Diese Quellen behaupten keinen zukuenftigen Commit-Hash oder bereits bestandenen Lauf.
+
+## Ausschliesslich sechs Steuerdateien und ein neuer Abschlusscommit
+
+Erlaubter Repositoryumfang nach neuer persoenlicher Paketfreigabe:
+docs/PROJECT_STATE_CURRENT.md; docs/PROJECT_MASTERLIST.md;
+docs/tasks/CURRENT_TASK.md; docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md;
+tools/check-project-continuity-control.py; tools/preflight.py.
+Nur der vorgelegte additive Status-/Pruefblock und dessen enge Dispatches sind erlaubt.
+Nach dessen Entfernung muessen alle sechs Quellen bytegenau dem Produktcommit gleichen.
+Alle579 versionierten Pfade werden vollstaendig geprueft;573 weitere Pfade bleiben
+byte-, Blob- und Modus-identisch. Insbesondere app.js, style.css,
+tools/check-dashboard-exam-dates.py und alle anderen Produkt-/Testdateien unveraendert.
+Die gesamte folgende bisherige Quelle bleibt bytegenau als ausdrueckliche Historie
+erhalten. Ihre damaligen Aussagen 'ausstehend', 'nicht angewandt' und 'STOPP' sind
+keine aktuelle Behauptung ueber den abgeschlossenen Pruefungstermin-Produkttask.
+Sie verlieren keine historische Bedeutung und heben andere STOPPs nicht auf.
+
+## Unveraenderte Pruef- und Schutzpflichten
+
+Vor Anwendung frische persoenliche Quelle, Regeln, einzelne Ausfuehrung, kompletter
+Arbeitsbaum/Index/579-Pfade-/1158-Attribute-/Hash-/Modusabgleich und direktes GitHub-main.
+Vor Staging und Gitaktionen erneut die konkreten gueltigen Phasen belegen.
+Alle Originalpruefungen bleiben unveraendert. Neue vier Abschlussphasen und deren
+Negativfaelle kommen zusaetzlich hinzu. Originale Pruefungstermin-/B-/A-Vertraege und
+historische Artefaktketten werden ausdruecklich als historische Fixtures geprueft,
+niemals als aktueller Abschluss-Git-Zustand ausgegeben. Echte unveraenderte n/m-
+Pruefung und vollstaendiger Original-Preflight einschliesslich d-j-Sammellauf und
+1800s-Innenbudget bleiben verpflichtend. Alte PASS-Berichte ersetzen keinen neuen Lauf.
+Vor dem Commit tatsaechlicher neuer voller staged-Preflight mit vorhandenem Python3,
+volle Kontinuitaet, git diff --check und git diff --cached --check. Keine Browser-
+oder Serverwiederholung und keine echten Daten/Keys. Schriftlich/muendlich/Karten getrennt.
+
+Nach allen PASS darf genau ein neuer linearer Commit mit einzigem Parent
+71862566d2cb96b14864715b337471df3a134472 und Titel
+ACCAOUI close exam dates control status entstehen. Keine Gate-/Reparatur-Zusatzcommits.
+Danach volle echte Objekt-/Parent-/Titel-/Sechs-Dateien-/Index-/Restbaumkontrolle und
+Kontinuitaet. Nur bei direkt bestaetigtem unveraendertem Remote-Parent normal nach
+origin/main pushen. H2 unverzueglich unabhaengig direkt auf GitHub bestaetigen; erst
+danach 'gepusht' melden. Nach-Push-Kontinuitaet und lesender Endschutz bleiben Pflicht.
+
+Bei Fehler sofort den betroffenen Ablauf stoppen und Originalbelege/Zaehler erhalten.
+Nur eine ausdruecklich im neuen Paket genehmigte begrenzte Diagnose/Korrektur innerhalb
+derselben sechs Pfade und desselben Ein-Commit-Ziels ist zulaessig. Erst belegte
+Ursachenbehebung, erhaltene Revisionen/Pins und frischer Schutz erlauben einen neuen
+nummerierten Versuch; kein blinder Retry und keine gelockerten Erwartungen/Budgets.
+Bei Fremdaenderung, Schutzverletzung, Scope-Erweiterung oder automatischer Ablehnung
+STOPP und konkrete Nutzerhandlung nennen. Keine Umgehung. Kein Reset/Restore/Fetch,
+Rebase/Merge/Amend/Force und kein eigenmaechtiges Entstagen. Kein weiterer Commit.
+Nur erlaubter eigener Abschluss und lesender Endschutz auch nach Fehler.
+
+Ein technischer Ausfuehrer in diesem bestehenden Chat; keine Unteragenten/neuen Chats,
+keine parallele technische Ausfuehrung, Drive-/Automationsaenderung oder Uebertragung.
+Belege nur im vorhandenen privaten externen lokalen Bereich. Das unversionierte Audit
+bleibt ungeaendert, unkopiert und unuebertragen:10336Bytes/SHA256
+da23a1d052684fc3646a5a01e06c4520555053caddb67c7ff3ad06a5c1c78b00.
+Keine Wiederaufnahme des v27.37n-Audits. Supabase NICHT LIVE. Kein naechster Produkttask.
+
+## Historie bis zum veroeffentlichten Pruefungstermin-Commit 71862566
+
+---
+
 # ACCAOUI - WinError206-Korrektur (CURRENT_TASK)
 Task-ID: ACCAOUI_V1_DASHBOARD_EXAM_DATES
 Status: AUTHORIZED_KORREKTUR
