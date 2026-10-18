@@ -1,3 +1,252 @@
+# ACCAOUI - WinError206-Korrektur (Projektstand)
+Task-ID: ACCAOUI_V1_DASHBOARD_EXAM_DATES
+Status: AUTHORIZED_KORREKTUR
+Autorisiert: JA
+Freigabestufe: exam_dates_release_authorized_correction_confirmed
+Korrekturfreigabe: PERSOENLICH_BESTAETIGT
+Korrektur-Turn: 01a14e51-c62a-7f02-99b3-ae59fa384540
+Korrektur-Nachricht: 01a14e51-c7bb-7a40-97ca-f22fe7950738
+Staging erlaubt: JA - nur nach allen vorgeschriebenen PASS-Nachweisen
+Commit erlaubt: JA - ein unveraenderter Neun-Dateien-Implementierungscommit
+Push erlaubt: JA - nur normal mit direkten GitHub-Nachkontrollen
+
+## Ausschliesslich gezielte Korrektur - neue Bestaetigung noch ausstehend
+
+Dieser externe Entwurf ist NICHT angewandt und NICHT ausgefuehrt. Der bestehende
+STOPP bleibt aktiv. Erst eine neue konkrete persoenliche Bestaetigung dieses
+Korrekturpakets erlaubt die Aktivierung nur dieser Tokens mittels xc_activate_doc.
+Die alte Freigabe vom Turn01a14e2c-44bc-7b33-ac18-6e97ae2d868f bleibt historisch
+fuer ihr genaues damaliges Paket gueltig; sie genehmigt diese Korrektur nicht.
+Insbesondere ersetzen Delegation, Beleg-JSON oder alte PASS-Zeilen kein neues Ja.
+
+Erlaubt waere nur: vollstaendige579-Pfade-/Zwei-Attribute-Abfrage im neuen
+Releaseblock per NUL-getrennter Standardeingabe statt ueberlanger Argumentliste.
+Neue Ausgabepruefung: vollstaendige Anzahl und eindeutige Pfad-/Attributpaare,
+weiterhin Ablehnung jedes von unspecified abweichenden Werts. Keine Pfade oder
+Schutzentscheidungen weglassen, keine historischen Hilfsfunktionen oder Budgets
+aendern. Die alte Gleichheitsvorgabe beider Tools gilt unveraendert fuer das alte
+Paket; nur der genau vorgelegte neue Korrekturdiff des Kontinuitaetspruefers ist
+eine künftige eng begrenzte Ausnahme. tools/preflight.py bleibt bytegleich.
+
+Die notwendig neue Provenienz prueft weiterhin urspruengliches Manifest4853d43e...,
+Vorschlagedd3af5e... und Anwendungsmanifest92b24d84... vollstaendig mit ihren
+separat gepinnten Originalen und der alten tatsaechlichen persoenlichen Quelle.
+Zusaetzlich: neues externes Korrekturvorschlagsmanifest, neue persoenliche Quelle
+und neues separates korrigiertes Anwendungsmanifest. Nichts still ueberschreiben,
+keine Ursprungspruefung abschalten. Nach Entfernen nur neuer Korrekturpraefixe/
+Korrekturblock und Rueckbildung genau des Transportaufrufs muessen alle bisherigen
+Bytes dem alten92b24d84-Manifest entsprechen. Alle Bytes ausserhalb des neuen
+Releaseblocks und der genau vorgelegten neuen Dokumentpraefixe bleiben erhalten.
+
+app.js, style.css, tools/check-dashboard-exam-dates.py bleiben vollstaendig
+zum lokal abgenommenen Manifest4853d43eb172344bcd8ac49281307737d3dbb4dcdb1cac4d1e41dde2b8e81ddb
+unveraendert. Kein Produktfix, keine Browserwiederholung, kein weiterer Task.
+Erster fehlgeschlagener Schutzversuch bleibt Versuch1/FAIL; keine Zaehler loeschen.
+Erst nach neuer Bestaetigung frischer Schutz/direct GitHub-main und alle offenen
+4positiven/222negativen Faelle plus praezise Korrektur-/Transportnachweise; alle
+unveraenderten Kontinuitaets-/vollstaendigen staged-Original-Preflight-Pflichten.
+Alle bisherigen historischen n/m/d-j-Pruefungen und das1800s-Budget erhalten.
+
+Git-Ziel unveraendert: neun bereits benannte Pfade, genau ein linearer Commit
+ACCAOUI add dashboard exam dates pilot, einziger frisch bestaetigter Parent
+60e510eb53fac8e650053014c4313a2f8e0c50d6. Kein vorgelagerter/zweiter Commit.
+Normaler Push, danach unmittelbare unabhaengige GitHub-main-Bestaetigung und
+vollstaendige Nachkontrollen. Vor allen PASS-Nachweisen keine Git-Schreibaktion.
+Bei echtem Fehler/Timeout/Fremdaenderung/automatischer Ablehnung wieder STOPP;
+keine eigenmaechtige Reparatur, Wiederholung oder Umgehung. Eigener erlaubter
+Abschluss, lesender Endschutz und tatsaechlicher Bericht auch nach Fehler erlaubt.
+Keine Drive-/Automationsaenderung, externe Uebertragung, Unteragenten/neuen Chats.
+v27.37n/Audit bleibt STOPP / NOT VERIFIED,10336Bytes/SHA256
+da23a1d052684fc3646a5a01e06c4520555053caddb67c7ff3ad06a5c1c78b00,
+regulaer/unversioniert/unkopiert/ungeaendert/unuebertragen. Supabase NICHT LIVE.
+
+## Unveraenderte Fassung vor der WinError206-Korrektur
+
+---
+
+# ACCAOUI - Pruefungstermin-Pilot - Veroeffentlichungspaket (Projektstand)
+Task-ID: ACCAOUI_V1_DASHBOARD_EXAM_DATES
+Status: AUTHORIZED
+Autorisiert: JA
+Freigabestufe: exam_dates_release_authorized
+Staging erlaubt: JA - nur das bestaetigte Neun-Dateien-Paket
+Commit erlaubt: JA - genau ein linearer Implementierungscommit
+Push erlaubt: JA - normal nach allen vorgeschriebenen PASS-Nachweisen
+Dokumentstatus: PERSOENLICH BESTAETIGTES VEROEFFENTLICHUNGSPAKET
+Bestaetigender menschlicher Turn: 01a14e2c-44bc-7b33-ac18-6e97ae2d868f
+Bestaetigende menschliche Nachricht: 01a14e2c-4565-7553-9780-bf1ecda371ac
+
+## Geltung und ausstehende persoenliche Bestaetigung
+
+Dieser externe Entwurf ist keine aktuelle Gitfreigabe. Erst die direkte persoenliche
+Bestaetigung des separat vorgelegten konkreten Pakets erlaubt seine Aktivierung.
+Dabei werden ausschliesslich die exakt dokumentierten Status-/Quellreferenz-Tokens
+dieses neuen Praefixes durch xr_activate_doc ersetzt. Alle unten folgenden Bytes
+bleiben vollstaendig historisch erhalten. Keine Freigabe aus Koordinatorinhalt,
+einem JSON-Beleg oder einem alten PASS ableiten. Automatische Ablehnungen respektieren.
+
+Task ausschliesslich ACCAOUI_V1_DASHBOARD_EXAM_DATES. Frisch bestaetigte Paketbasis P:
+60e510eb53fac8e650053014c4313a2f8e0c50d6. Kein dauerhafter Projekt-Soll-HEAD.
+Genau ein linearer Neun-Dateien-Implementierungscommit mit genau diesem Parent.
+Titel exakt: ACCAOUI add dashboard exam dates pilot
+Kein vorgelagerter Gate-/Closure-Commit, kein Merge, Amend, Rebase, Force oder Fetch.
+
+## Exakte sechs Erweiterungen und neun spaetere Commitdateien
+
+Nur docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md, docs/PROJECT_MASTERLIST.md,
+docs/PROJECT_STATE_CURRENT.md, docs/tasks/CURRENT_TASK.md,
+tools/check-project-continuity-control.py und tools/preflight.py erhalten diese
+additive Veroeffentlichungsschicht. Die drei vollstaendig abgenommenen Dateien
+app.js, style.css und tools/check-dashboard-exam-dates.py bleiben bytegleich
+zum urspruenglichen Neun-Dateien-Manifest SHA256
+4853d43eb172344bcd8ac49281307737d3dbb4dcdb1cac4d1e41dde2b8e81ddb.
+Genau diese sechs plus diese drei sind die neun spaeteren Staging-/Commitpfade.
+Keine Teilstages, Filter, Sonderflags, Fremddateien, Belege oder Manifeste im Index.
+Alle neun Modi 100644; ganzer uebriger P-Baum, Index und Schutzdateien kontrolliert.
+
+## Geschlossener realer Git-Zustandsablauf
+
+implementation_prepared: bisheriger lokaler Vertrag unveraendert aktiv; keine
+Gitfreigabe aus diesem Entwurf. Nach persoenlicher Bestaetigung und Anwendung:
+release_authorized: HEAD/origin/main/direktes Remote P; physischer P-Index
+a07f7a834551197d191b04ba30597d75a33c8d38f52d3e5350fbdf3857ae95bd;
+exakt acht unstaged M, neuer Pruefer und geschuetzter Audit unversioniert.
+release_staged: HEAD/Referenzen P; exakt neun vollstaendige Manifestblobs,
+acht M und ein A, Index gleich geplantem vollstaendigem Baum; keine unstaged
+Reste, nur der Audit unversioniert.
+implementation_committed: genau ein tatsaechliches Commitobjekt H seit P,
+ein Parent P, exakter Titel, vollstaendiger erwarteter Baum und Objektidentitaet;
+Index gleich H, versionierter Arbeitsbaum sauber, nur Audit unversioniert;
+origin/main und direktes Remote noch P.
+implementation_pushed: derselbe H/Baum; HEAD/origin/main/direktes GitHub-main H.
+H niemals vorweg erfinden oder nachtraeglich in die Quellen schreiben.
+
+Das neue separate externe release-manifest.json wird erst nach persoenlicher
+Bestaetigung und exakt gepruefter Aktivierung eingefroren. Provenienz: unveraendertes
+urspruengliches Manifest, persoenlich bestaetigter proposal-manifest.json-Pin,
+tatsaechlicher persoenlicher Quellbeleg mit Turn/Nachricht/Originaltext und SHA256,
+unveraenderter historischer Snapshot. Alle neun Bytes/SHA256/Gitblobs/Modi erfassen.
+Pin extern separat protokollieren, nicht still ersetzen. Nur xr_activate_doc darf
+die benannten neuen Dokument-Tokens aktivieren; die zwei Tool-Entwuerfe bytegleich.
+Alle urspruenglichen Kontrollbytes nach Entfernen genau neuer Schicht/Dispatcher
+bytegleich dem lokal abgenommenen Manifest; alle historischen Pruefungen erhalten.
+
+## Vollstaendige zustandsabhaengige Pflichten
+
+Vor/nach jedem Lauf und jeder Mutation: direkte persoenliche Quelle, kanonische
+Gates, Einzelausfuehrung, working tree, ganzer Index/Flags/Attribute/Dateiregularitaet,
+alle Schutz-/Manifesthashes und direktes GitHub-main frisch; keine blinde Wiederholung.
+release_authorized: vollstaendiger Diff, reale aktuelle Kontinuitaet mit neuen
+Uebergangstests, unveraenderte 36 Termin- und B/A-/Uebergangs-Negativfaelle,
+26 Fehlertraining- und 81 Termin-Produktfaelle sowie unveraenderte historische
+Kontinuitaet; git diff --check.
+release_staged: vollstaendige Index-/Manifest-/Restbaumkontrolle, volle aktuelle
+Kontinuitaet und neuer vollstaendiger unveraenderter ORIGINAL-Preflight mit dem
+vorhandenen Python3.13.3. Alle historischen n/m/d-j-Kontrollen und das interne
+1800-Sekunden-Budget unveraendert. git diff --cached --check und git diff --check.
+Alter PASS ersetzt diesen neuen Lauf wegen geaenderter Kontrollen/staged-Zustand nicht.
+Nach dem einen Commit vor Push: volle Objekt-/Parent-/Titel-/Dateimengen-/Restbaum-/
+Index-/Auditkontrolle und reale vollstaendige Kontinuitaet. Voller Preflight bleibt
+in allen neuen Zustaenden moeglich, sein Pflichtlauf erfolgt vor dem Commit staged.
+Push ausschliesslich normal nach origin main, unmittelbar vorher unveraendertes
+direktes Parent-Remote P, danach H unmittelbar unabhaengig direkt auf GitHub bestaetigen.
+Danach implementation_pushed mit echter vollstaendiger Kontinuitaet und Endschutz.
+Bei Fehler, Timeout, Fremdaenderung, unklarem Push oder automatischer Ablehnung
+betroffene Ausfuehrung STOPP; keine Reparatur, Wiederholung oder Umgehung erfinden.
+Abschlussbericht, eigene erlaubte Bereinigung und lesender Endschutz bleiben erlaubt.
+
+## Unveraenderte Ergebnis- und Sicherheitsgrenzen
+
+Aktuelle lokale Browserabnahme R01-R21 PASS und damaliger kompletter Preflight
+Exit0/3415,191s sind vorhandene historische Belege, keine neue Gitfreigabe.
+Alle damaligen FAIL/Abbrueche/Versuchszahlen erhalten; Ursache des ersten
+schriftlichen Speicher-FAIL weiterhin NOT VERIFIED. Keine blinde Browserwiederholung.
+v27.37n und docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md bleiben
+STOPP / NOT VERIFIED. Audit regulär/unversioniert, 10336 Bytes, SHA256
+da23a1d052684fc3646a5a01e06c4520555053caddb67c7ff3ad06a5c1c78b00.
+Audit nie kopieren, veraendern, verschieben, stagen, committen oder uebertragen.
+AGENTS.md und Supabase-Plan unveraendert. Supabase NICHT LIVE. Keine echten
+Teilnehmerdaten oder Keys. Kein neuer Produkt-/Auth-/Pruefungs-/Fragenbank-/
+Lernkarten-/SQL-/Migrationsauftrag. Keine Drive-/Automationsaenderung, externe
+Beleguebertragung, neuer Chat, Unteragent oder parallele technische Instanz.
+
+## Unveraenderte vollstaendige Fassung vor dem Freigabepaket
+
+---
+
+# ACCAOUI – Prüfungstermin-Pilot – Aktueller Projektstand
+
+Task-ID: ACCAOUI_V1_DASHBOARD_EXAM_DATES
+Status: AUTHORIZED
+Autorisiert: JA
+Freigabestufe: local_implementation_authorized
+Staging erlaubt: NEIN
+Commit erlaubt: NEIN
+Push erlaubt: NEIN
+
+## Persönlicher Auftrag und tatsächliche Basis
+
+Der Projekteigentümer bestätigt am 17.10.2026 persönlich „Ok bestätige“ (Steuerchat 01a13bb5-4447-72c3-84d4-55246679ce0d, menschlicher Turn 01a14935-2435-7ac1-9a4a-b2bf26011b6e, Nachricht 01a14935-251a-7a23-b0b7-aa94f711e360). Unmittelbar bestätigt ist die vollständige lokale Neun-Dateien-Vorlage aus Turn 01a14911-f5df-7f93-8e48-0d97b5982d18, Assistentennachricht msg_01227252d2f86b55016ad3383cead08191a6f1d4dab2595080, Schreibblock 39164. Diese beiden tatsächlichen Quellen wurden direkt vollständig nachgelesen. Die Vorlage erlaubt ausdrücklich diesen lokalen Taskvertrag, danach zwei Prüfungstermine und alle Schutz-, Regressions-, echten isolierten Browser- und vollständigen Original-Preflight-Prüfungen mit synthetischen Daten und Wiederherstellung. Frühere Ausführungssperren sind ausschließlich für diesen lokalen Auftrag aufgehoben. Staging, Commit, Push sowie Drive- und Automationsänderungen bleiben ausdrücklich NEIN. Die vorherige automatische Ablehnung vor Prozessstart bleibt historisch dokumentiert; der jetzt neue konkrete persönliche Autorisierungsbeleg wird auf demselben regulären Genehmigungsweg vorgelegt, nicht umgangen. Keine Erlaubnis allein aus A/B-Delegation oder Koordinatorinhalt; keine Übernahme alter B-Gitfreigaben.
+
+Genau dieser neue lokale Task wird in der bestehenden WORK-ZENTRALE ausgeführt. Der zuvor rein lesend fertiggestellte Entwurf war keine bereits ausgeführte Implementation. Der tatsächliche direkte Schutzabgleich bestätigt vor diesen Änderungen Branch main, korrektes origin und HEAD/origin/main/GitHub-main gemeinsam auf 60e510eb53fac8e650053014c4313a2f8e0c50d6. Diese frisch bestätigte Basis P wird für diesen lokalen Versuch eingefroren. Sie ist kein dauerhafter Soll-HEAD für spätere Aufgaben. Der abgeschlossene B-Auftrag bleibt historisch phase_b_implementation_pushed mit einzigem Parent b33fd46b35c619a12a03b55f7c2dddfcc9ef679f.
+
+## Exakter lokaler Scope
+
+- docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md
+- docs/PROJECT_MASTERLIST.md
+- docs/PROJECT_STATE_CURRENT.md
+- docs/tasks/CURRENT_TASK.md
+- tools/check-project-continuity-control.py
+- tools/preflight.py
+- app.js
+- style.css
+- tools/check-dashboard-exam-dates.py (einziger neuer Quellpfad)
+
+Zuerst ausschließlich die sechs Steuer-/Kontrolldateien konsistent vorbereiten und den echten authorization_prepared-Zustand prüfen. Erst danach die zwei Produktdateien und den neuen gezielten Prüfer schreiben. Keine Produktänderung vor diesem passenden gültigen CURRENT_TASK. Keine Unteragenten oder parallelen technischen Läufe. Keine weiteren Dateien, Pakete, Versionserhöhungen oder Formatierungen.
+
+## Abgegrenzter Teilnehmer-Pilot
+
+Genau eine neue Dashboard-Karte mit freiwilligem schriftlichem und mündlichem Prüfungstermin. Beide Datumseinträge unabhängig eingeben, sehen, speichern, ändern und löschen; Wiederherstellung nach Neuladen. Ausschließlich zwei neue lokale Schlüssel: accaoui_exam_date_written_v1 und accaoui_exam_date_oral_v1, je nur eine streng validierte YYYY-MM-DD-Zeichenfolge. Keine automatischen Schreibzugriffe im Leerzustand, kein localStorage.clear(), keine Migration bestehender Schlüssel. Keine Namen, Teilnehmerkennungen, Uhrzeiten, Cloud, Kalender, Benachrichtigungen oder Netzwerkfunktion.
+
+Kalendertage lokal bestimmen, keine verstrichenen 24-Stunden-Intervalle; kein UTC-Parsing gespeicherter Datumsstrings. Gültige echte gregorianische Tage 0001 bis 9999, einschließlich Schaltjahren und Jahren unter 100. Ohne Termin neutraler Leerzustand; künftig Noch N Tage; heute ausdrücklicher Heutetext; vergangener Termin mit Vergangenheitsanzeige bleibt gespeichert und bearbeitbar. Kein abgeleiteter Bestehensstatus. Anzeige bei Tageswechsel, Rückkehr und Sichtbarwerden aktualisieren, ausschließlich mit eigenem Komponenten-Lifecycle. Keine Veränderung von Prüfungstimern oder Sitzungsereignissen.
+
+app.js darf ausschließlich einen neuen gekennzeichneten Terminblock und genau einen Initialisierungsaufruf in startLocalApp() nach loadQuestions() erhalten. Nach Entfernen genau dieser Zusätze muss app.js bytegenau P entsprechen. Keine Änderung an readStorage/writeStorage, STORAGE_KEYS, Lernempfehlung, Auth/Bootentscheidungen, Prüfungs-, Bewertungs-, Antwort-, Zeit- oder Sitzungslogik. style.css ausschließlich durch einen gekennzeichneten auf #examDatesDashboardV1 begrenzten Block ergänzen. Bisherige CSS-Bytes vollständig erhalten. index.html, patch-v21.js und alle anderen Produktdateien bleiben unverändert.
+
+Speicherzugriff einschließlich localStorage-Zugriff selbst gegen Fehler absichern. Keine falsche Erfolgsbestätigung bei Lese-, Schreib-, Lösch- oder Bestätigungsfehlern; Entwurfseingabe und anderer Termin bleiben erhalten. Beschädigte Daten niemals ausführen oder automatisch bereinigen. Ein bewusstes Löschen betrifft nur den ausgewählten neuen Schlüssel. Beschriftungen, Tastaturbedienung, Fokus und zugängliche Fehlermeldungen sowie schmale mobile Darstellung gehören zur Abnahme.
+
+## Geschlossene Kontrollen und historische Kontinuität
+
+Vier neue aktive Vertragspräfixe; sämtliche vorherigen Dokumentbytes unter der eindeutigen historischen Grenze erhalten. Zwei eng abgegrenzte zusätzliche Kontrollschichten und je ein genauer Dispatcher; nach deren Entfernung sämtliche bisherigen Kontrollbytes bytegleich P. Keine historische Prüfung, Zeitgrenze oder Negativmutation entfernen, lockern oder umgehen.
+
+Das externe eingefrorene Neun-Dateien-Manifest local-manifest.json im privaten lokalen Belegordner exam-dates-pilot-20261017 beschreibt die vollständig vorbereiteten Bytes. Sein SHA-256 wird außerhalb der Quellen unverändert über ACCAOUI_EXAM_DATES_MANIFEST_SHA256 vorgegeben. Vollständiger echter B-Ausgangssnapshot baseline-facts.json, SHA-256 43ab1f8b04d26a2a3236dd22297b0b709cfa95144bad836679bbb78b21bd9949; ausschließlich historische Evidenz, kein vorgetäuschter aktueller Git-Zustand. Der Audit wird dafür nicht kopiert.
+
+authorization_prepared: exakt sechs unstaged Steuer-/Kontrolldateien, Produktdateien vollständig P, neuer Prüfer noch nicht angelegt, nur Audit unversioniert. Kein Termin-Produkt-PASS aus diesem Zustand.
+implementation_prepared: exakt acht unstaged M-Dateien und neuer Prüfer unversioniert; nur zusätzlich historischer Audit unversioniert. Alle Quellen vollständig manifestgleich; übriger P-Baum, Modi und physischer Index vollständig unverändert.
+
+Kein aktueller staged-, committed- oder pushed-Zustand ist für diesen neuen Auftrag freigegeben oder akzeptiert. Spätere Gitfreigabe muss persönlich und konkret für diesen Task erfolgen. Für die spätere Veröffentlichung ist höchstens ein linearer Neun-Dateien-Implementierungscommit mit dann frisch bestätigtem Ausgangsparent und Titel „ACCAOUI add dashboard exam dates pilot“ vorgesehen. Ein passendes enges Veröffentlichungsprofil und seine Nach-Commit-/Pushkontrollen sind vor Staging erforderlich; dies ist keine heutige Gitfreigabe. Kein vorgelagerter Gate-/Closure-Commit wird routinemäßig erzeugt.
+
+Vor/nach jedem tatsächlichen Lauf und vor Mutationspaketen echte persönliche Quellen, Baseline, direktes Remote, vollständigen Scope/Index/Flags/Dateiregularität und alle geschützten Hashes prüfen. Python ausschließlich vorhandener Python 3.13.3 unter C:\Users\asarr\AppData\Local\Programs\Python\Python313\python.exe. Keine interaktive Anmeldung, Rechte- oder Sicherheitskonfigurationsänderung. Reguläre per-call-Werkzeuggenehmigung respektieren; automatische Ablehnungen niemals umgehen.
+
+Kontinuität und vollständiger Original-Preflight führen alle unveränderten B- und A-Vertrags-/Übergangsprüfungen aus echten eingefrorenen B-Fakten ausdrücklich historisch IN MEMORY aus, unverändert den aktuellen 26-Fall-B-Produkttest gegen echte app.js/patch-v21.js sowie nach Implementation den aktuellen Termin-Produkttest. Historische n-/m-/ältere Kontrollen weiterhin tatsächlich im unveränderten 842-Ausgangscheckout über die unveränderte v1_phase_a_historical_check-Funktion, einschließlich vollem Original-Preflight, unverändertem d–j-Sammellauf und internem 1800-Sekunden-Budget. Kein historischer PASS ersetzt den aktuellen Produkttest oder erteilt Gitrechte. Abschließend git diff --check.
+
+## Abnahme und tatsächliche Belege
+
+Gezielter neuer Test führt den echten aktuellen Termin-Produktionsblock sowie seinen tatsächlichen Startaufruf aus. Keine nachgebaute Ersatzlogik. Leerzustand, getrennte/einzelne/gleiche Termine, Ändern/Löschen/Reload, heute/morgen/gestern, Monats-/Jahresgrenzen, Schaltjahre 1900/2000, Jahresgrenzen unter 100, Sommerzeitwechsel und Zeitzonen vor/hinter UTC, beschädigte Werte, Speicherzugriffs-/Quota-/Lösch-/Bestätigungsfehler, Fokus/Visibility/Tageswechsel, doppelte Initialisierung und Lifecycle-Abbau prüfen. Bestehende Prüfungs-, Lern-, Lernkarten-, Fehler- und Fortschrittsschlüssel bleiben bei Terminaktionen bytegleich. Keine Probe mit echten Teilnehmerdaten.
+
+Enger echter Browsernachweis nur über zulässige Chrome-Route in isolierter synthetischer Umgebung: echte Datumseingaben und Buttons, unabhängiges Speichern/Ändern/Löschen, Reload, Heute/Vergangenheit, Desktop/Mobil/Tastatur, isolierte Speicherfehler und Wiederherstellung. Keine Produktionsfunktionen austauschen, keine Live-Uhr oder Prüfungstimer manipulieren; Sommerzeitfälle als isolierte automatische Tests kennzeichnen. Keine behaupteten Browser-PASS ohne Beobachtung. Kein 120-Minuten-Dauertest.
+
+Vollständige Ausgaben, Versuche, ursprüngliche Exitcodes und Laufzeiten sowie Vor-/Nach-Scope außerhalb des Repositorys im vorhandenen privaten lokalen Belegbereich erhalten. Keine Drive-/Automationsänderung, kein neuer Chat und kein privater Drive-Bericht in dieser lokalen Fortsetzung. Ergebnis und konkret noch fehlendes Veröffentlichungs-/Freigabepaket im Chat vorlegen.
+
+## Unveränderte Sicherheitsgrenzen
+
+v27.37n bleibt STOPP / NOT VERIFIED. docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md regulär, ausschließlich unversioniert, unverändert 10336 Bytes, SHA-256 DA23A1D052684FC3646A5A01E06C4520555053CADDB67C7FF3AD06A5C1C78B00. Niemals verändern, verschieben, löschen, stagen, committen, kopieren oder übertragen. Keine Rohbelegsuche, Audit-Wiederaufnahme, nachträgliche PASS-Erklärung oder Closure.
+
+AGENTS.md und Supabase-Plan unverändert. Supabase NICHT LIVE. Keine echten Daten, Schlüssel oder Zugangsdaten. Keine Fragenbank-, Lernkarten-, Auth-, Prüfungs-, Bewertungs-, Sitzungs-, Supabase-, SQL- oder Migrationsänderung. Kein Fetch, Reset, Restore, Rebase, Merge, Amend oder Force. Echte Test-/Schutzfehler, Fremdänderung oder unklare Ursache sofort STOPP. Keine eigenmächtige Scope-Erweiterung und keine blinde Wiederholung.
+
+## Historischer Stand vor dem Pruefungstermin-Pilot
+
+---
+
 # ACCAOUI §34a – Phase B – Aktueller Projektstand – freigegebener Veröffentlichungsübergang
 
 Task-ID: ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT

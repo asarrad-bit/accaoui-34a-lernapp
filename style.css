@@ -9498,3 +9498,34 @@ body .main-content .topic-stats-list > .topic-stat-row .topic-neutral {
     min-width: 0;
   }
 }
+
+/* BEGIN ACCAOUI_V1_DASHBOARD_EXAM_DATES styles */
+#examDatesDashboardV1 {
+  margin: 0 0 28px;
+  padding: 24px;
+  border: 1px solid var(--border, #dce3ee);
+  border-radius: 20px;
+  background: var(--bg-card, #fff);
+  color: var(--text-main, #172033);
+}
+#examDatesDashboardV1 h2 { margin: 0 0 8px; font-size: 1.3rem; }
+#examDatesDashboardV1 .exam-dates-hint { margin: 0 0 20px; color: #475569; }
+#examDatesDashboardV1 .exam-dates-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+#examDatesDashboardV1 fieldset { min-width: 0; margin: 0; padding: 16px; border: 1px solid #cbd5e1; border-radius: 14px; }
+#examDatesDashboardV1 legend { padding: 0 5px; font-weight: 700; }
+#examDatesDashboardV1 label { display: block; margin: 12px 0 6px; font-weight: 600; }
+#examDatesDashboardV1 input { display: block; box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid #64748b; border-radius: 9px; background: #fff; color: #172033; font-size: 1rem; }
+#examDatesDashboardV1 input[aria-invalid="true"] { border-color: #b91c1c; }
+#examDatesDashboardV1 input:focus-visible, #examDatesDashboardV1 button:focus-visible { outline: 3px solid #2344c6; outline-offset: 3px; }
+#examDatesDashboardV1 .exam-date-status { margin: 0; min-height: 3em; }
+#examDatesDashboardV1 .exam-date-error { color: #991b1b; margin: 8px 0; font-size: .94rem; }
+#examDatesDashboardV1 .exam-date-error:empty { display: none; }
+#examDatesDashboardV1 .exam-date-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+#examDatesDashboardV1 button { min-height: 44px; white-space: normal; }
+#examDatesDashboardV1 [hidden] { display: none !important; }
+@media (max-width: 640px) {
+  #examDatesDashboardV1 { padding: 16px; }
+  #examDatesDashboardV1 .exam-dates-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  #examDatesDashboardV1 .exam-date-actions > button { flex: 1 1 130px; }
+}
+/* END ACCAOUI_V1_DASHBOARD_EXAM_DATES styles */

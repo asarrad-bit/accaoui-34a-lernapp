@@ -22981,7 +22981,837 @@ def run_v1_phase_b_control():
         return 1
 # END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b_release continuity
 # END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b continuity
+# BEGIN ACCAOUI_V1_DASHBOARD_EXAM_DATES continuity
+EXAM_DATES_TASK = 'ACCAOUI_V1_DASHBOARD_EXAM_DATES'
+EXAM_DATES_PARENT = '60e510eb53fac8e650053014c4313a2f8e0c50d6'
+EXAM_DATES_EVIDENCE = Path(r'C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\exam-dates-pilot-20261017')
+EXAM_DATES_TEST = 'tools/check-dashboard-exam-dates.py'
+EXAM_DATES_FILES = frozenset((*V1_PHASE_A_FILES, 'app.js', 'style.css', EXAM_DATES_TEST))
+EXAM_DATES_BASE_FACTS_SHA = '43ab1f8b04d26a2a3236dd22297b0b709cfa95144bad836679bbb78b21bd9949'
+
+
+def exam_dates_requested():
+    import os
+    header = TASK_PATH.read_text(encoding='utf-8')[:2500]
+    return EXAM_DATES_TASK in header or header.startswith('# ACCAOUI – Prüfungstermin-Pilot') or 'ACCAOUI_EXAM_DATES_MANIFEST_SHA256' in os.environ
+
+
+def exam_dates_decode(value):
+    import base64
+    if isinstance(value, dict):
+        if set(value) == {'$bytes'}: return base64.b64decode(value['$bytes'], validate=True)
+        if set(value) == {'$tuple'}: return tuple(exam_dates_decode(x) for x in value['$tuple'])
+        if set(value) == {'$set'}: return frozenset(exam_dates_decode(x) for x in value['$set'])
+        if set(value) == {'$path'}: return Path(value['$path'])
+        return {k:exam_dates_decode(v) for k,v in value.items()}
+    if isinstance(value, list): return [exam_dates_decode(x) for x in value]
+    return value
+
+
+def exam_dates_manifest():
+    import os, json, re
+    raw = (EXAM_DATES_EVIDENCE/'local-manifest.json').read_bytes()
+    expected = os.environ.get('ACCAOUI_EXAM_DATES_MANIFEST_SHA256', '').lower()
+    require(bool(re.fullmatch('[0-9a-f]{64}', expected)) and hashlib.sha256(raw).hexdigest() == expected,
+            'Exam dates: missing or changed externally pinned manifest')
+    result = json.loads(raw.decode('utf-8'))
+    require(set(result) == {'schema','task','base','index_sha256','baseline_facts_sha256','files'}
+            and result['schema'] == 1 and result['task'] == EXAM_DATES_TASK
+            and result['base'] == EXAM_DATES_PARENT
+            and result['index_sha256'] == 'a07f7a834551197d191b04ba30597d75a33c8d38f52d3e5350fbdf3857ae95bd'
+            and result['baseline_facts_sha256'] == EXAM_DATES_BASE_FACTS_SHA
+            and set(result['files']) == EXAM_DATES_FILES, 'Exam dates: manifest contract/scope')
+    for path, row in result['files'].items():
+        require(set(row) == {'bytes','sha256','blob','mode'} and row['mode'] == '100644'
+                and re.fullmatch('[0-9a-f]{64}', row['sha256']) and row['bytes'] > 0,
+                'Exam dates: manifest row '+path)
+    return result
+
+
+def exam_dates_baseline():
+    import json
+    raw = (EXAM_DATES_EVIDENCE/'baseline-facts.json').read_bytes()
+    require(hashlib.sha256(raw).hexdigest() == EXAM_DATES_BASE_FACTS_SHA,
+            'Exam dates: historical B evidence changed')
+    result = exam_dates_decode(json.loads(raw.decode('utf-8')))
+    require(v1_phase_b_validate_facts(result) == 'phase_b_implementation_pushed'
+            and result['head'] == EXAM_DATES_PARENT, 'Exam dates: actual completed B baseline invalid')
+    return result
+
+
+def exam_dates_validate_facts(f, manifest):
+    require(f['cwd'] == str(ROOT.resolve()) and f['branch'] == 'main' and f['origin_valid'],
+            'Exam dates: working directory/branch/origin')
+    require(f['head'] == f['origin_head'] == f['remote'] == EXAM_DATES_PARENT,
+            'Exam dates: actual base/remote mismatch')
+    require(f['python'] == str(Path(V1_PHASE_A_PYTHON).resolve()) and f['python_version'] == (3,13,3),
+            'Exam dates: interpreter')
+    require(f['index_sha'] == manifest['index_sha256'] and f['index_matches_base'] and not f['staged'],
+            'Exam dates: Git writes are not authorized; index changed')
+    require(not f['flags'] and not f['filters'] and not f['frozen_changes'] and f['regular'],
+            'Exam dates: foreign source/mode/filter/special-file change')
+    require(f['audit_sha'] == V1_PHASE_A_AUDIT_SHA and f['audit_bytes'] == 10336 and not f['audit_tracked'],
+            'Exam dates: protected untracked audit changed')
+    require(f['agents_sha'] == 'b85cbf52ef90e83a13c45d9347d4252c54f10684fb5762d80257faa00b09a7bc'
+            and f['plan_sha'].lower() == 'de88f6680c0323031eedb7680de787b83b8fb8bdf5161bfdabbe124178a47766',
+            'Exam dates: protected project rules changed')
+    require(f['manifest_ok'] and f['history_ok'] and f['tree_count'] == 578,
+            'Exam dates: manifest/history/base incomplete')
+    for p in V1_PHASE_A_FILES:
+        require(f['hashes'][p] == manifest['files'][p]['sha256'], 'Exam dates: control/authorization changed '+p)
+    before = f['hashes'].get(EXAM_DATES_TEST) is None
+    if before:
+        require(f['working'] == V1_PHASE_A_FILES and f['untracked'] == frozenset({V1_PHASE_A_AUDIT})
+                and f['hashes']['app.js'] == '07c06ea4e4c830abbcab435a91700df565332fb61e9ac71f7406a691f7b4d439'
+                and f['hashes']['style.css'] == '3d5fc8387e6acc5bdde74bf33d2dcdd7bc645a0d499aa4ec90e95281d84bbc5b',
+                'Exam dates: authorization-only state must keep all product bytes frozen')
+        return 'authorization_prepared'
+    require(f['working'] == V1_PHASE_A_FILES | {'app.js','style.css'}
+            and f['untracked'] == frozenset({V1_PHASE_A_AUDIT,EXAM_DATES_TEST}),
+            'Exam dates: exact local implementation scope')
+    for p in ('app.js','style.css',EXAM_DATES_TEST):
+        require(f['hashes'][p] == manifest['files'][p]['sha256'], 'Exam dates: product/test differs from reviewed source '+p)
+    return 'implementation_prepared'
+
+
+def exam_dates_snapshot():
+    import sys
+    manifest = exam_dates_manifest()
+    baseline = exam_dates_baseline()
+    expected_tree = baseline['head_tree']
+    g = v1_phase_b_git_bytes
+    origin = g(['remote','get-url','origin']).decode().strip()
+    require(origin in {'https://github.com/asarrad-bit/accaoui-34a-lernapp.git',
+                       'https://github.com/asarrad-bit/accaoui-34a-lernapp',
+                       'git@github.com:asarrad-bit/accaoui-34a-lernapp.git'}, 'Exam dates: unexpected origin, value suppressed')
+    remote = g(['ls-remote','--exit-code','https://github.com/asarrad-bit/accaoui-34a-lernapp.git','refs/heads/main']).decode().strip().split()
+    require(len(remote) == 2 and remote[1] == 'refs/heads/main', 'Exam dates: ambiguous direct GitHub-main')
+    index = {}
+    for row in g(['ls-files','--stage','-z']).split(b'\0'):
+        if row:
+            meta,name=row.split(b'\t',1); mode,oid,stage=meta.decode().split()
+            require(stage == '0' and name.decode() not in index, 'Exam dates: unmerged/duplicate index')
+            index[name.decode()] = (mode,oid)
+    flags = tuple(row[2:].decode() for row in g(['ls-files','-v','-z']).split(b'\0') if row and row[:1] != b'H')
+    filters = g(['check-attr','filter','working-tree-encoding','--',*sorted(EXAM_DATES_FILES)]).decode().splitlines()
+    filters = tuple(row for row in filters if not row.endswith(': unspecified'))
+    hashes, frozen, regular = {}, [], True
+    for path, (mode,oid) in expected_tree.items():
+        p=ROOT/path
+        okay=p.is_file() and not p.is_symlink() and not p.is_junction() and not (getattr(p.stat(),'st_file_attributes',0)&1024)
+        regular = regular and okay
+        require(okay,'Exam dates: missing/nonregular source '+path)
+        raw=p.read_bytes(); digest=hashlib.sha256(raw).hexdigest()
+        if path in EXAM_DATES_FILES: hashes[path]=digest
+        elif _b_release_blob(raw) != oid: frozen.append(path)
+    test=ROOT/EXAM_DATES_TEST
+    if test.exists():
+        regular=regular and test.is_file() and not test.is_symlink() and not test.is_junction()
+        hashes[EXAM_DATES_TEST]=hashlib.sha256(test.read_bytes()).hexdigest()
+    else: hashes[EXAM_DATES_TEST]=None
+    audit=ROOT/V1_PHASE_A_AUDIT
+    regular=regular and audit.is_file() and not audit.is_symlink() and not audit.is_junction() and not (getattr(audit.stat(),'st_file_attributes',0)&1024)
+    status=g(['status','--porcelain=v1','-z','--untracked-files=all']).split(b'\0')
+    working,staged,untracked=set(),set(),set()
+    for row in status:
+        if not row: continue
+        require(row[:2] in {b' M',b'??'},'Exam dates: unexpected status code, staging/renames are locked')
+        name=row[3:].decode()
+        if row[:2] == b'??': untracked.add(name)
+        else: working.add(name)
+    history_ok=True
+    for path in V1_PHASE_A_FILES:
+        raw=(ROOT/path).read_bytes()
+        if path in _B_RELEASE_PREFIX_SHA:
+            boundary=b'## Historischer Stand vor dem Pruefungstermin-Pilot\n\n---\n\n'
+            require(raw.count(boundary)==1,'Exam dates: unique canonical history boundary')
+            old=raw.split(boundary,1)[1]
+        else:
+            role='continuity' if path==CHECKER_RELATIVE_PATH else 'preflight'
+            begin=('\n# BEGIN '+EXAM_DATES_TASK+' '+role+'\n').encode()
+            end=('# END '+EXAM_DATES_TASK+' '+role+'\n').encode()
+            require(raw.count(begin)==raw.count(end)==1,'Exam dates: unique additive control layer')
+            a=raw.index(begin);b=raw.index(end,a)+len(end);old=raw[:a]+raw[b:]
+            dispatch=(b'    if exam_dates_requested():\n        return run_exam_dates_control("continuity")\n' if role=='continuity'
+                      else b'    if _exam_dates_preflight():\n        return\n')
+            require(old.count(dispatch)==1,'Exam dates: exact additive dispatcher')
+            old=old.replace(dispatch,b'',1)
+        history_ok=history_ok and old==(EXAM_DATES_EVIDENCE/'baseline'/path).read_bytes()
+    if test.exists():
+        for path, start_marker, end_marker in (
+            ('app.js',b'// BEGIN ACCAOUI_V1_DASHBOARD_EXAM_DATES product',b'// END ACCAOUI_V1_DASHBOARD_EXAM_DATES product'),
+            ('style.css',b'/* BEGIN ACCAOUI_V1_DASHBOARD_EXAM_DATES styles */',b'/* END ACCAOUI_V1_DASHBOARD_EXAM_DATES styles */')):
+            raw=(ROOT/path).read_bytes();nl=b'\r\n' if b'\r\n' in raw else b'\n'
+            require(raw.count(start_marker)==raw.count(end_marker)==1,'Exam dates: unique product/style block')
+            a=raw.index(start_marker);b=raw.index(end_marker)+len(end_marker)
+            require(raw[:a].endswith(nl) and raw[b:]==nl,'Exam dates: additive block boundary')
+            old=raw[:a-len(nl)]
+            if path=='app.js':
+                call=b'  initDashboardExamDatesV1();'+nl
+                require(old.count(call)==1,'Exam dates: single authorized startLocalApp call')
+                old=old.replace(call,b'',1)
+            history_ok=history_ok and old==(EXAM_DATES_EVIDENCE/'baseline'/path).read_bytes()
+    f={'cwd':str(ROOT.resolve()),'branch':g(['branch','--show-current']).decode().strip(),'origin_valid':True,
+       'head':g(['rev-parse','HEAD']).decode().strip(),'origin_head':g(['rev-parse','refs/remotes/origin/main']).decode().strip(),
+       'remote':remote[0],'python':str(Path(sys.executable).resolve()),'python_version':sys.version_info[:3],
+       'index_sha':hashlib.sha256((ROOT/'.git/index').read_bytes()).hexdigest(),'index_matches_base':index==expected_tree,
+       'staged':frozenset(staged),'flags':flags,'filters':filters,'frozen_changes':tuple(frozen),'regular':regular,
+       'audit_sha':hashlib.sha256(audit.read_bytes()).hexdigest(),'audit_bytes':audit.stat().st_size,'audit_tracked':V1_PHASE_A_AUDIT in index,
+       'agents_sha':hashlib.sha256(AGENTS_PATH.read_bytes()).hexdigest(),
+       'plan_sha':hashlib.sha256((ROOT/'docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md').read_bytes()).hexdigest(),
+       'manifest_ok':True,'history_ok':history_ok,'tree_count':len(expected_tree),'hashes':hashes,
+       'working':frozenset(working),'untracked':frozenset(untracked)}
+    exam_dates_validate_facts(f,manifest)
+    return f
+
+
+def exam_dates_self_checks(f, manifest):
+    import copy
+    actual = exam_dates_validate_facts(f,manifest)
+    opposite=copy.deepcopy(f)
+    if actual=='authorization_prepared':
+        opposite['hashes'].update({p:manifest['files'][p]['sha256'] for p in ('app.js','style.css',EXAM_DATES_TEST)})
+        opposite['working']=V1_PHASE_A_FILES|{'app.js','style.css'}
+        opposite['untracked']=frozenset({V1_PHASE_A_AUDIT,EXAM_DATES_TEST})
+        require(exam_dates_validate_facts(opposite,manifest)=='implementation_prepared','Exam dates: positive contract fixture')
+    else:
+        opposite['hashes'].update({'app.js':'07c06ea4e4c830abbcab435a91700df565332fb61e9ac71f7406a691f7b4d439','style.css':'3d5fc8387e6acc5bdde74bf33d2dcdd7bc645a0d499aa4ec90e95281d84bbc5b',EXAM_DATES_TEST:None})
+        opposite['working']=V1_PHASE_A_FILES;opposite['untracked']=frozenset({V1_PHASE_A_AUDIT})
+        require(exam_dates_validate_facts(opposite,manifest)=='authorization_prepared','Exam dates: positive gate fixture')
+    negative=0
+    def blocked(change):
+        nonlocal negative
+        candidate=copy.deepcopy(f);change(candidate)
+        try: exam_dates_validate_facts(candidate,manifest)
+        except ValidationError: negative+=1;return
+        raise ValidationError('Exam dates: forbidden contract mutation accepted')
+    for k,v in {'cwd':'foreign','branch':'other','origin_valid':False,'head':'0'*40,'origin_head':'0'*40,'remote':'0'*40,
+                'python':'foreign','python_version':(3,13,2),'index_sha':'0'*64,'index_matches_base':False,
+                'staged':frozenset({'app.js'}),'flags':('app.js',),'filters':('filter',),'frozen_changes':('patch-v21.js',),
+                'regular':False,'audit_sha':'0'*64,'audit_bytes':10335,'audit_tracked':True,'agents_sha':'0'*64,'plan_sha':'0'*64,
+                'manifest_ok':False,'history_ok':False,'tree_count':577,'working':frozenset(),'untracked':frozenset()}.items():
+        blocked(lambda x,k=k,v=v:x.__setitem__(k,v))
+    for p in EXAM_DATES_FILES:
+        blocked(lambda x,p=p:x['hashes'].__setitem__(p,'0'*64))
+    blocked(lambda x:x.__setitem__('untracked',x['untracked']|{'foreign.txt'}))
+    blocked(lambda x:x.__setitem__('working',x['working']|{'patch-v21.js'}))
+    print('Exam dates: 2 explicitly synthetic contract positives; '+str(negative)+' negatives blocked.',flush=True)
+    print('Historical B/A contracts: immutable real B evidence, not the current task Git state.',flush=True)
+    v1_phase_b_self_checks(exam_dates_baseline())
+
+
+def run_exam_dates_control(kind):
+    import sys
+    try:
+        require(kind in {'continuity','preflight'},'Exam dates: unknown control kind')
+        before=exam_dates_snapshot();manifest=exam_dates_manifest()
+        state=exam_dates_validate_facts(before,manifest)
+        exam_dates_self_checks(before,manifest)
+        v1_phase_b_product_check()
+        if state=='implementation_prepared':
+            result=subprocess.run([sys.executable,'-X','utf8','-B',str(ROOT/EXAM_DATES_TEST)],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',timeout=180)
+            if result.stdout: print(result.stdout.rstrip(),flush=True)
+            require(result.returncode==0 and not result.stderr.strip() and 'EXAM_DATES_CURRENT_PASS' in result.stdout,
+                    'Exam dates: actual product regression failed: '+(result.stderr.strip() or result.stdout.strip()))
+        else:
+            print('Authorization only: no exam-date implementation or exam-date product PASS claimed.',flush=True)
+        print(v1_phase_a_historical_check(kind).strip(),flush=True)
+        require(exam_dates_snapshot()==before,'Exam dates: protected state changed during actual checks')
+        print('Actual exam-date task phase: '+state+' / '+kind+' PASS.',flush=True)
+        print('Staging/commit/push NEIN. v27.37n STOPP / NOT VERIFIED. Supabase NICHT LIVE.',flush=True)
+        if kind=='preflight': print('OK: Preflight bestanden.',flush=True)
+        return 0
+    except Exception as exc:
+        print('STOPP: exam-date '+kind+': '+str(exc),flush=True)
+        return 1
+# END ACCAOUI_V1_DASHBOARD_EXAM_DATES continuity
+
+# BEGIN ACCAOUI_EXAM_DATES_RELEASE continuity
+# DRAFT ONLY. Do not execute or apply before the exact publication package is confirmed.
+# This additive layer keeps all prior definitions and their original bytes unchanged.
+_XR_BOUNDARY = b"## Unveraenderte vollstaendige Fassung vor dem Freigabepaket\n\n---\n\n"
+_XR_PROPOSAL_DIR = EXAM_DATES_EVIDENCE / "release-preparation-20261018-run1"
+_XR_APPLIED_DIR = EXAM_DATES_EVIDENCE / "release-applied-20261018-run1"
+_XR_ORIGINAL_PIN = "4853d43eb172344bcd8ac49281307737d3dbb4dcdb1cac4d1e41dde2b8e81ddb"
+_XR_SUBJECT = "ACCAOUI add dashboard exam dates pilot"
+_XR_DOCS = frozenset(_B_RELEASE_PREFIX_SHA)
+_XR_CONTROL = V1_PHASE_A_FILES
+_XR_DISPATCH = {
+    CHECKER_RELATIVE_PATH: b'    if exam_dates_release_requested():\n        return run_exam_dates_release_control("continuity")\n',
+    "tools/preflight.py": b'    if _exam_dates_release_preflight():\n        return\n',
+}
+
+
+def exam_dates_release_requested():
+    import os
+    header = TASK_PATH.read_text(encoding="utf-8")[:2400]
+    return ("ACCAOUI_EXAM_DATES_RELEASE_MANIFEST" in os.environ
+            or "release_pending" in header or "exam_dates_release_authorized" in header)
+
+
+def xr_sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def xr_regular(path):
+    return (path.is_file() and not path.is_symlink() and not path.is_junction()
+            and not (getattr(path.stat(), "st_file_attributes", 0) & 1024))
+
+
+def xr_json(path, pin):
+    import json
+    require(re.fullmatch("[0-9a-f]{64}", pin or "") and xr_regular(path), "XR/artifact-file-pin")
+    raw = path.read_bytes()
+    require(xr_sha(raw) == pin, "XR/artifact-digest")
+    def unique(pairs):
+        d = {}
+        for k, v in pairs:
+            require(k not in d, "XR/duplicate-json-key")
+            d[k] = v
+        return d
+    return json.loads(raw.decode("utf-8"), object_pairs_hook=unique)
+
+
+def xr_activate_doc(raw, approval):
+    require(raw.count(_XR_BOUNDARY) == 1, "XR/document-boundary")
+    prefix, old = raw.split(_XR_BOUNDARY, 1)
+    changes = {
+        b"Status: DRAFT\n": b"Status: AUTHORIZED\n",
+        b"Autorisiert: NEIN\n": b"Autorisiert: JA\n",
+        b"Freigabestufe: release_pending\n": b"Freigabestufe: exam_dates_release_authorized\n",
+        b"Staging erlaubt: NEIN\n": b"Staging erlaubt: JA - nur das bestaetigte Neun-Dateien-Paket\n",
+        b"Commit erlaubt: NEIN\n": b"Commit erlaubt: JA - genau ein linearer Implementierungscommit\n",
+        b"Push erlaubt: NEIN\n": b"Push erlaubt: JA - normal nach allen vorgeschriebenen PASS-Nachweisen\n",
+        b"Dokumentstatus: ENTWURF - NICHT ANWENDEN\n": b"Dokumentstatus: PERSOENLICH BESTAETIGTES VEROEFFENTLICHUNGSPAKET\n",
+        b"PENDING_HUMAN_TURN": approval["human_turn"].encode("ascii"),
+        b"PENDING_HUMAN_MESSAGE": approval["human_message"].encode("ascii"),
+    }
+    for before, after in changes.items():
+        require(prefix.count(before) == 1, "XR/activation-token")
+        prefix = prefix.replace(before, after, 1)
+    return prefix + _XR_BOUNDARY + old
+
+
+def xr_peel(path, raw):
+    if path in _XR_DOCS:
+        require(raw.count(_XR_BOUNDARY) == 1, "XR/history-boundary")
+        return raw.split(_XR_BOUNDARY, 1)[1]
+    role = "continuity" if path == CHECKER_RELATIVE_PATH else "preflight"
+    begin = ("\n# BEGIN ACCAOUI_EXAM_DATES_RELEASE " + role + "\n").encode()
+    end = ("# END ACCAOUI_EXAM_DATES_RELEASE " + role + "\n").encode()
+    require(raw.count(begin) == raw.count(end) == 1, "XR/control-boundary")
+    a = raw.index(begin)
+    b = raw.index(end, a) + len(end)
+    old = raw[:a] + raw[b:]
+    require(old.count(_XR_DISPATCH[path]) == 1, "XR/dispatcher")
+    return old.replace(_XR_DISPATCH[path], b"", 1)
+
+
+def xr_package():
+    import os
+    original = exam_dates_manifest()
+    require(os.environ.get("ACCAOUI_EXAM_DATES_MANIFEST_SHA256") == _XR_ORIGINAL_PIN,
+            "XR/original-manifest-pin")
+    proposal_pin = os.environ.get("ACCAOUI_EXAM_DATES_RELEASE_PROPOSAL_SHA256", "")
+    proposal = xr_json(_XR_PROPOSAL_DIR / "proposal-manifest.json", proposal_pin)
+    require(proposal["schema"] == 1 and proposal["status"] == "DRAFT_NOT_AUTHORIZED"
+            and proposal["task"] == EXAM_DATES_TASK
+            and proposal["parent"] == EXAM_DATES_PARENT
+            and proposal["original_manifest_sha256"] == _XR_ORIGINAL_PIN
+            and set(proposal["draft_files"]) == _XR_CONTROL, "XR/proposal-contract")
+    manifest_path = Path(os.environ.get("ACCAOUI_EXAM_DATES_RELEASE_MANIFEST", ""))
+    require(manifest_path == _XR_APPLIED_DIR / "release-manifest.json", "XR/manifest-location")
+    m = xr_json(manifest_path, os.environ.get("ACCAOUI_EXAM_DATES_RELEASE_MANIFEST_SHA256", ""))
+    require(set(m) == {"schema", "task", "parent", "subject", "original_manifest_sha256",
+                      "proposal_sha256", "approval_receipt_sha256", "historical_snapshot_sha256", "files"}
+            and m["schema"] == 1 and m["task"] == EXAM_DATES_TASK
+            and m["parent"] == EXAM_DATES_PARENT and m["subject"] == _XR_SUBJECT
+            and m["proposal_sha256"] == proposal_pin
+            and m["original_manifest_sha256"] == _XR_ORIGINAL_PIN
+            and m["historical_snapshot_sha256"] == proposal["historical_snapshot_sha256"]
+            and set(m["files"]) == EXAM_DATES_FILES, "XR/manifest-contract")
+    approval = xr_json(_XR_APPLIED_DIR / "personal-approval.json", m["approval_receipt_sha256"])
+    require(approval["schema"] == 1 and approval["explicit_publication_approval"] is True
+            and approval["proposal_sha256"] == proposal_pin
+            and approval["source_thread"] == "01a13bb5-4447-72c3-84d4-55246679ce0d"
+            and re.fullmatch("[0-9a-f-]{36}", approval["human_turn"])
+            and re.fullmatch("[0-9a-f-]{36}", approval["human_message"])
+            and approval["confirmed_text_sha256"] == xr_sha(approval["confirmed_text"].encode("utf-8"))
+            and approval["confirmation_text"].strip(), "XR/personal-confirmation")
+    # The executor must additionally read the actual human source directly.
+    # An agent-authored JSON receipt is not independent permission to execute.
+    for p, row in m["files"].items():
+        require(set(row) == {"bytes", "sha256", "blob", "mode"} and row["mode"] == "100644"
+                and row["bytes"] > 0 and re.fullmatch("[0-9a-f]{64}", row["sha256"])
+                and re.fullmatch("[0-9a-f]{40}", row["blob"]), "XR/manifest-row")
+        raw = (ROOT / p).read_bytes()
+        require(len(raw) == row["bytes"] and xr_sha(raw) == row["sha256"]
+                and _b_release_blob(raw) == row["blob"], "XR/current-manifest-source")
+        if p in _XR_CONTROL:
+            draft_row = proposal["draft_files"][p]
+            draft = (_XR_PROPOSAL_DIR / "proposed-sources" / p).read_bytes()
+            require(xr_regular(_XR_PROPOSAL_DIR / "proposed-sources" / p)
+                    and len(draft) == draft_row["bytes"] and xr_sha(draft) == draft_row["sha256"],
+                    "XR/approved-draft")
+            expected = xr_activate_doc(draft, approval) if p in _XR_DOCS else draft
+            require(raw == expected and xr_sha(xr_peel(p, raw)) == original["files"][p]["sha256"],
+                    "XR/approved-additive-source")
+        else:
+            require(row == original["files"][p], "XR/frozen-product-or-test")
+    return m, original
+
+
+# BEGIN ACCAOUI_EXAM_DATES_WIN206_CORRECTION
+# DRAFT CORRECTION ONLY - NOT APPLIED / NOT EXECUTED.
+_XC_BOUNDARY = b"## Unveraenderte Fassung vor der WinError206-Korrektur\n\n---\n\n"
+_XC_PROPOSAL_DIR = EXAM_DATES_EVIDENCE / "release-correction-draft-20261018-run1"
+_XC_APPLIED_DIR = EXAM_DATES_EVIDENCE / "release-correction-applied-20261018-run1"
+_XC_PREVIOUS_PIN = "92b24d84fc6e99ab8d07f6c286f03c77a72344f309cf84182603b8e3252d0ec8"
+_XC_PREVIOUS_PROPOSAL_PIN = "edd3af5e27e857af0315e74da39dfe9a571533a2c62cf5fc47bebee26af51ddd"
+_XC_CHANGED = _XR_DOCS | {CHECKER_RELATIVE_PATH}
+_XC_OLD_ATTR = (b'    attr = g(["check-attr", "-z", "filter", "working-tree-encoding", "--",\n'
+                b'              *sorted(set(base) | EXAM_DATES_FILES)]).split(b"\\0")\n')
+_XC_NEW_ATTR = b'    attr = xc_check_attributes(sorted(set(base) | EXAM_DATES_FILES))\n'
+
+
+def xc_check_attributes(paths):
+    # Same complete path set and same two attributes. No historic helper modified.
+    paths = tuple(paths)
+    names = (b"filter", b"working-tree-encoding")
+    require(paths and len(paths) == len(set(paths))
+            and all(isinstance(p, str) and "\0" not in p for p in paths), "XC/attribute-paths")
+    payload = b"\0".join(p.encode("utf-8") for p in paths) + b"\0"
+    try:
+        result = subprocess.run(
+            ["git", "--no-optional-locks", "--no-replace-objects",
+             "check-attr", "-z", "--stdin", "filter", "working-tree-encoding"],
+            cwd=ROOT, input=payload, capture_output=True, check=False)
+    except (FileNotFoundError, OSError) as exc:
+        raise ValidationError("XC/attribute-process: " + str(exc)) from exc
+    require(result.returncode == 0,
+            "XC/attribute-query: " + decode_git_stderr(result.stderr).strip())
+    values = result.stdout.split(b"\0")
+    require(values[-1:] == [b""] and len(values)-1 == len(paths)*len(names)*3,
+            "XR/attribute-format")
+    records = [tuple(values[i:i+3]) for i in range(0, len(values)-1, 3)]
+    expected = {(p.encode("utf-8"), a) for p in paths for a in names}
+    require(len(records) == len(expected)
+            and {(p, a) for p, a, _ in records} == expected, "XC/attribute-complete-set")
+    # Caller retains its unchanged rejection of every non-unspecified value.
+    return values
+
+
+def xc_activate_doc(raw, approval):
+    require(raw.count(_XC_BOUNDARY) == 1, "XC/document-boundary")
+    prefix, old = raw.split(_XC_BOUNDARY, 1)
+    replacements = {
+        b"Status: DRAFT_KORREKTUR_GESPERRT\n": b"Status: AUTHORIZED_KORREKTUR\n",
+        b"Autorisiert: NEIN\n": b"Autorisiert: JA\n",
+        b"Freigabestufe: exam_dates_release_authorized_correction_pending\n":
+            b"Freigabestufe: exam_dates_release_authorized_correction_confirmed\n",
+        b"Korrekturfreigabe: AUSSTEHEND\n": b"Korrekturfreigabe: PERSOENLICH_BESTAETIGT\n",
+        b"Staging erlaubt: NEIN\n": b"Staging erlaubt: JA - nur nach allen vorgeschriebenen PASS-Nachweisen\n",
+        b"Commit erlaubt: NEIN\n": b"Commit erlaubt: JA - ein unveraenderter Neun-Dateien-Implementierungscommit\n",
+        b"Push erlaubt: NEIN\n": b"Push erlaubt: JA - nur normal mit direkten GitHub-Nachkontrollen\n",
+        b"PENDING_CORRECTION_TURN": approval["human_turn"].encode("ascii"),
+        b"PENDING_CORRECTION_MESSAGE": approval["human_message"].encode("ascii"),
+    }
+    for before, after in replacements.items():
+        require(prefix.count(before) == 1, "XC/activation-token")
+        prefix = prefix.replace(before, after, 1)
+    return prefix + _XC_BOUNDARY + old
+
+
+def xc_previous_bytes(path, raw):
+    if path in _XR_DOCS:
+        require(raw.count(_XC_BOUNDARY) == 1, "XC/history-boundary")
+        return raw.split(_XC_BOUNDARY, 1)[1]
+    if path != CHECKER_RELATIVE_PATH:
+        return raw
+    begin = b"\n# BEGIN ACCAOUI_EXAM_DATES_WIN206_CORRECTION\n"
+    end = b"# END ACCAOUI_EXAM_DATES_WIN206_CORRECTION\n"
+    require(raw.count(begin) == raw.count(end) == 1, "XC/control-boundary")
+    a = raw.index(begin)
+    b = raw.index(end, a) + len(end)
+    previous = raw[:a] + raw[b:]
+    require(previous.count(_XC_NEW_ATTR) == 1, "XC/exact-transport-call")
+    return previous.replace(_XC_NEW_ATTR, _XC_OLD_ATTR, 1)
+
+
+def xc_package():
+    import os
+    # Preserve, authenticate and verify the complete earlier approval/source chain.
+    original = exam_dates_manifest()
+    require(os.environ.get("ACCAOUI_EXAM_DATES_MANIFEST_SHA256") == _XR_ORIGINAL_PIN
+            and os.environ.get("ACCAOUI_EXAM_DATES_RELEASE_PROPOSAL_SHA256") == _XC_PREVIOUS_PROPOSAL_PIN
+            and Path(os.environ.get("ACCAOUI_EXAM_DATES_RELEASE_MANIFEST", "")) == _XR_APPLIED_DIR/"release-manifest.json"
+            and os.environ.get("ACCAOUI_EXAM_DATES_RELEASE_MANIFEST_SHA256") == _XC_PREVIOUS_PIN,
+            "XC/previous-external-pins")
+    old_proposal = xr_json(_XR_PROPOSAL_DIR/"proposal-manifest.json", _XC_PREVIOUS_PROPOSAL_PIN)
+    old_manifest = xr_json(_XR_APPLIED_DIR/"release-manifest.json", _XC_PREVIOUS_PIN)
+    require(old_proposal["schema"] == 1 and old_proposal["status"] == "DRAFT_NOT_AUTHORIZED"
+            and old_proposal["task"] == EXAM_DATES_TASK and old_proposal["parent"] == EXAM_DATES_PARENT
+            and old_proposal["original_manifest_sha256"] == _XR_ORIGINAL_PIN
+            and set(old_proposal["draft_files"]) == _XR_CONTROL, "XR/proposal-contract")
+    old_keys = {"schema","task","parent","subject","original_manifest_sha256",
+                "proposal_sha256","approval_receipt_sha256","historical_snapshot_sha256","files"}
+    require(set(old_manifest) == old_keys and old_manifest["schema"] == 1
+            and old_manifest["task"] == EXAM_DATES_TASK and old_manifest["parent"] == EXAM_DATES_PARENT
+            and old_manifest["subject"] == _XR_SUBJECT
+            and old_manifest["original_manifest_sha256"] == _XR_ORIGINAL_PIN
+            and old_manifest["proposal_sha256"] == _XC_PREVIOUS_PROPOSAL_PIN
+            and old_manifest["historical_snapshot_sha256"] == old_proposal["historical_snapshot_sha256"]
+            and set(old_manifest["files"]) == EXAM_DATES_FILES, "XR/manifest-contract")
+    old_approval = xr_json(_XR_APPLIED_DIR/"personal-approval.json", old_manifest["approval_receipt_sha256"])
+    require(old_approval["schema"] == 1 and old_approval["explicit_publication_approval"] is True
+            and old_approval["proposal_sha256"] == _XC_PREVIOUS_PROPOSAL_PIN
+            and old_approval["source_thread"] == "01a13bb5-4447-72c3-84d4-55246679ce0d"
+            and old_approval["human_turn"] == "01a14e2c-44bc-7b33-ac18-6e97ae2d868f"
+            and old_approval["human_message"] == "01a14e2c-4565-7553-9780-bf1ecda371ac"
+            and old_approval["confirmed_text_sha256"] == "54ba7ec5ce6a9878843021e9549aac85fbc648e19dfb0a1fca65cbafd7f7cc14"
+            and xr_sha(old_approval["confirmed_text"].encode("utf-8")) == old_approval["confirmed_text_sha256"]
+            and old_approval["confirmation_text"].strip(), "XR/personal-confirmation")
+    correction_pin = os.environ.get("ACCAOUI_EXAM_DATES_CORRECTION_PROPOSAL_SHA256", "")
+    proposal = xr_json(_XC_PROPOSAL_DIR/"correction-proposal.json", correction_pin)
+    require(proposal["schema"] == 1 and proposal["status"] == "DRAFT_LOCKED_NOT_APPLIED"
+            and proposal["task"] == EXAM_DATES_TASK and proposal["parent"] == EXAM_DATES_PARENT
+            and proposal["original_manifest_sha256"] == _XR_ORIGINAL_PIN
+            and proposal["previous_proposal_sha256"] == _XC_PREVIOUS_PROPOSAL_PIN
+            and proposal["previous_application_manifest_sha256"] == _XC_PREVIOUS_PIN
+            and proposal["before_files"] == old_manifest["files"]
+            and set(proposal["draft_files"]) == _XC_CHANGED
+            and proposal["unchanged_files"] == {p:r for p,r in old_manifest["files"].items() if p not in _XC_CHANGED},
+            "XC/correction-proposal")
+    location = Path(os.environ.get("ACCAOUI_EXAM_DATES_CORRECTION_MANIFEST", ""))
+    require(location == _XC_APPLIED_DIR/"release-manifest.json", "XC/manifest-location")
+    m = xr_json(location, os.environ.get("ACCAOUI_EXAM_DATES_CORRECTION_MANIFEST_SHA256", ""))
+    require(set(m) == old_keys | {"previous_release_manifest_sha256","correction_proposal_sha256",
+                                 "correction_approval_receipt_sha256"}
+            and all(m[k] == old_manifest[k] for k in old_keys-{"files"})
+            and m["previous_release_manifest_sha256"] == _XC_PREVIOUS_PIN
+            and m["correction_proposal_sha256"] == correction_pin
+            and set(m["files"]) == EXAM_DATES_FILES, "XC/corrected-manifest")
+    approval = xr_json(_XC_APPLIED_DIR/"personal-correction-approval.json",
+                       m["correction_approval_receipt_sha256"])
+    require(approval["schema"] == 1 and approval["explicit_correction_and_resumption_approval"] is True
+            and approval["correction_proposal_sha256"] == correction_pin
+            and approval["previous_release_manifest_sha256"] == _XC_PREVIOUS_PIN
+            and approval["source_thread"] == "01a13bb5-4447-72c3-84d4-55246679ce0d"
+            and re.fullmatch("[0-9a-f-]{36}", approval["human_turn"])
+            and re.fullmatch("[0-9a-f-]{36}", approval["human_message"])
+            and approval["human_turn"] != old_approval["human_turn"]
+            and approval["human_message"] != old_approval["human_message"]
+            and approval["confirmed_text_sha256"] == xr_sha(approval["confirmed_text"].encode("utf-8"))
+            and approval["confirmation_text"].strip(), "XC/new-personal-confirmation")
+    # Both actual human sources must also be read directly by the executor.
+    # Neither this JSON receipt nor an old PASS grants a new repair permission.
+    for p, row in m["files"].items():
+        require(set(row) == {"bytes","sha256","blob","mode"} and row["mode"] == "100644"
+                and row["bytes"] > 0 and re.fullmatch("[0-9a-f]{64}",row["sha256"])
+                and re.fullmatch("[0-9a-f]{40}",row["blob"]), "XR/manifest-row")
+        raw = (ROOT/p).read_bytes()
+        require(len(raw) == row["bytes"] and xr_sha(raw) == row["sha256"]
+                and _b_release_blob(raw) == row["blob"], "XR/current-manifest-source")
+        previous = xc_previous_bytes(p,raw) if p in _XC_CHANGED else raw
+        previous_row = old_manifest["files"][p]
+        require(previous_row["mode"] == "100644" and len(previous) == previous_row["bytes"]
+                and xr_sha(previous) == previous_row["sha256"]
+                and _b_release_blob(previous) == previous_row["blob"], "XC/previous-source-bytes")
+        if p in _XR_CONTROL:
+            old_row = old_proposal["draft_files"][p]
+            old_draft_path = _XR_PROPOSAL_DIR/"proposed-sources"/p
+            old_draft = old_draft_path.read_bytes()
+            require(xr_regular(old_draft_path) and len(old_draft) == old_row["bytes"]
+                    and xr_sha(old_draft) == old_row["sha256"], "XR/approved-draft")
+            previous_expected = xr_activate_doc(old_draft,old_approval) if p in _XR_DOCS else old_draft
+            require(previous == previous_expected
+                    and xr_sha(xr_peel(p,previous)) == original["files"][p]["sha256"],
+                    "XR/approved-additive-source")
+        else:
+            require(previous_row == original["files"][p], "XR/frozen-product-or-test")
+        if p in _XC_CHANGED:
+            draft_row = proposal["draft_files"][p]
+            draft_path = _XC_PROPOSAL_DIR/"proposed-sources"/p
+            draft = draft_path.read_bytes()
+            require(xr_regular(draft_path) and len(draft) == draft_row["bytes"]
+                    and xr_sha(draft) == draft_row["sha256"], "XC/approved-correction-draft")
+            expected = xc_activate_doc(draft,approval) if p in _XR_DOCS else draft
+            require(raw == expected, "XC/exact-correction-source")
+        else:
+            require(row == previous_row, "XC/unchanged-four-sources")
+    return m, original
+
+
+_xc_previous_package = xr_package
+
+
+def xr_package():
+    import os
+    if ("ACCAOUI_EXAM_DATES_CORRECTION_MANIFEST" in os.environ
+            or _XC_BOUNDARY in TASK_PATH.read_bytes()):
+        return xc_package()
+    return _xc_previous_package()
+
+# END ACCAOUI_EXAM_DATES_WIN206_CORRECTION
+
+def xr_tree(ref):
+    result = {}
+    for row in v1_phase_b_git_bytes(["ls-tree", "-rz", "--full-tree", ref]).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, kind, oid = meta.decode().split()
+            require(kind == "blob" and name.decode() not in result, "XR/tree-entry")
+            result[name.decode()] = (mode, oid)
+    return result
+
+
+def xr_expected_tree(f, m):
+    expected = dict(f["base_tree"])
+    expected.update({p: (row["mode"], row["blob"]) for p, row in m["files"].items()})
+    return expected
+
+
+def xr_validate(f, m):
+    require(f["schema"] == 1 and f["cwd"] == str(ROOT.resolve()) and f["branch"] == "main",
+            "XR/schema-cwd-branch")
+    require(f["origin_valid"] and f["python"] == str(Path(V1_PHASE_A_PYTHON).resolve())
+            and f["python_version"] == (3,13,3), "XR/origin-python")
+    require(f["provenance_ok"] and f["regular"] and not f["flags"] and not f["attributes"]
+            and f["history_complete"] and not f["shallow"] and not f["replacements"],
+            "XR/provenance-flags-regular-history")
+    require(len(f["base_tree"]) == 578 and V1_PHASE_A_AUDIT not in f["index_tree"]
+            and not f["audit_tracked"] and f["audit_bytes"] == 10336
+            and f["audit_sha"] == V1_PHASE_A_AUDIT_SHA, "XR/audit-base")
+    require(f["agents_sha"] == "b85cbf52ef90e83a13c45d9347d4252c54f10684fb5762d80257faa00b09a7bc"
+            and f["plan_sha"] == "de88f6680c0323031eedb7680de787b83b8fb8bdf5161bfdabbe124178a47766",
+            "XR/project-rules")
+    require(set(f["sources"]) == EXAM_DATES_FILES and set(m["files"]) == EXAM_DATES_FILES,
+            "XR/nine-file-scope")
+    for p, raw in f["sources"].items():
+        row = m["files"][p]
+        require(row["mode"] == "100644" and len(raw) == row["bytes"]
+                and xr_sha(raw) == row["sha256"] and _b_release_blob(raw) == row["blob"],
+                "XR/source-blob-mode")
+    expected = xr_expected_tree(f, m)
+    require(f["working_tree"] == expected, "XR/complete-working-tree")
+    require(re.fullmatch("[0-9a-f]{64}", f["index_sha"]), "XR/index-digest")
+    _b_release_head_identity(f)
+    if f["head"] == EXAM_DATES_PARENT:
+        require(f["new_count"] == 0 and f["head_tree"] == f["base_tree"]
+                and f["origin_ref"] == f["remote_main"] == EXAM_DATES_PARENT
+                and f["head_changes"] == {}, "XR/uncommitted-base-remote")
+        if not f["staged"]:
+            require(f["index_tree"] == f["base_tree"]
+                    and f["index_sha"] == "a07f7a834551197d191b04ba30597d75a33c8d38f52d3e5350fbdf3857ae95bd"
+                    and f["working"] == EXAM_DATES_FILES - {EXAM_DATES_TEST}
+                    and f["untracked"] == frozenset({V1_PHASE_A_AUDIT, EXAM_DATES_TEST}),
+                    "XR/release-authorized-scope-index")
+            return "release_authorized"
+        require(f["staged"] == EXAM_DATES_FILES and not f["working"]
+                and f["untracked"] == frozenset({V1_PHASE_A_AUDIT})
+                and f["index_tree"] == expected, "XR/exact-staged")
+        return "release_staged"
+    require(f["new_count"] == 1 and f["head_parents"] == (EXAM_DATES_PARENT,)
+            and f["head_subject"] == _XR_SUBJECT and f["head_tree"] == expected
+            and f["index_tree"] == expected and not f["working"] and not f["staged"]
+            and f["untracked"] == frozenset({V1_PHASE_A_AUDIT})
+            and f["head_changes"] == {p: ("A" if p == EXAM_DATES_TEST else "M")
+                                     for p in EXAM_DATES_FILES}, "XR/one-linear-implementation")
+    if f["origin_ref"] == f["remote_main"] == EXAM_DATES_PARENT:
+        return "implementation_committed"
+    require(f["origin_ref"] == f["remote_main"] == f["head"], "XR/direct-remote-state")
+    return "implementation_pushed"
+
+
+def xr_snapshot():
+    import sys
+    g = v1_phase_b_git_bytes
+    m, original = xr_package()
+    allowed = {"https://github.com/asarrad-bit/accaoui-34a-lernapp.git",
+               "https://github.com/asarrad-bit/accaoui-34a-lernapp",
+               "git@github.com:asarrad-bit/accaoui-34a-lernapp.git"}
+    fetch_urls = g(["remote", "get-url", "--all", "origin"]).decode().splitlines()
+    push_urls = g(["remote", "get-url", "--push", "--all", "origin"]).decode().splitlines()
+    require(len(fetch_urls) == len(push_urls) == 1 and fetch_urls[0] in allowed
+            and push_urls[0] in allowed, "XR/single-origin-destination")
+    remote = g(["ls-remote", "--exit-code", "origin", "refs/heads/main"]).decode().splitlines()
+    require(len(remote) == 1 and remote[0].split()[1:] == ["refs/heads/main"], "XR/direct-remote-read")
+    base = xr_tree(EXAM_DATES_PARENT)
+    require(base == exam_dates_baseline()["head_tree"], "XR/actual-base-tree")
+    head = g(["rev-parse", "HEAD"]).decode().strip()
+    g(["merge-base", "--is-ancestor", EXAM_DATES_PARENT, head])
+    index = {}
+    for row in g(["ls-files", "--stage", "-z"]).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, oid, stage = meta.decode().split()
+            require(stage == "0" and name.decode() not in index, "XR/index-entry")
+            index[name.decode()] = (mode, oid)
+    flags = tuple(row for row in g(["ls-files", "-v", "-z"]).split(b"\0") if row and row[:1] != b"H")
+    attr = xc_check_attributes(sorted(set(base) | EXAM_DATES_FILES))
+    require(attr[-1:] == [b""] and (len(attr)-1) % 3 == 0, "XR/attribute-format")
+    attributes = tuple(tuple(attr[i:i+3]) for i in range(0,len(attr)-1,3)
+                       if attr[i+2] != b"unspecified")
+    working, staged, untracked = set(), set(), set()
+    for row in g(["status", "--porcelain=v1", "-z", "--untracked-files=all"]).split(b"\0"):
+        if not row:
+            continue
+        require(row[:2] in {b" M", b"M ", b"A ", b"??"}, "XR/status-renames-partial")
+        code, path = row[:2], row[3:].decode()
+        if code == b"??": untracked.add(path)
+        elif code == b" M": working.add(path)
+        else: staged.add(path)
+    sources = {p: (ROOT/p).read_bytes() for p in EXAM_DATES_FILES}
+    full_work = {}
+    for p in set(base) | EXAM_DATES_FILES:
+        require(xr_regular(ROOT/p), "XR/nonregular-source")
+        raw = sources[p] if p in sources else (ROOT/p).read_bytes()
+        full_work[p] = (base[p][0] if p in base else "100644", _b_release_blob(raw))
+    audit = ROOT/V1_PHASE_A_AUDIT
+    require(xr_regular(audit), "XR/nonregular-audit")
+    # Audit content is hashed in place only, never copied to an artifact or fixture.
+    changes = {}
+    for row in g(["diff-tree", "--no-commit-id", "--name-status", "--no-renames",
+                  "-r", EXAM_DATES_PARENT, head]).decode().splitlines():
+        status, p = row.split("\t")
+        require(p not in changes, "XR/duplicate-change")
+        changes[p] = status
+    index_path = Path(g(["rev-parse", "--git-path", "index"]).decode().strip())
+    if not index_path.is_absolute(): index_path = ROOT/index_path
+    f = {"schema":1,"cwd":str(Path.cwd().resolve()),"branch":g(["branch","--show-current"]).decode().strip(),
+         "origin_valid":True,"head":head,"origin_ref":g(["rev-parse","origin/main"]).decode().strip(),
+         "remote_main":remote[0].split()[0],"base_tree":base,"head_tree":xr_tree(head),
+         "index_tree":index,"working_tree":full_work,"index_sha":xr_sha(index_path.read_bytes()),
+         "head_tree_sha":g(["rev-parse",head+"^{tree}"]).decode().strip(),
+         "head_commit":g(["cat-file","commit",head]),"base_commit":g(["cat-file","commit",EXAM_DATES_PARENT]),
+         "head_parents":tuple(g(["show","-s","--format=%P",head]).decode().strip().split()),
+         "head_subject":g(["show","-s","--format=%s",head]).decode().strip(),
+         "new_count":int(g(["rev-list","--count",EXAM_DATES_PARENT+".."+head]).decode()),
+         "head_changes":changes,"working":frozenset(working),"staged":frozenset(staged),
+         "untracked":frozenset(untracked),"flags":flags,"attributes":attributes,"regular":True,
+         "audit_sha":xr_sha(audit.read_bytes()),"audit_bytes":audit.stat().st_size,
+         "audit_tracked":bool(g(["ls-files","--",V1_PHASE_A_AUDIT]).strip()),
+         "agents_sha":xr_sha(AGENTS_PATH.read_bytes()),
+         "plan_sha":xr_sha((ROOT/"docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md").read_bytes()),
+         "python":str(Path(sys.executable).resolve()),"python_version":tuple(sys.version_info[:3]),
+         "sources":sources,"provenance_ok":True,"history_complete":True,
+         "shallow":g(["rev-parse","--is-shallow-repository"]).strip()!=b"false",
+         "replacements":g(["for-each-ref","--format=%(refname)","refs/replace"]).strip()}
+    xr_validate(f,m)
+    return f, m
+
+
+def xr_transition_checks(actual, m):
+    # These are explicitly synthetic contract fixtures, never real Git-state claims.
+    import copy
+    p = copy.deepcopy(actual)
+    headers, _, body = p["base_commit"].partition(b"\n\n")
+    p.update(head=EXAM_DATES_PARENT,head_commit=p["base_commit"],head_tree=dict(p["base_tree"]),
+             head_tree_sha=_b_release_tree_oid(p["base_tree"]),
+             head_parents=tuple(x[7:].decode() for x in headers.splitlines() if x.startswith(b"parent ")),
+             head_subject=body.splitlines()[0].decode(),head_changes={},new_count=0,
+             origin_ref=EXAM_DATES_PARENT,remote_main=EXAM_DATES_PARENT,
+             index_tree=dict(p["base_tree"]),
+             index_sha="a07f7a834551197d191b04ba30597d75a33c8d38f52d3e5350fbdf3857ae95bd",
+             staged=frozenset(),working=EXAM_DATES_FILES-{EXAM_DATES_TEST},
+             untracked=frozenset({V1_PHASE_A_AUDIT,EXAM_DATES_TEST}))
+    s = copy.deepcopy(p)
+    s.update(index_tree=xr_expected_tree(s,m),index_sha="a"*64,staged=EXAM_DATES_FILES,
+             working=frozenset(),untracked=frozenset({V1_PHASE_A_AUDIT}))
+    c = copy.deepcopy(s)
+    c.update(head_tree=xr_expected_tree(c,m),head_parents=(EXAM_DATES_PARENT,),
+             head_subject=_XR_SUBJECT,new_count=1,staged=frozenset(),
+             head_changes={q:("A" if q==EXAM_DATES_TEST else "M") for q in EXAM_DATES_FILES})
+    c["head_tree_sha"] = _b_release_tree_oid(c["head_tree"])
+    c["head_commit"] = (b"tree "+c["head_tree_sha"].encode()+b"\nparent "+EXAM_DATES_PARENT.encode()
+        +b"\nauthor Synthetic <synthetic@example.invalid> 0 +0000"
+        +b"\ncommitter Synthetic <synthetic@example.invalid> 0 +0000\n\n"+_XR_SUBJECT.encode()+b"\n")
+    c["head"] = hashlib.sha1(b"commit "+str(len(c["head_commit"])).encode()+b"\0"+c["head_commit"]).hexdigest()
+    u = copy.deepcopy(c)
+    u.update(origin_ref=u["head"],remote_main=u["head"])
+    cases = [(p,"release_authorized"),(s,"release_staged"),(c,"implementation_committed"),(u,"implementation_pushed")]
+    count = 0
+    def blocked(fixture, mutate):
+        nonlocal count
+        bad = copy.deepcopy(fixture)
+        mutate(bad)
+        try: xr_validate(bad,m)
+        except (ValidationError,KeyError,TypeError,ValueError): count += 1; return
+        raise ValidationError("XR/negative-fixture-accepted")
+    for fixture, state in cases:
+        require(xr_validate(fixture,m)==state,"XR/positive-fixture")
+        for key, value in {
+            "schema":2,"cwd":"foreign","branch":"other","origin_valid":False,"python":"foreign",
+            "python_version":(3,13,2),"provenance_ok":False,"regular":False,"flags":(b"S app.js",),
+            "attributes":(b"filter",),"history_complete":False,"shallow":True,"replacements":b"replacement",
+            "audit_sha":"0"*64,"audit_bytes":10335,"audit_tracked":True,"agents_sha":"0"*64,
+            "plan_sha":"0"*64,"index_sha":"bad","new_count":2,"remote_main":"0"*40,
+            "head_subject":"foreign","head_commit":b"invalid-object",
+            "head_tree_sha":"0"*40}.items():
+            blocked(fixture,lambda f,k=key,v=value:f.__setitem__(k,v))
+        for path in EXAM_DATES_FILES:
+            blocked(fixture,lambda f,p=path:f["sources"].__setitem__(p,b"changed"))
+            blocked(fixture,lambda f,p=path:f["index_tree"].__setitem__(p,("100755","0"*40)))
+        for key in ("working_tree","head_tree","index_tree"):
+            blocked(fixture,lambda f,k=key:f[k].__setitem__("foreign.txt",("100644","0"*40)))
+        blocked(fixture,lambda f:f.__setitem__("untracked",f["untracked"]|{"evidence.json"}))
+        blocked(fixture,lambda f:f.__setitem__("working",f["working"]|{"patch-v21.js"}))
+    blocked(s,lambda f:f.__setitem__("staged",EXAM_DATES_FILES-{"app.js"}))
+    blocked(s,lambda f:f.__setitem__("staged",EXAM_DATES_FILES|{V1_PHASE_A_AUDIT}))
+    blocked(s,lambda f:f.__setitem__("working",frozenset({"app.js"})))
+    blocked(c,lambda f:f.__setitem__("head_parents",(EXAM_DATES_PARENT,"0"*40)))
+    blocked(c,lambda f:f.__setitem__("head_changes",{}))
+    blocked(u,lambda f:f.__setitem__("origin_ref",EXAM_DATES_PARENT))
+    print("XR: 4 explicitly synthetic state positives; "+str(count)+" negative cases blocked.",flush=True)
+
+
+def xr_original_contract_checks(m):
+    import json
+    path = EXAM_DATES_EVIDENCE/"final-resumption-protection.json"
+    raw = path.read_bytes()
+    require(xr_regular(path) and xr_sha(raw)==m["historical_snapshot_sha256"],"XR/historical-snapshot")
+    old = json.loads(raw.decode("utf-8"))["final_snapshot"]
+    for key in ("working","staged","untracked"): old[key] = frozenset(old[key])
+    for key in ("python_version","flags","filters","frozen_changes"): old[key] = tuple(old[key])
+    require(exam_dates_validate_facts(old,exam_dates_manifest())=="implementation_prepared",
+            "XR/original-actual-historical-contract")
+    print("XR: original captured implementation facts are HISTORICAL, not current Git.",flush=True)
+    # Unchanged 36 exam-date and complete B/A contract/transition checks.
+    exam_dates_self_checks(old,exam_dates_manifest())
+
+
+def run_exam_dates_release_control(kind):
+    import sys
+    try:
+        require(kind in {"continuity","preflight"},"XR/kind")
+        before,m = xr_snapshot()
+        state = xr_validate(before,m)
+        xr_transition_checks(before,m)
+        xr_original_contract_checks(m)
+        v1_phase_b_product_check()
+        result = subprocess.run([sys.executable,"-X","utf8","-B",str(ROOT/EXAM_DATES_TEST)],
+                                cwd=ROOT,capture_output=True,text=True,encoding="utf-8",timeout=180)
+        if result.stdout: print(result.stdout.rstrip(),flush=True)
+        require(result.returncode==0 and not result.stderr.strip() and "EXAM_DATES_CURRENT_PASS" in result.stdout,
+                "XR/current-original-product-regression: "+(result.stderr.strip() or result.stdout.strip()))
+        # Unchanged full real historical continuity/original preflight, including old time budgets.
+        print(v1_phase_a_historical_check(kind).strip(),flush=True)
+        require(xr_snapshot()==(before,m),"XR/state-changed-during-full-checks")
+        print("Actual exam-date publication phase: "+state+" / "+kind+" PASS.",flush=True)
+        print("v27.37n STOPP / NOT VERIFIED. Supabase NICHT LIVE. No new product task.",flush=True)
+        if kind=="preflight": print("OK: Preflight bestanden.",flush=True)
+        return 0
+    except Exception as exc:
+        print("STOPP: exam-date publication "+kind+": "+str(exc),flush=True)
+        return 1
+
+# END ACCAOUI_EXAM_DATES_RELEASE continuity
+
 def main() -> int:
+    if exam_dates_release_requested():
+        return run_exam_dates_release_control("continuity")
+    if exam_dates_requested():
+        return run_exam_dates_control("continuity")
     if v1_phase_b_requested():
         return run_v1_phase_b_control()
     if v1_phase_a_requested():

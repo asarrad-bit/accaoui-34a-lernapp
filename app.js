@@ -765,6 +765,7 @@ function startLocalApp() {
   activateDashboardButtons();
   renderDashboardNextLearningStepCardV2735B();
   loadQuestions();
+  initDashboardExamDatesV1();
 }
 
 function renderLoginOrAccessNotice(accessState) {
@@ -6468,3 +6469,183 @@ window.getNextLearningStepV2735B = getNextLearningStepV2735B;
 window.renderDashboardNextLearningStepCardV2735B = renderDashboardNextLearningStepCardV2735B;
 window.openWeakestCategoryFromDashboardV2735B = openWeakestCategoryFromDashboardV2735B;
 window.startFlashcardSessionFromUnknownV2735B = startFlashcardSessionFromUnknownV2735B;
+
+// BEGIN ACCAOUI_V1_DASHBOARD_EXAM_DATES product
+const EXAM_DATE_KEYS_V1 = Object.freeze({
+  written: "accaoui_exam_date_written_v1",
+  oral: "accaoui_exam_date_oral_v1"
+});
+let examDatesDashboardV1 = null;
+
+function parseExamDateV1(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(5, 7));
+  const day = Number(value.slice(8, 10));
+  if (year < 1 || month < 1 || month > 12 || day < 1 || day > 31) return null;
+  const utc = new Date(0);
+  utc.setUTCFullYear(year, month - 1, day);
+  utc.setUTCHours(0, 0, 0, 0);
+  if (utc.getUTCFullYear() !== year || utc.getUTCMonth() !== month - 1 || utc.getUTCDate() !== day) return null;
+  return { year, month, day, ordinal: utc.getTime() / 86400000 };
+}
+
+function examDateDisplayV1(value, now = new Date()) {
+  const parsed = parseExamDateV1(value);
+  if (!parsed) return null;
+  const today = new Date(0);
+  today.setUTCFullYear(now.getFullYear(), now.getMonth(), now.getDate());
+  today.setUTCHours(0, 0, 0, 0);
+  const days = parsed.ordinal - today.getTime() / 86400000;
+  const date = value.slice(8, 10) + "." + value.slice(5, 7) + "." + value.slice(0, 4);
+  const label = days === 0 ? "Ihr Prüfungstermin ist heute."
+    : days > 0 ? "Noch " + days + (days === 1 ? " Tag." : " Tage.")
+    : "Der Termin war vor " + Math.abs(days) + (days === -1 ? " Tag." : " Tagen.");
+  return { date, days, label };
+}
+
+function initDashboardExamDatesV1() {
+  const hero = document.querySelector(".hero-grid");
+  const main = document.querySelector(".main-content");
+  if (!hero || !main || document.getElementById("examDatesDashboardV1")) return;
+
+  function element(tag, attrs, text) {
+    const node = document.createElement(tag);
+    Object.entries(attrs || {}).forEach(([name, value]) => node.setAttribute(name, value));
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  const card = element("section", { id: "examDatesDashboardV1", "aria-labelledby": "examDatesHeadingV1" });
+  card.appendChild(element("h2", { id: "examDatesHeadingV1" }, "Mein Prüfungstermin"));
+  card.appendChild(element("p", { class: "exam-dates-hint" }, "Freiwillig: Ihre Termine werden nur in diesem Browser gespeichert. Sie können sie jederzeit ändern oder löschen."));
+  const grid = element("div", { class: "exam-dates-grid" });
+  card.appendChild(grid);
+  const rows = [];
+
+  function buildRow(kind, title) {
+    const key = EXAM_DATE_KEYS_V1[kind];
+    const prefix = kind === "written" ? "examDateWrittenV1" : "examDateOralV1";
+    const form = element("form", { id: prefix + "Form", class: "exam-date-form", novalidate: "" });
+    const group = element("fieldset");
+    group.appendChild(element("legend", {}, title));
+    const status = element("p", { id: prefix + "Status", class: "exam-date-status", "aria-live": "polite" });
+    group.appendChild(status);
+    group.appendChild(element("label", { for: prefix + "Input" }, "Datum"));
+    const input = element("input", { id: prefix + "Input", name: kind, type: "date", min: "0001-01-01", max: "9999-12-31", "aria-describedby": prefix + "Status " + prefix + "Error" });
+    group.appendChild(input);
+    const error = element("p", { id: prefix + "Error", class: "exam-date-error", role: "alert" });
+    group.appendChild(error);
+    const actions = element("div", { class: "exam-date-actions" });
+    const save = element("button", { id: prefix + "Save", type: "submit", class: "next-btn" }, "Speichern");
+    const remove = element("button", { id: prefix + "Delete", type: "button", class: "next-btn secondary-btn" }, "Löschen");
+    actions.appendChild(save);
+    actions.appendChild(remove);
+    group.appendChild(actions);
+    form.appendChild(group);
+    grid.appendChild(form);
+    let saved = "";
+
+    function fail(message, invalid = false) {
+      error.textContent = message;
+      input.setAttribute("aria-invalid", invalid ? "true" : "false");
+    }
+    function sync(preserveDraft) {
+      const previous = saved;
+      let raw;
+      try {
+        raw = localStorage.getItem(key);
+      } catch (_error) {
+        fail("Der lokale Speicher kann nicht gelesen werden. Bitte prüfen Sie die Browsereinstellungen.");
+        remove.hidden = false;
+        return;
+      }
+      if (raw !== null && !parseExamDateV1(raw)) {
+        saved = "";
+        status.textContent = "Kein gültiger Termin verfügbar.";
+        fail("Der gespeicherte Termin ist ungültig. Sie können ein gültiges Datum speichern oder nur diesen Termin löschen.", true);
+        remove.hidden = false;
+        return;
+      }
+      saved = raw || "";
+      if (!preserveDraft || input.value === previous) input.value = saved;
+      const display = saved ? examDateDisplayV1(saved) : null;
+      status.textContent = display ? display.date + " · " + display.label : "Noch kein Termin eingetragen.";
+      save.textContent = saved ? "Änderung speichern" : "Speichern";
+      remove.hidden = !saved;
+      fail("");
+    }
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const value = input.value;
+      if (!parseExamDateV1(value)) {
+        fail("Bitte geben Sie ein gültiges Datum ein. Zum Entfernen verwenden Sie Löschen.", true);
+        input.focus();
+        return;
+      }
+      try {
+        localStorage.setItem(key, value);
+        if (localStorage.getItem(key) !== value) throw new Error("date-write-unconfirmed");
+      } catch (_error) {
+        fail("Der Termin konnte nicht sicher gespeichert werden. Ihre Eingabe bleibt erhalten. Bitte prüfen Sie den lokalen Browserspeicher.");
+        return;
+      }
+      sync(false);
+    });
+    remove.addEventListener("click", () => {
+      try {
+        localStorage.removeItem(key);
+        if (localStorage.getItem(key) !== null) throw new Error("date-delete-unconfirmed");
+      } catch (_error) {
+        fail("Das Löschen konnte nicht bestätigt werden. Bitte prüfen Sie den lokalen Browserspeicher.");
+        return;
+      }
+      sync(false);
+    });
+    sync(false);
+    rows.push({ sync });
+  }
+
+  buildRow("written", "Schriftliche Prüfung");
+  buildRow("oral", "Mündliche Prüfung");
+  hero.insertAdjacentElement("afterend", card);
+  if (examDatesDashboardV1) examDatesDashboardV1.dispose();
+  let timer = null;
+  let observer = null;
+  function stopTimer() {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+  }
+  function refresh() {
+    stopTimer();
+    if (!card.isConnected) {
+      dispose();
+      return;
+    }
+    if (document.visibilityState === "hidden") return;
+    rows.forEach(row => row.sync(true));
+    const now = new Date();
+    const midnight = new Date(now.getTime());
+    midnight.setHours(24, 0, 0, 50);
+    timer = setTimeout(refresh, Math.max(50, midnight.getTime() - now.getTime()));
+  }
+  function onStorage(event) {
+    if (event.key === null || Object.values(EXAM_DATE_KEYS_V1).includes(event.key)) refresh();
+  }
+  function dispose() {
+    stopTimer();
+    document.removeEventListener("visibilitychange", refresh);
+    window.removeEventListener("focus", refresh);
+    window.removeEventListener("storage", onStorage);
+    if (observer) observer.disconnect();
+  }
+  document.addEventListener("visibilitychange", refresh);
+  window.addEventListener("focus", refresh);
+  window.addEventListener("storage", onStorage);
+  if (typeof MutationObserver === "function") {
+    observer = new MutationObserver(() => { if (!card.isConnected) dispose(); });
+    observer.observe(main, { childList: true });
+  }
+  examDatesDashboardV1 = { dispose };
+  refresh();
+}
+// END ACCAOUI_V1_DASHBOARD_EXAM_DATES product

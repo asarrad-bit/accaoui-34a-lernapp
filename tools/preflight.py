@@ -7139,7 +7139,34 @@ def _v1_phase_b_preflight():
         raise SystemExit(1)
 # END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b_release preflight
 # END ACCAOUI_V1_LAST_EXAM_MISTAKES_PARTIAL_RESULT phase_b preflight
+# BEGIN ACCAOUI_V1_DASHBOARD_EXAM_DATES preflight
+def _exam_dates_preflight():
+    control = runpy.run_path(str(Path(__file__).resolve().with_name('check-project-continuity-control.py')))
+    if not control['exam_dates_requested']():
+        return False
+    result = control['run_exam_dates_control']('preflight')
+    if result != 0:
+        raise SystemExit(result)
+    return True
+# END ACCAOUI_V1_DASHBOARD_EXAM_DATES preflight
+
+# BEGIN ACCAOUI_EXAM_DATES_RELEASE preflight
+# DRAFT ONLY: the pending documents and absent approval receipt block execution.
+def _exam_dates_release_preflight():
+    control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+    if not control["exam_dates_release_requested"]():
+        return False
+    result = control["run_exam_dates_release_control"]("preflight")
+    if result != 0:
+        raise SystemExit(result)
+    return True
+# END ACCAOUI_EXAM_DATES_RELEASE preflight
+
 def main():
+    if _exam_dates_release_preflight():
+        return
+    if _exam_dates_preflight():
+        return
     if _v1_phase_b_preflight():
         return
     if _v1_phase_a_preflight():
