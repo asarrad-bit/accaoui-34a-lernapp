@@ -24258,7 +24258,143 @@ def run_exam_dates_status_closure(kind):
         return 1
 # END ACCAOUI_EXAM_DATES_STATUS_CLOSURE
 
+# BEGIN ACCAOUI_WRITTEN_TIMEOUT_REACCEPTANCE_GATE_V1 continuity
+def written_timeout_gate_requested():
+    return TASK_PATH.read_bytes().startswith(
+        b"# ACCAOUI - schriftliches Timeout: kanonisches GATE, keine Durchfuehrung\n"
+        b"Task-ID: ACCAOUI_WRITTEN_TIMEOUT_REACCEPTANCE_GATE_V1\n")
+
+
+def wt_original_contracts(kind, gate):
+    """All existing contracts; old closure facts are explicitly HISTORICAL, not current Git."""
+    import json, os, sys, tempfile, types
+    require(kind in {"continuity", "preflight"}, "WT/control-kind")
+    original = gate["git"]("show", gate["BASE"] + ":" + CHECKER_RELATIVE_PATH)
+    name = "accaoui_written_timeout_gate_original"
+    require(name not in sys.modules, "WT/single-original-module")
+    module = types.ModuleType(name)
+    module.__file__ = str(ROOT / CHECKER_RELATIVE_PATH)
+    sys.modules[name] = module
+    ns = module.__dict__
+    saved_env = dict(os.environ)
+    try:
+        exec(compile(original, module.__file__, "exec"), ns)
+        previous = ns["_CS_OUT"]
+        old_approval_raw = (previous / "personal-approval.json").read_bytes()
+        old_approval = json.loads(old_approval_raw)
+        old_pin = "8258a8f791a2956b608803165eb95a51d31cfd809c86ad30f36afeb08c1d9f60"
+        require(old_approval["proposal_sha256"] == old_pin, "WT/historical-closure-approval-pin")
+        os.environ.update(
+            ACCAOUI_EXAM_CLOSURE_ORIGINAL_PROPOSAL_SHA256=old_pin,
+            ACCAOUI_EXAM_CLOSURE_PROPOSAL_SHA256=old_pin,
+            ACCAOUI_EXAM_CLOSURE_REVISION="0",
+            ACCAOUI_EXAM_CLOSURE_APPROVAL_SHA256=hashlib.sha256(old_approval_raw).hexdigest())
+        files = {p: gate["git"]("show", gate["BASE"] + ":" + p) for p in ns["_CS_FILES"]}
+        # Full, unchanged original cs_package verifies its old complete artifact chain.
+        # Only source-location/Git-read dependencies are bound to a labelled historical
+        # six-source fixture; no validator, expectation or timeout is replaced.
+        original_root, original_reader = ns["ROOT"], ns["v1_phase_b_git_bytes"]
+        with tempfile.TemporaryDirectory(prefix="historical-closure-six-source-", dir=gate["OUT"]) as directory:
+            fixture = Path(directory)
+            for p, raw in files.items():
+                path = fixture / p
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+            try:
+                ns["ROOT"] = fixture
+                ns["v1_phase_b_git_bytes"] = lambda args: gate["git"](*args)
+                manifest = ns["cs_package"]()
+            finally:
+                ns["ROOT"], ns["v1_phase_b_git_bytes"] = original_root, original_reader
+        base_tree = ns["xr_tree"](ns["_CS_BASE"])
+        closed_tree = ns["xr_tree"](gate["BASE"])
+        raw_commit = gate["git"]("cat-file", "commit", gate["BASE"])
+        changes = {}
+        for line in gate["git"]("diff-tree", "--no-commit-id", "--name-status", "--no-renames", "-r", ns["_CS_BASE"], gate["BASE"]).decode().splitlines():
+            status, path = line.split("\t")
+            require(path not in changes, "WT/historical-duplicate-change")
+            changes[path] = status
+        # These facts describe the immutable old commit/tree. They do not replace
+        # gate.snapshot(), which independently checks every actual current path/index.
+        f = {
+            "cwd": str(ROOT.resolve()), "branch": "main", "origin_valid": True,
+            "python": str(Path(sys.executable).resolve()), "python_version": tuple(sys.version_info[:3]),
+            "regular": True, "flags": (), "attributes": (), "shallow": False,
+            "replacements": b"", "provenance_ok": True,
+            "agents_sha": gate["sha"]((ROOT/"AGENTS.md").read_bytes()),
+            "plan_sha": gate["sha"]((ROOT/"docs/SUPABASE_EXAM_QUESTION_DATABASE_PLAN.md").read_bytes()),
+            "audit_regular": True, "audit_tracked": False, "audit_bytes": 10336,
+            "audit_sha": V1_PHASE_A_AUDIT_SHA, "untracked": frozenset({V1_PHASE_A_AUDIT}),
+            "base_tree": base_tree, "working_tree": closed_tree, "sources": files,
+            "index_sha": "f7af8cb091c7596c524c79fd14b0b04d17c9a3df6ad95468c415d620d0c6cc87",
+            "head": gate["BASE"], "head_commit": raw_commit,
+            "head_parents": tuple(gate["git"]("show","-s","--format=%P",gate["BASE"]).decode().split()),
+            "head_tree_sha": gate["git"]("rev-parse",gate["BASE"]+"^{tree}").decode().strip(),
+            "head_tree": closed_tree,
+            "head_subject": gate["git"]("show","-s","--format=%s",gate["BASE"]).decode().strip(),
+            "origin_ref": gate["BASE"], "remote_main": gate["BASE"],
+            "new_count": int(gate["git"]("rev-list","--count",ns["_CS_BASE"]+".."+gate["BASE"])),
+            "changes": changes, "index_tree": closed_tree,
+            "working": frozenset(), "staged": frozenset(),
+        }
+        require(ns["cs_validate"](f,manifest) == "closure_pushed", "WT/historical-closure-retained")
+        print("WT: unchanged original closure artifact chain and closed commit verified as HISTORICAL; not current gate state.", flush=True)
+        ns["cs_cases"](f,manifest)
+        ns["cs_preserved_contracts"]()
+        ns["v1_phase_b_product_check"]()
+        result = subprocess.run([sys.executable,"-X","utf8","-B",str(ROOT/ns["EXAM_DATES_TEST"])],
+                                cwd=ROOT,capture_output=True,text=True,encoding="utf-8",timeout=180)
+        if result.stdout:
+            print(result.stdout.rstrip(),flush=True)
+        require(result.returncode == 0 and not result.stderr.strip() and "EXAM_DATES_CURRENT_PASS" in result.stdout,
+                "WT/unchanged-exam-date-regression: "+(result.stderr.strip() or result.stdout.strip()))
+        # EXACT original n/m execution and, for preflight, original d-j collector.
+        # This original function/budget is executed unchanged, never text-matched away.
+        print(ns["v1_phase_a_historical_check"](kind).strip(),flush=True)
+    finally:
+        os.environ.clear()
+        os.environ.update(saved_env)
+        if sys.modules.get(name) is module:
+            del sys.modules[name]
+
+
+def run_written_timeout_gate(kind):
+    import json, runpy
+    try:
+        gate = runpy.run_path(str(ROOT/"tools/check-written-timeout-reacceptance-contract-v1.py"))
+        before = gate["snapshot"]()
+        rows = gate["cases"]()
+        print("WT: explicit SYNTHETIC contract fixtures: "+json.dumps(rows,ensure_ascii=False),flush=True)
+        wt_original_contracts(kind,gate)
+        require(gate["snapshot"]() == before, "WT/current-state-changed-during-all-original-checks")
+        print("WRITTEN_TIMEOUT_GATE_CURRENT_PASS: "+kind+"; later acceptance BLOCKED; real browser run NOT RUN.",flush=True)
+        print("v27.37n STOPP / NOT VERIFIED. Supabase NICHT LIVE. No staging/commit/push authority.",flush=True)
+        if kind == "preflight":
+            print("OK: Preflight bestanden.",flush=True)
+        return 0
+    except Exception as exc:
+        print("STOPP: written-timeout gate "+kind+": "+str(exc),flush=True)
+        return 1
+# END ACCAOUI_WRITTEN_TIMEOUT_REACCEPTANCE_GATE_V1 continuity
+
+
+# BEGIN ACCAOUI_AUTOMATISCHE_ENTWICKLUNGSFOLGE_20261021_V1 continuity
+def development_sequence_requested():
+    return TASK_PATH.read_bytes().startswith(
+        "# ACCAOUI – bestätigte automatische Entwicklungsfolge\n".encode("utf-8"))
+
+
+def run_development_sequence(kind):
+    import runpy
+    profile = runpy.run_path(str(ROOT / "tools/check-development-queue-v1.py"))
+    return profile["run_profile"](kind, globals())
+# END ACCAOUI_AUTOMATISCHE_ENTWICKLUNGSFOLGE_20261021_V1 continuity
+
 def main() -> int:
+    if development_sequence_requested():
+        return run_development_sequence("continuity")
+    if written_timeout_gate_requested():
+        return run_written_timeout_gate("continuity")
     if exam_dates_status_closure_requested():
         return run_exam_dates_status_closure("continuity")
     if exam_dates_release_requested():

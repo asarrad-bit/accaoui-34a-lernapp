@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "id": "ACCAOUI_AUTOMATISCHE_ENTWICKLUNGSFOLGE_20261021_V1",
+  "status": "PERSONALLY_CONFIRMED_EXECUTING",
+  "authority": {
+    "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
+    "hostId": "local",
+    "turnId": "01a15e2f-a343-7a40-a370-5fe2871e1129",
+    "messageId": "01a15e2f-a3f6-7262-86ea-ed8986e1090f",
+    "directHumanReadRequired": true,
+    "planSHA256": "72617f1b90a246b096574eff5250ee35cf18d98e5ba5e3d2ee16b760f8e6a61d",
+    "approvalSHA256": "129bbb87e84fca9a89b280d9dc7a2dd1568379a43cfc5172d007ee2bd10ed3da"
+  },
+  "executor": {
+    "threadId": "01a11cc6-ee66-7890-9520-7fd190f6e687",
+    "hostId": "local"
+  },
+  "current": "W00",
+  "order": [
+    "W00",
+    "W01",
+    "W02",
+    "W03",
+    "W04",
+    "W05",
+    "W06",
+    "W07",
+    "W08"
+  ],
+  "items": [
+    {
+      "id": "W00",
+      "goal": "Arbeitssteuerung und feste Queue einrichten",
+      "depends": [],
+      "status": "ACTIVE",
+      "attempts": 1,
+      "result": null
+    },
+    {
+      "id": "W01",
+      "goal": "Neuer echter schriftlicher 120-Minuten-Abschlussnachweis",
+      "depends": [
+        "W00"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    },
+    {
+      "id": "W02",
+      "goal": "Vorhandenen Lern- und Prüfungsbetrieb vollständig prüfen",
+      "depends": [
+        "W01"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    },
+    {
+      "id": "W03",
+      "goal": "Teilnehmerzugang und dauerhaften Fortschritt umsetzen",
+      "depends": [
+        "W02"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    },
+    {
+      "id": "W04",
+      "goal": "Persönliche Lernführung fertigstellen",
+      "depends": [
+        "W02"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    },
+    {
+      "id": "W05",
+      "goal": "Fragenredaktion, Inhalte und Kursverwaltung",
+      "depends": [
+        "W02"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    },
+    {
+      "id": "W06",
+      "goal": "Materialien, Zertifikate, Exporte und Mitteilungen",
+      "depends": [
+        "W03"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    },
+    {
+      "id": "W07",
+      "goal": "KI-Lernmodus",
+      "depends": [
+        "W04"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    },
+    {
+      "id": "W08",
+      "goal": "Gesamt-Abnahme und Veröffentlichungsdossier",
+      "depends": [
+        "W03",
+        "W04",
+        "W05",
+        "W06",
+        "W07"
+      ],
+      "status": "PENDING",
+      "attempts": 0,
+      "result": null
+    }
+  ],
+  "localReadFailure": {
+    "command": "git --no-optional-locks status --short",
+    "exit": 1,
+    "error": "fatal: this operation must be run in a work tree",
+    "cause": "NOT_ESTABLISHED",
+    "retryPerformed": false
+  },
+  "historicalGate": {
+    "result": "GATE_PASS_PREPARED",
+    "coversCurrentMasterlist": false
+  },
+  "productionGrant": false,
+  "liveSupabaseGrant": false,
+  "realParticipantDataGrant": false,
+  "active": {
+    "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W00",
+    "baseline": "431ea31b1c0b9fbcc84e04152d8d244bfa1c4f91",
+    "paths": [
+      "AGENTS.md",
+      "docs/PROJECT_STATE_CURRENT.md",
+      "docs/PROJECT_MASTERLIST.md",
+      "docs/tasks/CURRENT_TASK.md",
+      "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
+      "tools/check-project-continuity-control.py",
+      "tools/preflight.py",
+      "docs/DEVELOPMENT_SEQUENCE_V1.md",
+      "docs/tasks/DEVELOPMENT_QUEUE_V1.json",
+      "tools/check-development-queue-v1.py"
+    ],
+    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W00",
+    "attempt": 1,
+    "correctionRounds": 1,
+    "fullFeatureScopeRetained": true
+  },
+  "protected": {
+    "auditPath": "docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md",
+    "auditSHA256": "da23a1d052684fc3646a5a01e06c4520555053caddb67c7ff3ad06a5c1c78b00",
+    "auditBytes": 10336,
+    "historicalV2737n": "STOPP / NOT VERIFIED",
+    "supabase": "NICHT LIVE"
+  },
+  "correctionBudget": {
+    "invocationOnly": 1,
+    "implementationRounds": 2,
+    "realNaturalRunStarts": 1,
+    "protectionOrPlatformError": "STOPP"
+  },
+  "checkpointsAreExternal": true
+}

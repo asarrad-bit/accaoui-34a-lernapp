@@ -1,3 +1,107 @@
+# ACCAOUI – bestätigte automatische Entwicklungsfolge
+Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W00
+Paket: ACCAOUI_AUTOMATISCHE_ENTWICKLUNGSFOLGE_20261021_V1
+Queueposition: W00
+Status: AUTHORIZED_IN_PROGRESS
+Korrekturrunde: 1 - Folgepaketprofil konkret begrenzen und pruefen
+Ausgangsbasis: 431ea31b1c0b9fbcc84e04152d8d244bfa1c4f91
+Persönliche Quelle: 01a13bb5-4447-72c3-84d4-55246679ce0d
+Bestätigungsturn: 01a15e2f-a343-7a40-a370-5fe2871e1129
+Bestätigungsnachricht: 01a15e2f-a3f6-7262-86ea-ed8986e1090f
+Queue: docs/tasks/DEVELOPMENT_QUEUE_V1.json
+Verbindlicher Plan: docs/DEVELOPMENT_SEQUENCE_V1.md
+Exaktes Pfadmanifest: ["AGENTS.md", "docs/PROJECT_STATE_CURRENT.md", "docs/PROJECT_MASTERLIST.md", "docs/tasks/CURRENT_TASK.md", "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md", "tools/check-project-continuity-control.py", "tools/preflight.py", "docs/DEVELOPMENT_SEQUENCE_V1.md", "docs/tasks/DEVELOPMENT_QUEUE_V1.json", "tools/check-development-queue-v1.py"]
+Aktueller Paketbeleg: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W00
+Produktänderung in W00: NEIN
+Paket-Commit/normaler Push: JA, nur nach allen tatsächlichen Pflicht-PASS
+v27.37n und geschützter Audit: STOPP / NOT VERIFIED
+Supabase: NICHT LIVE
+
+Diese neue persönliche Gesamtfreigabe ersetzt ausschließlich für die feste Folge
+W00–W08 die früheren Verbote automatischer Folgearbeit. Das frühere Gate-PASS gilt
+nur für seine damaligen Bytes. Sein Vertrag und seine Prüfprofile bleiben als
+historische Fakten erhalten. Die heutige Drive-Quellennotiz bleibt vollständig erhalten.
+Der neue echte 7200s-Nachweis gehört ausschließlich zum späteren W01; er ist hier NOT RUN.
+Alle folgenden älteren Task-/STOPP-Aussagen sind unveränderte Historie, keine zweite
+aktive Anweisung. Andere historische STOPPs werden nicht aufgehoben.
+
+Vor Änderungen an einem Folgepaket CURRENT_TASK und exaktes Manifest an die bestätigte
+Queue binden. Nach tatsächlichem Pflicht-PASS direkt zum ersten geeigneten vorgegebenen
+Paket; keine neue Routinefreigabe. Abgeschlossene Pakete nicht wiederholen.
+Fehlende externe Eingaben blockieren nur betroffene Pakete; Schutz-/Integritätsfehler
+und tatsächliche Plattformablehnungen stoppen die gesamte technische Folge.
+Keine neuen Chats/Agenten und keine parallelen Technikläufe.
+Korrekturen nur gemäß engem Budget im bestätigten Plan; Originalchecks, fachliche
+Erwartungen und 1800s-Innenbudget unverändert. Kein synthetischer App-/Launch-PASS.
+
+## Unveränderte Historie vor ACCAOUI_AUTOMATISCHE_ENTWICKLUNGSFOLGE_20261021_V1
+
+---
+
+# ACCAOUI - schriftliches Timeout: kanonisches GATE, keine Durchfuehrung
+Task-ID: ACCAOUI_WRITTEN_TIMEOUT_REACCEPTANCE_GATE_V1
+Status: GATE_AUTHORIZED_EXECUTION_LOCKED
+Autorisiert: JA - ausschliesslich dieser einmalige Gate-Auftrag und Pflichtchecks
+Ausgangsbasis: 431ea31b1c0b9fbcc84e04152d8d244bfa1c4f91
+Persoenliche Quelle: 01a13bb5-4447-72c3-84d4-55246679ce0d
+Bestaetigender Turn: 01a1529e-f0b2-7123-8df0-b0153cfb5ef2
+Bestaetigende Nachricht: 01a1529e-f14f-7a73-b49e-153d963f7744
+Bestaetigter Block: 68420 - vollstaendiger Freigabetext im privaten Launch-Gap-Bericht
+Spaetere echte Abnahme: BLOCKED
+Browser/Server/Dauerlauf/Produkt/Staging/Commit/Push erlaubt: NEIN
+Neuer Produkttask: KEINER
+v27.37n und Audit: STOPP / NOT VERIFIED
+Supabase: NICHT LIVE
+
+## Einmaliger persoenlicher Bootstrap und exakter Umfang
+
+Die unmittelbare persoenliche Quelle wurde direkt gelesen. Ein Beleg-JSON allein
+ist keine Befugnis. Die Quelle erlaubt ausschliesslich die additive Gate-Schicht,
+den Vertrag docs/WRITTEN_TIMEOUT_REACCEPTANCE_CONTRACT_V1.md und dessen echten
+Checker tools/check-written-timeout-reacceptance-contract-v1.py. Hinzu kommen nur
+diese vier Steuerpraefixe sowie additive Einbindungen in
+tools/check-project-continuity-control.py und tools/preflight.py: exakt acht Pfade.
+Die gesamte bisherige Quelle folgt unveraendert unter der eindeutigen Historie.
+
+Vertragsfixtures P01-P03/N01-N18 sind ausdruecklich synthetisch und pruefen
+Zulaessigkeit, Belegintegritaet und die geschlossene Ausfuehrung; sie sind KEIN
+echter 7200-Sekunden-Nachweis. Neuer Vertragschecker, volle Kontinuitaet,
+vollstaendiger Original-Preflight mit vorhandenem Python3 und git diff --check
+sind Pflicht. Alte Erwartungen und der originale 1800s-Innenhaushalt bleiben
+unveraendert; historische Befunde werden nicht als neue Produktabnahme ausgegeben.
+
+Der Vertrag verlangt fuer einen spaeter gesondert zu entscheidenden Lauf
+82 Fragen/120 Punkte, 120:00, natuerlich mindestens7200s ohne Zeitmanipulation,
+beobachtetes00:00, automatischen einmaligen Abschluss und genau einen Verlauf,
+korrekte Wertung/offene Fragen, kein falsches Fortsetzen sowie Reload/Storage/
+Konsole. Vorher begonnene passive Aufzeichnung, UTC plus monotone Zeit, externe
+Sicherung und vollstaendiges Lesen/Hashen vor Bereinigung bleiben erforderlich.
+Fehlende Belege bleiben NOT VERIFIED; Widersprueche FAIL; keine Rekonstruktion.
+
+## Gesperrte Durchfuehrung und notwendige Eigentümerentscheidung
+
+BLOCKED bleibt jede spaetere echte Browser-/Server-/Dauerpruefung. Noetig waere
+eine neue konkrete persoenliche Entscheidung, ob ein eigenstaendiger neuer
+schriftlicher Nachweis unter Erhalt der alten v27.37n-Sperre zulaessig ist.
+Sie muss Scope, Basis, Origin, Budget, prospektive Belegsicherung und frische
+kanonische Gates explizit binden. Umbenennung allein umgeht keinen STOPP.
+Dieses Gate entscheidet das nicht vor und erteilt keinen executionGrant.
+
+Audit bleibt unversioniert, unveraendert, unkopiert/unuebertragen:
+10336 Bytes / SHA256 da23a1d052684fc3646a5a01e06c4520555053caddb67c7ff3ad06a5c1c78b00.
+Keine alte Rohbelegsuche. Alle Produkt-/Auth-/Daten-/SQL-Pfade bleiben unveraendert.
+Kein Fetch/Pull/Reset/Restore/Amend/Rebase/Merge oder automatisches Entstagen.
+Kein neuer Chat/Agent und keine parallele Technik. Bei wirklichem Fehler,
+Fremdaenderung, Schutzkonflikt oder automatischer Ablehnung sofort STOPP.
+Keine uebernommene Nachtausnahme und kein uebernommenes Korrekturbudget.
+Nach diesem Gate endet die Freigabe; keine automatische Folgearbeit.
+Pruefergebnis ist nur im tatsaechlichen privaten Abschlussbeleg zu lesen,
+nicht aus diesem Autorisierungspraefix als zukuenftiger PASS abzuleiten.
+
+## Unveraenderte Historie vor ACCAOUI_WRITTEN_TIMEOUT_REACCEPTANCE_GATE_V1
+
+---
+
 # ACCAOUI - eindeutiger Abschluss des Pruefungstermin-Auftrags
 Task-ID: ACCAOUI_EXAM_DATES_STATUS_CLOSURE
 Status: GESCHLOSSENER_ABSCHLUSSVERTRAG

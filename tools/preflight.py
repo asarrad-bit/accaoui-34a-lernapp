@@ -7173,7 +7173,34 @@ def _exam_dates_status_closure_preflight():
     return True
 # END ACCAOUI_EXAM_DATES_STATUS_CLOSURE preflight
 
+# BEGIN ACCAOUI_WRITTEN_TIMEOUT_REACCEPTANCE_GATE_V1 preflight
+def _written_timeout_gate_preflight():
+    control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+    if not control["written_timeout_gate_requested"]():
+        return False
+    result = control["run_written_timeout_gate"]("preflight")
+    if result != 0:
+        raise SystemExit(result)
+    return True
+# END ACCAOUI_WRITTEN_TIMEOUT_REACCEPTANCE_GATE_V1 preflight
+
+
+# BEGIN ACCAOUI_AUTOMATISCHE_ENTWICKLUNGSFOLGE_20261021_V1 preflight
+def _development_sequence_preflight():
+    control = runpy.run_path(str(Path(__file__).resolve().with_name("check-project-continuity-control.py")))
+    if not control["development_sequence_requested"]():
+        return False
+    result = control["run_development_sequence"]("preflight")
+    if result != 0:
+        raise SystemExit(result)
+    return True
+# END ACCAOUI_AUTOMATISCHE_ENTWICKLUNGSFOLGE_20261021_V1 preflight
+
 def main():
+    if _development_sequence_preflight():
+        return
+    if _written_timeout_gate_preflight():
+        return
     if _exam_dates_status_closure_preflight():
         return
     if _exam_dates_release_preflight():
