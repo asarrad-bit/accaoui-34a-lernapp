@@ -15,7 +15,7 @@
     "threadId": "01a11cc6-ee66-7890-9520-7fd190f6e687",
     "hostId": "local"
   },
-  "current": "W00",
+  "current": "W01",
   "order": [
     "W00",
     "W01",
@@ -32,9 +32,13 @@
       "id": "W00",
       "goal": "Arbeitssteuerung und feste Queue einrichten",
       "depends": [],
-      "status": "ACTIVE",
+      "status": "PASS",
       "attempts": 1,
-      "result": null
+      "result": {
+        "actualMandatoryChecksPass": true,
+        "reportSHA256": "c8b8084fc2c39a74e09f2a491f9e5a8693d8717fd6c38df094fa65837c2ae093",
+        "commit": "63eef665aefb207a70c08904143a907448e189df"
+      }
     },
     {
       "id": "W01",
@@ -42,8 +46,8 @@
       "depends": [
         "W00"
       ],
-      "status": "PENDING",
-      "attempts": 0,
+      "status": "ACTIVE",
+      "attempts": 1,
       "result": null
     },
     {
@@ -136,24 +140,25 @@
   "liveSupabaseGrant": false,
   "realParticipantDataGrant": false,
   "active": {
-    "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W00",
-    "baseline": "431ea31b1c0b9fbcc84e04152d8d244bfa1c4f91",
+    "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W01",
+    "baseline": "63eef665aefb207a70c08904143a907448e189df",
     "paths": [
-      "AGENTS.md",
+      "docs/tasks/CURRENT_TASK.md",
       "docs/PROJECT_STATE_CURRENT.md",
       "docs/PROJECT_MASTERLIST.md",
-      "docs/tasks/CURRENT_TASK.md",
       "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
-      "tools/check-project-continuity-control.py",
-      "tools/preflight.py",
-      "docs/DEVELOPMENT_SEQUENCE_V1.md",
       "docs/tasks/DEVELOPMENT_QUEUE_V1.json",
+      "tools/capture-written-timeout-browser-proof-v1.js",
+      "tools/check-written-timeout-browser-proof-v1.py",
+      "AGENTS.md",
+      "docs/DEVELOPMENT_SEQUENCE_V1.md",
       "tools/check-development-queue-v1.py"
     ],
-    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W00",
+    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W01\\closure-20261024-v1",
     "attempt": 1,
-    "correctionRounds": 1,
-    "fullFeatureScopeRetained": true
+    "correctionRounds": 2,
+    "fullFeatureScopeRetained": true,
+    "diagnosticPurpose": "Close the actually completed W01 proof under the new direct personal continuation; no new natural run and no product changes. Ordinary staged EOF-only normalization: preserve captured tool bytes separately and retain all old pins; recheck the final exact bytes."
   },
   "protected": {
     "auditPath": "docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md",
@@ -163,10 +168,76 @@
     "supabase": "NICHT LIVE"
   },
   "correctionBudget": {
+    "ordinaryCorrections": "PURPOSE_BOUND",
+    "unknownCauseReadOnlyDiagnosis": true,
+    "realNaturalRunStarts": 1,
+    "protectionOrPlatformError": "STOPP"
+  },
+  "checkpointsAreExternal": true,
+  "lease": "W01-CLOSURE-20261024-V1",
+  "workAuthorityV2": {
+    "package": "ACCAOUI_ARBEITSFREIGABE_W00_W08_20261021_V2",
+    "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
+    "hostId": "local",
+    "turnId": "01a15fde-8d82-7483-a91c-ae16b5963742",
+    "messageId": "01a15fde-8e28-7313-9c63-a59bd0c74115",
+    "textSHA256": "941bd147114ddf06aba36ad4f4364f108d397c5216ddbda837f1090e85629ed8",
+    "textBytes": 6292
+  },
+  "historicalCorrectionBudgetV1": {
     "invocationOnly": 1,
     "implementationRounds": 2,
     "realNaturalRunStarts": 1,
     "protectionOrPlatformError": "STOPP"
   },
-  "checkpointsAreExternal": true
+  "secondRealRun": {
+    "package": "W01_SECOND_REAL_RUN_7200S_DECISION_V1",
+    "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
+    "hostId": "local",
+    "turnId": "01a163f8-7c9f-7e00-ac8f-96663ae359ac",
+    "messageId": "01a163fb-1713-76f1-bb3f-d1c0e8895fbd",
+    "questionItem": "call_bd7d9be8282048808390441f5ea13eb6",
+    "proposalSHA256": "5f3bcc8142f998eef49a030037203002d7a6dfaaa5754cd25e9ffb6605acab82",
+    "answer": "Ja, dieses Paket einmal durchführen",
+    "priorActualAppStarts": 1,
+    "additionalActualAppStartsMaximum": 1,
+    "historicalAppStartsMaximum": 2,
+    "runId": "W01-20261022-NATURAL-SECOND-ONE-START",
+    "directory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W01\\v2\\real-run-02-7200s-v1",
+    "oldClaimSHA256": "f2d5c5ea6b15a69c729317969aad28427f845caa5e493c9f04e6804d19142c5e",
+    "minimumNaturalSeconds": 7200,
+    "maximumBrowserSeconds": 7800,
+    "originalPreflightInnerSeconds": 1800,
+    "commitPushQueueAdvanceAuthorized": false,
+    "productMutationAuthorized": false
+  },
+  "w01Closure": {
+    "package": "ACCAOUI_W01_ABSCHLUSS_W02_FORTSETZUNG_20261023_V1",
+    "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
+    "hostId": "local",
+    "turnId": "01a16a95-d7a8-7881-8a28-c40454b0abae",
+    "messageId": "01a16a95-d84b-7e81-ad90-150229e4fb8d",
+    "sourceSHA256": "1414e003885b8e615f39f3d6036b998e3f1c17a9339d8bc3403886ddc735daac",
+    "completedRunId": "W01-20261022-NATURAL-SECOND-ONE-START",
+    "completedReadbackSHA256": "ac4099d4e0f9c66d62ebd93e08ed745d078df69f1d21141df4da8ce0d20d026a",
+    "historicalAppStarts": 2,
+    "additionalAppStartsAuthorized": 0,
+    "commitPushAuthorizedAfterGates": true,
+    "fullFeatureLaunch": false
+  },
+  "automaticContinuationW03W08": {
+    "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
+    "turnId": "01a16a95-d7a8-7881-8a28-c40454b0abae",
+    "messageId": "01a16a9b-efaf-7f62-856d-f167d1a1f788",
+    "questionItem": "call_7e259f72514042d7beda0adf4886f8b2",
+    "answer": "W03–W08 automatisch durchführen",
+    "sourceSHA256": "50c0eebbe4e95605fe6e3f38dd39228b0a1a1ada630db45c3d42e13053e431b2"
+  },
+  "w01EofNormalization": {
+    "kind": "CLOSURE_EOF_ONLY_NORMALIZATION",
+    "receiptSHA256": "388ec43ac0fde0759d33b0b0d5520c9215bf1671229bc25119ca2692f43e00b0",
+    "authoritySourceSHA256": "1414e003885b8e615f39f3d6036b998e3f1c17a9339d8bc3403886ddc735daac",
+    "removedFinalLFBytesPerTool": 1,
+    "newNaturalRuns": 0
+  }
 }
