@@ -186,6 +186,92 @@ def queue_cases():
             except (ValueError,KeyError,TypeError):rows.append(name+":REJECTED")
             else:raise ValueError("unsafe closure authority accepted: "+name)
         require(len(rows)==40,"all 32 previous cases plus eight closure cases")
+    if q.get("w02RuntimeBinding") is not None:
+        # Extract the exact production pure contract: no alternate guard/test mode.
+        syntax=ast.parse((ROOT/"tools/check-development-queue-v1.py").read_text(encoding="utf-8"))
+        outer=next(n for n in syntax.body if isinstance(n,ast.FunctionDef) and n.name=="successor_protection")
+        validator=next(n for n in outer.body if isinstance(n,ast.FunctionDef) and n.name=="validate_w02_identity")
+        namespace={"require":require}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W02-identity-contract>","exec"),namespace)
+        check_identity=namespace["validate_w02_identity"]
+        binding=q["w02RuntimeBinding"]
+        runtime=json.loads((Path(binding["directory"])/"runtime-set.json").read_bytes())
+        pins=runtime["runtimePins"]
+        observed={name:dict(entry,regular=True) for name,entry in pins.items()}
+        observed["browser"].update(afterBytes=pins["browser"]["bytes"],afterSHA256=pins["browser"]["sha256"],version="156.0.4314.42",signature="Valid",signer="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",thumbprint="4028CAD637509D4744B17EC5B42AED8D7A31E6AF")
+        predecessor=json.loads((OUT.parent/"W01/closure-20261024-v1/result-readback.json").read_bytes())
+        authority=binding["executionAuthority"]
+        check_identity(pins,observed,authority,predecessor)
+        rows.append("W02:valid-separated-runtime-authority-predecessor")
+        invalid=[
+            ("byte-hash-change",lambda p,o,a,c:o["browser"].update(sha256="0"*64)),
+            ("size-change",lambda p,o,a,c:o["browser"].update(bytes=1)),
+            ("old-W01-pin",lambda p,o,a,c:p["browser"].update(bytes=5438320,sha256="c2451a012ff88e82449834de5b526ebb42b5a3fc25958d795910d2b172c975b6")),
+            ("wrong-path",lambda p,o,a,c:o["browser"].update(path="C:/other.exe")),
+            ("symlink-or-filetype",lambda p,o,a,c:o["browser"].update(regular=False)),
+            ("missing-runtime",lambda p,o,a,c:p.pop("node")),
+            ("extra-runtime",lambda p,o,a,c:p.update(extra={})),
+            ("missing-observation",lambda p,o,a,c:o.pop("python")),
+            ("extra-observation",lambda p,o,a,c:o.update(extra={})),
+            ("wrong-version",lambda p,o,a,c:o["browser"].update(version="OTHER")),
+            ("invalid-signature",lambda p,o,a,c:o["browser"].update(signature="NotTrusted")),
+            ("wrong-signer",lambda p,o,a,c:o["browser"].update(signer="OTHER")),
+            ("wrong-thumbprint",lambda p,o,a,c:o["browser"].update(thumbprint="0"*40)),
+            ("changed-during-native-query",lambda p,o,a,c:o["browser"].update(afterSHA256="0"*64)),
+            ("missing-implementation-authority",lambda p,o,a,c:a.clear()),
+            ("preparation-only-authority",lambda p,o,a,c:a.update(answer="Ja, Reparaturvorschlag von WORK vorbereiten lassen")),
+            ("wrong-human-message",lambda p,o,a,c:a.update(messageId="unconfirmed")),
+            ("missing-W01-completion",lambda p,o,a,c:c.update(actualMandatoryChecksPass=False)),
+            ("missing-W01-readback",lambda p,o,a,c:c.update(currentAllChecksReadbackComplete=False)),
+            ("wrong-W01-parent",lambda p,o,a,c:c["commit"].update(parent="0"*40)),
+            ("wrong-W01-commit",lambda p,o,a,c:c["commit"].update(sha="0"*40)),
+            ("failed-W01-push",lambda p,o,a,c:c["push"].update(nativeExitCode=1)),
+            ("missing-direct-GitHub",lambda p,o,a,c:c["directGitHubAfterPush"].update(directlyConfirmed=False)),
+            ("wrong-direct-GitHub",lambda p,o,a,c:c["directGitHubAfterPush"].update(sha="0"*40)),
+            ("new-natural-start",lambda p,o,a,c:c.update(newNaturalRuns=1)),
+            ("false-launch-claim",lambda p,o,a,c:c.update(fullFeatureLaunch=True))]
+        for name,alter in invalid:
+            p,o,a,c=copy.deepcopy((pins,observed,authority,predecessor));alter(p,o,a,c)
+            try:check_identity(p,o,a,c)
+            except (ValueError,KeyError,TypeError):rows.append("W02:"+name+":REJECTED")
+            else:raise ValueError("unsafe W02 identity/authority accepted: "+name)
+        require(len(rows)==40+1+len(invalid),"all old forty plus separately counted W02 cases")
+    if q.get("w02NodeBinding") is not None:
+        # Additional isolated cases; all previous 67 case statements above stay byte-identical.
+        nr=json.loads((Path(q["w02NodeBinding"]["directory"])/"runtime-set.json").read_bytes())
+        context=nr["nodeRebinding"]; node_pins=nr["runtimePins"]
+        node_observed={name:dict(entry,regular=True) for name,entry in node_pins.items()}
+        node_observed["browser"].update(observed["browser"])
+        node_observed["node"].update(afterBytes=node_pins["node"]["bytes"],afterSHA256=node_pins["node"]["sha256"],version="24.22.1",productVersion="24.22.1",signature="Valid",signer="CN=\"OpenAI OpCo, LLC\", O=\"OpenAI OpCo, LLC\", L=San Francisco, S=California, C=US",thumbprint="900AE29FF12CB2F3DDAB9943CD63371065432B73")
+        check_identity(node_pins,node_observed,authority,predecessor,context)
+        rows.append("NodeRebind:exact-approved-identity:PASS")
+        node_invalid=[
+            ("third-hash",lambda p,o,c:o["node"].update(sha256="0"*64)),
+            ("old-hash-in-new-binding",lambda p,o,c:o["node"].update(sha256="6416a2fc6ccaf41d71fc50e3c0ff9074c633249e3c74564d55cd0a5c25b61ecb")),
+            ("size",lambda p,o,c:o["node"].update(bytes=1)),
+            ("path",lambda p,o,c:o["node"].update(path="C:/other/node.exe")),
+            ("filetype",lambda p,o,c:o["node"].update(regular=False)),
+            ("version",lambda p,o,c:o["node"].update(version="OTHER")),
+            ("product-version",lambda p,o,c:o["node"].update(productVersion="OTHER")),
+            ("signature",lambda p,o,c:o["node"].update(signature="NotTrusted")),
+            ("signer",lambda p,o,c:o["node"].update(signer="OTHER")),
+            ("thumbprint",lambda p,o,c:o["node"].update(thumbprint="0"*40)),
+            ("query-race-hash",lambda p,o,c:o["node"].update(afterSHA256="0"*64)),
+            ("query-race-size",lambda p,o,c:o["node"].update(afterBytes=1)),
+            ("authority-missing",lambda p,o,c:c.update(executionAuthority=None)),
+            ("preparation-only",lambda p,o,c:c["executionAuthority"].update(messageId="01a17998-2ab8-7da0-9edd-d90db37c1a7e")),
+            ("gate-retry-only",lambda p,o,c:c["executionAuthority"].update(messageId="01a1793e-bfff-7c71-86a6-0c48faea6f17")),
+            ("automatic-adoption",lambda p,o,c:c.update(acceptNewIdentityAutomatically=True)),
+            ("historical-pin",lambda p,o,c:c.update(previousRuntimeSetSHA256="0"*64)),
+            ("natural-start",lambda p,o,c:c.update(newW01NaturalRuns=1)),
+            ("extra-field",lambda p,o,c:c.update(extra=True)),
+            ("self-repinned-third-value",lambda p,o,c:(p["node"].update(sha256="f"*64),o["node"].update(sha256="f"*64,afterSHA256="f"*64),c["node"].update(sha256="f"*64)))]
+        for name,alter in node_invalid:
+            p,o,c=copy.deepcopy((node_pins,node_observed,context));alter(p,o,c)
+            try:check_identity(p,o,authority,predecessor,c)
+            except (ValueError,KeyError,TypeError):rows.append("NodeRebind:"+name+":REJECTED")
+            else:raise ValueError("unsafe Node rebinding accepted: "+name)
+        require(len(rows)==67+1+len(node_invalid),"all original 67 plus separately counted Node cases")
     return rows
 
 def peel(rel,raw):
@@ -288,7 +374,46 @@ def validate_v2_source_bindings(q,m,baseline):
             require(ast.dump(get(old),include_attributes=False)==ast.dump(get(new),include_attributes=False),"unchanged original factual/check/budget source "+name)
 
 def successor_protection(q):
+    def validate_w02_identity(pins, observed, authority, predecessor, node_rebinding=None):
+        # Pure contract, also exercised below with isolated synthetic observations.
+        expected={"powerShell":{"path":"C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe","bytes":301368,"sha256":"362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139"},"node":{"path":"C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe","bytes":93713712,"sha256":"6416a2fc6ccaf41d71fc50e3c0ff9074c633249e3c74564d55cd0a5c25b61ecb"},"python":{"path":"C:\\Users\\asarr\\AppData\\Local\\Programs\\Python\\Python313\\python.exe","bytes":105832,"sha256":"d87063e5597f257004c731b66c59c56c91038861c6877b1a3dca6b8c4e919125"},"browser":{"path":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe","bytes":5452616,"sha256":"bb74db4c753133706f4ab0a483a87aa28a90ddd6eeb305fe001376ba73a40fc3"}}
+        expected_authority={"package":"ACCAOUI_W02_BROWSER_BINDING_IMPLEMENTATION_20261024_V1","threadId":"01a13bb5-4447-72c3-84d4-55246679ce0d","hostId":"local","questionTurn":"01a16e74-7919-71e0-a84f-b99b0bad2a35","questionItem":"call_003c7eca68c84de69f929be2c5fc34cd","answerTurn":"01a16e82-8442-7793-92f8-bc62036ebc11","messageId":"01a16e82-84c6-7190-ad61-8f308e40590b","answer":"Ja, diesen konkreten Reparaturvorschlag regulär umsetzen lassen","proposalSHA256":"6c0787b9556383e1a05d60e558d042f1cec237950bdc4eca1e3c5c3e6db4dc9f"}
+        require(authority==expected_authority,"specific directly confirmed W02 repair implementation authority")
+        if node_rebinding is not None:
+            # Fixed actual personal Node implementation authority, read directly in full.
+            expected_node_authority={'package': 'ACCAOUI_W02_NODE_BINDING_IMPLEMENTATION_20261027_V1', 'threadId': '01a13bb5-4447-72c3-84d4-55246679ce0d', 'hostId': 'local', 'questionTurn': '01a17bec-5303-7b20-b230-db8302b58afb', 'questionItem': 'msg_05f1b5a72e54e49e016ae03c9c780881919dc9531d3ef9b607', 'answerTurn': '01a17bed-7a35-7181-baf0-29b9a5280624', 'messageId': '01a17bed-7b3e-7c21-a3ee-22dec0a8c189', 'answer': 'Ja, diesen Node-Vorschlag an WORK zur Umsetzung und vollständigen Prüfung übergeben.', 'proposalSHA256': '060783d9b2acca11c4c60684d13ab5775b80a64c0c8615a187e00a6544b5c611'}
+            require(type(expected_node_authority) is dict and node_rebinding["executionAuthority"]==expected_node_authority,"separate exact Node implementation authority")
+            require(set(node_rebinding)=={"kind","previousRuntimeSetSHA256","node","executionAuthority","acceptNewIdentityAutomatically","newW01NaturalRuns"},"closed Node rebinding schema")
+            require(node_rebinding["kind"]=="W02_NODE_IDENTITY_REBIND_V1" and node_rebinding["previousRuntimeSetSHA256"]=="3ac2f584daaa400b7c1e99d4b0acb5f0d9fef5e472fe3009a578407908587747","unchanged predecessor runtime identity")
+            require(node_rebinding["acceptNewIdentityAutomatically"] is False and type(node_rebinding["newW01NaturalRuns"]) is int and node_rebinding["newW01NaturalRuns"]==0,"no automatic adoption or natural run")
+            expected_node={"path":"C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe","bytes":93713712,"sha256":"6d75619e8720161bb0e8c5617bcf90384b48a920b9182ec6e9d52f11f83a8e84"}
+            require(node_rebinding["node"]==expected_node,"one exact separately proposed Node identity")
+            expected["node"]=expected_node
+        require(pins==expected and set(observed)==set(expected),"exact four independently confirmed W02 runtime identities")
+        for name,entry in expected.items():
+            actual=observed[name]
+            require(actual["regular"] is True and actual["path"]==entry["path"],"regular exact W02 runtime path "+name)
+            require(actual["bytes"]==entry["bytes"] and actual["sha256"]==entry["sha256"],"exact W02 runtime bytes/hash "+name)
+        browser=observed["browser"]
+        require(browser["afterBytes"]==browser["bytes"] and browser["afterSHA256"]==browser["sha256"],"browser unchanged across native identity query")
+        require(browser["version"]=="156.0.4314.42" and browser["signature"]=="Valid","exact W02 browser version and valid signature")
+        require(browser["signer"]=="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" and browser["thumbprint"]=="4028CAD637509D4744B17EC5B42AED8D7A31E6AF","exact Microsoft W02 signer identity")
+        if node_rebinding is not None:
+            node=observed["node"]
+            require(node["afterBytes"]==node["bytes"] and node["afterSHA256"]==node["sha256"],"Node unchanged across native query")
+            require(node["version"]=="24.22.1" and node["productVersion"]=="24.22.1" and node["signature"]=="Valid","exact Node versions and valid signature")
+            require(node["signer"]=="CN=\"OpenAI OpCo, LLC\", O=\"OpenAI OpCo, LLC\", L=San Francisco, S=California, C=US" and node["thumbprint"]=="900AE29FF12CB2F3DDAB9943CD63371065432B73","exact OpenAI Node signer")
+        commit="d7d1151830951188854ad7aa013448251a2a9bbe"
+        require(predecessor["state"]=="W01_CLOSED_COMMITTED_PUSHED_DIRECT_GITHUB_VERIFIED" and predecessor["actualMandatoryChecksPass"] is True and predecessor["currentAllChecksReadbackComplete"] is True and predecessor["nativeWorkerExitCode"]==0,"actual fully checked W01 closure")
+        require(predecessor["commit"]["sha"]==commit and predecessor["commit"]["parent"]=="63eef665aefb207a70c08904143a907448e189df" and predecessor["commit"]["nativeExitCode"]==0,"exact normal W01 commit and parent")
+        require(predecessor["push"]["nativeExitCode"]==0 and predecessor["directGitHubAfterPush"]["directlyConfirmed"] is True and predecessor["directGitHubAfterPush"]["sha"]==commit,"actual W01 push and direct GitHub confirmation")
+        require(predecessor["newNaturalRuns"]==0 and predecessor["fullFeatureLaunch"] is False,"historical narrow closure preserved")
+        return True
     active=validate_active_manifest(q)
+    closure_evidence=Path(active["evidenceDirectory"])
+    if q["current"]=="W02":
+        require(q.get("w01Closure") is not None and q.get("w02RuntimeBinding") is not None,"W02 requires actual predecessor and separate repair binding")
+        closure_evidence=OUT.parent/"W01/closure-20261024-v1"
     second=q.get("secondRealRun")
     present=b"W01_SECOND_REAL_RUN_7200S_DECISION_V1" in (ROOT/"docs/tasks/CURRENT_TASK.md").read_bytes().split(b"## Erhaltene fr\xc3\xbchere",1)[0]
     require(bool(second)==present,"new actual canonical second-run scope requires separate authority")
@@ -299,8 +424,11 @@ def successor_protection(q):
             require(q["current"]=="W01" and active["evidenceDirectory"]==second["directory"] and q["lease"]==second["runId"],"exact second-run W01 directory/lease")
         else:
             validate_second_run_authority(second,closure)
-            require(q["current"]=="W01" and q["lease"]=="W01-CLOSURE-20261024-V1","one identified W01 closure; no new run")
-            receipt=json.loads((Path(active["evidenceDirectory"])/"authority-readback.json").read_bytes())
+            if q["current"]=="W02":
+                require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1","one identified new W02 binding; no new W01 run")
+            else:
+                require(q["current"]=="W01" and q["lease"]=="W01-CLOSURE-20261024-V1","one identified W01 closure; no new run")
+            receipt=json.loads((closure_evidence/"authority-readback.json").read_bytes())
             require(receipt["directSourceRead"] is True and receipt["closureAuthority"]==closure,"directly read new closure source")
             closed_path=Path(second["directory"])/"result-readback.json"
             require(regular(closed_path) and sha(closed_path.read_bytes())==closure["completedReadbackSHA256"],"immutable completed natural proof")
@@ -319,7 +447,7 @@ def successor_protection(q):
         normalization=None
         if eof is not None:
             require(closure is not None and eof["kind"]=="CLOSURE_EOF_ONLY_NORMALIZATION" and eof["authoritySourceSHA256"]==W01_CLOSURE_AUTHORITY["sourceSHA256"] and eof["removedFinalLFBytesPerTool"]==1 and eof["newNaturalRuns"]==0,"purpose-bound ordinary EOF correction under the new closure source")
-            normalization_path=Path(active["evidenceDirectory"])/"EOF_NORMALIZATION.json"
+            normalization_path=closure_evidence/"EOF_NORMALIZATION.json"
             require(regular(normalization_path) and sha(normalization_path.read_bytes())==eof["receiptSHA256"],"exact EOF correction receipt")
             normalization=json.loads(normalization_path.read_bytes())
             require(normalization["kind"]==eof["kind"] and normalization["authoritySourceSHA256"]==eof["authoritySourceSHA256"] and normalization["newNaturalRuns"]==0,"same later format-correction authority; no natural run")
@@ -331,7 +459,7 @@ def successor_protection(q):
             else:
                 entry=normalization["tools"][rel]
                 require(entry["archivedRelativePath"]=="tool-source-before/"+Path(rel).name and entry["removedFinalLFBytes"]==1,"one final LF only, exact archived source path")
-                archived=Path(active["evidenceDirectory"])/entry["archivedRelativePath"]
+                archived=closure_evidence/entry["archivedRelativePath"]
                 require(regular(archived),"regular exact original tool archive")
                 original=archived.read_bytes()
                 require({"bytes":len(original),"sha256":sha(original)}==package["protectedCandidate"][rel]==entry["capturedOriginal"],"all original captured tool bytes and historical pins preserved")
@@ -366,9 +494,75 @@ def successor_protection(q):
     require(m.get("eofNormalization")==q.get("w01EofNormalization"),"same exact manifest and queue EOF correction, or absent from both")
     if q.get("w01Closure") is not None:
         require(m.get("closureAuthority")==q["w01Closure"],"independent closure manifest authority")
-        for name,entry in m["runtimePins"].items():
-            path=Path(entry["path"]);raw=path.read_bytes()
-            require(regular(path) and len(raw)==entry["bytes"] and sha(raw)==entry["sha256"],"fresh unchanged closure runtime "+name)
+        if q["current"]!="W02":
+            for name,entry in m["runtimePins"].items():
+                path=Path(entry["path"]);raw=path.read_bytes()
+                require(regular(path) and len(raw)==entry["bytes"] and sha(raw)==entry["sha256"],"fresh unchanged closure runtime "+name)
+    if q["current"]=="W02":
+        binding=q["w02RuntimeBinding"]
+        require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1" and active["baseline"]=="d7d1151830951188854ad7aa013448251a2a9bbe","exact W02 repair lease/base")
+        directory=OUT.parent/"W02/runtime-binding-v1/execution-v1"
+        require(Path(binding["directory"]).resolve()==directory.resolve() and Path(active["evidenceDirectory"]).resolve()==directory.resolve(),"own fixed W02 evidence area")
+        runtime_path=directory/"runtime-set.json"
+        require(regular(runtime_path),"regular W02 runtime set")
+        runtime_raw=runtime_path.read_bytes()
+        require(sha(runtime_raw)==binding["runtimeSetSHA256"]==m["w02RuntimeSetSHA256"]==os.environ.get("ACCAOUI_W02_RUNTIME_SHA256"),"independent exact W02 runtime set pin")
+        runtime=json.loads(runtime_raw)
+        require(runtime["kind"]=="W02_RUNTIME_IDENTITY_V1" and runtime["executionAuthority"]==binding["executionAuthority"],"separate confirmed W02 runtime authority")
+        authority_path=directory/"authority-readback.json"
+        require(regular(authority_path) and sha(authority_path.read_bytes())==binding["authoritySHA256"]==m["w02AuthoritySHA256"],"exact W02 actual source receipt")
+        receipt=json.loads(authority_path.read_bytes())
+        require(receipt["directSourceRead"] is True and receipt["executionAuthority"]==binding["executionAuthority"],"directly read actual implementation question/answer")
+        immutable={"result-readback.json":{"bytes":30021,"sha256":"7fdefce1724d2a1cc290b4a15828568b4e1f14cf9af17a5ac8b348f723952a84"},"candidate-manifest.json":{"bytes":7961,"sha256":"fa7432f9c373ea0f5ad4f643a34a73debe6a7c6672a7c1e5074dac0de976c779"},"EOF_NORMALIZATION.json":{"bytes":1606,"sha256":"388ec43ac0fde0759d33b0b0d5520c9215bf1671229bc25119ca2692f43e00b0"},"W02_TRANSITION_PLATFORM_STOPP_20261024.json":{"bytes":2537,"sha256":"f2e58f6cc5c3ea7e8da56c741ceea76bd3c9fd65dd8bb56d8d0d087b9bee2a72"},"diagnosis-20261024-v1/result-readback.json":{"bytes":6070,"sha256":"251d56e68b1e8d18abb8d28d357e5bca131ab0ef61b0c95fbeff064bff8cd9e2"},"resubmission-20261024-v1/result-readback.json":{"bytes":9204,"sha256":"34cd9afc847bbff3dbc795292874cb60c2567d9f8469e841f6918b73df94cc1c"}}
+        require(runtime["historicalW01"]["immutableArtifacts"]==immutable,"unchanged historical W01 pins")
+        for relative,pin in immutable.items():
+            path=closure_evidence/relative
+            require(regular(path),"regular historical W01 artifact "+relative)
+            data=path.read_bytes()
+            require({"bytes":len(data),"sha256":sha(data)}==pin,"immutable historical W01 artifact "+relative)
+        historical_manifest=json.loads((closure_evidence/"candidate-manifest.json").read_bytes())
+        require(historical_manifest["runtimePins"]["browser"]=={"path":r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe","bytes":5438320,"sha256":"c2451a012ff88e82449834de5b526ebb42b5a3fc25958d795910d2b172c975b6"},"historical W01 browser pin preserved")
+        node_context=None
+        node_binding=q.get("w02NodeBinding")
+        require(m.get("w02NodeBinding")==node_binding,"same Node binding in queue and candidate manifest")
+        if node_binding is not None:
+            require(node_binding["status"]=="CONFIRMED_EXECUTION_AUTHORITY","queue Node binding is implementation-confirmed")
+            node_directory=directory/"node-binding-20261026-v1"
+            require(Path(node_binding["directory"]).resolve()==node_directory.resolve(),"one fixed separate Node binding directory")
+            rp=node_directory/"runtime-set.json"; ap=node_directory/"authority-readback.json"
+            require(regular(rp) and regular(ap),"regular Node runtime and authority artifacts")
+            rr=rp.read_bytes(); ar=ap.read_bytes()
+            require(sha(rr)==node_binding["runtimeSetSHA256"]==os.environ.get("ACCAOUI_W02_NODE_RUNTIME_SHA256"),"independent new runtime pin")
+            require(sha(ar)==node_binding["authoritySHA256"]==os.environ.get("ACCAOUI_W02_NODE_AUTHORITY_SHA256"),"independent new authority receipt pin")
+            nr=json.loads(rr); na=json.loads(ar)
+            require(nr["kind"]=="W02_RUNTIME_IDENTITY_NODE_REBIND_V1" and nr["status"]=="CONFIRMED_EXECUTION_AUTHORITY","confirmed implementation, not proposal")
+            require(nr["executionAuthority"]==runtime["executionAuthority"] and nr["historicalW01"]==runtime["historicalW01"] and nr["browserSignature"]==runtime["browserSignature"],"original browser authority and historical W01 preserved")
+            node_context=nr["nodeRebinding"]
+            require(na["directSourceRead"] is True and na["status"]=="CONFIRMED_EXECUTION_AUTHORITY" and na["executionAuthority"]==node_context["executionAuthority"]==node_binding["executionAuthority"],"same directly read future implementation source")
+            require(nr["acceptNewIdentityAutomatically"] is False and nr["newW01NaturalRuns"]==0,"no automatic adoption or natural run")
+            runtime=nr
+        require(m["runtimePins"]==runtime["runtimePins"],"same independently pinned active W02 runtime set")
+        observations={}
+        for name,entry in runtime["runtimePins"].items():
+            path=Path(entry["path"])
+            require(regular(path),"regular W02 runtime "+name)
+            data=path.read_bytes()
+            observations[name]={"path":str(path),"regular":True,"bytes":len(data),"sha256":sha(data)}
+        ps=r"$ErrorActionPreference='Stop'; $f=Get-Item -LiteralPath 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'; $s=Get-AuthenticodeSignature -LiteralPath $f.FullName; [pscustomobject]@{version=$f.VersionInfo.FileVersion;signature=$s.Status.ToString();signer=$s.SignerCertificate.Subject;thumbprint=$s.SignerCertificate.Thumbprint} | ConvertTo-Json -Compress"
+        native=subprocess.run([runtime["runtimePins"]["powerShell"]["path"],"-NoLogo","-NoProfile","-NonInteractive","-Command",ps],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)
+        require(native.returncode==0 and not native.stderr.strip(),"native W02 browser identity query")
+        identity=json.loads(native.stdout.decode("utf-8-sig"))
+        after=Path(runtime["runtimePins"]["browser"]["path"]).read_bytes()
+        observations["browser"].update(identity,afterBytes=len(after),afterSHA256=sha(after))
+        predecessor=json.loads((closure_evidence/"result-readback.json").read_bytes())
+        if node_context is not None:
+            ps_node="$ErrorActionPreference='Stop'; $f=Get-Item -LiteralPath 'C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe'; $s=Get-AuthenticodeSignature -LiteralPath $f.FullName; [pscustomobject]@{version=$f.VersionInfo.FileVersion;productVersion=$f.VersionInfo.ProductVersion;signature=$s.Status.ToString();signer=$s.SignerCertificate.Subject;thumbprint=$s.SignerCertificate.Thumbprint} | ConvertTo-Json -Compress"
+            node_native=subprocess.run([runtime["runtimePins"]["powerShell"]["path"],"-NoLogo","-NoProfile","-NonInteractive","-Command",ps_node],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)
+            require(node_native.returncode==0 and not node_native.stderr.strip(),"native Node metadata query without Node execution")
+            identity_node=json.loads(node_native.stdout.decode("utf-8-sig"))
+            after_node=Path(runtime["runtimePins"]["node"]["path"]).read_bytes()
+            observations["node"].update(identity_node,afterBytes=len(after_node),afterSHA256=sha(after_node))
+        validate_w02_identity(runtime["runtimePins"],observations,binding["executionAuthority"],predecessor,node_context)
     prefixes=[]
     boundary=("## Unveränderte Historie vor "+active["task"]+"\n\n---\n\n").encode()
     for rel in META["scope"][1:5]:

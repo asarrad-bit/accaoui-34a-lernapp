@@ -1,4 +1,46 @@
 # ACCAOUI – bestätigte automatische Entwicklungsfolge
+Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W02
+Paket: ACCAOUI_W02_USER_FLOW_ACCEPTANCE_V1
+Status: NODE_REBINDING_AUTHORIZED_PREPARED_FUNCTIONAL_AND_FINAL_GATES_PENDING
+Ausgangsbasis: d7d1151830951188854ad7aa013448251a2a9bbe
+Exaktes Pfadmanifest: ["docs/tasks/CURRENT_TASK.md", "docs/PROJECT_STATE_CURRENT.md", "docs/PROJECT_MASTERLIST.md", "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md", "docs/tasks/DEVELOPMENT_QUEUE_V1.json", "tools/check-development-queue-v1.py", "tools/run-w02-user-flows-v1.js", "docs/W02_USER_FLOW_ACCEPTANCE_REPORT.md", "patch-v21.js"]
+Private externe W02-Bindungsbelege: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W02\runtime-binding-v1\execution-v1
+Direkte persönliche Umsetzungsquelle: 01a13bb5-4447-72c3-84d4-55246679ce0d / call_003c7eca68c84de69f929be2c5fc34cd / 01a16e82-84c6-7190-ad61-8f308e40590b.
+Tatsächliche Antwort: Ja, diesen konkreten Reparaturvorschlag regulär umsetzen lassen.
+Konkreter Gegenstand: REPAIR_PROPOSAL.md SHA256 6c0787b9556383e1a05d60e558d042f1cec237950bdc4eca1e3c5c3e6db4dc9f.
+Separater W02-Laufzeitsatz SHA256 3ac2f584daaa400b7c1e99d4b0acb5f0d9fef5e472fe3009a578407908587747; direkte Quellenquittung SHA256 25e81fb11344b5dbe5530805b774ba379c54a4844cd567c5dbec3ac0994c50e0.
+W01 tatsächlich abgeschlossen, normal committed/pushed und GitHub main direkt bestätigt: d7d1151830951188854ad7aa013448251a2a9bbe.
+Historische W01-Abschluss-/Naturbelege, Browser-/Nodepins, EOF-Rezept und Originalarchive unverändert am alten Ort.
+Neue aktive Browserbasis: Edge 156.0.4314.42 / 5452616 Bytes / bb74db4c753133706f4ab0a483a87aa28a90ddd6eeb305fe001376ba73a40fc3.
+Microsoft-Signatur Valid, exakter Signer und Thumbprint 4028CAD637509D4744B17EC5B42AED8D7A31E6AF; Identität vor/nach nativer Prüfung gleich.
+Jetzt neun exakt gebundene Pfade: acht vorhandene Steuer-/Prüf-/Berichtspfade plus patch-v21.js für vier eng begrenzte Bogen-A-Erkennungskorrekturen. Fragen/Lösungen bleiben bytegleich; noch kein Gesamtprodukt-PASS. Vor weiteren Pfaden erneut exakt binden.
+W02-Nutzerabnahme vollständig erhalten: Lernen, schriftlich/mündlich, Karten, beide Fehlertrainings, Dashboard/Statistik, Termine, Persistenz, Reload/Storage-Fehler, Tastatur/Fokus, Desktop/Mobil. Viewport ist kein physisches Gerät.
+Bereits persönlich bestätigte Folge W02–W08 bei erfüllten kanonischen Voraussetzungen automatisch weiterführen; keine neuen Tasks.
+Kein Verwaltungscommit nur für Bindung. Vor sinnvoller fachlicher Commit/Push-Abnahme volle Original-Kontinuität, Original-Preflight/Python3/inneres1800s, Diff und exakter Schutz auf endgültigen Bytes; GitHub direkt bestätigen.
+Historische Plattformablehnung bleibt ungeklärt. Jeder konkrete Schritt regulär plattformgeprüft; Ablehnung oder unklare Teilbindung STOPP, kein alternativer Ausführungsweg oder Rechtewechsel.
+Kein dritter W01-Naturlauf, keine neutrale/Ersatzprobe. Alle alten positiven/negativen Ergebnisse und V2-Grenzen erhalten.
+Audit/v27.37n STOPP / NOT VERIFIED, Audit nur in place hashen/unkopiert/unübertragen/unversioniert; Supabase NICHT LIVE.
+Keine Produktion/Stores, echten Daten/Schlüssel/Nachrichten/paid Dienste/System-/Rechte-/Sicherheitsänderung. Ein WORK-Ausführer; keine neuen Chats/Agenten.
+
+Vollständiger Bindungs-Prüfabschluss: full-gates-01/result-readback.json SHA256 6ae6bc18695a113e5e8e37c6471386b498e687bcbce331f4e1e094c3f38fcf96. Original-Kontinuität Exit0/464.4487155000679s; Original-Preflight Exit0/3546.331169300014s, Nachschutz/Diff Exit0; vollständige Nachlesung. Gilt nur für den vorherigen Sechspfadstand.
+Direkte W02-Fortsetzung: persönliche Nachricht 01a16a95-d84b-7e81-ad90-150229e4fb8d und bestehender bedingter Schritt4-Auftrag. Kleine exakt gebundene Teilmanifeste; keine Routinezwischenfreigabe.
+Aktueller neuer Prüfer: ausschließlich isolierte lokale W02-Funktionstests; neue private Belege product-acceptance-v1. Kein weiterer natürlicher W01-Dauerversuch/Neutraltest; physische Geräte nicht durch Viewports ersetzen.
+Bestandsaufnahme run-02 tatsächlich Exit0:16 Desktop-/Mobil-Viewportansichten, keine unbehandelten Browserfehler oder externen Anfragen; Ergebnis SHA256 4e15fffc2eb88c86bb138b00bdbd53c10d6e2417efc7b608e382848fb120d2ef. run-01 mit Prüferfehler unverändert erhalten.
+Nächster gebundener Teilschritt: konkrete lokale synthetische Bedien-/Speicherfälle. Schriftliche Vollstruktur wird ausschließlich manuell beendet; keine Uhrenmanipulation, keine natürliche Timeoutabnahme, kein neuer W01-Dauerversuch. Vollständige W02-Abnahme und neue volle Pflichtgates auf endgültigen Bytes bleiben offen.
+Tatsächlicher zusätzlicher Produktbefund run-05:15 Antworten sicher bewertet, aber drei Prüferblöcke nicht erkannt. Quelle: aktueller lokaler Bogen A hat Kennung oral_sheet_a_v2340; vier alte Routing-/Reset-/Review-Prädikate akzeptierten nur oral_sheet_a_v2320. Vier genaue Codeersetzungen akzeptieren beide bereits vorhandenen A-Kennungen. Alle Fragen/Lösungen und sämtliche übrigen Programmbytes unverändert; strenger fehlgeschlagener15-Fragen-/Dreierblocktest bleibt erhalten und wird nach Korrektur erneut ausgeführt.
+Aktueller tatsächlicher W02-Bediennachweis run-07:40Fälle/32Ansichten nativExit0; drei Prüferblöcke nach Bogen-A-Korrektur und beide Fehlertrainings PASS. Nachlesung SHA2567ce4d8fc06f1a793a8c5dad268d192b4e8c04f20e5689585b6d84099aef653eb. Verbindliche Endfassung steht vor den vollständigen Pflichtgates; kein Paketabschluss/Commit/Push/Launch-PASS vor deren tatsächlichem Bestehen.
+
+Persönlich bestätigte getrennte Node-Neubindung: node-binding-20261026-v1. Bestehender Laufzeitsatz 3ac2f584daaa400b7c1e99d4b0acb5f0d9fef5e472fe3009a578407908587747 bleibt unveränderte historische Quelle.
+Node-Kandidat: 93713712 Bytes / 6d75619e8720161bb0e8c5617bcf90384b48a920b9182ec6e9d52f11f83a8e84; Version 24.22.1; native Valid/OpenAI OpCo, LLC/Thumbprint 900AE29FF12CB2F3DDAB9943CD63371065432B73. Weitere Hash-/Versions-/Signaturwechsel werden abgewiesen.
+Neue direkt vollständig gelesene Node-Umsetzungsquelle: 01a17bec-5303-7b20-b230-db8302b58afb / msg_05f1b5a72e54e49e016ae03c9c780881919dc9531d3ef9b607 / 01a17bed-7b3e-7c21-a3ee-22dec0a8c189. Tatsächliche Antwort: Ja, diesen Node-Vorschlag an WORK zur Umsetzung und vollständigen Prüfung übergeben.
+Genehmigter Node-Vorschlag SHA256 060783d9b2acca11c4c60684d13ab5775b80a64c0c8615a187e00a6544b5c611; endgültiger neuer Laufzeitsatz SHA256 c63d9980fd30f8d89e9b612074aaae4891facf09b92f6b8a93b3a25b10eabe1a; neue Quellenquittung SHA256 71e19045f738deb2d8698e8f8ee541922e3ac19224ef17564e3ddbc6c8e84643.
+Die Zustimmung kennt die ungeklärte Austauschursache/-zeit und unbelegte Gleichheit zum alten Programmcode. Keine stärkere Herkunfts- oder Semantikbehauptung. Neu gebundenes Kandidatenmanifest: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W02\runtime-binding-v1\execution-v1\product-acceptance-v1\node-implementation-20261027-v1\candidate-manifest.json.
+Alte W01-/W02-/STOPP-/Endgatebelege bleiben unverändert. Derselbe 40-Fälle-W02-Prüfer muss später unter der neu bestätigten Laufzeit mit unveränderten Erwartungen bestehen; danach volle Originalpflichtgates auf endgültigen Bytes. Historische PASS bleiben datiert; keine zusätzliche Natur-/Neutralprobe.
+## Unveränderte Historie vor ACCAOUI_DEVELOPMENT_SEQUENCE_W02
+
+---
+
+# ACCAOUI – bestätigte automatische Entwicklungsfolge
 Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W01
 Paket: ACCAOUI_W01_ABSCHLUSS_W02_FORTSETZUNG_20261023_V1
 Status: W01_NATURAL_PROOF_ACCEPTED_CLOSURE_CHECKS_REQUIRED

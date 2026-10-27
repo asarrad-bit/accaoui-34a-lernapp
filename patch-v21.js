@@ -3567,7 +3567,7 @@ if (!window.ACCAOUI_V2321_ORAL_BLOCK_RESULT_PATCH) {
       return (
         window.ACCAOUI_V2317_ORAL_SIMULATION_MODE === "15" &&
         Array.isArray(oralExamQuestionsV220) &&
-        oralExamQuestionsV220.some(question => question && question.sheetId === "oral_sheet_a_v2320")
+        oralExamQuestionsV220.some(question => question && ["oral_sheet_a_v2320", "oral_sheet_a_v2340"].includes(question.sheetId))
       );
     } catch (error) {
       return false;
@@ -3830,7 +3830,7 @@ if (!window.ACCAOUI_V2321_ORAL_BLOCK_RESULT_PATCH) {
   window.startOralExamSessionV220 = function patchedStartOralExamSessionV2321(questions, title) {
     const isSheetA =
       Array.isArray(questions) &&
-      questions.some(question => question && question.sheetId === "oral_sheet_a_v2320");
+      questions.some(question => question && ["oral_sheet_a_v2320", "oral_sheet_a_v2340"].includes(question.sheetId));
 
     if (isSheetA) {
       resetOralRatingsV2321();
@@ -4123,7 +4123,7 @@ if (!window.ACCAOUI_V2322_ORAL_RESULT_POLISH_PATCH) {
         window.ACCAOUI_V2317_ORAL_SIMULATION_MODE === "15" &&
         typeof oralExamQuestionsV220 !== "undefined" &&
         Array.isArray(oralExamQuestionsV220) &&
-        oralExamQuestionsV220.some(question => question && question.sheetId === "oral_sheet_a_v2320")
+        oralExamQuestionsV220.some(question => question && ["oral_sheet_a_v2320", "oral_sheet_a_v2340"].includes(question.sheetId))
       ) {
         renderOralExamBlockFinishV2322();
         return;
@@ -4165,7 +4165,7 @@ if (!window.ACCAOUI_V2323_REVIEW_AND_TOPIC_STATS_PATCH) {
     try {
       if (Array.isArray(oralExamQuestionsV220)) {
         const sheetQuestions = oralExamQuestionsV220.filter(question => {
-          return question && question.sheetId === "oral_sheet_a_v2320";
+          return question && ["oral_sheet_a_v2320", "oral_sheet_a_v2340"].includes(question.sheetId);
         });
 
         if (sheetQuestions.length) return sheetQuestions;
