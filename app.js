@@ -2254,6 +2254,7 @@ function checkLearningAnswer() {
   }
 
   saveTopicResult(question.category, isCorrect);
+  recordGuidanceActivityV1("written", 1, isCorrect ? 1 : 0);
   markQuestionAsAnswered(question);
 
   if (isCorrect) {
@@ -4875,6 +4876,7 @@ function saveExamResult(result) {
   const nextHistory = [...history, result];
   writeStorage(STORAGE_KEYS.examHistory, nextHistory);
   examHistory = nextHistory;
+  if (Number.isInteger(result.correct) && Number.isInteger(result.wrong) && result.correct >= 0 && result.wrong >= 0) recordGuidanceActivityV1("written", result.correct + result.wrong, result.correct);
   return true;
 }
 
@@ -5538,11 +5540,13 @@ function saveFlashcardProgress(question, status) {
     lastStatus: status,
     knownCount: Number(oldEntry.knownCount || 0) + (status === "known" ? 1 : 0),
     unknownCount: Number(oldEntry.unknownCount || 0) + (status === "unknown" ? 1 : 0),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    review: learningGuidanceApiV1() ? learningGuidanceApiV1().nextReview(oldEntry, status) : undefined
   };
 
   flashcardProgressStore[key] = newEntry;
   saveFlashcardProgressStore();
+  recordGuidanceActivityV1("card", 1, 0);
 }
 
 function getFlashcardCategoryProgress(categoryName) {
@@ -6348,6 +6352,9 @@ function getNextLearningStepV2735B() {
     return buildDashboardResumeStepV2735B(sessionCandidates[0]);
   }
 
+  const dueCardsV1 = getDueFlashcardQuestionsV1();
+  if (dueCardsV1.length > 0) return { title: "Fällige Lernkarten wiederholen", description: dueCardsV1.length + " selbst bewertete Karte(n) sind zur aktiven Wiederholung fällig.", actionLabel: "Fällige Karten starten", actionHandler: "startDueFlashcardsV1()" };
+
   let mistakeCount = 0;
 
   try {
@@ -6456,6 +6463,7 @@ function renderDashboardNextLearningStepCardV2735B() {
   `;
 
     heroGrid.parentNode.insertBefore(card, heroGrid);
+    renderLearningGuidanceV1();
   } catch (error) {
     console.error("Fehler beim Ermitteln des nächsten Lernschritts:", error);
   }
@@ -6649,3 +6657,138 @@ function initDashboardExamDatesV1() {
   refresh();
 }
 // END ACCAOUI_V1_DASHBOARD_EXAM_DATES product
+
+/* BEGIN ACCAOUI_W04_LEARNING_GUIDANCE_V1 */
+function learningGuidanceApiV1(){return window.ACCAOUI_LEARNING_GUIDANCE_V1||null;}
+function recordGuidanceActivityV1(kind,amount,correct){
+  const api=learningGuidanceApiV1();if(!api)return;
+  try{if(!api.activity(localStorage,kind,amount,correct).ok)showSmallNotice("Die Tagesübersicht konnte nicht gespeichert werden. Ihre fachliche Bewertung wird dadurch nicht geändert.");}
+  catch(_error){showSmallNotice("Die Tagesübersicht ist momentan nicht verfügbar.");}
+}
+function getDueFlashcardQuestionsV1(){
+  const api=learningGuidanceApiV1();if(!api||!Array.isArray(allQuestions))return [];
+  try{
+    loadFlashcardProgressStore();
+    const due=new Set(api.dueKeys(flashcardProgressStore,allQuestions.map(getFlashcardProgressKey))),seen=new Set();
+    return allQuestions.filter(q=>{const key=getFlashcardProgressKey(q);if(!due.has(key)||seen.has(key))return false;seen.add(key);return true;});
+  }catch(_error){return [];}
+}
+function startDueFlashcardsV1(){
+  const questions=getDueFlashcardQuestionsV1();
+  if(!questions.length){showSmallNotice("Zurzeit sind keine bewerteten Lernkarten fällig.");return;}
+  startFlashcardSession(questions,"Fällige Lernkarten · aktiv erinnern");
+}
+function runGuidanceNextStepV1(){
+  const step=getNextLearningStepV2735B();
+  const actions={
+    "resumeActiveExamSession()":()=>resumeActiveExamSession(),
+    "resumeActiveLearningSession()":()=>resumeActiveLearningSession(),
+    "resumeActiveFlashcardSession()":()=>resumeActiveFlashcardSession(),
+    "startDueFlashcardsV1()":()=>startDueFlashcardsV1(),
+    "startAllTopicMistakeTraining()":()=>startAllTopicMistakeTraining(),
+    "openWeakestCategoryFromDashboardV2735B()":()=>openWeakestCategoryFromDashboardV2735B(),
+    "startFlashcardSessionFromUnknownV2735B()":()=>startFlashcardSessionFromUnknownV2735B(),
+    "showExamStartPage()":()=>showExamStartPage()
+  };
+  if(step&&actions[step.actionHandler])actions[step.actionHandler]();else showSmallNotice("Bitte wählen Sie Ihren Lernbereich direkt im Menü.");
+}
+function renderLearningGuidanceV1(){
+  const api=learningGuidanceApiV1(),hero=document.querySelector(".hero-grid");
+  if(!api||!hero||!Array.isArray(allQuestions)||!allQuestions.length)return;
+  const existing=document.getElementById("learningGuidanceV1");
+  if(existing){if(existing.refreshPlanV1)existing.refreshPlanV1(true);return;}
+  const card=document.createElement("section");
+  card.id="learningGuidanceV1";card.setAttribute("aria-labelledby","learningGuidanceHeadingV1");
+  card.innerHTML=`
+    <h2 id="learningGuidanceHeadingV1">Mein Lernplan</h2>
+    <p>Kurze Einheiten mit aktiver Abfrage: Antworten Sie zuerst aus dem Gedächtnis und decken Sie die Lösung danach auf.</p>
+    <p id="guidancePlanStatusV1" aria-live="polite"></p><p id="guidancePlanErrorV1" role="alert"></p>
+    <div id="guidanceReminderV1" role="status"></div><ol id="guidanceBlocksV1"></ol>
+    <div class="guidance-actions"><button id="guidancePauseV1" type="button" class="next-btn secondary-btn">Heute pausieren</button><button id="guidanceReplanV1" type="button" class="next-btn secondary-btn">Plan neu berechnen</button></div>
+    <p id="guidanceTodayV1"></p><div id="guidanceEvidenceV1" class="guidance-evidence"></div>
+    <p class="guidance-boundary">„Gewusst“ bei Lernkarten ist Ihre Selbsteinschätzung. Richtig beantwortete Übungsfragen werden gesondert gezählt. Daraus berechnen wir keine Prüfungsreife und keine Bestehensgarantie.</p>
+    <details id="guidanceSettingsV1"><summary>Lernzeit und Erinnerung einstellen</summary>
+      <form id="guidanceFormV1" novalidate><fieldset><legend>Nur in diesem Browser gespeichert</legend>
+        <label for="guidanceMinutesV1">Reine Lernzeit pro Tag (10–120 Minuten)</label><input id="guidanceMinutesV1" type="number" min="10" max="120" step="1" inputmode="numeric" required>
+        <label class="guidance-check"><input id="guidanceReminderEnabledV1" type="checkbox"> In-App-Erinnerung anzeigen</label>
+        <label for="guidanceReminderTimeV1">Erinnerungszeit auf diesem Gerät</label><input id="guidanceReminderTimeV1" type="time" required>
+        <p>Die Erinnerung erscheint beim geöffneten Dashboard ab dieser Uhrzeit. Es werden keine E-Mails, Push-Nachrichten oder Meldungen bei geschlossener App versendet.</p>
+        <button id="guidanceSaveV1" type="submit" class="next-btn">Einstellungen speichern</button>
+      </fieldset></form>
+      <button id="guidanceResetV1" type="button" class="next-btn secondary-btn">Nur den Lernplan zurücksetzen</button>
+      <p>Dies entfernt nur Lernzeit, In-App-Erinnerung, Planpause und die neuen Tageszähler. Lernkartenbewertungen, Antworten, Prüfungsergebnisse und Termine bleiben erhalten.</p>
+    </details>`;
+  hero.insertAdjacentElement("beforebegin",card);
+  const find=id=>card.querySelector("#"+id),minutes=find("guidanceMinutesV1"),reminders=find("guidanceReminderEnabledV1"),time=find("guidanceReminderTimeV1");
+  const error=find("guidancePlanErrorV1"),status=find("guidancePlanStatusV1");
+  let dirty=false,savedPreferences=null,timer=null,disposed=false,observer=null;
+  function fail(message){error.textContent=message;}
+  function read(){const r=api.readState(localStorage);if(!r.ok)fail("Der gespeicherte Lernplan ist ungültig oder nicht lesbar. Er wurde nicht überschrieben. Sie können nur den Lernplan zurücksetzen.");return r;}
+  function localDate(key){try{return localStorage.getItem(key);}catch(_error){return null;}}
+  function refresh(preserveDraft=true){
+    if(disposed)return;
+    if(timer!==null)clearTimeout(timer);
+    if(!card.isConnected){dispose();return;}
+    timer=setTimeout(()=>refresh(true),60000);
+    const loaded=read(),state=loaded.ok?loaded.state:api.defaults();
+    const plan=api.buildPlan(state.preferences,[localDate(EXAM_DATE_KEYS_V1.written),localDate(EXAM_DATE_KEYS_V1.oral)]);
+    if(loaded.ok&&(!preserveDraft||!dirty)){
+      minutes.value=String(state.preferences.minutes);reminders.checked=state.preferences.reminders;time.value=state.preferences.reminderTime;
+      savedPreferences=JSON.stringify(state.preferences);dirty=false;
+    }
+    time.disabled=!reminders.checked;
+    const due=getDueFlashcardQuestionsV1(),next=getNextLearningStepV2735B();
+    const deadline=plan.days===null?"Kein kommender Prüfungstermin eingetragen.":plan.days===0?"Prüfungstermin heute.":"Nächster Prüfungstermin in "+plan.days+" Tag(en).";
+    status.textContent=plan.paused?"Ihr Plan ruht heute. Fälligkeiten bleiben erhalten; Sie können jederzeit manuell lernen.":plan.studyMinutes+" Minuten Lernzeit"+(plan.breakMinutes?" + "+plan.breakMinutes+" Minuten Pause":"")+". "+deadline+" "+due.length+" bewertete Karte(n) fällig.";
+    if(!plan.paused&&plan.reviewPriority)status.textContent+=" Kurz vor dem Termin: bekannte Inhalte aktiv wiederholen; keine zusätzlichen Pflichtminuten.";
+    const list=find("guidanceBlocksV1");list.replaceChildren();
+    for(const block of plan.blocks){
+      const li=document.createElement("li"),heading=document.createElement("strong"),description=document.createElement("p");
+      heading.textContent=block.minutes+" Minuten · "+(block.kind==="break"?"Pause":block.kind==="next"?next.title:"Aktiv erinnern");
+      description.textContent=block.kind==="break"?"Aufstehen, kurz bewegen und danach mit dem nächsten Schritt weitermachen.":block.kind==="next"?next.description:"Lernkarten zuerst ohne Lösung beantworten. Danach ehrlich mit „Gewusst“ oder „Wiederholen“ bewerten.";
+      li.append(heading,description);
+      if(block.kind!=="break"){
+        const button=document.createElement("button");button.type="button";button.className="next-btn";button.textContent=block.kind==="next"?next.actionLabel:"Lernkarten auswählen";
+        button.addEventListener("click",()=>{if(block.kind==="next")runGuidanceNextStepV1();else showFlashcardsPage();});li.appendChild(button);
+      }
+      list.appendChild(li);
+    }
+    find("guidancePauseV1").textContent=plan.paused?"Plan fortsetzen":"Heute pausieren";
+    const today=state.daily.day===plan.today?state.daily:{answers:0,correct:0,cardRatings:0};
+    find("guidanceTodayV1").textContent="Heute seit Aktivierung der Tagesübersicht: "+today.answers+" geprüfte Antwort(en), davon "+today.correct+" richtig · "+today.cardRatings+" Lernkartenbewertung(en). Reine Minutenplanung, keine gemessene Lernzeit.";
+    const evidence=find("guidanceEvidenceV1");evidence.replaceChildren();
+    let checked=0,correct=0,known=0,unknown=0;
+    try{loadTopicStats();Object.values(topicStats).forEach(x=>{if(x&&Number.isInteger(x.answered)&&Number.isInteger(x.correct)&&x.answered>=0&&x.correct>=0&&x.correct<=x.answered){checked+=x.answered;correct+=x.correct;}});}catch(_error){fail("Die Übungsstatistik konnte nicht vollständig gelesen werden.");}
+    try{loadFlashcardProgressStore();for(const key of new Set(allQuestions.map(getFlashcardProgressKey))){const x=flashcardProgressStore[key];if(x?.lastStatus==="known")known++;if(x?.lastStatus==="unknown")unknown++;}}catch(_error){fail("Die Kartenbewertungen konnten nicht vollständig gelesen werden.");}
+    for(const text of ["Geprüfte Übungsantworten gesamt: "+checked+" · davon richtig: "+correct,"Lernkarten-Selbsteinschätzung: "+known+" gewusst · "+unknown+" wiederholen"]){const p=document.createElement("p");p.textContent=text;evidence.appendChild(p);}
+    find("guidanceReminderV1").textContent=plan.reminder&&today.answers+today.cardRatings===0?"Ihre In-App-Erinnerung: Heute ist noch keine Aktivität in der Tagesübersicht erfasst. Starten Sie eine kurze Einheit, wenn es für Sie passt.":"";
+  }
+  find("guidanceFormV1").addEventListener("input",()=>{dirty=true;time.disabled=!reminders.checked;});
+  find("guidanceFormV1").addEventListener("submit",event=>{
+    event.preventDefault();const loaded=read();if(!loaded.ok)return;
+    const current=JSON.stringify(loaded.state.preferences);
+    if(savedPreferences!==null&&savedPreferences!==current){savedPreferences=current;fail("Die Einstellungen wurden inzwischen geändert. Ihre Eingabe bleibt erhalten. Bitte prüfen und zum Übernehmen erneut speichern.");refresh(true);return;}
+    const settings={minutes:Number(minutes.value),pausedUntil:loaded.state.preferences.pausedUntil,reminders:reminders.checked,reminderTime:time.value};
+    if(!api.validPreferences(settings)){fail("Bitte eine ganze Lernzeit von 10 bis 120 Minuten und eine gültige Uhrzeit eingeben.");minutes.setAttribute("aria-invalid","true");return;}
+    if(!api.savePreferences(localStorage,settings).ok){fail("Die Einstellungen konnten nicht sicher gespeichert werden. Ihre Eingabe bleibt erhalten.");return;}
+    minutes.removeAttribute("aria-invalid");fail("");dirty=false;refresh(false);
+  });
+  find("guidancePauseV1").addEventListener("click",()=>{
+    const loaded=read();if(!loaded.ok)return;
+    const today=api.day(),p=loaded.state.preferences;
+    if(!api.savePreferences(localStorage,{...p,pausedUntil:p.pausedUntil&&p.pausedUntil>=today?null:today}).ok){fail("Die Planpause konnte nicht sicher gespeichert werden.");return;}
+    fail("");refresh(true);
+  });
+  find("guidanceReplanV1").addEventListener("click",()=>{fail("");refresh(true);});
+  find("guidanceResetV1").addEventListener("click",()=>{if(!api.reset(localStorage).ok){fail("Der Lernplan konnte nicht sicher zurückgesetzt werden.");return;}dirty=false;fail("");refresh(false);});
+  const onVisibility=()=>{if(document.visibilityState!=="hidden")refresh(true);};
+  const onStorage=event=>{if(event.key===null||[api.KEY,FLASHCARD_PROGRESS_KEY,STORAGE_KEYS.topicStats,...Object.values(EXAM_DATE_KEYS_V1)].includes(event.key))refresh(true);};
+  function dispose(){if(disposed)return;disposed=true;if(timer!==null)clearTimeout(timer);window.removeEventListener("focus",onVisibility);window.removeEventListener("storage",onStorage);document.removeEventListener("visibilitychange",onVisibility);if(observer)observer.disconnect();}
+  window.addEventListener("focus",onVisibility);window.addEventListener("storage",onStorage);document.addEventListener("visibilitychange",onVisibility);
+  if(typeof MutationObserver==="function"){observer=new MutationObserver(()=>{if(!card.isConnected)dispose();});observer.observe(hero.parentNode,{childList:true});}
+  card.refreshPlanV1=refresh;refresh(false);
+}
+window.getDueFlashcardQuestionsV1=getDueFlashcardQuestionsV1;
+window.startDueFlashcardsV1=startDueFlashcardsV1;
+window.renderLearningGuidanceV1=renderLearningGuidanceV1;
+/* END ACCAOUI_W04_LEARNING_GUIDANCE_V1 */

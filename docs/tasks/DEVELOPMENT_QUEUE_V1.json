@@ -15,7 +15,7 @@
     "threadId": "01a11cc6-ee66-7890-9520-7fd190f6e687",
     "hostId": "local"
   },
-  "current": "W02",
+  "current": "W04",
   "order": [
     "W00",
     "W01",
@@ -60,9 +60,13 @@
       "depends": [
         "W01"
       ],
-      "status": "ACTIVE",
+      "status": "PASS",
       "attempts": 1,
-      "result": null
+      "result": {
+        "actualMandatoryChecksPass": true,
+        "reportSHA256": "5b7439530023b78aae3a8f8732315e329f55886eb19e1ef3b82556092b373b46",
+        "commit": "2cb33ce491ee26db4b9767901368156bbbadad76"
+      }
     },
     {
       "id": "W03",
@@ -70,9 +74,13 @@
       "depends": [
         "W02"
       ],
-      "status": "PENDING",
+      "status": "BLOCKED_EXTERNAL",
       "attempts": 0,
-      "result": null
+      "result": {
+        "actualMandatoryChecksPass": false,
+        "reportSHA256": "cc348640e19d91a4233a18cd40c8fa3e7a1f4e69329d49a9f24124f2a10af16d",
+        "reason": "ISOLATED_LOCAL_DB_AUTH_ENVIRONMENT_NOT_CONFIRMED"
+      }
     },
     {
       "id": "W04",
@@ -80,8 +88,8 @@
       "depends": [
         "W02"
       ],
-      "status": "PENDING",
-      "attempts": 0,
+      "status": "ACTIVE",
+      "attempts": 1,
       "result": null
     },
     {
@@ -144,8 +152,8 @@
   "liveSupabaseGrant": false,
   "realParticipantDataGrant": false,
   "active": {
-    "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W02",
-    "baseline": "d7d1151830951188854ad7aa013448251a2a9bbe",
+    "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W04",
+    "baseline": "2cb33ce491ee26db4b9767901368156bbbadad76",
     "paths": [
       "docs/tasks/CURRENT_TASK.md",
       "docs/PROJECT_STATE_CURRENT.md",
@@ -153,19 +161,46 @@
       "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
       "docs/tasks/DEVELOPMENT_QUEUE_V1.json",
       "tools/check-development-queue-v1.py",
-      "tools/run-w02-user-flows-v1.js",
-      "docs/W02_USER_FLOW_ACCEPTANCE_REPORT.md",
-      "patch-v21.js"
+      "app.js",
+      "index.html",
+      "style.css",
+      "data/learning-guidance-v1.js",
+      "tools/run-w04-learning-guidance-v1.js",
+      "docs/LEARNING_STRATEGY_MODULE.md",
+      "docs/W04_LEARNING_GUIDANCE_ACCEPTANCE_REPORT.md"
     ],
-    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W02\\runtime-binding-v1\\execution-v1",
+    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W04\\execution-20261027-v1",
     "attempt": 1,
-    "correctionRounds": 4,
+    "correctionRounds": 2,
     "fullFeatureScopeRetained": true,
-    "diagnosticPurpose": "Canonical W02 user-flow acceptance. Repair four sheet-A routing predicates to recognize current existing oral_sheet_a_v2340 alongside historical oral_sheet_a_v2320; retain every question/solution byte and existing test expectations. Full user-flow cases and final mandatory gates remain required.",
-    "bindingGatesReportSHA256": "6ae6bc18695a113e5e8e37c6471386b498e687bcbce331f4e1e094c3f38fcf96",
-    "acceptanceRevision": 5,
-    "functionalReadbackSHA256": "7ce4d8fc06f1a793a8c5dad268d192b4e8c04f20e5689585b6d84099aef653eb",
-    "finalGatesPending": true
+    "diagnosticPurpose": "Add one genuine native manual written-exam completion case per viewport to verify the new daily counter excludes unanswered questions, preserves self-rating separation and does not duplicate on reload. Preserve all 26 rules and all prior30 browser assertions. Record dated fully read F3 actual pass while retaining all failed runs; then require a complete26+32 run and unchanged full original final gates on these final bytes.",
+    "phase": "FINAL_FUNCTIONAL_COVERAGE_NEW_RUN_AND_FULL_FINAL_GATES_PENDING",
+    "finalGatesPending": true,
+    "functionalAcceptancePending": true,
+    "functionalFailureReadback": {
+      "path": "C:/Users/asarr/.codex/visualizations/2026/10/08/01a11cc6-ee66-7890-9520-7fd190f6e687/development-sequence-20261021-v1/W04/execution-20261027-v1/product-02/functional-01/result-readback.json",
+      "bytes": 18861,
+      "sha256": "650a4fb260a2e6fc81261fc1aac977df79600791e90e7b78b5f9882d67a0329b"
+    },
+    "functionalFailureReadbacks": [
+      {
+        "path": "C:/Users/asarr/.codex/visualizations/2026/10/08/01a11cc6-ee66-7890-9520-7fd190f6e687/development-sequence-20261021-v1/W04/execution-20261027-v1/product-01/functional-01/result-readback.json",
+        "bytes": 9048,
+        "sha256": "f1c9c8528a626205c714c5265bde1b7b5da4591f263730030cd95b5cf3620434"
+      },
+      {
+        "path": "C:/Users/asarr/.codex/visualizations/2026/10/08/01a11cc6-ee66-7890-9520-7fd190f6e687/development-sequence-20261021-v1/W04/execution-20261027-v1/product-02/functional-01/result-readback.json",
+        "bytes": 18861,
+        "sha256": "650a4fb260a2e6fc81261fc1aac977df79600791e90e7b78b5f9882d67a0329b"
+      }
+    ],
+    "datedFunctionalReadback": {
+      "path": "C:/Users/asarr/.codex/visualizations/2026/10/08/01a11cc6-ee66-7890-9520-7fd190f6e687/development-sequence-20261021-v1/W04/execution-20261027-v1/product-03/functional-01/result-readback.json",
+      "bytes": 31600,
+      "sha256": "67260ffcebdaa9951c11f804503153105c5b68fa11f46c910ffdc25cd83c9af3"
+    },
+    "functionalExpectedPureCases": 26,
+    "functionalExpectedBrowserCases": 32
   },
   "protected": {
     "auditPath": "docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md",
@@ -181,7 +216,7 @@
     "protectionOrPlatformError": "STOPP"
   },
   "checkpointsAreExternal": true,
-  "lease": "W02-RUNTIME-BINDING-20261024-V1",
+  "lease": "W04-LEARNING-GUIDANCE-20261027-V1",
   "workAuthorityV2": {
     "package": "ACCAOUI_ARBEITSFREIGABE_W00_W08_20261021_V2",
     "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
@@ -280,5 +315,24 @@
       "proposalSHA256": "060783d9b2acca11c4c60684d13ab5775b80a64c0c8615a187e00a6544b5c611"
     },
     "status": "CONFIRMED_EXECUTION_AUTHORITY"
+  },
+  "w02CompletedPredecessor": {
+    "kind": "W02_COMPLETED_PREDECESSOR_V1",
+    "reportPath": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W02\\runtime-binding-v1\\execution-v1\\product-acceptance-v1\\node-implementation-20261027-v1\\publish-01\\result-readback.json",
+    "reportBytes": 10326,
+    "reportSHA256": "5b7439530023b78aae3a8f8732315e329f55886eb19e1ef3b82556092b373b46",
+    "commit": "2cb33ce491ee26db4b9767901368156bbbadad76",
+    "parent": "d7d1151830951188854ad7aa013448251a2a9bbe",
+    "newW01NaturalRuns": 0,
+    "fullFeatureLaunch": false
+  },
+  "w03EnvironmentReadiness": {
+    "kind": "W03_EXTERNAL_ENVIRONMENT_PREREQUISITE_V1",
+    "reportPath": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\environment-readiness-20261027-v1\\result-readback.json",
+    "reportBytes": 864,
+    "reportSHA256": "cc348640e19d91a4233a18cd40c8fa3e7a1f4e69329d49a9f24124f2a10af16d",
+    "reason": "ISOLATED_LOCAL_DB_AUTH_ENVIRONMENT_NOT_CONFIRMED",
+    "questionAlreadyAsked": true,
+    "answerReceived": false
   }
 }

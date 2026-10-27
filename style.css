@@ -9529,3 +9529,28 @@ body .main-content .topic-stats-list > .topic-stat-row .topic-neutral {
   #examDatesDashboardV1 .exam-date-actions > button { flex: 1 1 130px; }
 }
 /* END ACCAOUI_V1_DASHBOARD_EXAM_DATES styles */
+
+/* W04 local learning guidance */
+#learningGuidanceV1{margin:24px 0;padding:24px;border:1px solid #d8dee8;border-radius:18px;background:#fff;color:#172338;min-width:0}
+#learningGuidanceV1 h2{margin:0 0 12px}
+#learningGuidanceV1 p{line-height:1.55;overflow-wrap:anywhere}
+#guidanceBlocksV1{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px;list-style-position:inside;padding:0}
+#guidanceBlocksV1 li{list-style:none;padding:16px;border:1px solid #d8dee8;border-radius:12px;min-width:0}
+#learningGuidanceV1 button{white-space:normal;overflow-wrap:anywhere;max-width:100%;min-height:44px}
+#learningGuidanceV1 .guidance-actions{display:flex;flex-wrap:wrap;gap:12px}
+#learningGuidanceV1 .guidance-evidence{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+#learningGuidanceV1 .guidance-evidence p{padding:12px;border-left:4px solid #315d93;background:#f1f5fa}
+#learningGuidanceV1 .guidance-boundary{font-size:.94rem;color:#3c4c63}
+#guidancePlanErrorV1{color:#9b1c24;font-weight:600}
+#guidanceReminderV1:not(:empty){padding:14px;background:#fff2cf;color:#42300b;border-radius:10px}
+#learningGuidanceV1 summary{cursor:pointer;font-weight:600;padding:14px 0;min-height:44px}
+#guidanceFormV1 fieldset{display:grid;gap:10px;padding:16px;border:1px solid #d8dee8;border-radius:12px;margin:0 0 16px;min-width:0}
+#guidanceFormV1 input[type=number],#guidanceFormV1 input[type=time]{box-sizing:border-box;max-width:220px;width:100%;padding:10px;font:inherit;border:1px solid #7b8799;border-radius:7px;min-height:44px;color:#172338;background:#fff}
+#guidanceFormV1 .guidance-check{display:flex;align-items:center;gap:10px}
+#guidanceFormV1 input[type=checkbox]{width:22px;height:22px;flex:0 0 22px}
+#learningGuidanceV1 :focus-visible{outline:3px solid #0b62c2;outline-offset:3px}
+@media(max-width:600px){#learningGuidanceV1{padding:16px}#learningGuidanceV1 .guidance-actions button{width:100%}}
+
+/* W04 native focus/scroll clearance above the fixed mobile navigation. */
+html:has(#learningGuidanceV1){scroll-behavior:auto;scroll-padding-block:100px}
+#learningGuidanceV1 :is(button,input,summary){scroll-margin-block:100px}

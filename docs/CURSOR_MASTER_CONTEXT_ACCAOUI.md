@@ -1,4 +1,39 @@
 # ACCAOUI – bestätigte automatische Entwicklungsfolge
+
+Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W04
+
+Status: W04_FINAL_FUNCTIONAL_COVERAGE_NEW_RUN_AND_FULL_FINAL_GATES_PENDING. Ein bestehender WORK-Ausführer; keine neue allgemeine Freigabe erforderlich.
+
+W02 tatsächlich abgeschlossen: normaler Fix/Test-Commit 2cb33ce491ee26db4b9767901368156bbbadad76, Parent d7d1151830951188854ad7aa013448251a2a9bbe; normal gepusht und GitHub main direkt bestätigt. Abschlussbericht10326/SHA2565b7439530023b78aae3a8f8732315e329f55886eb19e1ef3b82556092b373b46. Alle sechs vollständigen Originalpflichtgates auf endgültigen W02-Bytes sowie40Funktionsfälle tatsächlich bestanden; alter enger Geltungsbereich bleibt erhalten.
+
+W03 BLOCKED_EXTERNAL vor Produktstart: geeignete isolierte lokale DB/Auth-Umgebung noch nicht bestätigt. Private konkrete Voraussetzungsklärung864/SHA256cc348640e19d91a4233a18cd40c8fa3e7a1f4e69329d49a9f24124f2a10af16d, genau eine Frage steht aus. Kein W03-PASS/keine Fake-DB-Abnahme. W06 wartet auf W03; W08 auf alle erforderlichen Vorgänger.
+
+W04 wird als erster unabhängiger geeigneter Nachfolger mit erfüllter W02-Abhängigkeit regulär gebunden. Ziel vollständig erhalten: Tagesplan, Termin-/Fortschrittsanpassung, Pausen/Neuplanung, Active Recall, Spaced Repetition, Fälligkeit und verständliche Statistik; ausschließlich lokale In-App-Erinnerungen. Bestehende Fortsetzen-/Fehler-/Lernkartenfunktionen wiederverwenden; Selbsteinschätzung, richtig beantwortete Aufgaben und Prüfungsreife getrennt. W04-Produkt umgesetzt; datierte dritte Funktionsabnahme26+30 bestanden, noch keine endgültigen Originalpflichtgates/Paketpublikation. Exakte Produktpfade und neue Funktionsprüfungen sind vor dieser Mutation im privaten Produktmanifest gebunden.
+
+Persönlich bestätigte automatische Fortsetzung: 01a16a9b-efaf-7f62-856d-f167d1a1f788, tatsächliche Antwort W03–W08 automatisch durchführen, Quellenindex8692/SHA25650c0eebbe4e95605fe6e3f38dd39228b0a1a1ada630db45c3d42e13053e431b2. V2-Zweck: Add one genuine native manual written-exam completion case per viewport to verify the new daily counter excludes unanswered questions, preserves self-rating separation and does not duplicate on reload. Preserve all 26 rules and all prior30 browser assertions. Record dated fully read F3 actual pass while retaining all failed runs; then require a complete26+32 run and unchanged full original final gates on these final bytes.
+
+Basis: 2cb33ce491ee26db4b9767901368156bbbadad76
+Exaktes Produktteilmanifest: ["docs/tasks/CURRENT_TASK.md", "docs/PROJECT_STATE_CURRENT.md", "docs/PROJECT_MASTERLIST.md", "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md", "docs/tasks/DEVELOPMENT_QUEUE_V1.json", "tools/check-development-queue-v1.py", "app.js", "index.html", "style.css", "data/learning-guidance-v1.js", "tools/run-w04-learning-guidance-v1.js", "docs/LEARNING_STRATEGY_MODULE.md", "docs/W04_LEARNING_GUIDANCE_ACCEPTANCE_REPORT.md"]
+Privates Belegverzeichnis: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W04\execution-20261027-v1
+Lease: W04-LEARNING-GUIDANCE-20261027-V1
+
+Historisch abgeschlossen und unverändert erhalten: W01_SECOND_REAL_RUN_7200S_DECISION_V1; zwei tatsächliche alte Appstarts, keine weitere natürliche/Neutral-/Ersatzprobe. Alle W01-/W02-/STOPP-/Runtime-/Autoritätsbelege und ursprünglichen67+21Fallstatements bleiben erhalten. Node6d75619e8720161bb0e8c5617bcf90384b48a920b9182ec6e9d52f11f83a8e84 exakt separat persönlich bestätigt; keine automatische Istwertübernahme. Originalprüfer und inneres1800s-Budget unverändert.
+
+Audit/v27.37n STOPP / NOT VERIFIED, nur unverändert in place; Supabase NICHT LIVE. Keine Produktion/Stores/echten Daten/Schlüssel/Nachrichten/paid Dienste/System-/Rechte-/Sicherheitsänderung. Keine neuen Chats/Agenten/Paralleltechnik. Volle Originalpflichtgates, diff und exakter Schutz auf späteren endgültigen W04-Bytes vor sinnvoller Normalpublikation; kein Verwaltungscommit für diese Bindung.
+
+Produktumfang dieser Revision: ein lokaler Kalender-/Karten-/Tagesplanbaustein in data/learning-guidance-v1.js, dessen bestehende App-Anbindungen, responsive Bedienung und eigener Regel-/Browserprüfer. Datierter dritter Lauf26+30 tatsächlich bestanden. Diese ergänzte Revision benötigt genau26Regelfälle+32Browserfälle und alle vollen Originalpflichtgates auf endgültigen Bytes. Fragen-/Antwortbytes, Auth-/Liveflags, Timer-/Abschlusslogik und alle116Autoritätsfallstatements bleiben erhalten.
+
+Erhaltene tatsächliche Erstprüfung: 26Regelfälle und6Desktopfälle PASS, nächsterDesktopfall FAIL wegen nichtisolierter synthetischer aktiver Lerneinheit; Worker/NodeExit1 regulärgeschlossen. KeinMobil-/VollfunktionsPASS. Fachliche Resume-first-Regel bleibt; neuegezieltePrüffixturekorrektur verlangt vollständig neuen26+30Lauf. AlterRun/alleFehler/Screens unverändert erhalten, keinW01Natur-/Neutral-/Ersatzlauf.
+
+Erhaltene zweite Funktionsprüfung: alle26Regelfälle,15Desktop+12Mobilfälle PASS, weitererMobilfall FAIL beimnativenSpeichernnachZweittab; festerNavbereichüberlagertKlick/Scrollinstabilitätbelegt. Worker/NodeExit1 geschlossen,keinVollfunktionsPASS. GezielteTabaktivierungundaufneuenLernplanbegrenzterScrollabstand,keineForce-/DOM-Klicks,keineTimeout-/Assertabschwächung. BeidealtenRuns/Ströme/Screens/Belegeerhalten;vollständigerneuer26+30Laufnötig.
+
+Datierte dritte Funktionsabnahme08:12UTC: Worker/NodeExit0,26Regel+30Browserfälle PASS,15Desktop+15Mobilviewport/32Screens,keinePageerrors/externenAnfragen,VorNachschutzidentisch116Fälle. VollständigerNachlesebericht31600/SHA25667260ffcebdaa9951c11f804503153105c5b68fa11f46c910ffdc25cd83c9af3. ZweiScreensvisuell;lokaleMissingconfig404honestbelegt. KeineDB-/Geräte-/Natur-/Launchabnahme. Diese Revision ergänzt ausschließlich native manuellePrüfungsabschluss-Zählerabdeckung jeViewport/offeneFragen nichtalsbearbeitet zählen; keineProdukt-/Grading-/Timeränderung. AllealtenReportsundFehlererhalten. Neuer26+32Lauf+volleEndgatesaufdiesenBytes erforderlich.
+
+## Unveränderte Historie vor ACCAOUI_DEVELOPMENT_SEQUENCE_W04
+
+---
+
+# ACCAOUI – bestätigte automatische Entwicklungsfolge
 Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W02
 Paket: ACCAOUI_W02_USER_FLOW_ACCEPTANCE_V1
 Status: NODE_REBINDING_AUTHORIZED_PREPARED_FUNCTIONAL_AND_FINAL_GATES_PENDING

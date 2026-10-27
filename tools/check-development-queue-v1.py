@@ -272,6 +272,58 @@ def queue_cases():
             except (ValueError,KeyError,TypeError):rows.append("NodeRebind:"+name+":REJECTED")
             else:raise ValueError("unsafe Node rebinding accepted: "+name)
         require(len(rows)==67+1+len(node_invalid),"all original 67 plus separately counted Node cases")
+    if q.get("w02CompletedPredecessor") is not None:
+        syntax=ast.parse((ROOT/"tools/check-development-queue-v1.py").read_text(encoding="utf-8"))
+        outer=next(n for n in syntax.body if isinstance(n,ast.FunctionDef) and n.name=="successor_protection")
+        validator=next(n for n in outer.body if isinstance(n,ast.FunctionDef) and n.name=="validate_w04_predecessor")
+        namespace={"require":require}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W04-predecessor-contract>","exec"),namespace)
+        check_followup=namespace["validate_w04_predecessor"]
+        fixture_manifest={"w02CompletedPredecessor":copy.deepcopy(q["w02CompletedPredecessor"]),"w03EnvironmentReadiness":copy.deepcopy(q["w03EnvironmentReadiness"])}
+        completion=json.loads(Path(q["w02CompletedPredecessor"]["reportPath"]).read_bytes())
+        environment=json.loads(Path(q["w03EnvironmentReadiness"]["reportPath"]).read_bytes())
+        check_followup(q,fixture_manifest,completion,environment)
+        rows.append("W04:actual-W02-completion-and-honest-W03-prerequisite:PASS")
+        followup_invalid=[
+            ("missing-completion-binding",lambda a,m,c,e:a.pop("w02CompletedPredecessor")),
+            ("self-repinned-completion",lambda a,m,c,e:(a["w02CompletedPredecessor"].update(reportSHA256="0"*64),m["w02CompletedPredecessor"].update(reportSHA256="0"*64))),
+            ("wrong-base",lambda a,m,c,e:a["active"].update(baseline="0"*40)),
+            ("wrong-lease",lambda a,m,c,e:a.update(lease="OTHER")),
+            ("unconfirmed-continuation",lambda a,m,c,e:a["automaticContinuationW03W08"].update(messageId="unconfirmed")),
+            ("W02-still-active",lambda a,m,c,e:a["items"][2].update(status="ACTIVE")),
+            ("W02-false-pass",lambda a,m,c,e:a["items"][2]["result"].update(actualMandatoryChecksPass=False)),
+            ("W02-wrong-result",lambda a,m,c,e:a["items"][2]["result"].update(reportSHA256="0"*64)),
+            ("W02-incomplete-gates",lambda a,m,c,e:c.update(actualMandatoryChecksPass=False)),
+            ("W02-incomplete-readback",lambda a,m,c,e:c.update(currentAllChecksReadbackComplete=False)),
+            ("W02-native-failure",lambda a,m,c,e:c.update(nativeWorkerExitCode=1)),
+            ("W02-wrong-commit",lambda a,m,c,e:c["commit"].update(sha="0"*40)),
+            ("W02-wrong-parent",lambda a,m,c,e:c["commit"].update(parent="0"*40)),
+            ("W02-failed-push",lambda a,m,c,e:c["push"].update(nativeExitCode=1)),
+            ("W02-nonnormal-push",lambda a,m,c,e:c["push"].update(normalPush=False)),
+            ("W02-unconfirmed-GitHub",lambda a,m,c,e:c["directGitHubAfterPush"].update(directlyConfirmed=False)),
+            ("W02-wrong-GitHub",lambda a,m,c,e:c["directGitHubAfterPush"].update(sha="0"*40)),
+            ("new-natural-run",lambda a,m,c,e:c.update(newNaturalRuns=1)),
+            ("launch-claim",lambda a,m,c,e:c.update(fullFeatureLaunch=True)),
+            ("physical-device-claim",lambda a,m,c,e:c.update(physicalDeviceAcceptance=True)),
+            ("W03-false-PASS",lambda a,m,c,e:a["items"][3].update(status="PASS")),
+            ("W03-test-start-claim",lambda a,m,c,e:e.update(w03DbAuthTestPerformed=True)),
+            ("W03-unbound-prerequisite",lambda a,m,c,e:m["w03EnvironmentReadiness"].update(reportSHA256="0"*64)),
+            ("W03-assumed-answer",lambda a,m,c,e:(a["w03EnvironmentReadiness"].update(answerReceived=True),m["w03EnvironmentReadiness"].update(answerReceived=True))),
+            ("W04-false-completion",lambda a,m,c,e:a["items"][4].update(result={"actualMandatoryChecksPass":True}))]
+        for name,alter in followup_invalid:
+            a,m,c,e=copy.deepcopy((q,fixture_manifest,completion,environment));alter(a,m,c,e)
+            try:check_followup(a,m,c,e)
+            except (ValueError,KeyError,TypeError):rows.append("W04:"+name+":REJECTED")
+            else:raise ValueError("unsafe W04 predecessor transition accepted: "+name)
+        independent=copy.deepcopy(q)
+        independent["items"][4].update(status="PENDING",attempts=0,result=None)
+        independent["current"]=None
+        require(authorize_transition(independent,"W04",True)["attempts"]==1,"first independent eligible W04 after external W03 prerequisite")
+        rows.append("W04:first-independent-eligible-after-external-W03:PASS")
+        try:authorize_transition(independent,"W06",True)
+        except (ValueError,KeyError,TypeError):rows.append("W04:W06-still-needs-W03:REJECTED")
+        else:raise ValueError("W06 incorrectly bypassed W03")
+        require(len(rows)==88+3+len(followup_invalid),"all original 88 plus distinct W04 dependency and actual-completion cases")
     return rows
 
 def peel(rel,raw):
@@ -409,9 +461,27 @@ def successor_protection(q):
         require(predecessor["push"]["nativeExitCode"]==0 and predecessor["directGitHubAfterPush"]["directlyConfirmed"] is True and predecessor["directGitHubAfterPush"]["sha"]==commit,"actual W01 push and direct GitHub confirmation")
         require(predecessor["newNaturalRuns"]==0 and predecessor["fullFeatureLaunch"] is False,"historical narrow closure preserved")
         return True
+    def validate_w04_predecessor(queue,manifest,completion,environment):
+        expected={"kind":"W02_COMPLETED_PREDECESSOR_V1","reportPath":'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W02\\runtime-binding-v1\\execution-v1\\product-acceptance-v1\\node-implementation-20261027-v1\\publish-01\\result-readback.json',"reportBytes":10326,"reportSHA256":"5b7439530023b78aae3a8f8732315e329f55886eb19e1ef3b82556092b373b46","commit":"2cb33ce491ee26db4b9767901368156bbbadad76","parent":"d7d1151830951188854ad7aa013448251a2a9bbe","newW01NaturalRuns":0,"fullFeatureLaunch":False}
+        require(queue["w02CompletedPredecessor"]==manifest["w02CompletedPredecessor"]==expected,"independent exact actual W02 completion binding")
+        require(queue["current"]=="W04" and queue["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1" and queue["active"]["baseline"]==expected["commit"],"one bounded W04 transition from actual W02")
+        require(queue["automaticContinuationW03W08"]=={'threadId': '01a13bb5-4447-72c3-84d4-55246679ce0d', 'turnId': '01a16a95-d7a8-7881-8a28-c40454b0abae', 'messageId': '01a16a9b-efaf-7f62-856d-f167d1a1f788', 'questionItem': 'call_7e259f72514042d7beda0adf4886f8b2', 'answer': 'W03–W08 automatisch durchführen', 'sourceSHA256': '50c0eebbe4e95605fe6e3f38dd39228b0a1a1ada630db45c3d42e13053e431b2'},"exact personally confirmed W03-W08 source")
+        items={i["id"]:i for i in queue["items"]}
+        require(items["W02"]["status"]=="PASS" and items["W02"]["result"]=={"actualMandatoryChecksPass":True,"reportSHA256":expected["reportSHA256"],"commit":expected["commit"]},"W02 actual completion required, no pending predecessor")
+        require(completion["state"]=="W02_FIX_TEST_PACKAGE_COMMITTED_PUSHED_DIRECT_GITHUB_VERIFIED" and completion["actualMandatoryChecksPass"] is True and completion["currentAllChecksReadbackComplete"] is True and completion["nativeWorkerExitCode"]==0,"actual complete W02 gates and native readback")
+        require(completion["commit"]["sha"]==expected["commit"] and completion["commit"]["parent"]==expected["parent"] and completion["commit"]["nativeExitCode"]==0 and completion["commit"]["exactPathCount"]==9,"exact normal W02 fix/test commit")
+        require(completion["push"]["nativeExitCode"]==0 and completion["push"]["normalPush"] is True and completion["push"]["branch"]=="main","actual normal W02 push")
+        require(completion["directGitHubAfterPush"]["directlyConfirmed"] is True and completion["directGitHubAfterPush"]["sha"]==expected["commit"] and completion["directGitHubAfterPush"]["requestedRef"]=="main","actual directly connected GitHub publication")
+        require(completion["newNaturalRuns"]==0 and completion["fullFeatureLaunch"] is False and completion["physicalDeviceAcceptance"] is False,"no expanded natural/device/launch claim")
+        required_environment={'kind': 'W03_EXTERNAL_ENVIRONMENT_PREREQUISITE_V1', 'reportPath': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\environment-readiness-20261027-v1\\result-readback.json', 'reportBytes': 864, 'reportSHA256': 'cc348640e19d91a4233a18cd40c8fa3e7a1f4e69329d49a9f24124f2a10af16d', 'reason': 'ISOLATED_LOCAL_DB_AUTH_ENVIRONMENT_NOT_CONFIRMED', 'questionAlreadyAsked': True, 'answerReceived': False}
+        require(queue["w03EnvironmentReadiness"]==manifest["w03EnvironmentReadiness"]==required_environment,"independent exact W03 environment prerequisite report")
+        require(items["W03"]["status"]=="BLOCKED_EXTERNAL" and items["W03"]["attempts"]==0 and items["W03"]["result"]=={"actualMandatoryChecksPass":False,"reportSHA256":required_environment["reportSHA256"],"reason":required_environment["reason"]},"honest unstarted external W03 prerequisite; not PASS or technical STOPP")
+        require(environment["status"]=="W03_ENVIRONMENT_INPUT_REQUIRED_READ_ONLY_PREPARATION" and environment["base"]==expected["commit"] and environment["actualMandatoryChecksPass"] is False and environment["w03QueueActivated"] is False and environment["w03ProductMutationPerformed"] is False and environment["w03DbAuthTestPerformed"] is False,"no fake DB/Auth completion")
+        require(items["W04"]["status"]=="ACTIVE" and items["W04"]["depends"]==["W02"] and items["W04"]["attempts"]==1 and items["W04"]["result"] is None,"only independent first eligible W04 active")
+        return True
     active=validate_active_manifest(q)
     closure_evidence=Path(active["evidenceDirectory"])
-    if q["current"]=="W02":
+    if q["current"] in {"W02","W04"}:
         require(q.get("w01Closure") is not None and q.get("w02RuntimeBinding") is not None,"W02 requires actual predecessor and separate repair binding")
         closure_evidence=OUT.parent/"W01/closure-20261024-v1"
     second=q.get("secondRealRun")
@@ -426,6 +496,8 @@ def successor_protection(q):
             validate_second_run_authority(second,closure)
             if q["current"]=="W02":
                 require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1","one identified new W02 binding; no new W01 run")
+            elif q["current"]=="W04":
+                require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1","one identified independent W04; all W01 starts consumed")
             else:
                 require(q["current"]=="W01" and q["lease"]=="W01-CLOSURE-20261024-V1","one identified W01 closure; no new run")
             receipt=json.loads((closure_evidence/"authority-readback.json").read_bytes())
@@ -498,11 +570,16 @@ def successor_protection(q):
             for name,entry in m["runtimePins"].items():
                 path=Path(entry["path"]);raw=path.read_bytes()
                 require(regular(path) and len(raw)==entry["bytes"] and sha(raw)==entry["sha256"],"fresh unchanged closure runtime "+name)
-    if q["current"]=="W02":
+    if q["current"] in {"W02","W04"}:
         binding=q["w02RuntimeBinding"]
-        require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1" and active["baseline"]=="d7d1151830951188854ad7aa013448251a2a9bbe","exact W02 repair lease/base")
+        if q["current"]=="W02":
+            require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1" and active["baseline"]=="d7d1151830951188854ad7aa013448251a2a9bbe","exact W02 repair lease/base")
+        else:
+            require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1" and active["baseline"]=="2cb33ce491ee26db4b9767901368156bbbadad76","exact W04 lease and actual W02 completion base")
         directory=OUT.parent/"W02/runtime-binding-v1/execution-v1"
-        require(Path(binding["directory"]).resolve()==directory.resolve() and Path(active["evidenceDirectory"]).resolve()==directory.resolve(),"own fixed W02 evidence area")
+        require(Path(binding["directory"]).resolve()==directory.resolve(),"fixed preserved W02 runtime evidence area")
+        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/"W04/execution-20261027-v1"
+        require(Path(active["evidenceDirectory"]).resolve()==expected_active_directory.resolve(),"own exact active package evidence area")
         runtime_path=directory/"runtime-set.json"
         require(regular(runtime_path),"regular W02 runtime set")
         runtime_raw=runtime_path.read_bytes()
@@ -563,6 +640,18 @@ def successor_protection(q):
             after_node=Path(runtime["runtimePins"]["node"]["path"]).read_bytes()
             observations["node"].update(identity_node,afterBytes=len(after_node),afterSHA256=sha(after_node))
         validate_w02_identity(runtime["runtimePins"],observations,binding["executionAuthority"],predecessor,node_context)
+    if q["current"]=="W04":
+        completion_path=OUT.parent/"W02/runtime-binding-v1/execution-v1/product-acceptance-v1/node-implementation-20261027-v1/publish-01/result-readback.json"
+        environment_path=OUT.parent/"W03/environment-readiness-20261027-v1/result-readback.json"
+        require(regular(completion_path) and regular(environment_path),"regular actual predecessor and prerequisite reports")
+        completion_raw=completion_path.read_bytes();environment_raw=environment_path.read_bytes()
+        require(len(completion_raw)==10326 and sha(completion_raw)=="5b7439530023b78aae3a8f8732315e329f55886eb19e1ef3b82556092b373b46","fixed complete W02 publication bytes")
+        require(len(environment_raw)==864 and sha(environment_raw)=="cc348640e19d91a4233a18cd40c8fa3e7a1f4e69329d49a9f24124f2a10af16d","fixed scoped W03 prerequisite bytes")
+        validate_w04_predecessor(q,m,json.loads(completion_raw),json.loads(environment_raw))
+        continuation=Path("C:/Users/asarr/.codex/visualizations/2026/10/14/01a13bb5-4447-72c3-84d4-55246679ce0d/ACCAOUI_W03_W08_AUTOMATISCHE_FORTSETZUNG_20261023_V1.md")
+        require(regular(continuation),"regular exact continuation source")
+        continuation_raw=continuation.read_bytes()
+        require(len(continuation_raw)==8692 and sha(continuation_raw)=="50c0eebbe4e95605fe6e3f38dd39228b0a1a1ada630db45c3d42e13053e431b2","unchanged full exact automatic continuation source")
     prefixes=[]
     boundary=("## Unveränderte Historie vor "+active["task"]+"\n\n---\n\n").encode()
     for rel in META["scope"][1:5]:

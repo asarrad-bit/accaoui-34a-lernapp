@@ -1,3 +1,34 @@
+# Persönliche Lernführung – W04
+
+Der lokale Tagesplan verwendet die vorhandenen Lern-, Fehler-, Karten-, Statistik- und Terminfunktionen. Er führt keine zweite Fragenbank und keine zweite Bewertung der fachlichen Richtigkeit ein.
+
+- Tagesbudget: 10–120 Minuten reine geplante Lernzeit; nach einer 25-Minuten-Einheit wird eine fünfminütige Pause angeboten. Dies ist keine gemessene Lernzeit.
+- Fortsetzen einer gespeicherten Einheit hat Vorrang. Danach werden fällige bewertete Karten in den bestehenden nächsten Lernschritt eingebunden; Fehlertraining und schwache Themen bleiben die bisherigen Funktionen.
+- Active Recall: Antwort aus dem Gedächtnis formulieren, danach Lösung aufdecken und bei Karten ehrlich selbst bewerten.
+- Kartenwiederholung: konservative lokale Abstände von 1, 3, 7, 14 und 30 Kalendertagen. Nur eine fällige spätere Gewusst-Bewertung verlängert den Abstand. Frühes Wiederholen verschiebt eine bestehende Fälligkeit nicht. Nicht gewusst setzt auf einen Tag zurück. Diese Produktregel ist keine individuelle Gedächtnisprognose.
+- Alte Kartenbewertungen bleiben erhalten und werden lesend konservativ eingeordnet. Alte Wiederholungszähler werden nicht als Nachweis verteilter Lernerfolge behandelt. Fehlende oder ungültige Zeitangaben verbergen keine Wiederholung.
+- Der nächste kommende schriftliche oder mündliche Termin wird aus den vorhandenen getrennten Terminwerten übernommen. Kurz vor dem Termin wird Wiederholung empfohlen, ohne das eingestellte Budget automatisch zu erhöhen.
+- Eine Planpause gilt einschließlich des gewählten heutigen Kalendertags und lässt Fortschritt und Fälligkeiten erhalten. Neuplanung liest aktuelle Termine und Fortschritte; sie löscht keine Antworten.
+- Erinnerungen sind freiwillige Hinweise im geöffneten Dashboard ab der lokalen Gerätezeit. Kein E-Mail-/Push-Versand und keine Hintergrundzustellung.
+
+## Getrennte Belege
+
+Lernkartenbewertungen bleiben Selbsteinschätzungen. Geprüfte Übungsantworten und tatsächlich richtig bewertete Antworten werden gesondert angezeigt. Die neue Tagesübersicht zählt ausschließlich tatsächliche Bewertungsvorgänge seit ihrer Aktivierung: Lernantworten, abgeschlossene schriftliche Ergebnisse ohne offene Fragen und Kartenbewertungen. Aus Karten-Selbsteinschätzungen wird keine Anzahl richtiger Antworten und keine Prüfungsreife abgeleitet.
+
+Die bestehende fachliche Statistik, gespeicherte Prüfungsergebnisse, Kartenbewertungen und Termine bleiben maßgeblich. Der neue Schlüssel accaoui_learning_guidance_v1 enthält nur Planpräferenzen und tägliche Summen. Er ist keine kontenübergreifende Datenbank und kein Nachweis echter Gerätesynchronisation.
+
+## Speicher- und Fehlerverhalten
+
+Keine Speicherung beim bloßen Lesen der Standardwerte. Fehlende, beschädigte oder nicht lesbare Planeinstellungen werden nicht automatisch überschrieben. Quota-/Schreibfehler werden sichtbar, Eingaben bleiben erhalten. Eine zwischenzeitliche Änderung aus einem zweiten Tab verlangt nach Prüfung ein erneutes ausdrückliches Speichern. „Nur den Lernplan zurücksetzen“ betrifft ausschließlich den neuen Planschlüssel.
+
+## Abnahme
+
+Die produktbezogenen Prüfungen sind in docs/W04_LEARNING_GUIDANCE_ACCEPTANCE_REPORT.md beschrieben. Vor einem W04-Abschluss werden eigene neue tatsächliche Belege und anschließend alle vollständigen Originalpflichtgates auf den endgültigen Bytes benötigt. Das frühere Konzept unten bleibt als datierter Entwurf erhalten; dessen Prozentgrafik wird durch W04 nicht als individuelle Vorhersage umgesetzt.
+
+## Erhaltenes frueheres Konzept
+
+---
+
 # Accaoui §34a Lern-App – Lernstrategie-Modul (Vergessenskurve)
 
 Stand: v23.5.29
