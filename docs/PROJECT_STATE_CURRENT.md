@@ -1,5 +1,36 @@
 # ACCAOUI – bestätigte automatische Entwicklungsfolge
 
+Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W05
+
+Status: W05_LOCAL_WORKSPACE_CORRECTION_03_FUNCTIONAL_PENDING. Ein bestehender WORK-Ausführer, keine neue allgemeine Freigabe.
+
+W04 tatsächlich vollständig abgeschlossen: 249465eeb129ef1f782a4ce919d04937a9c9cd1b, Parent 2cb33ce491ee26db4b9767901368156bbbadad76, normal committed/gepusht und GitHub main direkt bestätigt. Unveränderlicher Abschlussbericht25417/SHA256e1e5d3a3ccb76421e1556d70fa1b7b72ada89130738c9eb6ede7e298a3d4de37. Alle sechs vollständigen Originalpflichtgates und26Regel+32Browserfälle auf den endgültigen13Pfaden tatsächlich bestanden. Nur Desktop-/Mobilviewport, kein physisches Gerät, keine tatsächliche DB/Auth-Abnahme oder Produktivfreigabe.
+
+W02 abgeschlossen; W03 BLOCKED_EXTERNAL/attempts0, genau eine DB/Auth-Umgebungsfrage unbeantwortet. Keine Antwort aus Optionsvorwahl/Zeitablauf; keine DB-/Installations-/Liveaktion. W06 braucht W03, W08 alle erforderlichen Vorgänger.
+
+W05 als erster geeigneter unabhängiger Nachfolger mit W02-Abhängigkeit regulär gebunden. Voller Zielumfang: getrennte schriftliche/mündliche Fragen und Lernkarten, Kategorien/Quellen, Review/Freigabe, Kurs-/Dozenten-/Adminverwaltung und passende Rollen. Fachliche Aktualität, Quellen und Nutzungsrechte gesondert klären. Drive erst nach konkreter Eigentümer-Ordner-/Dateiangabe gezielt sichten; keine breite Suche, keine Originaländerung, Import nur überprüfbarer Entwurf. Offene Fach-/Quellenentscheidungen blockieren betroffene Inhalte, nicht unabhängige UI-/Verwaltungsarbeit. Kein Testdouble als tatsächlicher DB/Auth-/Geräteschutz ausgeben.
+
+Persönlich bestätigte Quelle W03–W08 automatisch durchführen: 01a16a9b-efaf-7f62-856d-f167d1a1f788, Quellenindex8692/50c0eebbe4e95605fe6e3f38dd39228b0a1a1ada630db45c3d42e13053e431b2. V2-Zweck: Record actual W04 publication with fixed complete proof, retain pending W03 external prerequisite and all old authority/runtime/history checks, bind first eligible W05. Initial control binding only. Independent content/admin work follows under a fresh expanded exact product manifest; source review/import waits for a specific owner source location and factual/reuse decisions. No administrative-only commit.
+
+Basis: 249465eeb129ef1f782a4ce919d04937a9c9cd1b
+Exaktes aktuelles Produktteilmanifest: ["docs/tasks/CURRENT_TASK.md", "docs/PROJECT_STATE_CURRENT.md", "docs/PROJECT_MASTERLIST.md", "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md", "docs/tasks/DEVELOPMENT_QUEUE_V1.json", "tools/check-development-queue-v1.py", "index.html", "style.css", "data/content-workspace-v1.js", "data/content-workspace-ui-v1.js", "tools/run-w05-content-workspace-v1.js", "docs/W05_CONTENT_WORKSPACE_ACCEPTANCE_REPORT.md"]
+Privates Belegverzeichnis: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W05\execution-20261027-v1
+Lease: W05-CONTENT-ADMIN-20261027-V1
+
+W01_SECOND_REAL_RUN_7200S_DECISION_V1 historisch abgeschlossen; zwei alte tatsächliche Appstarts, kein dritter natürlicher/Neutral-/Ersatzlauf. Alle bisherigen116Autoritätsfälle und unveränderten Originalprüfer/Runner/META/GATE_SOURCE/HISTORICAL_FUNCTION/Budgets/inneres1800s erhalten. W01-/W02-/W04-/STOPP-/Runtime-/Autoritätsbelege unverändert, keine automatische Pinübernahme. Noch kein W05-Produkt-/Funktions-/Endgate-PASS; vor Produktmutation neues erweitertes exaktes Teilmanifest.
+
+Audit/v27.37n STOPP / NOT VERIFIED, nur unverändert in place; Supabase NICHT LIVE. Keine Produktion/Stores/echten Daten/Schlüssel/Nachrichten/paid Dienste/System-/Rechte-/Sicherheitsänderung. Keine neuen Chats/Agenten/Paralleltechnik. Volle Originalpflichtgates, diff und exakter Schutz auf endgültigen Bytes vor sinnvoller Normalpublikation; kein Verwaltungscommit für diese Bindung.
+
+Aktuelle unabhängige Produktrevision02: rootUI-Einstieg und modal bedienbarer lokaler Redaktions-/Kursentwurf, drei getrennte Banken, Quellen, Versionen, Dubletten/Import/Export, siebenReviewpunkte und zweitePerson, Quellen-/Bearbeitungsentzug, Teilnehmer-Vorschau und default-deny Servicegrenze. Nur ausdrücklich bestätigte lokale synthetische Testrollen, keine echte Anmeldung/DB-/RLS-/Geräteabnahme. Teilnehmerbanken bleiben bytegleich. W05Fach-/Quellen-/echteRollensicherheit weiterhin offen; vollständiger Zielumfang erhalten. Geplant20Regel+24Browserfälle/2Viewports und spätere volleOriginalendgates auf diesen neuenBytes, noch keinPass. Neuer privater genauer Produktsatz: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W05\execution-20261027-v1\product-02. Kein Produktiv-/Inhalts-/Naturstart.
+
+Aktuelle unabhängige Produktrevision05: rootUI-Einstieg und modal bedienbarer lokaler Redaktions-/Kursentwurf, drei getrennte Banken, Quellen, Versionen, Dubletten/Import/Export, siebenReviewpunkte und zweitePerson, Quellen-/Bearbeitungsentzug, Teilnehmer-Vorschau und default-deny Servicegrenze. Nur ausdrücklich bestätigte lokale synthetische Testrollen, keine echte Anmeldung/DB-/RLS-/Geräteabnahme. Teilnehmerbanken bleiben bytegleich. W05Fach-/Quellen-/echteRollensicherheit weiterhin offen; vollständiger Zielumfang erhalten. Geplant20Regel+24Browserfälle/2Viewports und spätere volleOriginalendgates auf diesen neuenBytes, noch keinPass. Neuer privater genauer Produktsatz: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W05\execution-20261027-v1\product-05. Kein Produktiv-/Inhalts-/Naturstart.
+
+## Unveränderte Historie vor ACCAOUI_DEVELOPMENT_SEQUENCE_W05
+
+---
+
+# ACCAOUI – bestätigte automatische Entwicklungsfolge
+
 Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W04
 
 Status: W04_FINAL_FUNCTIONAL_COVERAGE_NEW_RUN_AND_FULL_FINAL_GATES_PENDING. Ein bestehender WORK-Ausführer; keine neue allgemeine Freigabe erforderlich.

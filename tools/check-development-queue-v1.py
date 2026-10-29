@@ -85,6 +85,11 @@ def queue_cases():
     # Real calls to the same decision function using explicitly synthetic queue data.
     q=json.loads((ROOT/"docs/tasks/DEVELOPMENT_QUEUE_V1.json").read_bytes())
     validate_queue(q);rows=[]
+    current_queue=copy.deepcopy(q)
+    if q["current"]=="W05":
+        prior_raw=git("show","249465eeb129ef1f782a4ce919d04937a9c9cd1b:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+        require(len(prior_raw)==13923 and sha(prior_raw)=="4c47ea2414bbbb9a11569c7c744cbf974d38fa28d8500c302d3c5f205489a152","all 116 historical authority fixtures pinned")
+        q=json.loads(prior_raw)
     pending=copy.deepcopy(q)
     for i in pending["items"]:i.update(status="PENDING",attempts=0,result=None)
     pending["current"]=None
@@ -324,6 +329,103 @@ def queue_cases():
         except (ValueError,KeyError,TypeError):rows.append("W04:W06-still-needs-W03:REJECTED")
         else:raise ValueError("W06 incorrectly bypassed W03")
         require(len(rows)==88+3+len(followup_invalid),"all original 88 plus distinct W04 dependency and actual-completion cases")
+    if current_queue["current"]=="W05":
+        q=current_queue
+        syntax=ast.parse((ROOT/"tools/check-development-queue-v1.py").read_text(encoding="utf-8"))
+        outer=next(n for n in syntax.body if isinstance(n,ast.FunctionDef) and n.name=="successor_protection")
+        validator=next(n for n in outer.body if isinstance(n,ast.FunctionDef) and n.name=="validate_w05_predecessor")
+        namespace={"require":require}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W05-predecessor-contract>","exec"),namespace)
+        check_w05=namespace["validate_w05_predecessor"]
+        m={"w04CompletedPredecessor":copy.deepcopy(q["w04CompletedPredecessor"])}
+        c=json.loads(Path(q["w04CompletedPredecessor"]["reportPath"]).read_bytes())
+        prior=json.loads(git("show","249465eeb129ef1f782a4ce919d04937a9c9cd1b:docs/tasks/DEVELOPMENT_QUEUE_V1.json"))
+        check_w05(q,m,c,prior);rows.append("W05:actual-complete-W04-publication:PASS")
+        invalid=[
+            ("missing-publication-binding",lambda a,m,c:a.pop("w04CompletedPredecessor")),
+            ("self-repinned-publication",lambda a,m,c:(a["w04CompletedPredecessor"].update(reportSHA256="0"*64),m["w04CompletedPredecessor"].update(reportSHA256="0"*64))),
+            ("wrong-base",lambda a,m,c:a["active"].update(baseline="0"*40)),
+            ("wrong-lease",lambda a,m,c:a.update(lease="OTHER")),
+            ("wrong-task",lambda a,m,c:a["active"].update(task="OTHER")),
+            ("foreign-evidence-area",lambda a,m,c:a["active"].update(evidenceDirectory="C:/other")),
+            ("reduced-objective",lambda a,m,c:a["active"].update(fullFeatureScopeRetained=False)),
+            ("W04-still-active",lambda a,m,c:a["items"][4].update(status="ACTIVE")),
+            ("W04-false-result",lambda a,m,c:a["items"][4]["result"].update(actualMandatoryChecksPass=False)),
+            ("W03-assumed-answer",lambda a,m,c:a["w03EnvironmentReadiness"].update(answerReceived=True)),
+            ("W03-false-PASS",lambda a,m,c:a["items"][3].update(status="PASS")),
+            ("changed-runtime-authority",lambda a,m,c:a["w02NodeBinding"].update(status="PROPOSED_NOT_ACTIVE")),
+            ("incomplete-gates",lambda a,m,c:c.update(allSixMandatoryOriginalGatesPass=False)),
+            ("incomplete-artifact-readback",lambda a,m,c:c.update(allCurrentGateArtifactsRead=False)),
+            ("checkpoint-gap",lambda a,m,c:c.update(all109Checkpoints218PrefixesValid=False)),
+            ("worker-not-complete",lambda a,m,c:c["fullGateWorkerExit"].update(nativeWorkerExitCode=None)),
+            ("gate-failure",lambda a,m,c:c["fullOriginalGates"][3].update(nativeExitCode=1)),
+            ("omitted-original-gate",lambda a,m,c:c["fullOriginalGates"].pop(3)),
+            ("failed-commit",lambda a,m,c:c.update(normalCommitExit0=False)),
+            ("failed-push",lambda a,m,c:c["publicationNativeSteps"][4].update(nativeExitCode=1)),
+            ("force-push",lambda a,m,c:c["publicationNativeSteps"][4].update(command=["git","push","--force","origin","main"])),
+            ("unconfirmed-GitHub",lambda a,m,c:c.update(directConnectedGitHubConfirmed=False)),
+            ("wrong-GitHub",lambda a,m,c:c["gitHub"].update(sha="0"*40)),
+            ("wrong-commit",lambda a,m,c:c.update(commit="0"*40)),
+            ("wrong-parent",lambda a,m,c:c.update(parent="0"*40)),
+            ("incomplete-guard",lambda a,m,c:c["postPushProtection"].update(workingFiles=1)),
+            ("wrong-functional-proof",lambda a,m,c:c["functionalReadback"].update(sha256="0"*64)),
+            ("wrong-gate-proof",lambda a,m,c:c["fullGateReadback"].update(sha256="0"*64)),
+            ("new-natural-start",lambda a,m,c:c.update(newW01NaturalRuns=1)),
+            ("launch-claim",lambda a,m,c:c.update(fullFeatureLaunch=True)),
+            ("physical-device-claim",lambda a,m,c:c.update(physicalDeviceAcceptance=True)),
+            ("actual-DBAuth-claim",lambda a,m,c:c.update(actualDatabaseAuthAcceptance=True))]
+        for name,alter in invalid:
+            a,b,d=copy.deepcopy((q,m,c));alter(a,b,d)
+            try:check_w05(a,b,d,prior)
+            except (ValueError,KeyError,TypeError):rows.append("W05:"+name+":REJECTED")
+            else:raise ValueError("unsafe W05 transition accepted: "+name)
+        pending=copy.deepcopy(q);pending["items"][5].update(status="PENDING",attempts=0,result=None);pending["current"]=None
+        require(authorize_transition(pending,"W05",True)["attempts"]==1,"first eligible W05 with actual W04 and external W03")
+        rows.append("W05:first-eligible-after-W04:PASS")
+        try:authorize_transition(pending,"W06",True)
+        except (ValueError,KeyError,TypeError):rows.append("W05:W06-still-needs-W03:REJECTED")
+        else:raise ValueError("unsafe W06 bypass")
+        require(len(rows)==116+3+len(invalid),"all original 116 plus distinct W05 authority cases")
+    if current_queue["current"]=="W05":
+        browser_context_fixture={'kind': 'W05_EXPLICIT_BROWSER_REBIND_20261028_V1', 'task': 'ACCAOUI_DEVELOPMENT_SEQUENCE_W05', 'previousNodeRuntimeSetSHA256': 'c63d9980fd30f8d89e9b612074aaae4891facf09b92f6b8a93b3a25b10eabe1a', 'browser': {'path': 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', 'bytes': 5452616, 'sha256': 'f87d927bed3597f19c70af67bc786dd22e4eca3b5c7cc050336a016bb42f7fda'}, 'authorityReceipt': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\BROWSER_REBIND_AUTHORITY.json', 'bytes': 1406, 'sha256': '84c84341ff2efa1c922ceb7b62a8253ad04824ac408d783c5a95bc77525245b5'}, 'authorityThreadId': '01a183e7-10e8-74b1-a61b-ce55bc71724e', 'authorityTurnId': '01a18455-8eba-7093-a3e7-8aed91e761e0', 'authorityMessageId': '01a18455-8f55-78d3-86b3-e272e72bed94', 'acceptNewIdentityAutomatically': False, 'newW01NaturalRuns': 0, 'fullW05Acceptance': False}
+        browser_pins=copy.deepcopy(node_pins);browser_pins["browser"]=copy.deepcopy(browser_context_fixture["browser"])
+        browser_observed=copy.deepcopy(node_observed)
+        browser_observed["browser"].update(browser_pins["browser"],afterBytes=5452616,afterSHA256=browser_context_fixture["browser"]["sha256"],version="156.0.4314.50")
+        check_identity(browser_pins,browser_observed,authority,predecessor,context,browser_context_fixture)
+        old_count=len(rows)
+        rows.append("W05Browser:exact-human-approved-identity:PASS")
+        browser_invalid=[
+            ("third-hash",lambda p,o,c:o["browser"].update(sha256="0"*64)),
+            ("old-browser-pin",lambda p,o,c:p["browser"].update(sha256="bb74db4c753133706f4ab0a483a87aa28a90ddd6eeb305fe001376ba73a40fc3")),
+            ("size",lambda p,o,c:o["browser"].update(bytes=1)),
+            ("wrong-path",lambda p,o,c:o["browser"].update(path="C:/other/browser.exe")),
+            ("filetype",lambda p,o,c:o["browser"].update(regular=False)),
+            ("old-version",lambda p,o,c:o["browser"].update(version="156.0.4314.42")),
+            ("other-version",lambda p,o,c:o["browser"].update(version="OTHER")),
+            ("invalid-signature",lambda p,o,c:o["browser"].update(signature="NotTrusted")),
+            ("signer",lambda p,o,c:o["browser"].update(signer="OTHER")),
+            ("thumbprint",lambda p,o,c:o["browser"].update(thumbprint="0"*40)),
+            ("query-race-hash",lambda p,o,c:o["browser"].update(afterSHA256="0"*64)),
+            ("query-race-size",lambda p,o,c:o["browser"].update(afterBytes=1)),
+            ("missing-context",lambda p,o,c:c.clear()),
+            ("wrong-task",lambda p,o,c:c.update(task="W08")),
+            ("wrong-message",lambda p,o,c:c.update(authorityMessageId="unconfirmed")),
+            ("wrong-thread",lambda p,o,c:c.update(authorityThreadId="unconfirmed")),
+            ("wrong-turn",lambda p,o,c:c.update(authorityTurnId="unconfirmed")),
+            ("wrong-receipt-hash",lambda p,o,c:c["authorityReceipt"].update(sha256="0"*64)),
+            ("wrong-receipt-size",lambda p,o,c:c["authorityReceipt"].update(bytes=1)),
+            ("wrong-receipt-path",lambda p,o,c:c["authorityReceipt"].update(path="C:/other.json")),
+            ("wrong-predecessor",lambda p,o,c:c.update(previousNodeRuntimeSetSHA256="0"*64)),
+            ("automatic-adoption",lambda p,o,c:c.update(acceptNewIdentityAutomatically=True)),
+            ("new-natural-run",lambda p,o,c:c.update(newW01NaturalRuns=1)),
+            ("false-full-W05",lambda p,o,c:c.update(fullW05Acceptance=True)),
+            ("extra-field",lambda p,o,c:c.update(extra=True))]
+        for name,alter in browser_invalid:
+            p,o,c=copy.deepcopy((browser_pins,browser_observed,browser_context_fixture));alter(p,o,c)
+            try:check_identity(p,o,authority,predecessor,context,c)
+            except (ValueError,KeyError,TypeError):rows.append("W05Browser:"+name+":REJECTED")
+            else:raise ValueError("unsafe W05 browser binding accepted: "+name)
+        require(len(rows)==old_count+1+len(browser_invalid),"all original cases plus distinct strict browser identity cases")
     return rows
 
 def peel(rel,raw):
@@ -426,7 +528,7 @@ def validate_v2_source_bindings(q,m,baseline):
             require(ast.dump(get(old),include_attributes=False)==ast.dump(get(new),include_attributes=False),"unchanged original factual/check/budget source "+name)
 
 def successor_protection(q):
-    def validate_w02_identity(pins, observed, authority, predecessor, node_rebinding=None):
+    def validate_w02_identity(pins, observed, authority, predecessor, node_rebinding=None, browser_rebinding=None):
         # Pure contract, also exercised below with isolated synthetic observations.
         expected={"powerShell":{"path":"C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe","bytes":301368,"sha256":"362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139"},"node":{"path":"C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe","bytes":93713712,"sha256":"6416a2fc6ccaf41d71fc50e3c0ff9074c633249e3c74564d55cd0a5c25b61ecb"},"python":{"path":"C:\\Users\\asarr\\AppData\\Local\\Programs\\Python\\Python313\\python.exe","bytes":105832,"sha256":"d87063e5597f257004c731b66c59c56c91038861c6877b1a3dca6b8c4e919125"},"browser":{"path":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe","bytes":5452616,"sha256":"bb74db4c753133706f4ab0a483a87aa28a90ddd6eeb305fe001376ba73a40fc3"}}
         expected_authority={"package":"ACCAOUI_W02_BROWSER_BINDING_IMPLEMENTATION_20261024_V1","threadId":"01a13bb5-4447-72c3-84d4-55246679ce0d","hostId":"local","questionTurn":"01a16e74-7919-71e0-a84f-b99b0bad2a35","questionItem":"call_003c7eca68c84de69f929be2c5fc34cd","answerTurn":"01a16e82-8442-7793-92f8-bc62036ebc11","messageId":"01a16e82-84c6-7190-ad61-8f308e40590b","answer":"Ja, diesen konkreten Reparaturvorschlag regulär umsetzen lassen","proposalSHA256":"6c0787b9556383e1a05d60e558d042f1cec237950bdc4eca1e3c5c3e6db4dc9f"}
@@ -441,6 +543,13 @@ def successor_protection(q):
             expected_node={"path":"C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe","bytes":93713712,"sha256":"6d75619e8720161bb0e8c5617bcf90384b48a920b9182ec6e9d52f11f83a8e84"}
             require(node_rebinding["node"]==expected_node,"one exact separately proposed Node identity")
             expected["node"]=expected_node
+        if browser_rebinding is not None:
+            # Exact current human browser approval; historical/default contracts stay unchanged.
+            expected_browser_rebinding={'kind': 'W05_EXPLICIT_BROWSER_REBIND_20261028_V1', 'task': 'ACCAOUI_DEVELOPMENT_SEQUENCE_W05', 'previousNodeRuntimeSetSHA256': 'c63d9980fd30f8d89e9b612074aaae4891facf09b92f6b8a93b3a25b10eabe1a', 'browser': {'path': 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', 'bytes': 5452616, 'sha256': 'f87d927bed3597f19c70af67bc786dd22e4eca3b5c7cc050336a016bb42f7fda'}, 'authorityReceipt': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\BROWSER_REBIND_AUTHORITY.json', 'bytes': 1406, 'sha256': '84c84341ff2efa1c922ceb7b62a8253ad04824ac408d783c5a95bc77525245b5'}, 'authorityThreadId': '01a183e7-10e8-74b1-a61b-ce55bc71724e', 'authorityTurnId': '01a18455-8eba-7093-a3e7-8aed91e761e0', 'authorityMessageId': '01a18455-8f55-78d3-86b3-e272e72bed94', 'acceptNewIdentityAutomatically': False, 'newW01NaturalRuns': 0, 'fullW05Acceptance': False}
+            require(type(browser_rebinding) is dict and browser_rebinding==expected_browser_rebinding,"one exact separately human-approved W05 browser binding")
+            require(node_rebinding is not None,"approved browser extension retains the required prior Node binding")
+            require(browser_rebinding["acceptNewIdentityAutomatically"] is False and type(browser_rebinding["newW01NaturalRuns"]) is int and browser_rebinding["newW01NaturalRuns"]==0 and browser_rebinding["fullW05Acceptance"] is False,"strict browser extension exclusions")
+            expected["browser"]=browser_rebinding["browser"]
         require(pins==expected and set(observed)==set(expected),"exact four independently confirmed W02 runtime identities")
         for name,entry in expected.items():
             actual=observed[name]
@@ -448,7 +557,7 @@ def successor_protection(q):
             require(actual["bytes"]==entry["bytes"] and actual["sha256"]==entry["sha256"],"exact W02 runtime bytes/hash "+name)
         browser=observed["browser"]
         require(browser["afterBytes"]==browser["bytes"] and browser["afterSHA256"]==browser["sha256"],"browser unchanged across native identity query")
-        require(browser["version"]=="156.0.4314.42" and browser["signature"]=="Valid","exact W02 browser version and valid signature")
+        require(browser["version"]==("156.0.4314.50" if browser_rebinding is not None else "156.0.4314.42") and browser["signature"]=="Valid","exact independently approved browser version and valid signature")
         require(browser["signer"]=="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" and browser["thumbprint"]=="4028CAD637509D4744B17EC5B42AED8D7A31E6AF","exact Microsoft W02 signer identity")
         if node_rebinding is not None:
             node=observed["node"]
@@ -479,9 +588,38 @@ def successor_protection(q):
         require(environment["status"]=="W03_ENVIRONMENT_INPUT_REQUIRED_READ_ONLY_PREPARATION" and environment["base"]==expected["commit"] and environment["actualMandatoryChecksPass"] is False and environment["w03QueueActivated"] is False and environment["w03ProductMutationPerformed"] is False and environment["w03DbAuthTestPerformed"] is False,"no fake DB/Auth completion")
         require(items["W04"]["status"]=="ACTIVE" and items["W04"]["depends"]==["W02"] and items["W04"]["attempts"]==1 and items["W04"]["result"] is None,"only independent first eligible W04 active")
         return True
+    def validate_w05_predecessor(queue,manifest,completion,previous_queue):
+        expected={"kind":"W04_COMPLETED_PREDECESSOR_V1","reportPath":"C:/Users/asarr/.codex/visualizations/2026/10/08/01a11cc6-ee66-7890-9520-7fd190f6e687/development-sequence-20261021-v1/W04/execution-20261027-v1/product-05/publish-01/result-readback.json","reportBytes":25417,"reportSHA256":"e1e5d3a3ccb76421e1556d70fa1b7b72ada89130738c9eb6ede7e298a3d4de37","commit":"249465eeb129ef1f782a4ce919d04937a9c9cd1b","parent":"2cb33ce491ee26db4b9767901368156bbbadad76","newW01NaturalRuns":0,"fullFeatureLaunch":False}
+        require(queue["w04CompletedPredecessor"]==manifest["w04CompletedPredecessor"]==expected,"independent exact actual W04 publication binding")
+        require(queue["current"]=="W05" and queue["lease"]=="W05-CONTENT-ADMIN-20261027-V1" and queue["active"]["baseline"]==expected["commit"] and queue["active"]["task"]=="ACCAOUI_DEVELOPMENT_SEQUENCE_W05","one exact eligible W05 lease/task/base")
+        require(queue["active"]["evidenceDirectory"]=="C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W05\\execution-20261027-v1" and queue["active"]["fullFeatureScopeRetained"] is True,"exact W05 area and full objective retained")
+        require(set(queue)==set(previous_queue)|{"w04CompletedPredecessor"},"closed W05 queue transition fields")
+        for key in set(previous_queue)-{"items","current","lease","active"}:
+            require(queue[key]==previous_queue[key],"all predecessor authority/runtime/external fields retained "+key)
+        items={i["id"]:i for i in queue["items"]}; prior={i["id"]:i for i in previous_queue["items"]}
+        require(set(items)==set(prior) and len(queue["items"])==len(previous_queue["items"]),"all exact original queue items retained")
+        for name in set(items)-{"W04","W05"}:require(items[name]==prior[name],"unrelated queue item retained "+name)
+        require(items["W04"]==dict(prior["W04"],status="PASS",result={"actualMandatoryChecksPass":True,"reportSHA256":expected["reportSHA256"],"commit":expected["commit"]}),"actual W04 result required")
+        require(items["W05"]==dict(prior["W05"],status="ACTIVE",attempts=1,result=None) and items["W05"]["depends"]==["W02"],"only independent eligible W05 active")
+        require(completion["state"]=="W04_PRODUCT_TEST_PACKAGE_COMMITTED_PUSHED_DIRECT_GITHUB_VERIFIED" and completion["task"]=="ACCAOUI_DEVELOPMENT_SEQUENCE_W04" and completion["commit"]==expected["commit"] and completion["parent"]==completion["base"]==expected["parent"],"actual normal W04 publication identity")
+        for key in ("allSixMandatoryOriginalGatesPass","allCurrentGateArtifactsRead","all109Checkpoints218PrefixesValid","normalCommitExit0","normalPushExit0","directConnectedGitHubConfirmed","allInitialPublicationArtifactsRead","all116AuthorityCasesAnd591FilePinsBeforeAfterEqual","noFurtherRepoContentChangesAfterFullGates","w03ExternalNeedStillOpen"):
+            require(completion[key] is True,"actual complete W04 proof "+key)
+        require(completion["fullGateWorkerExit"]["nativeWorkerExitCode"]==0,"actual completed worker exit")
+        require([g["name"] for g in completion["fullOriginalGates"]]==["pre-guard","pre-diff","continuity","preflight","post-diff","post-guard"] and all(g["nativeExitCode"]==0 and g["state"]=="PASS" and g["stderr"]["bytes"]==0 for g in completion["fullOriginalGates"]),"all six original gates executed completely")
+        require([p["name"] for p in completion["publicationNativeSteps"]]==["precommit-guard","precommit-diff","commit","postcommit-guard","push","postpush-guard"] and all(p["nativeExitCode"]==0 for p in completion["publicationNativeSteps"]),"all native normal publication steps")
+        require(completion["publicationNativeSteps"][2]["command"]==["git","commit","-m","ACCAOUI add daily study plans and spaced card review with verified user flows"] and completion["publicationNativeSteps"][4]["command"]==["git","push","origin","main"],"normal commit and push only")
+        require(completion["gitHub"]["ref"]=="main" and completion["gitHub"]["sha"]==completion["gitHub"]["localHead"]==completion["gitHub"]["originMain"]==expected["commit"],"direct connected main identity")
+        require(completion["postPushProtection"]["phase"]=="pushed" and completion["postPushProtection"]["head"]==completion["postPushProtection"]["origin"]==expected["commit"],"actual postpush protection")
+        require(len(completion["scope"])==13 and len(completion["authorityCases"])==116 and completion["postPushProtection"]["workingFiles"]==591 and completion["postPushProtection"]["attributes"]==1182,"complete actual W04 scope")
+        require(completion["fullGateReadback"]["bytes"]==16838 and completion["fullGateReadback"]["sha256"]=="c24d5e44d64c91f61144c4af5f3b248a79b9489a3fab01c46568bef78f6d052e","fixed complete original gate readback")
+        require(completion["functionalReadback"]["bytes"]==38377 and completion["functionalReadback"]["sha256"]=="20bfd805d7795ffb3c4a95dbf320da6dd1c5e813390d6fdc95d47858cd8eb0be","fixed final functional readback")
+        for key in ("actualDatabaseAuthAcceptance","liveSupabase","realDataOrKeysUsed","physicalDeviceAcceptance","fullFeatureLaunch"):
+            require(completion[key] is False,"no expanded W04 claim "+key)
+        require(completion["newW01NaturalRuns"]==0,"no extra natural start")
+        return True
     active=validate_active_manifest(q)
     closure_evidence=Path(active["evidenceDirectory"])
-    if q["current"] in {"W02","W04"}:
+    if q["current"] in {"W02","W04","W05"}:
         require(q.get("w01Closure") is not None and q.get("w02RuntimeBinding") is not None,"W02 requires actual predecessor and separate repair binding")
         closure_evidence=OUT.parent/"W01/closure-20261024-v1"
     second=q.get("secondRealRun")
@@ -496,6 +634,8 @@ def successor_protection(q):
             validate_second_run_authority(second,closure)
             if q["current"]=="W02":
                 require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1","one identified new W02 binding; no new W01 run")
+            elif q["current"]=="W05":
+                require(q["lease"]=="W05-CONTENT-ADMIN-20261027-V1","one identified W05; all natural starts consumed")
             elif q["current"]=="W04":
                 require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1","one identified independent W04; all W01 starts consumed")
             else:
@@ -570,15 +710,17 @@ def successor_protection(q):
             for name,entry in m["runtimePins"].items():
                 path=Path(entry["path"]);raw=path.read_bytes()
                 require(regular(path) and len(raw)==entry["bytes"] and sha(raw)==entry["sha256"],"fresh unchanged closure runtime "+name)
-    if q["current"] in {"W02","W04"}:
+    if q["current"] in {"W02","W04","W05"}:
         binding=q["w02RuntimeBinding"]
         if q["current"]=="W02":
             require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1" and active["baseline"]=="d7d1151830951188854ad7aa013448251a2a9bbe","exact W02 repair lease/base")
+        elif q["current"]=="W05":
+            require(q["lease"]=="W05-CONTENT-ADMIN-20261027-V1" and active["baseline"]=="249465eeb129ef1f782a4ce919d04937a9c9cd1b","exact W05 lease and actual W04 base")
         else:
             require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1" and active["baseline"]=="2cb33ce491ee26db4b9767901368156bbbadad76","exact W04 lease and actual W02 completion base")
         directory=OUT.parent/"W02/runtime-binding-v1/execution-v1"
         require(Path(binding["directory"]).resolve()==directory.resolve(),"fixed preserved W02 runtime evidence area")
-        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/"W04/execution-20261027-v1"
+        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/("W05/execution-20261027-v1" if q["current"]=="W05" else "W04/execution-20261027-v1")
         require(Path(active["evidenceDirectory"]).resolve()==expected_active_directory.resolve(),"own exact active package evidence area")
         runtime_path=directory/"runtime-set.json"
         require(regular(runtime_path),"regular W02 runtime set")
@@ -618,6 +760,19 @@ def successor_protection(q):
             require(na["directSourceRead"] is True and na["status"]=="CONFIRMED_EXECUTION_AUTHORITY" and na["executionAuthority"]==node_context["executionAuthority"]==node_binding["executionAuthority"],"same directly read future implementation source")
             require(nr["acceptNewIdentityAutomatically"] is False and nr["newW01NaturalRuns"]==0,"no automatic adoption or natural run")
             runtime=nr
+        browser_context=m.get("browserRebinding")
+        if browser_context is not None:
+            require(q["current"]=="W05" and node_context is not None,"browser extension restricted to this W05 scope with original Node proof")
+            receipt_entry=browser_context["authorityReceipt"]
+            receipt_path=Path(receipt_entry["path"])
+            require(regular(receipt_path),"regular direct human browser approval receipt")
+            receipt_raw=receipt_path.read_bytes()
+            require({"bytes":len(receipt_raw),"sha256":sha(receipt_raw)}=={k:receipt_entry[k] for k in ("bytes","sha256")},"independent direct browser approval source pin")
+            browser_authority=json.loads(receipt_raw)
+            require(browser_authority["threadId"]==browser_context["authorityThreadId"] and browser_authority["turnId"]==browser_context["authorityTurnId"] and browser_authority["message"]["id"]==browser_context["authorityMessageId"],"exact directly read browser approval source")
+            require("Ja, Browser neu binden und erforderliche Prüfungen durchführen" in browser_authority["message"]["content"][0]["text"],"actual human browser implementation approval, not a proposal")
+            runtime=copy.deepcopy(runtime)
+            runtime["runtimePins"]["browser"]=copy.deepcopy(browser_context["browser"])
         require(m["runtimePins"]==runtime["runtimePins"],"same independently pinned active W02 runtime set")
         observations={}
         for name,entry in runtime["runtimePins"].items():
@@ -639,15 +794,28 @@ def successor_protection(q):
             identity_node=json.loads(node_native.stdout.decode("utf-8-sig"))
             after_node=Path(runtime["runtimePins"]["node"]["path"]).read_bytes()
             observations["node"].update(identity_node,afterBytes=len(after_node),afterSHA256=sha(after_node))
-        validate_w02_identity(runtime["runtimePins"],observations,binding["executionAuthority"],predecessor,node_context)
-    if q["current"]=="W04":
+        validate_w02_identity(runtime["runtimePins"],observations,binding["executionAuthority"],predecessor,node_context,browser_context)
+    if q["current"] in {"W04","W05"}:
         completion_path=OUT.parent/"W02/runtime-binding-v1/execution-v1/product-acceptance-v1/node-implementation-20261027-v1/publish-01/result-readback.json"
         environment_path=OUT.parent/"W03/environment-readiness-20261027-v1/result-readback.json"
         require(regular(completion_path) and regular(environment_path),"regular actual predecessor and prerequisite reports")
         completion_raw=completion_path.read_bytes();environment_raw=environment_path.read_bytes()
         require(len(completion_raw)==10326 and sha(completion_raw)=="5b7439530023b78aae3a8f8732315e329f55886eb19e1ef3b82556092b373b46","fixed complete W02 publication bytes")
         require(len(environment_raw)==864 and sha(environment_raw)=="cc348640e19d91a4233a18cd40c8fa3e7a1f4e69329d49a9f24124f2a10af16d","fixed scoped W03 prerequisite bytes")
-        validate_w04_predecessor(q,m,json.loads(completion_raw),json.loads(environment_raw))
+        if q["current"]=="W05":
+            prior_raw=git("show","249465eeb129ef1f782a4ce919d04937a9c9cd1b:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+            require(len(prior_raw)==13923 and sha(prior_raw)=="4c47ea2414bbbb9a11569c7c744cbf974d38fa28d8500c302d3c5f205489a152","fixed full historical W04 queue")
+            prior_queue=json.loads(prior_raw)
+            prior_manifest_path=OUT.parent/"W04/execution-20261027-v1/product-05/candidate-manifest.json"
+            prior_manifest_raw=prior_manifest_path.read_bytes()
+            require(regular(prior_manifest_path) and len(prior_manifest_raw)==11023 and sha(prior_manifest_raw)=="4d43699251a11d2cda2d29c3e988333af54a2f95058f9f98b90ff76e5e1526fe","fixed full historical W04 manifest")
+            validate_w04_predecessor(prior_queue,json.loads(prior_manifest_raw),json.loads(completion_raw),json.loads(environment_raw))
+            publication_path=OUT.parent/"W04/execution-20261027-v1/product-05/publish-01/result-readback.json"
+            publication_raw=publication_path.read_bytes()
+            require(regular(publication_path) and len(publication_raw)==25417 and sha(publication_raw)=="e1e5d3a3ccb76421e1556d70fa1b7b72ada89130738c9eb6ede7e298a3d4de37","fixed actual complete W04 publication report")
+            validate_w05_predecessor(q,m,json.loads(publication_raw),prior_queue)
+        else:
+            validate_w04_predecessor(q,m,json.loads(completion_raw),json.loads(environment_raw))
         continuation=Path("C:/Users/asarr/.codex/visualizations/2026/10/14/01a13bb5-4447-72c3-84d4-55246679ce0d/ACCAOUI_W03_W08_AUTOMATISCHE_FORTSETZUNG_20261023_V1.md")
         require(regular(continuation),"regular exact continuation source")
         continuation_raw=continuation.read_bytes()
