@@ -91,6 +91,13 @@ def queue_cases():
     q=json.loads((ROOT/"docs/tasks/DEVELOPMENT_QUEUE_V1.json").read_bytes())
     actual_queue_for_w06=copy.deepcopy(q)
     actual_queue_for_w03=copy.deepcopy(q)
+    actual_queue_for_w07=copy.deepcopy(q)
+    if q["current"]=="W07":
+        w06_fixture=git("show","96cf711cf1718aa75036ae3b87dbb047283107d6:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+        require({"bytes":len(w06_fixture),"sha256":sha(w06_fixture)}=={'bytes': 16204, 'sha256': '0dc223b22457c0123ea381fb5a15934d7013c3b1508e5dbc5fd43a685286c1c7'},"all256 actual published W06 authority fixtures pinned")
+        actual_queue_for_w06=json.loads(w06_fixture)
+        q=copy.deepcopy(actual_queue_for_w06)
+        actual_queue_for_w03=copy.deepcopy(q)
     if q["current"]=="W06":
         w03_fixture=git("show","f40919ca4481f69491a88efa28c2d29965186aab:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
         require({"bytes":len(w03_fixture),"sha256":sha(w03_fixture)}=={'bytes': 15389, 'sha256': 'e33a7d0af9ad8fcce9d6c91e1018b03465b2d4fadba71c9c10a915e3741c30e2'},"all210 actual historical W03 authority fixtures pinned")
@@ -513,8 +520,13 @@ def queue_cases():
         namespace={"require":require}
         exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W06-transition-contract>","exec"),namespace)
         check_w06=namespace["validate_w06_transition"]
-        manifest_raw=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"]).read_bytes()
-        require(sha(manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound current W06 fixture manifest")
+        if actual_queue_for_w07["current"]=="W07":
+            w06_manifest_ref={'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W06\\execution-20261030-v1\\final-02\\candidate-manifest.json', 'bytes': 63928, 'sha256': 'a7af460477cee2c84219b0d7d31001877f599df7c5cb0e2c2547876ec15ad149'}
+            manifest_raw=Path(w06_manifest_ref["path"]).read_bytes()
+            require({"bytes":len(manifest_raw),"sha256":sha(manifest_raw)}=={key:w06_manifest_ref[key] for key in ("bytes","sha256")},"independent original W06 fixture manifest")
+        else:
+            manifest_raw=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"]).read_bytes()
+            require(sha(manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound current W06 fixture manifest")
         m6=json.loads(manifest_raw);p6=json.loads(Path(m6["w03CompletedPredecessor"]["reportPath"]).read_bytes());r6=json.loads(Path(m6["w06ReadOnlyReadiness"]["path"]).read_bytes())
         live6=actual_queue_for_w06;prior6=actual_queue_for_w03
         check_w06(live6,m6,p6,prior6,r6)
@@ -572,6 +584,93 @@ def queue_cases():
             except (ValueError,KeyError,TypeError):rows.append("W06:"+name+":REJECTED")
             else:raise ValueError("unsafe W06 transition accepted: "+name)
         require(len(rows)==old_count+1+len(invalid_w06),"all previous cases plus distinct strict W06 transition cases")
+    if actual_queue_for_w07["current"]=="W07":
+        validate_queue(actual_queue_for_w07)
+        syntax=ast.parse((ROOT/"tools/check-development-queue-v1.py").read_text(encoding="utf8"))
+        outer=next(n for n in syntax.body if isinstance(n,ast.FunctionDef) and n.name=="successor_protection")
+        validator=next(n for n in outer.body if isinstance(n,ast.FunctionDef) and n.name=="validate_w07_transition")
+        namespace={"require":require}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W07-transition-contract>","exec"),namespace)
+        check_w07=namespace["validate_w07_transition"]
+        manifest_raw=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"]).read_bytes()
+        require(sha(manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound actual W07 candidate manifest")
+        m7=json.loads(manifest_raw)
+        p7=json.loads(Path(m7["w06CompletedLocalPredecessor"]["reportPath"]).read_bytes())
+        r7=json.loads(Path(m7["w07ReadOnlyReadiness"]["path"]).read_bytes())
+        a7=json.loads(Path(m7["w07PreparedSource"]["path"]).read_bytes())
+        live7=actual_queue_for_w07;prior7=actual_queue_for_w06
+        check_w07(live7,m7,p7,prior7,r7,a7)
+        old_count=len(rows);require(old_count==256,"all256 original authority cases still executed")
+        rows.append("W07:actual-W04-dependency-W06-canonical-completion-local-source-scope:PASS")
+        invalid_w07 = [
+            ('wrong-current-task', lambda q,m,p,r,a:q.update(current='W08')),
+            ('wrong-executor-lease', lambda q,m,p,r,a:q.update(lease='OTHER')),
+            ('wrong-base', lambda q,m,p,r,a:q['active'].update(baseline='0'*40)),
+            ('wrong-task-id', lambda q,m,p,r,a:q['active'].update(task='OTHER')),
+            ('missing-full-feature-goal', lambda q,m,p,r,a:q['active'].update(fullFeatureScopeRetained=False)),
+            ('wrong-evidence-directory', lambda q,m,p,r,a:q['active'].update(evidenceDirectory='C:/other')),
+            ('extra-attempt', lambda q,m,p,r,a:q['active'].update(attempt=2)),
+            ('missing-scope-path', lambda q,m,p,r,a:q['active']['paths'].pop()),
+            ('extra-source-write', lambda q,m,p,r,a:q['active']['paths'].append('questions.json')),
+            ('scope-duplicate', lambda q,m,p,r,a:q['active']['paths'].append(q['active']['paths'][0])),
+            ('premature-full-W07', lambda q,m,p,r,a:q['active'].update(fullW07Acceptance=True)),
+            ('fabricated-real-AI', lambda q,m,p,r,a:q['active'].update(realAiAcceptance=True)),
+            ('automatic-provider-activation', lambda q,m,p,r,a:q['active'].update(externalProviderBlocked=False)),
+            ('new-natural-run', lambda q,m,p,r,a:q['active'].update(newW01NaturalRuns=1)),
+            ('missing-completion-source', lambda q,m,p,r,a:q.pop('w06CompletedLocalPredecessor')),
+            ('wrong-completion-pin', lambda q,m,p,r,a:m['w06CompletedLocalPredecessor'].update(sha256='0'*64)),
+            ('wrong-historical-manifest', lambda q,m,p,r,a:m['w06HistoricalManifest'].update(sha256='0'*64)),
+            ('wrong-published-queue', lambda q,m,p,r,a:m['w06PublishedQueuePin'].update(sha256='0'*64)),
+            ('wrong-readiness-pin', lambda q,m,p,r,a:m['w07ReadOnlyReadiness'].update(sha256='0'*64)),
+            ('wrong-preparation-pin', lambda q,m,p,r,a:m['w07PreparedSource'].update(sha256='0'*64)),
+            ('unrelated-queue-field', lambda q,m,p,r,a:q.update(extra=True)),
+            ('foreign-executor', lambda q,m,p,r,a:q['executor'].update(threadId='OTHER')),
+            ('removed-takeover', lambda q,m,p,r,a:q.pop('executorTakeover')),
+            ('unrelated-package-change', lambda q,m,p,r,a:q['items'][0].update(attempts=2)),
+            ('false-full-W05', lambda q,m,p,r,a:q['items'][5].update(status='PASS')),
+            ('missing-real-W04', lambda q,m,p,r,a:q['items'][4].update(status='PENDING')),
+            ('fake-W04-result', lambda q,m,p,r,a:q['items'][4]['result'].update(actualMandatoryChecksPass=False)),
+            ('invented-W06-dependency', lambda q,m,p,r,a:q['items'][7].update(depends=['W04','W06'])),
+            ('missing-W04-dependency', lambda q,m,p,r,a:q['items'][7].update(depends=[])),
+            ('production-grant', lambda q,m,p,r,a:q.update(productionGrant=True)),
+            ('live-Supabase-grant', lambda q,m,p,r,a:q.update(liveSupabaseGrant=True)),
+            ('real-participant-data-grant', lambda q,m,p,r,a:q.update(realParticipantDataGrant=True)),
+            ('forged-W06-commit', lambda q,m,p,r,a:p.update(commit='0'*40)),
+            ('wrong-W06-parent', lambda q,m,p,r,a:p.update(parent='0'*40)),
+            ('false-W06-scope', lambda q,m,p,r,a:p.update(acceptanceScope='PRODUCTION')),
+            ('missing-W06-acceptance', lambda q,m,p,r,a:p.update(fullW06Acceptance=False)),
+            ('missing-GitHub-proof', lambda q,m,p,r,a:p.update(directConnectedGitHubMainConfirmed=False)),
+            ('missing-full-gates', lambda q,m,p,r,a:p.update(allSixOriginalFinalGatesNativePass=False)),
+            ('missing-checkpoint-prefix', lambda q,m,p,r,a:p.update(verifiedCheckpointPrefixes=227)),
+            ('fake-W06-backend-count', lambda q,m,p,r,a:p.update(actualPrivateBackendAuthCases=66)),
+            ('fake-W06-browser-count', lambda q,m,p,r,a:p.update(actualBrowserCases=31)),
+            ('missing-actual-QR-pixel-proof', lambda q,m,p,r,a:p.update(actualNativeQrImagesIndependentlyDecoded=2)),
+            ('failed-normal-push', lambda q,m,p,r,a:p['publicationSteps'][5].update(nativeExitCode=1)),
+            ('wrong-postpush-head', lambda q,m,p,r,a:p['postPushProtection'].update(head='0'*40)),
+            ('false-device-proof', lambda q,m,p,r,a:p.update(physicalDeviceAcceptance=True)),
+            ('false-PDF-raster-proof', lambda q,m,p,r,a:p.update(pdfRasterQrAcceptance=True)),
+            ('false-external-delivery', lambda q,m,p,r,a:p.update(realNotificationDeliveryAcceptance=True)),
+            ('published-backend-port', lambda q,m,p,r,a:p.update(backendPublishedHostPorts=1)),
+            ('unclean-real-fixtures', lambda q,m,p,r,a:p.update(servicesStoppedSyntheticRowsCleaned=False)),
+            ('changed-readiness', lambda q,m,p,r,a:r.update(w07ProductMutationPerformed=True)),
+            ('readiness-fake-AI-pass', lambda q,m,p,r,a:r.update(realAiAcceptance=True)),
+            ('readiness-provider-call', lambda q,m,p,r,a:r.update(providerCalls=1)),
+            ('inferred-owner-answer', lambda q,m,p,r,a:r['ownerQuestion'].update(answerReceived=True)),
+            ('missing-owner-question-record', lambda q,m,p,r,a:r['ownerQuestion'].update(toolAccepted=False)),
+            ('missing-prepared-source', lambda q,m,p,r,a:a['candidateSources'].pop('data/learning-ai-source-v1.js')),
+            ('changed-old-model-assertions', lambda q,m,p,r,a:a.update(all31OriginalModelAssertionsPreserved=False)),
+            ('failed-browser-runner-syntax', lambda q,m,p,r,a:a.update(newBrowserRunnerSyntaxExit=1)),
+            ('preparation-as-browser-pass', lambda q,m,p,r,a:a.update(actualBrowserCasesRun=32)),
+            ('preparation-as-full-W07', lambda q,m,p,r,a:a.update(fullW07Acceptance=True)),
+            ('unqualified-model-bytes', lambda q,m,p,r,a:m['candidate']['data/learning-ai-source-v1.js'].update(sha256='0'*64)),
+            ('changed-model-assertion-runner', lambda q,m,p,r,a:m['candidate']['tools/run-w07-learning-assistance-v1.js'].update(sha256='0'*64)),
+        ]
+        for name,alter in invalid_w07:
+            qa,ma,pa,ra,aa=copy.deepcopy((live7,m7,p7,r7,a7));alter(qa,ma,pa,ra,aa)
+            try:check_w07(qa,ma,pa,prior7,ra,aa)
+            except (ValueError,KeyError,TypeError):rows.append("W07:"+name+":REJECTED")
+            else:raise ValueError("unsafe W07 transition accepted: "+name)
+        require(len(rows)==old_count+1+len(invalid_w07),"all original256 cases plus distinct strict W07 transition cases")
     return rows
 
 def peel(rel,raw):
@@ -837,9 +936,66 @@ def successor_protection(q):
         require(readiness['w06Active'] is False and readiness['w06ProductOrDbMutationPerformed'] is False and readiness['fullW06Acceptance'] is False,'readiness is not actual W06 app acceptance')
         return True
 
+    def validate_w07_transition(queue, manifest, publication, previous_queue, readiness, preparation):
+        expected_predecessor = {'kind': 'W06_COMPLETED_LOCAL_DEVELOPMENT_PREDECESSOR_V1', 'reportPath': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\W06_LOCAL_PUBLICATION_CLOSURE.json', 'bytes': 155463, 'sha256': 'b852b9951e11711846fd57a58fde84be07f119459f6f4ae6004474c453cea804', 'commit': '96cf711cf1718aa75036ae3b87dbb047283107d6', 'parent': 'f40919ca4481f69491a88efa28c2d29965186aab', 'acceptanceScope': 'APPROVED_ISOLATED_SYNTHETIC_LOCAL_W06_DEVELOPMENT'}
+        historical_manifest = {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W06\\execution-20261030-v1\\final-02\\candidate-manifest.json', 'bytes': 63928, 'sha256': 'a7af460477cee2c84219b0d7d31001877f599df7c5cb0e2c2547876ec15ad149'}
+        published_queue_pin = {'bytes': 16204, 'sha256': '0dc223b22457c0123ea381fb5a15934d7013c3b1508e5dbc5fd43a685286c1c7'}
+        readiness_ref = {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\preparation-20261030-v1\\READINESS_AFTER_W06_PUBLICATION.json', 'bytes': 4691, 'sha256': 'd7f8440e7cc9f6101c1c56ca4d157f33e13741997c6d852037e12bb0afa398c9'}
+        preparation_ref = {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\preparation-20261030-v1\\local-source-family-03\\SOURCE_FAMILY_INDEPENDENT_READBACK.json', 'bytes': 4886, 'sha256': '07da4abce2c4e68dc96295df35cd2099793d2a7b924581c41d4dcbf69d04af17'}
+        required = ['docs/tasks/CURRENT_TASK.md', 'docs/PROJECT_STATE_CURRENT.md', 'docs/PROJECT_MASTERLIST.md', 'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md', 'docs/tasks/DEVELOPMENT_QUEUE_V1.json', 'tools/check-development-queue-v1.py', 'docs/W07_LEARNING_AI_ACCEPTANCE_REPORT.md']
+        products = ['app.js', 'index.html', 'style.css', 'data/learning-ai-source-v1.js', 'data/learning-ai-source-ui-v1.js', 'tools/run-w07-learning-assistance-v1.js', 'tools/run-w07-learning-assistance-browser-v1.js']
+        scope = required + products
+        base = '96cf711cf1718aa75036ae3b87dbb047283107d6'
+        require(queue['current'] == 'W07' and queue['lease'] == 'W07-LOCAL-SOURCE-ASSISTANCE-20261030-V1', 'one personally confirmed W07 executor lease')
+        active = queue['active']
+        require(active['task'] == 'ACCAOUI_DEVELOPMENT_SEQUENCE_W07' and active['baseline'] == manifest['base'] == base, 'exact published W06 canonical base')
+        require(active['paths'] == manifest['scope'] == scope and set(manifest['candidate']) == set(scope), 'exact complete14 W07 scope, no placeholders or extra source writes')
+        require(active['evidenceDirectory'] == 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\execution-20261030-v1' and active['attempt'] == 1 and active['fullFeatureScopeRetained'] is True, 'one original full W07 goal and execution area')
+        require(active.get('fullW07Acceptance') is False and active.get('realAiAcceptance') is False and active.get('externalProviderBlocked') is True and active.get('newW01NaturalRuns') == 0, 'no unapproved AI/provider/full acceptance or natural start')
+        require(queue['w06CompletedLocalPredecessor'] == manifest['w06CompletedLocalPredecessor'] == expected_predecessor, 'same independent actual W06 local publication source')
+        require(manifest['w06HistoricalManifest'] == historical_manifest and manifest['w06PublishedQueuePin'] == published_queue_pin, 'fixed actual published W06 fixtures')
+        require(manifest['w07ReadOnlyReadiness'] == readiness_ref and manifest['w07PreparedSource'] == preparation_ref, 'fixed external W07 preparation sources')
+        require(set(queue) == set(previous_queue) | {'w06CompletedLocalPredecessor'}, 'no unrelated queue fields')
+        changed = {'current', 'lease', 'active', 'items', 'w06CompletedLocalPredecessor'}
+        require(all(queue[key] == previous_queue[key] for key in previous_queue if key not in changed), 'all prior authority/runtime/executor/history/budget fields preserved')
+        require(previous_queue['current'] == 'W06' and len(queue['items']) == len(previous_queue['items']) == 9, 'actual preceding published queue, fixed nine packages')
+        for position, item in enumerate(previous_queue['items']):
+            if position not in (6, 7):
+                require(queue['items'][position] == item, 'unrelated historical package unchanged')
+        w06 = dict(previous_queue['items'][6])
+        w06.update(status='PASS', result={'actualMandatoryChecksPass': True, 'reportSHA256': expected_predecessor['sha256'], 'commit': base, 'acceptanceScope': expected_predecessor['acceptanceScope']})
+        w07 = dict(previous_queue['items'][7])
+        w07.update(status='ACTIVE', attempts=1, result=None)
+        require(queue['items'][6] == w06 and queue['items'][7] == w07, 'only actual W06 completion and original W07 activation')
+        require(queue['items'][7]['depends'] == ['W04'] and queue['items'][4]['status'] == 'PASS' and queue['items'][4]['result'] == {'actualMandatoryChecksPass': True, 'reportSHA256': 'e1e5d3a3ccb76421e1556d70fa1b7b72ada89130738c9eb6ede7e298a3d4de37', 'commit': '249465eeb129ef1f782a4ce919d04937a9c9cd1b'}, 'actual W04 prerequisite only, no invented W05 or W06 feature dependency')
+        require(queue['items'][5]['status'] == 'BLOCKED_EXTERNAL', 'full W05 source/rights/editorial integration still external blocked')
+        require(queue['productionGrant'] is False and queue['liveSupabaseGrant'] is False and queue['realParticipantDataGrant'] is False, 'original production/live/real-data exclusions')
+        require(publication['state'] == 'W06_LOCAL_MATERIALS_DOCUMENTS_COMMITTED_PUSHED_DIRECT_GITHUB_VERIFIED' and publication['commit'] == base and publication['parent'] == 'f40919ca4481f69491a88efa28c2d29965186aab', 'actual normally published W06 package')
+        require(publication['acceptanceScope'] == expected_predecessor['acceptanceScope'] and publication['fullW06Acceptance'] is True, 'actual approved isolated synthetic local W06 acceptance only')
+        require(publication['directConnectedGitHubMainConfirmed'] is True and publication['allSixOriginalFinalGatesNativePass'] is True, 'actual direct GitHub and full original gates')
+        require(publication['checkpointRecords'] == 114 and publication['verifiedCheckpointPrefixes'] == 228, 'all actual114 checkpoints228 prefixes read')
+        require(publication['exactPublishedPathCount'] == len(publication['exactPublishedPaths']) == 17 and set(publication['publishedFinalFilePins']) == set(publication['exactPublishedPaths']), 'all17 actual published W06 inputs')
+        require(publication['pureCases'] == 66 and publication['actualPrivateBackendAuthCases'] == 67 and publication['actualBrowserCases'] == 32 and publication['actualPrivateBrowserHttpReplies'] == 652, 'actual W06 pure/backend/browser/transport proof counts')
+        require(publication['nativeQrComponentCases'] == 5 and publication['actualNativeQrImagesIndependentlyDecoded'] == 3, 'native QR and independent actual output pixel proof')
+        require(publication['all256AuthorityCasesAnd609FilePinsBeforeAfterEqual'] is True and publication['all19DatabaseFunctionBodiesAclsViewsPoliciesAndTargetDataPreserved'] is True and publication['originalFoundation10InputsPreserved'] is True, 'complete protection and preserved actual private backend foundation')
+        steps = publication['publicationSteps']
+        require([step['name'] for step in steps] == ['precommit-guard', 'precommit-diff', 'exact-staged-diff', 'commit', 'postcommit-guard', 'push', 'postpush-guard'] and all(step['nativeExitCode'] == 0 for step in steps), 'all seven native normal publication steps')
+        protection = publication['postPushProtection']
+        require(protection['phase'] == 'pushed' and protection['head'] == protection['origin'] == base and protection['workingFiles'] == 609 and protection['attributes'] == 1218, 'actual exact W06 postpush protection')
+        require(publication['physicalDeviceAcceptance'] is False and publication['physicalPrinterAcceptance'] is False and publication['directBrowserTcpAcceptance'] is False and publication['pdfRasterQrAcceptance'] is False and publication['realNotificationDeliveryAcceptance'] is False, 'no unsupported device/TCP/PDF-raster/external delivery claims')
+        require(publication['backendPublishedHostPorts'] == 0 and publication['servicesStoppedSyntheticRowsCleaned'] is True and publication['newW01NaturalRuns'] == 0 and publication['appSupabase'] == 'NICHT LIVE' and publication['productionGrant'] is False and publication['fullW05Acceptance'] is False, 'unchanged isolated development and W05 external boundary')
+        require(readiness['state'] == 'W07_LOCAL_PREPARATION_READY_AFTER_ACTUAL_W06_PUBLICATION_OWNER_PROVIDER_QUESTION_ASKED_ONCE' and readiness['base'] == base and readiness['actualW04RequiredPredecessor'] == queue['items'][4], 'actual read-only readiness after W06 publication')
+        require(readiness['w07CanonicalActivation'] is False and readiness['w07ProductMutationPerformed'] is False and readiness['realAiAcceptance'] is False and readiness['fullW07Acceptance'] is False and readiness['providerCalls'] == readiness['externalTransfers'] == 0, 'readiness is not product or AI acceptance')
+        require(readiness['ownerQuestion']['askedOnceVia'] == 'functions.request_user_input_async' and readiness['ownerQuestion']['toolAccepted'] is True and readiness['ownerQuestion']['answerReceived'] is False and readiness['ownerQuestion']['doNotRepeatQuestionOrInferApprovalFromTime'] is True, 'existing owner question is pending, no inferred provider approval')
+        require(preparation['state'] == 'W07_SEVEN_FINISHED_PRODUCT_CANDIDATES_IN_ORIGINAL_SOURCE_FAMILY_31_PURE_PASS_32_BROWSER_PREPARED' and set(preparation['candidateSources']) == set(products), 'seven completed real candidates in original source family')
+        require(preparation['modelAndUiBodiesByteIdentical'] is True and preparation['all31OriginalModelAssertionsPreserved'] is True and preparation['newBrowserRunnerSyntaxExit'] == 0, 'qualified source model and unchanged semantic assertions')
+        require(preparation['actualBrowserCasesPrepared'] == 32 and preparation['actualBrowserCasesRun'] == 0 and preparation['repositoryOrDbMutation'] is False and preparation['realAiAcceptance'] is False and preparation['fullW07Acceptance'] is False, 'prepared32 browser cases do not constitute actual browser/AI acceptance')
+        for path in ['data/learning-ai-source-v1.js', 'tools/run-w07-learning-assistance-v1.js']:
+            require(manifest['candidate'][path] == {key: preparation['candidateSources'][path][key] for key in ['bytes', 'sha256']}, 'actual model and all31 original assertions remain the qualified exact bytes')
+
     active=validate_active_manifest(q)
     closure_evidence=Path(active["evidenceDirectory"])
-    if q["current"] in {"W02","W03","W04","W05","W06"}:
+    if q["current"] in {"W02","W03","W04","W05","W06","W07"}:
         require(q.get("w01Closure") is not None and q.get("w02RuntimeBinding") is not None,"W02 requires actual predecessor and separate repair binding")
         closure_evidence=OUT.parent/"W01/closure-20261024-v1"
     second=q.get("secondRealRun")
@@ -856,6 +1012,8 @@ def successor_protection(q):
                 require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1","one identified new W02 binding; no new W01 run")
             elif q["current"]=="W05":
                 require(q["lease"]=="W05-CONTENT-ADMIN-20261027-V1","one identified W05; all natural starts consumed")
+            elif q["current"]=="W07":
+                require(q["lease"]=="W07-LOCAL-SOURCE-ASSISTANCE-20261030-V1","one identified W07, no new natural starts")
             elif q["current"]=="W06":
                 require(q["lease"]=="W06-MATERIALS-DOCUMENTS-20261030-V1","one identified W06; all natural starts remain consumed")
             elif q["current"]=="W03":
@@ -907,7 +1065,7 @@ def successor_protection(q):
     require(sha(raw)==os.environ.get("ACCAOUI_SEQUENCE_MANIFEST_SHA256"),"independent successor manifest pin")
     m=json.loads(raw);scope=set(active["paths"]);base=active["baseline"]
     require(m["task"]==active["task"] and m["base"]==base and m["scope"]==active["paths"] and set(m["candidate"])==scope,"exact successor application scope")
-    if q["current"] in {"W03","W06"}:
+    if q["current"] in {"W03","W06","W07"}:
         bound_sources={}
         for key in ("executorTakeover","w05LocalPartialPredecessor","w03ActualEnvironmentFoundation"):
             require(m[key]==q[key],"same actual W03 control source "+key)
@@ -919,7 +1077,7 @@ def successor_protection(q):
             bound_sources[key]=json.loads(data)
         prior_raw=git("show","874785d1495e408fb30e8df8906ae8af3a4157b9:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
         require(len(prior_raw)==14480 and sha(prior_raw)=="962cc82d23a34fbc8e1ce77654c807a3c6812372ea8ddef66b067a81f197cd02","actual published prior W05 queue")
-        if q["current"]=="W06":
+        if q["current"] in {"W06","W07"}:
             w03_queue_raw=git("show","f40919ca4481f69491a88efa28c2d29965186aab:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
             require({"bytes":len(w03_queue_raw),"sha256":sha(w03_queue_raw)}=={'bytes': 15389, 'sha256': 'e33a7d0af9ad8fcce9d6c91e1018b03465b2d4fadba71c9c10a915e3741c30e2'},"fixed actual published W03 queue")
             w03_manifest_ref={'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\execution-20261029-v1\\final-03\\candidate-manifest.json', 'bytes': 86316, 'sha256': '3d51fdc354c177da65b0d707fac0e5aabbb2ec5581ab20b0e7ce5692b297d570'}
@@ -933,7 +1091,49 @@ def successor_protection(q):
             require(m["w06ReadOnlyReadiness"]==readiness_ref,"fixed W06 read-only source binding")
             readiness_raw=Path(readiness_ref["path"]).read_bytes()
             require({"bytes":len(readiness_raw),"sha256":sha(readiness_raw)}=={k:readiness_ref[k] for k in ("bytes","sha256")},"immutable exact W06 inventory bytes")
-            validate_w06_transition(q,m,json.loads(publication_raw),json.loads(w03_queue_raw),json.loads(readiness_raw))
+            if q["current"]=="W07":
+                readiness_raw_w06=readiness_raw
+                w06_manifest_ref = {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W06\\execution-20261030-v1\\final-02\\candidate-manifest.json', 'bytes': 63928, 'sha256': 'a7af460477cee2c84219b0d7d31001877f599df7c5cb0e2c2547876ec15ad149'}
+                require(m['w06HistoricalManifest'] == w06_manifest_ref, 'fixed original W06 published manifest')
+                w06_manifest_raw = Path(w06_manifest_ref['path']).read_bytes()
+                require({'bytes': len(w06_manifest_raw), 'sha256': sha(w06_manifest_raw)} == {key: w06_manifest_ref[key] for key in ('bytes', 'sha256')}, 'immutable actual published W06 manifest bytes')
+                w06_queue_raw = git('show', '96cf711cf1718aa75036ae3b87dbb047283107d6:docs/tasks/DEVELOPMENT_QUEUE_V1.json')
+                require({'bytes': len(w06_queue_raw), 'sha256': sha(w06_queue_raw)} == {'bytes': 16204, 'sha256': '0dc223b22457c0123ea381fb5a15934d7013c3b1508e5dbc5fd43a685286c1c7'}, 'immutable original W06 published queue')
+                entry = m['w06CompletedLocalPredecessor']
+                w06_publication_raw = Path(entry['reportPath']).read_bytes()
+                require({'bytes': len(w06_publication_raw), 'sha256': sha(w06_publication_raw)} == {'bytes': 155463, 'sha256': 'b852b9951e11711846fd57a58fde84be07f119459f6f4ae6004474c453cea804'}, 'complete actual W06 normal publication closure')
+                readiness_ref = {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\preparation-20261030-v1\\READINESS_AFTER_W06_PUBLICATION.json', 'bytes': 4691, 'sha256': 'd7f8440e7cc9f6101c1c56ca4d157f33e13741997c6d852037e12bb0afa398c9'}
+                preparation_ref = {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\preparation-20261030-v1\\local-source-family-03\\SOURCE_FAMILY_INDEPENDENT_READBACK.json', 'bytes': 4886, 'sha256': '07da4abce2c4e68dc96295df35cd2099793d2a7b924581c41d4dcbf69d04af17'}
+                require(m['w07ReadOnlyReadiness'] == readiness_ref and m['w07PreparedSource'] == preparation_ref, 'same independent W07 readonly preparation references')
+                readiness_raw = Path(readiness_ref['path']).read_bytes()
+                preparation_raw = Path(preparation_ref['path']).read_bytes()
+                require({'bytes': len(readiness_raw), 'sha256': sha(readiness_raw)} == {key: readiness_ref[key] for key in ('bytes', 'sha256')}, 'unchanged actual W07 readiness')
+                require({'bytes': len(preparation_raw), 'sha256': sha(preparation_raw)} == {key: preparation_ref[key] for key in ('bytes', 'sha256')}, 'unchanged actual W07 source preparation')
+                preparation = json.loads(preparation_raw)
+                model_ref = preparation['modelResult']
+                model_raw = Path(model_ref['path']).read_bytes()
+                require({'bytes': len(model_raw), 'sha256': sha(model_raw)} == {key: model_ref[key] for key in ('bytes', 'sha256')}, 'immutable actual31 model-case result bytes')
+                model = json.loads(model_raw)
+                require(model['state'] == 'W07_LOCAL_SOURCE_MODEL_QUALIFIED_REAL_AI_BLOCKED' and model['failure'] is None and len(model['cases']) == 31 and all(row['status'] == 'PASS' for row in model['cases']), 'all31 actual pure source model cases passed')
+                require(model['pureModelOnly'] is True and model['actualBrowserAcceptance'] is False and model['actualAiAcceptance'] is False and model['fullW07Acceptance'] is False, 'model fixtures are not actual UI or AI acceptance')
+                for source_path, pin in model['sourcePins'].items():
+                    data = Path(source_path).read_bytes()
+                    require({'bytes': len(data), 'sha256': sha(data)} == pin, 'all qualified model and source inputs preserved')
+                w04_publication_path = OUT.parent / 'W04/execution-20261027-v1/product-05/publish-01/result-readback.json'
+                require(regular(w04_publication_path), 'actual required W04 publication report exists')
+                w04_publication_raw = w04_publication_path.read_bytes()
+                require({'bytes': len(w04_publication_raw), 'sha256': sha(w04_publication_raw)} == {'bytes': 25417, 'sha256': 'e1e5d3a3ccb76421e1556d70fa1b7b72ada89130738c9eb6ede7e298a3d4de37'}, 'independently pinned complete actual W04 prerequisite')
+                validate_w07_transition(q, m, json.loads(w06_publication_raw), json.loads(w06_queue_raw), json.loads(readiness_raw), preparation)
+                validate_w06_transition(json.loads(w06_queue_raw), json.loads(w06_manifest_raw), json.loads(publication_raw), json.loads(w03_queue_raw), json.loads(readiness_raw_w06))
+                app_raw = (ROOT / 'app.js').read_bytes()
+                guard_line = b'  window.ACCAOUI_LEARNING_ASSISTANCE_UI_V1?.prepareScopeChange();\n'
+                require(app_raw.count(guard_line) == 1 and app_raw.replace(guard_line, b'', 1) == git('show', '96cf711cf1718aa75036ae3b87dbb047283107d6:app.js'), 'all existing root learning/exam/account logic bytes retained except one explicit source-query guard')
+                index_raw = (ROOT / 'index.html').read_bytes()
+                source_scripts = b'<script src="data/learning-ai-source-v1.js?v=1"></script>\n<script src="data/learning-ai-source-ui-v1.js?v=1"></script>\n'
+                require(index_raw.count(source_scripts) == 1 and index_raw.replace(source_scripts, b'', 1) == git('show', '96cf711cf1718aa75036ae3b87dbb047283107d6:index.html'), 'only two local source scripts added; old live/init and script order bytes unchanged')
+                require((ROOT / 'style.css').read_bytes().startswith(git('show', '96cf711cf1718aa75036ae3b87dbb047283107d6:style.css')), 'all prior style bytes retained, scoped component CSS only')
+            else:
+                validate_w06_transition(q,m,json.loads(publication_raw),json.loads(w03_queue_raw),json.loads(readiness_raw))
             validate_w03_transition(json.loads(w03_queue_raw),json.loads(w03_manifest_raw),bound_sources["w05LocalPartialPredecessor"],bound_sources["w03ActualEnvironmentFoundation"],json.loads(prior_raw),bound_sources["executorTakeover"])
         else:
             validate_w03_transition(q,m,bound_sources["w05LocalPartialPredecessor"],bound_sources["w03ActualEnvironmentFoundation"],json.loads(prior_raw),bound_sources["executorTakeover"])
@@ -972,10 +1172,12 @@ def successor_protection(q):
             for name,entry in m["runtimePins"].items():
                 path=Path(entry["path"]);raw=path.read_bytes()
                 require(regular(path) and len(raw)==entry["bytes"] and sha(raw)==entry["sha256"],"fresh unchanged closure runtime "+name)
-    if q["current"] in {"W02","W03","W04","W05","W06"}:
+    if q["current"] in {"W02","W03","W04","W05","W06","W07"}:
         binding=q["w02RuntimeBinding"]
         if q["current"]=="W02":
             require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1" and active["baseline"]=="d7d1151830951188854ad7aa013448251a2a9bbe","exact W02 repair lease/base")
+        elif q["current"]=="W07":
+            require(q["lease"]=="W07-LOCAL-SOURCE-ASSISTANCE-20261030-V1" and active["baseline"]=="96cf711cf1718aa75036ae3b87dbb047283107d6","actual W07 lease and published canonical W06 base")
         elif q["current"]=="W06":
             require(q["lease"]=="W06-MATERIALS-DOCUMENTS-20261030-V1" and active["baseline"]=="f40919ca4481f69491a88efa28c2d29965186aab","actual W06 lease and directly published W03 base")
         elif q["current"]=="W03":
@@ -986,7 +1188,7 @@ def successor_protection(q):
             require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1" and active["baseline"]=="2cb33ce491ee26db4b9767901368156bbbadad76","exact W04 lease and actual W02 completion base")
         directory=OUT.parent/"W02/runtime-binding-v1/execution-v1"
         require(Path(binding["directory"]).resolve()==directory.resolve(),"fixed preserved W02 runtime evidence area")
-        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/({"W06":"W06/execution-20261030-v1","W03":"W03/execution-20261029-v1","W04":"W04/execution-20261027-v1","W05":"W05/execution-20261027-v1"}[q["current"]])
+        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/({"W07":"W07/execution-20261030-v1","W06":"W06/execution-20261030-v1","W03":"W03/execution-20261029-v1","W04":"W04/execution-20261027-v1","W05":"W05/execution-20261027-v1"}[q["current"]])
         require(Path(active["evidenceDirectory"]).resolve()==expected_active_directory.resolve(),"own exact active package evidence area")
         runtime_path=directory/"runtime-set.json"
         require(regular(runtime_path),"regular W02 runtime set")
@@ -1028,7 +1230,7 @@ def successor_protection(q):
             runtime=nr
         browser_context=m.get("browserRebinding")
         if browser_context is not None:
-            require(q["current"] in {"W03","W05","W06"} and node_context is not None,"exact qualified browser reused only for W05 or separately qualified W03 with original Node proof")
+            require(q["current"] in {"W03","W05","W06","W07"} and node_context is not None,"exact qualified browser reused only for W05 or separately qualified W03 with original Node proof")
             receipt_entry=browser_context["authorityReceipt"]
             receipt_path=Path(receipt_entry["path"])
             require(regular(receipt_path),"regular direct human browser approval receipt")
