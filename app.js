@@ -1,3 +1,30 @@
+// BEGIN W03 explicit owner/course storage dependency
+function participantProgressStorageV1() {
+  const participant = window.ACCAOUI_PARTICIPANT_SESSION_V1;
+  if (participant && participant.requested() === true) return participant.storage();
+  return localStorage;
+}
+// END W03 explicit owner/course storage dependency
+
+// Save through the existing entry points before an explicit account/course transition.
+function prepareParticipantScopeChangeV1() {
+  const guidance = document.getElementById("learningGuidanceV1");
+  if (guidance && typeof guidance.hasUnsavedParticipantInputV1 === "function" && guidance.hasUnsavedParticipantInputV1()) {
+    const error = new Error("pending_form_input"); error.code = "pending_form_input"; throw error;
+  }
+  for (const [id, key] of [["examDateWrittenV1Input", "accaoui_exam_date_written_v1"], ["examDateOralV1Input", "accaoui_exam_date_oral_v1"]]) {
+    const input = document.getElementById(id);
+    if (input && input.value !== (participantProgressStorageV1().getItem(key) || "")) {
+      const error = new Error("pending_form_input"); error.code = "pending_form_input"; throw error;
+    }
+  }
+  if (currentMode === "exam" && writtenExamAttemptV2737G && writtenExamAttemptV2737G.status === "active" && !saveActiveExamSession()) {
+    const error = new Error("cache_unavailable"); error.code = "cache_unavailable"; throw error;
+  }
+  if (isActiveLearningMode()) saveCurrentLearningSession();
+  if (currentMode === "flashcards") saveActiveFlashcardSession();
+}
+
 console.log("Accaoui §34a System gestartet");
 
 /* =====================================================
@@ -760,6 +787,11 @@ function getCurrentAccessState() {
 }
 
 function startLocalApp() {
+  const participant = window.ACCAOUI_PARTICIPANT_SESSION_V1;
+  if (participant && participant.requested() === true && participant.ready() !== true) {
+    participant.boot().then(() => { if (participant.ready() === true) startLocalApp(); }).catch(() => {});
+    return;
+  }
   registerActiveSessionAutoSaveListeners();
   loadAllLocalData();
   activateDashboardButtons();
@@ -856,7 +888,7 @@ function loadAllLocalData() {
 }
 
 function readStorage(key, fallbackValue) {
-  const saved = localStorage.getItem(key);
+  const saved = participantProgressStorageV1().getItem(key);
 
   if (!saved) {
     return fallbackValue;
@@ -871,7 +903,7 @@ function readStorage(key, fallbackValue) {
 }
 
 function writeStorage(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  participantProgressStorageV1().setItem(key, JSON.stringify(value));
 }
 
 // BEGIN v27.37g written exam completion
@@ -886,7 +918,7 @@ function writtenExamRecordV2737G(value) {
 }
 
 function writtenExamHistoryV2737G() {
-  const raw = localStorage.getItem(STORAGE_KEYS.examHistory);
+  const raw = participantProgressStorageV1().getItem(STORAGE_KEYS.examHistory);
   const history = raw === null ? [] : JSON.parse(raw);
   if (!Array.isArray(history) || !history.every(writtenExamRecordV2737G)) {
     throw new Error("written-exam-storage");
@@ -895,7 +927,7 @@ function writtenExamHistoryV2737G() {
 }
 
 function writtenExamSessionV2737G() {
-  const raw = localStorage.getItem(STORAGE_KEYS.activeSession);
+  const raw = participantProgressStorageV1().getItem(STORAGE_KEYS.activeSession);
   if (raw === null) return null;
   const session = JSON.parse(raw);
   if (!writtenExamRecordV2737G(session) || session.sessionType !== "exam" ||
@@ -953,7 +985,7 @@ function writtenExamTrainingStateV2737G() {
   // Validate the three existing written-training stores before any completion write.
   const values = [STORAGE_KEYS.topicStats, STORAGE_KEYS.topicMistakes, STORAGE_KEYS.answeredQuestions]
     .map(key => {
-      const raw = localStorage.getItem(key);
+      const raw = participantProgressStorageV1().getItem(key);
       const value = raw === null ? {} : JSON.parse(raw);
       if (!writtenExamRecordV2737G(value)) throw new Error("written-exam-training");
       return value;
@@ -969,7 +1001,7 @@ function writtenExamTrainingStateV2737G() {
 
 function writtenExamLegacyDialogV2737G(session) {
   if (document.getElementById("writtenExamLegacyDialogV2737G")) return;
-  const original = localStorage.getItem(STORAGE_KEYS.activeSession);
+  const original = participantProgressStorageV1().getItem(STORAGE_KEYS.activeSession);
   const dialog = document.createElement("dialog");
   dialog.id = "writtenExamLegacyDialogV2737G";
   dialog.className = "exam-warning-box";
@@ -991,7 +1023,7 @@ function writtenExamLegacyDialogV2737G(session) {
     button.addEventListener("click", () => {
       if (decision === "cancel") { dialog.close(); dialog.remove(); return; }
       try {
-        if (localStorage.getItem(STORAGE_KEYS.activeSession) !== original) throw new Error("written-exam-changed");
+        if (participantProgressStorageV1().getItem(STORAGE_KEYS.activeSession) !== original) throw new Error("written-exam-changed");
         const current = writtenExamSessionV2737G();
         if (!current || current.attemptId !== undefined) throw new Error("written-exam-changed");
         const id = writtenExamNewIdV2737G(current, writtenExamHistoryV2737G());
@@ -1034,7 +1066,7 @@ function saveActiveSession(session) {
 }
 
 function clearActiveSession() {
-  localStorage.removeItem(STORAGE_KEYS.activeSession);
+  participantProgressStorageV1().removeItem(STORAGE_KEYS.activeSession);
 }
 
 function hasActiveExamSession() {
@@ -1274,7 +1306,7 @@ function saveActiveLearningSession(session) {
 }
 
 function clearActiveLearningSession() {
-  localStorage.removeItem(STORAGE_KEYS.activeLearningSession);
+  participantProgressStorageV1().removeItem(STORAGE_KEYS.activeLearningSession);
 }
 
 function hasActiveLearningSession() {
@@ -1369,6 +1401,8 @@ function showAutoSaveIndicator(reason) {
 }
 
 function autoSaveActiveSessionOnLeave(reason) {
+  const participant = window.ACCAOUI_PARTICIPANT_SESSION_V1;
+  if (participant && participant.requested() === true && participant.ready() !== true) return;
   let saved = false;
 
   if (currentMode === "exam" && Array.isArray(examQuestions) && examQuestions.length > 0) {
@@ -5204,10 +5238,10 @@ function resetExamHistory() {
     "Statistik zurücksetzen?",
     "Alle lokal gespeicherten Prüfungsergebnisse, Themenstatistiken, offenen Fragen und Fehlerlisten werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
     () => {
-      localStorage.removeItem(STORAGE_KEYS.examHistory);
-      localStorage.removeItem(STORAGE_KEYS.topicStats);
-      localStorage.removeItem(STORAGE_KEYS.topicMistakes);
-      localStorage.removeItem(STORAGE_KEYS.answeredQuestions);
+      participantProgressStorageV1().removeItem(STORAGE_KEYS.examHistory);
+      participantProgressStorageV1().removeItem(STORAGE_KEYS.topicStats);
+      participantProgressStorageV1().removeItem(STORAGE_KEYS.topicMistakes);
+      participantProgressStorageV1().removeItem(STORAGE_KEYS.answeredQuestions);
 
       examHistory = [];
       topicStats = {};
@@ -5495,7 +5529,7 @@ function loadFlashcardProgressStore() {
   if (typeof readStorage === "function") {
     flashcardProgressStore = readStorage(FLASHCARD_PROGRESS_KEY, {});
   } else {
-    const saved = localStorage.getItem(FLASHCARD_PROGRESS_KEY);
+    const saved = participantProgressStorageV1().getItem(FLASHCARD_PROGRESS_KEY);
     flashcardProgressStore = saved ? JSON.parse(saved) : {};
   }
 }
@@ -5504,7 +5538,7 @@ function saveFlashcardProgressStore() {
   if (typeof writeStorage === "function") {
     writeStorage(FLASHCARD_PROGRESS_KEY, flashcardProgressStore);
   } else {
-    localStorage.setItem(FLASHCARD_PROGRESS_KEY, JSON.stringify(flashcardProgressStore));
+    participantProgressStorageV1().setItem(FLASHCARD_PROGRESS_KEY, JSON.stringify(flashcardProgressStore));
   }
 }
 
@@ -5605,7 +5639,7 @@ function getActiveFlashcardSession() {
     return readStorage(ACTIVE_FLASHCARD_SESSION_KEY_V261C, null);
   }
 
-  const saved = localStorage.getItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
+  const saved = participantProgressStorageV1().getItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
   return saved ? JSON.parse(saved) : null;
 }
 
@@ -5633,7 +5667,7 @@ function saveActiveFlashcardSession() {
   if (typeof writeStorage === "function") {
     writeStorage(ACTIVE_FLASHCARD_SESSION_KEY_V261C, session);
   } else {
-    localStorage.setItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C, JSON.stringify(session));
+    participantProgressStorageV1().setItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C, JSON.stringify(session));
   }
 }
 
@@ -5641,7 +5675,7 @@ function clearActiveFlashcardSession() {
   if (typeof removeStorage === "function") {
     removeStorage(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
   } else {
-    localStorage.removeItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
+    participantProgressStorageV1().removeItem(ACTIVE_FLASHCARD_SESSION_KEY_V261C);
   }
 }
 
@@ -6479,6 +6513,10 @@ window.openWeakestCategoryFromDashboardV2735B = openWeakestCategoryFromDashboard
 window.startFlashcardSessionFromUnknownV2735B = startFlashcardSessionFromUnknownV2735B;
 
 // BEGIN ACCAOUI_V1_DASHBOARD_EXAM_DATES product
+function examDatesProgressStorageV1() {
+  return typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage;
+}
+
 const EXAM_DATE_KEYS_V1 = Object.freeze({
   written: "accaoui_exam_date_written_v1",
   oral: "accaoui_exam_date_oral_v1"
@@ -6525,7 +6563,7 @@ function initDashboardExamDatesV1() {
   }
   const card = element("section", { id: "examDatesDashboardV1", "aria-labelledby": "examDatesHeadingV1" });
   card.appendChild(element("h2", { id: "examDatesHeadingV1" }, "Mein Prüfungstermin"));
-  card.appendChild(element("p", { class: "exam-dates-hint" }, "Freiwillig: Ihre Termine werden nur in diesem Browser gespeichert. Sie können sie jederzeit ändern oder löschen."));
+  card.appendChild(element("p", { class: "exam-dates-hint" }, (window.ACCAOUI_PARTICIPANT_SESSION_V1?.requested() === true ? "Freiwillig: Ihre Termine gehören zum gewählten Konto und Kurs. Sie können sie jederzeit ändern oder löschen." : "Freiwillig: Ihre Termine werden nur in diesem Browser gespeichert. Sie können sie jederzeit ändern oder löschen.")));
   const grid = element("div", { class: "exam-dates-grid" });
   card.appendChild(grid);
   const rows = [];
@@ -6561,7 +6599,7 @@ function initDashboardExamDatesV1() {
       const previous = saved;
       let raw;
       try {
-        raw = localStorage.getItem(key);
+        raw = examDatesProgressStorageV1().getItem(key);
       } catch (_error) {
         fail("Der lokale Speicher kann nicht gelesen werden. Bitte prüfen Sie die Browsereinstellungen.");
         remove.hidden = false;
@@ -6591,8 +6629,8 @@ function initDashboardExamDatesV1() {
         return;
       }
       try {
-        localStorage.setItem(key, value);
-        if (localStorage.getItem(key) !== value) throw new Error("date-write-unconfirmed");
+        examDatesProgressStorageV1().setItem(key, value);
+        if (examDatesProgressStorageV1().getItem(key) !== value) throw new Error("date-write-unconfirmed");
       } catch (_error) {
         fail("Der Termin konnte nicht sicher gespeichert werden. Ihre Eingabe bleibt erhalten. Bitte prüfen Sie den lokalen Browserspeicher.");
         return;
@@ -6601,8 +6639,8 @@ function initDashboardExamDatesV1() {
     });
     remove.addEventListener("click", () => {
       try {
-        localStorage.removeItem(key);
-        if (localStorage.getItem(key) !== null) throw new Error("date-delete-unconfirmed");
+        examDatesProgressStorageV1().removeItem(key);
+        if (examDatesProgressStorageV1().getItem(key) !== null) throw new Error("date-delete-unconfirmed");
       } catch (_error) {
         fail("Das Löschen konnte nicht bestätigt werden. Bitte prüfen Sie den lokalen Browserspeicher.");
         return;
@@ -6644,11 +6682,13 @@ function initDashboardExamDatesV1() {
     document.removeEventListener("visibilitychange", refresh);
     window.removeEventListener("focus", refresh);
     window.removeEventListener("storage", onStorage);
+    if (window.ACCAOUI_PARTICIPANT_SESSION_V1?.requested() === true) window.removeEventListener("accaoui-progress-updated-v1", refresh);
     if (observer) observer.disconnect();
   }
   document.addEventListener("visibilitychange", refresh);
   window.addEventListener("focus", refresh);
   window.addEventListener("storage", onStorage);
+  if (window.ACCAOUI_PARTICIPANT_SESSION_V1?.requested() === true) window.addEventListener("accaoui-progress-updated-v1", refresh);
   if (typeof MutationObserver === "function") {
     observer = new MutationObserver(() => { if (!card.isConnected) dispose(); });
     observer.observe(main, { childList: true });
@@ -6662,7 +6702,7 @@ function initDashboardExamDatesV1() {
 function learningGuidanceApiV1(){return window.ACCAOUI_LEARNING_GUIDANCE_V1||null;}
 function recordGuidanceActivityV1(kind,amount,correct){
   const api=learningGuidanceApiV1();if(!api)return;
-  try{if(!api.activity(localStorage,kind,amount,correct).ok)showSmallNotice("Die Tagesübersicht konnte nicht gespeichert werden. Ihre fachliche Bewertung wird dadurch nicht geändert.");}
+  try{if(!api.activity(participantProgressStorageV1(),kind,amount,correct).ok)showSmallNotice("Die Tagesübersicht konnte nicht gespeichert werden. Ihre fachliche Bewertung wird dadurch nicht geändert.");}
   catch(_error){showSmallNotice("Die Tagesübersicht ist momentan nicht verfügbar.");}
 }
 function getDueFlashcardQuestionsV1(){
@@ -6723,8 +6763,8 @@ function renderLearningGuidanceV1(){
   const error=find("guidancePlanErrorV1"),status=find("guidancePlanStatusV1");
   let dirty=false,savedPreferences=null,timer=null,disposed=false,observer=null;
   function fail(message){error.textContent=message;}
-  function read(){const r=api.readState(localStorage);if(!r.ok)fail("Der gespeicherte Lernplan ist ungültig oder nicht lesbar. Er wurde nicht überschrieben. Sie können nur den Lernplan zurücksetzen.");return r;}
-  function localDate(key){try{return localStorage.getItem(key);}catch(_error){return null;}}
+  function read(){const r=api.readState(participantProgressStorageV1());if(!r.ok)fail("Der gespeicherte Lernplan ist ungültig oder nicht lesbar. Er wurde nicht überschrieben. Sie können nur den Lernplan zurücksetzen.");return r;}
+  function localDate(key){try{return participantProgressStorageV1().getItem(key);}catch(_error){return null;}}
   function refresh(preserveDraft=true){
     if(disposed)return;
     if(timer!==null)clearTimeout(timer);
@@ -6770,22 +6810,23 @@ function renderLearningGuidanceV1(){
     if(savedPreferences!==null&&savedPreferences!==current){savedPreferences=current;fail("Die Einstellungen wurden inzwischen geändert. Ihre Eingabe bleibt erhalten. Bitte prüfen und zum Übernehmen erneut speichern.");refresh(true);return;}
     const settings={minutes:Number(minutes.value),pausedUntil:loaded.state.preferences.pausedUntil,reminders:reminders.checked,reminderTime:time.value};
     if(!api.validPreferences(settings)){fail("Bitte eine ganze Lernzeit von 10 bis 120 Minuten und eine gültige Uhrzeit eingeben.");minutes.setAttribute("aria-invalid","true");return;}
-    if(!api.savePreferences(localStorage,settings).ok){fail("Die Einstellungen konnten nicht sicher gespeichert werden. Ihre Eingabe bleibt erhalten.");return;}
+    if(!api.savePreferences(participantProgressStorageV1(),settings).ok){fail("Die Einstellungen konnten nicht sicher gespeichert werden. Ihre Eingabe bleibt erhalten.");return;}
     minutes.removeAttribute("aria-invalid");fail("");dirty=false;refresh(false);
   });
   find("guidancePauseV1").addEventListener("click",()=>{
     const loaded=read();if(!loaded.ok)return;
     const today=api.day(),p=loaded.state.preferences;
-    if(!api.savePreferences(localStorage,{...p,pausedUntil:p.pausedUntil&&p.pausedUntil>=today?null:today}).ok){fail("Die Planpause konnte nicht sicher gespeichert werden.");return;}
+    if(!api.savePreferences(participantProgressStorageV1(),{...p,pausedUntil:p.pausedUntil&&p.pausedUntil>=today?null:today}).ok){fail("Die Planpause konnte nicht sicher gespeichert werden.");return;}
     fail("");refresh(true);
   });
   find("guidanceReplanV1").addEventListener("click",()=>{fail("");refresh(true);});
-  find("guidanceResetV1").addEventListener("click",()=>{if(!api.reset(localStorage).ok){fail("Der Lernplan konnte nicht sicher zurückgesetzt werden.");return;}dirty=false;fail("");refresh(false);});
+  find("guidanceResetV1").addEventListener("click",()=>{if(!api.reset(participantProgressStorageV1()).ok){fail("Der Lernplan konnte nicht sicher zurückgesetzt werden.");return;}dirty=false;fail("");refresh(false);});
   const onVisibility=()=>{if(document.visibilityState!=="hidden")refresh(true);};
   const onStorage=event=>{if(event.key===null||[api.KEY,FLASHCARD_PROGRESS_KEY,STORAGE_KEYS.topicStats,...Object.values(EXAM_DATE_KEYS_V1)].includes(event.key))refresh(true);};
-  function dispose(){if(disposed)return;disposed=true;if(timer!==null)clearTimeout(timer);window.removeEventListener("focus",onVisibility);window.removeEventListener("storage",onStorage);document.removeEventListener("visibilitychange",onVisibility);if(observer)observer.disconnect();}
-  window.addEventListener("focus",onVisibility);window.addEventListener("storage",onStorage);document.addEventListener("visibilitychange",onVisibility);
+  function dispose(){if(disposed)return;disposed=true;if(timer!==null)clearTimeout(timer);window.removeEventListener("focus",onVisibility);window.removeEventListener("storage",onStorage);if(window.ACCAOUI_PARTICIPANT_SESSION_V1?.requested()===true)window.removeEventListener("accaoui-progress-updated-v1",onVisibility);document.removeEventListener("visibilitychange",onVisibility);if(observer)observer.disconnect();}
+  window.addEventListener("focus",onVisibility);window.addEventListener("storage",onStorage);if(window.ACCAOUI_PARTICIPANT_SESSION_V1?.requested()===true)window.addEventListener("accaoui-progress-updated-v1",onVisibility);document.addEventListener("visibilitychange",onVisibility);
   if(typeof MutationObserver==="function"){observer=new MutationObserver(()=>{if(!card.isConnected)dispose();});observer.observe(hero.parentNode,{childList:true});}
+  card.hasUnsavedParticipantInputV1=()=>dirty;
   card.refreshPlanV1=refresh;refresh(false);
 }
 window.getDueFlashcardQuestionsV1=getDueFlashcardQuestionsV1;

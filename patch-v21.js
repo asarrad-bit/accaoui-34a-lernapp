@@ -1570,6 +1570,7 @@ if (!window.ACCAOUI_V222_ORAL_SCENE_QUESTION_PATCH) {
   window.ACCAOUI_V222_ORAL_SCENE_QUESTION_PATCH = true;
 
   function getOralExamUserDisplayNameV222() {
+    if (window.ACCAOUI_PARTICIPANT_SESSION_V1?.requested() === true) return "Sie";
     const directWindowName = String(window.accaouiCurrentUserName || "").trim();
 
     if (directWindowName) {
@@ -1713,6 +1714,7 @@ if (!window.ACCAOUI_V225_ORAL_SCENE_QA_PATCH) {
   window.ACCAOUI_V225_ORAL_SCENE_QA_PATCH = true;
 
   function getOralExamUserDisplayNameV225() {
+    if (window.ACCAOUI_PARTICIPANT_SESSION_V1?.requested() === true) return "Sie";
     if (typeof getOralExamUserDisplayNameV222 === "function") {
       return getOralExamUserDisplayNameV222();
     }
@@ -4423,7 +4425,7 @@ if (!window.ACCAOUI_V2324_ORAL_MISTAKE_TRAINER_PATCH) {
 
   function readOralMistakesV2324() {
     try {
-      const raw = localStorage.getItem(ORAL_MISTAKE_STORAGE_KEY_V2324);
+      const raw = (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).getItem(ORAL_MISTAKE_STORAGE_KEY_V2324);
       const parsed = JSON.parse(raw || "[]");
       return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
@@ -4432,7 +4434,7 @@ if (!window.ACCAOUI_V2324_ORAL_MISTAKE_TRAINER_PATCH) {
   }
 
   function writeOralMistakesV2324(list) {
-    localStorage.setItem(
+    (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).setItem(
       ORAL_MISTAKE_STORAGE_KEY_V2324,
       JSON.stringify(Array.isArray(list) ? list : [])
     );
@@ -4746,7 +4748,7 @@ if (!window.ACCAOUI_V2325_ORAL_MISTAKE_REVEAL_PATCH) {
 
   function readOralMistakesV2325() {
     try {
-      const raw = localStorage.getItem(ORAL_MISTAKE_STORAGE_KEY_V2325);
+      const raw = (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).getItem(ORAL_MISTAKE_STORAGE_KEY_V2325);
       const parsed = JSON.parse(raw || "[]");
       return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
@@ -4755,7 +4757,7 @@ if (!window.ACCAOUI_V2325_ORAL_MISTAKE_REVEAL_PATCH) {
   }
 
   function writeOralMistakesV2325(list) {
-    localStorage.setItem(
+    (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).setItem(
       ORAL_MISTAKE_STORAGE_KEY_V2325,
       JSON.stringify(Array.isArray(list) ? list : [])
     );
@@ -4929,7 +4931,7 @@ if (!window.ACCAOUI_V2326_ORAL_MISTAKE_FORCE_REVEAL_PATCH) {
 
   function readOralMistakesV2326() {
     try {
-      const raw = localStorage.getItem(ORAL_MISTAKE_STORAGE_KEY_V2326);
+      const raw = (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).getItem(ORAL_MISTAKE_STORAGE_KEY_V2326);
       const parsed = JSON.parse(raw || "[]");
       return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
@@ -4938,7 +4940,7 @@ if (!window.ACCAOUI_V2326_ORAL_MISTAKE_FORCE_REVEAL_PATCH) {
   }
 
   function writeOralMistakesV2326(list) {
-    localStorage.setItem(
+    (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).setItem(
       ORAL_MISTAKE_STORAGE_KEY_V2326,
       JSON.stringify(Array.isArray(list) ? list : [])
     );

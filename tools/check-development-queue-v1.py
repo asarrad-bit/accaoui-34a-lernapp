@@ -53,7 +53,12 @@ def has_v2(q):
 def validate_queue(q):
     require(q["schema"]==1 and q["id"]==META["package"],"exact confirmed queue")
     require(q["status"]=="PERSONALLY_CONFIRMED_EXECUTING" and q["authority"]==META["authority"],"exact personal total authority; no implicit grant")
-    require(q["executor"]=={"threadId":"01a11cc6-ee66-7890-9520-7fd190f6e687","hostId":"local"},"single existing executor")
+    if "executorTakeover" in q:
+        expected_takeover={'kind': 'PERSONALLY_CONFIRMED_SINGLE_EXECUTOR_TAKEOVER_V1', 'previousExecutor': {'threadId': '01a11cc6-ee66-7890-9520-7fd190f6e687', 'hostId': 'local'}, 'executor': {'threadId': '01a183e7-10e8-74b1-a61b-ce55bc71724e', 'hostId': 'local'}, 'authority': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\TAKEOVER_AUTHORITY_AND_SCOPE.json', 'bytes': 4317, 'sha256': 'bd94f189876fd9b844e5fffd9a6ea265f414b5279d2f1d0c0f14b201b90b1dde'}, 'approvalTurnId': '01a1844b-c2cb-7363-a3a1-fe1f2e1502a9', 'approvalMessageId': '01a1844b-c34e-79a1-b7ec-e5f29f12aab3', 'additionalExecutors': 0}
+        require(q["executorTakeover"]==expected_takeover and q["executor"]==expected_takeover["executor"],"exact personally confirmed single-executor takeover")
+        require(type(q["executorTakeover"]["additionalExecutors"]) is int and q["executorTakeover"]["additionalExecutors"]==0,"no extra executor")
+    else:
+        require(q["executor"]=={"threadId":"01a11cc6-ee66-7890-9520-7fd190f6e687","hostId":"local"},"single existing executor")
     require(q["order"]==META["order"] and len(q["items"])==9,"fixed order and nine tasks")
     require([i["id"] for i in q["items"]]==q["order"],"unique ordered queue entries")
     require({i["id"]:i["depends"] for i in q["items"]}==META["depends"] and {i["id"]:i["goal"] for i in q["items"]}==META["goals"],"preserved goals and dependencies")
@@ -84,6 +89,11 @@ def authorize_transition(q,target,source_read,lease=None,resume=False):
 def queue_cases():
     # Real calls to the same decision function using explicitly synthetic queue data.
     q=json.loads((ROOT/"docs/tasks/DEVELOPMENT_QUEUE_V1.json").read_bytes())
+    actual_queue_for_w03=copy.deepcopy(q)
+    if q["current"]=="W03":
+        w05_fixture=git("show","874785d1495e408fb30e8df8906ae8af3a4157b9:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+        require(len(w05_fixture)==14480 and sha(w05_fixture)=="962cc82d23a34fbc8e1ce77654c807a3c6812372ea8ddef66b067a81f197cd02","all 177 historical W05 authority fixtures pinned")
+        q=json.loads(w05_fixture)
     validate_queue(q);rows=[]
     current_queue=copy.deepcopy(q)
     if q["current"]=="W05":
@@ -426,6 +436,65 @@ def queue_cases():
             except (ValueError,KeyError,TypeError):rows.append("W05Browser:"+name+":REJECTED")
             else:raise ValueError("unsafe W05 browser binding accepted: "+name)
         require(len(rows)==old_count+1+len(browser_invalid),"all original cases plus distinct strict browser identity cases")
+    if actual_queue_for_w03["current"]=="W03":
+        validate_queue(actual_queue_for_w03)
+        syntax=ast.parse((ROOT/"tools/check-development-queue-v1.py").read_text(encoding="utf-8"))
+        outer=next(n for n in syntax.body if isinstance(n,ast.FunctionDef) and n.name=="successor_protection")
+        validator=next(n for n in outer.body if isinstance(n,ast.FunctionDef) and n.name=="validate_w03_transition")
+        namespace={"require":require}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W03-transition-contract>","exec"),namespace)
+        check_w03=namespace["validate_w03_transition"]
+        w03_manifest_path=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"])
+        w03_manifest_raw=w03_manifest_path.read_bytes()
+        require(sha(w03_manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound current W03 fixture manifest")
+        mq=json.loads(w03_manifest_raw)
+        pq=json.loads(Path(mq["w05LocalPartialPredecessor"]["reportPath"]).read_bytes())
+        eq=json.loads(Path(mq["w03ActualEnvironmentFoundation"]["reportPath"]).read_bytes())
+        tq=json.loads(Path(mq["executorTakeover"]["authority"]["path"]).read_bytes())
+        prior_w05=json.loads(git("show","874785d1495e408fb30e8df8906ae8af3a4157b9:docs/tasks/DEVELOPMENT_QUEUE_V1.json"))
+        live=actual_queue_for_w03
+        check_w03(live,mq,pq,eq,prior_w05,tq)
+        old_count=len(rows);require(old_count==177,"all original 177 authority cases still executed")
+        rows.append("W03:actual-published-W05-partial-foundation-takeover:PASS")
+        invalid_w03=[
+            ("wrong-task",lambda q,m,p,e,t:q.update(current="W06")),
+            ("wrong-lease",lambda q,m,p,e,t:q.update(lease="OTHER")),
+            ("wrong-base",lambda q,m,p,e,t:q["active"].update(baseline="0"*40)),
+            ("changed-goal",lambda q,m,p,e,t:q["active"].update(fullFeatureScopeRetained=False)),
+            ("wrong-area",lambda q,m,p,e,t:q["active"].update(evidenceDirectory="C:/other")),
+            ("scope-mismatch",lambda q,m,p,e,t:m["scope"].pop()),
+            ("scope-extra",lambda q,m,p,e,t:q["active"]["paths"].append("questions.json")),
+            ("unrelated-queue-change",lambda q,m,p,e,t:q["items"][0].update(attempts=2)),
+            ("missing-W02-dependency",lambda q,m,p,e,t:q["items"][3].update(depends=[])),
+            ("extra-field",lambda q,m,p,e,t:q.update(extra=True)),
+            ("extra-executor",lambda q,m,p,e,t:q["executor"].update(threadId="OTHER")),
+            ("missing-takeover",lambda q,m,p,e,t:q.pop("executorTakeover")),
+            ("wrong-takeover-pin",lambda q,m,p,e,t:q["executorTakeover"]["authority"].update(sha256="0"*64)),
+            ("wrong-human",lambda q,m,p,e,t:t["approval"]["message"]["content"][0].update(text="unconfirmed")),
+            ("false-W05-PASS",lambda q,m,p,e,t:q["items"][5].update(status="PASS")),
+            ("missing-partial-proof",lambda q,m,p,e,t:q.pop("w05LocalPartialPredecessor")),
+            ("wrong-partial-commit",lambda q,m,p,e,t:p.update(commit="0"*40)),
+            ("wrong-parent",lambda q,m,p,e,t:p.update(parent="0"*40)),
+            ("missing-direct-GitHub",lambda q,m,p,e,t:p.update(directConnectedGitHubMainConfirmed=False)),
+            ("missing-full-gates",lambda q,m,p,e,t:p.update(allSixOriginalFinalGatesNativePass=False)),
+            ("failed-push",lambda q,m,p,e,t:p["publicationSteps"][5].update(nativeExitCode=1)),
+            ("false-full-W05",lambda q,m,p,e,t:p.update(fullW05Acceptance=True)),
+            ("false-real-source",lambda q,m,p,e,t:p.update(actualOwnerSourceAcceptance=True)),
+            ("false-device",lambda q,m,p,e,t:p.update(physicalDeviceAcceptance=True)),
+            ("new-natural-run",lambda q,m,p,e,t:p.update(newW01NaturalRuns=1)),
+            ("foundation-missing",lambda q,m,p,e,t:q.pop("w03ActualEnvironmentFoundation")),
+            ("foundation-fake",lambda q,m,p,e,t:e.update(state="FAKE")),
+            ("foundation-wrong-count",lambda q,m,p,e,t:e.update(casesPassed=11)),
+            ("foundation-hostports",lambda q,m,p,e,t:e.update(publishedHostPorts=1)),
+            ("foundation-live",lambda q,m,p,e,t:e.update(existingAppSupabaseLive=True)),
+            ("false-full-W03",lambda q,m,p,e,t:e.update(fullW03Acceptance=True)),
+            ("foundation-data-loss",lambda q,m,p,e,t:e.update(servicesStoppedDataRetained=False))]
+        for name,alter in invalid_w03:
+            a,b,c,d,f=copy.deepcopy((live,mq,pq,eq,tq));alter(a,b,c,d,f)
+            try:check_w03(a,b,c,d,prior_w05,f)
+            except (ValueError,KeyError,TypeError):rows.append("W03:"+name+":REJECTED")
+            else:raise ValueError("unsafe W03 transition accepted: "+name)
+        require(len(rows)==old_count+1+len(invalid_w03),"all historical plus distinct strict W03 transition cases")
     return rows
 
 def peel(rel,raw):
@@ -617,9 +686,41 @@ def successor_protection(q):
             require(completion[key] is False,"no expanded W04 claim "+key)
         require(completion["newW01NaturalRuns"]==0,"no extra natural start")
         return True
+    def validate_w03_transition(queue,manifest,publication,foundation,previous_queue,takeover_receipt):
+        expected_records={'executorTakeover': {'kind': 'PERSONALLY_CONFIRMED_SINGLE_EXECUTOR_TAKEOVER_V1', 'previousExecutor': {'threadId': '01a11cc6-ee66-7890-9520-7fd190f6e687', 'hostId': 'local'}, 'executor': {'threadId': '01a183e7-10e8-74b1-a61b-ce55bc71724e', 'hostId': 'local'}, 'authority': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\TAKEOVER_AUTHORITY_AND_SCOPE.json', 'bytes': 4317, 'sha256': 'bd94f189876fd9b844e5fffd9a6ea265f414b5279d2f1d0c0f14b201b90b1dde'}, 'approvalTurnId': '01a1844b-c2cb-7363-a3a1-fe1f2e1502a9', 'approvalMessageId': '01a1844b-c34e-79a1-b7ec-e5f29f12aab3', 'additionalExecutors': 0}, 'w05LocalPartialPredecessor': {'kind': 'W05_COMPLETED_LOCAL_PARTIAL_PREDECESSOR_V1', 'reportPath': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\W05_LOCAL_PARTIAL_PUBLICATION_CLOSURE.json', 'bytes': 143351, 'sha256': '04b2d1a4c1ae4b4347f61c24cb86ab88225eb7a21a1f235f9683e9dfc6118371', 'commit': '874785d1495e408fb30e8df8906ae8af3a4157b9', 'parent': '249465eeb129ef1f782a4ce919d04937a9c9cd1b', 'fullW05Acceptance': False}, 'w03ActualEnvironmentFoundation': {'kind': 'W03_ACTUAL_PRIVATE_DB_AUTH_FOUNDATION_V1', 'reportPath': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\w03-local-test-environment\\W03_ENVIRONMENT_HANDOFF.json', 'bytes': 2076, 'sha256': '366f8c170752f18068ab449767d11a4fdbf0910a6fbc0b73937bdc516166bf36', 'actualCasesPassed': 12, 'publishedHostPorts': 0, 'fullW03Acceptance': False}}
+        required_paths=['docs/tasks/CURRENT_TASK.md', 'docs/PROJECT_STATE_CURRENT.md', 'docs/PROJECT_MASTERLIST.md', 'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md', 'docs/tasks/DEVELOPMENT_QUEUE_V1.json', 'tools/check-development-queue-v1.py', 'docs/W03_PARTICIPANT_PROGRESS_ACCEPTANCE_REPORT.md']
+        ceiling=['docs/tasks/CURRENT_TASK.md', 'docs/PROJECT_STATE_CURRENT.md', 'docs/PROJECT_MASTERLIST.md', 'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md', 'docs/tasks/DEVELOPMENT_QUEUE_V1.json', 'tools/check-development-queue-v1.py', 'docs/W03_PARTICIPANT_PROGRESS_ACCEPTANCE_REPORT.md', 'app.js', 'index.html', 'style.css', 'patch-v21.js', 'oral-exam.js', 'data/supabase-participant-session-v1.js', 'data/supabase-participant-progress-v1.js', 'data/supabase-participant-progress-ui-v1.js', 'supabase/migrations/20261029_w03_participant_progress_v1.sql', 'tools/run-w03-participant-progress-v1.js']
+        require(queue["current"]=="W03" and queue["lease"]=="W03-PARTICIPANT-PROGRESS-20261029-V1","one fixed actual W03 lease/task")
+        active=queue["active"]
+        require(active["task"]=="ACCAOUI_DEVELOPMENT_SEQUENCE_W03" and active["baseline"]=="874785d1495e408fb30e8df8906ae8af3a4157b9" and active["fullFeatureScopeRetained"] is True,"actual W03 goal and published base")
+        require(active["paths"]==manifest["scope"] and set(required_paths)<=set(active["paths"])<=set(ceiling) and len(active["paths"])==len(set(active["paths"])),"one exact bounded W03 scope")
+        require(active["evidenceDirectory"]=='C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\execution-20261029-v1',"one actual W03 private evidence area")
+        require(manifest["task"]==active["task"] and manifest["base"]==active["baseline"],"same W03 task/base manifest")
+        require(set(queue)==set(previous_queue)|set(expected_records),"closed W03 transition additions")
+        for key in set(previous_queue)-{"items","current","lease","active","executor"}:
+            require(queue[key]==previous_queue[key],"all original authority/history fields preserved "+key)
+        for key,value in expected_records.items():
+            require(queue[key]==manifest[key]==value,"same exact qualified W03 source binding "+key)
+        require(queue["executor"]==expected_records["executorTakeover"]["executor"],"only personally confirmed existing executor")
+        require(takeover_receipt["currentExecutor"]["threadId"]==queue["executor"]["threadId"] and takeover_receipt["approval"]["turnId"]==expected_records["executorTakeover"]["approvalTurnId"] and takeover_receipt["approval"]["message"]["id"]==expected_records["executorTakeover"]["approvalMessageId"] and takeover_receipt["approval"]["message"]["content"][0]["text"].strip()=="ok","actual directly read personal takeover source")
+        current={x["id"]:x for x in queue["items"]};prior={x["id"]:x for x in previous_queue["items"]}
+        require(set(current)==set(prior) and len(queue["items"])==len(previous_queue["items"]),"all original nine queue items")
+        for key in set(prior)-{"W03","W05"}:require(current[key]==prior[key],"unrelated completed/pending queue item preserved "+key)
+        require(current["W03"]==dict(prior["W03"],status="ACTIVE",attempts=1,result=None) and current["W03"]["depends"]==["W02"] and prior["W02"]["status"]=="PASS","existing independent W03 starts only after actual W02")
+        require(current["W05"]==dict(prior["W05"],status="BLOCKED_EXTERNAL",result={'actualMandatoryChecksPass': False, 'reportSHA256': '04b2d1a4c1ae4b4347f61c24cb86ab88225eb7a21a1f235f9683e9dfc6118371', 'reason': 'OWNER_SOURCES_RIGHTS_AND_REAL_SERVER_ROLE_CONTENT_ACCEPTANCE_PENDING', 'localPartialCommit': '874785d1495e408fb30e8df8906ae8af3a4157b9', 'localPartialChecksPass': True, 'fullW05Acceptance': False}),"honest completed W05 local partial plus full scope open")
+        require(publication["state"]=="W05_LOCAL_EDITORIAL_PARTIAL_COMMITTED_PUSHED_DIRECT_GITHUB_VERIFIED" and publication["commit"]==expected_records["w05LocalPartialPredecessor"]["commit"] and publication["parent"]==expected_records["w05LocalPartialPredecessor"]["parent"],"exact actual W05 partial commit ancestry")
+        require(publication["directConnectedGitHubMainConfirmed"] is True and publication["allSixOriginalFinalGatesNativePass"] is True and publication["allPublicationStepsNativePass"] is True,"actual complete original W05 gates and direct GitHub publication")
+        require(publication["exactPublishedPaths"]==previous_queue["active"]["paths"] and publication["exactPublishedPathCount"]==12 and publication["modelCases"]==20 and publication["browserCases"]==24,"actual complete local W05 product cases and scope")
+        require(publication["originalAuthorityCases"]==151 and publication["additionalAuthorityCases"]==26,"all original W05 authority coverage")
+        require([x["name"] for x in publication["publicationSteps"]]==["precommit-guard","precommit-diff","exact-staged-diff","commit","postcommit-guard","push","postpush-guard"] and all(x["nativeExitCode"]==0 for x in publication["publicationSteps"]),"normal actual W05 publication steps all passed")
+        require(publication["postPushProtection"]["phase"]=="pushed" and publication["postPushProtection"]["head"]==publication["postPushProtection"]["origin"]==publication["commit"],"actual W05 post-push protection")
+        require(publication["fullW05Acceptance"] is False and publication["actualDbAuthAcceptance"] is False and publication["actualOwnerSourceAcceptance"] is False and publication["physicalDeviceAcceptance"] is False and publication["newW01NaturalRuns"]==0 and publication["appSupabase"]=="NICHT LIVE","all honest W05 limits and historical bounds")
+        require(foundation["state"]=="REAL_PRIVATE_LOCAL_DB_AUTH_FOUNDATION_VERIFIED" and type(foundation["casesPassed"]) is int and foundation["casesPassed"]==12 and type(foundation["publishedHostPorts"]) is int and foundation["publishedHostPorts"]==0,"actual qualified private DB/Auth foundation")
+        require(foundation["syntheticUsersCleanedUp"]==2 and foundation["servicesStoppedDataRetained"] is True and foundation["fullW03Acceptance"] is False and foundation["existingAppSupabaseLive"] is False,"foundation only, clean synthetic data and no full/live claim")
+        return True
     active=validate_active_manifest(q)
     closure_evidence=Path(active["evidenceDirectory"])
-    if q["current"] in {"W02","W04","W05"}:
+    if q["current"] in {"W02","W03","W04","W05"}:
         require(q.get("w01Closure") is not None and q.get("w02RuntimeBinding") is not None,"W02 requires actual predecessor and separate repair binding")
         closure_evidence=OUT.parent/"W01/closure-20261024-v1"
     second=q.get("secondRealRun")
@@ -636,6 +737,8 @@ def successor_protection(q):
                 require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1","one identified new W02 binding; no new W01 run")
             elif q["current"]=="W05":
                 require(q["lease"]=="W05-CONTENT-ADMIN-20261027-V1","one identified W05; all natural starts consumed")
+            elif q["current"]=="W03":
+                require(q["lease"]=="W03-PARTICIPANT-PROGRESS-20261029-V1","one identified W03; no further natural starts")
             elif q["current"]=="W04":
                 require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1","one identified independent W04; all W01 starts consumed")
             else:
@@ -683,6 +786,27 @@ def successor_protection(q):
     require(sha(raw)==os.environ.get("ACCAOUI_SEQUENCE_MANIFEST_SHA256"),"independent successor manifest pin")
     m=json.loads(raw);scope=set(active["paths"]);base=active["baseline"]
     require(m["task"]==active["task"] and m["base"]==base and m["scope"]==active["paths"] and set(m["candidate"])==scope,"exact successor application scope")
+    if q["current"]=="W03":
+        bound_sources={}
+        for key in ("executorTakeover","w05LocalPartialPredecessor","w03ActualEnvironmentFoundation"):
+            require(m[key]==q[key],"same actual W03 control source "+key)
+            entry=q[key]["authority"] if key=="executorTakeover" else q[key]
+            path=Path(entry["path"] if key=="executorTakeover" else entry["reportPath"])
+            require(regular(path),"regular qualified W03 source "+key)
+            data=path.read_bytes()
+            require({"bytes":len(data),"sha256":sha(data)}=={k:entry[k] for k in ("bytes","sha256")},"exact W03 independent source bytes "+key)
+            bound_sources[key]=json.loads(data)
+        prior_raw=git("show","874785d1495e408fb30e8df8906ae8af3a4157b9:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+        require(len(prior_raw)==14480 and sha(prior_raw)=="962cc82d23a34fbc8e1ce77654c807a3c6812372ea8ddef66b067a81f197cd02","actual published prior W05 queue")
+        validate_w03_transition(q,m,bound_sources["w05LocalPartialPredecessor"],bound_sources["w03ActualEnvironmentFoundation"],json.loads(prior_raw),bound_sources["executorTakeover"])
+        foundation=bound_sources["w03ActualEnvironmentFoundation"]
+        for name,entry in foundation["files"].items():
+            path=Path(foundation["location"])/name
+            require(regular(path),"regular preserved foundation proof "+name)
+            data=path.read_bytes()
+            require({"bytes":len(data),"sha256":sha(data)}==entry,"immutable actual environment foundation input "+name)
+        continuation=Path("C:/Users/asarr/.codex/visualizations/2026/10/14/01a13bb5-4447-72c3-84d4-55246679ce0d/ACCAOUI_W03_W08_AUTOMATISCHE_FORTSETZUNG_20261023_V1.md")
+        require(regular(continuation) and len(continuation.read_bytes())==8692 and sha(continuation.read_bytes())=="50c0eebbe4e95605fe6e3f38dd39228b0a1a1ada630db45c3d42e13053e431b2","unchanged actual automatic W03-W08 human source")
     require(ROOT.resolve()==Path(r"C:\xampp\htdocs\accaoui\v4-dashboard") and git("branch","--show-current").strip()==b"main","same real WORK root/main")
     require(Path(git("rev-parse","--show-toplevel").decode().strip()).resolve()==ROOT.resolve(),"real successor worktree")
     require(git("remote","get-url","origin").strip()==b"https://github.com/asarrad-bit/accaoui-34a-lernapp.git","same approved origin")
@@ -710,17 +834,19 @@ def successor_protection(q):
             for name,entry in m["runtimePins"].items():
                 path=Path(entry["path"]);raw=path.read_bytes()
                 require(regular(path) and len(raw)==entry["bytes"] and sha(raw)==entry["sha256"],"fresh unchanged closure runtime "+name)
-    if q["current"] in {"W02","W04","W05"}:
+    if q["current"] in {"W02","W03","W04","W05"}:
         binding=q["w02RuntimeBinding"]
         if q["current"]=="W02":
             require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1" and active["baseline"]=="d7d1151830951188854ad7aa013448251a2a9bbe","exact W02 repair lease/base")
+        elif q["current"]=="W03":
+            require(q["lease"]=="W03-PARTICIPANT-PROGRESS-20261029-V1" and active["baseline"]=="874785d1495e408fb30e8df8906ae8af3a4157b9","actual W03 lease and qualified W05 partial base")
         elif q["current"]=="W05":
             require(q["lease"]=="W05-CONTENT-ADMIN-20261027-V1" and active["baseline"]=="249465eeb129ef1f782a4ce919d04937a9c9cd1b","exact W05 lease and actual W04 base")
         else:
             require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1" and active["baseline"]=="2cb33ce491ee26db4b9767901368156bbbadad76","exact W04 lease and actual W02 completion base")
         directory=OUT.parent/"W02/runtime-binding-v1/execution-v1"
         require(Path(binding["directory"]).resolve()==directory.resolve(),"fixed preserved W02 runtime evidence area")
-        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/("W05/execution-20261027-v1" if q["current"]=="W05" else "W04/execution-20261027-v1")
+        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/({"W03":"W03/execution-20261029-v1","W04":"W04/execution-20261027-v1","W05":"W05/execution-20261027-v1"}[q["current"]])
         require(Path(active["evidenceDirectory"]).resolve()==expected_active_directory.resolve(),"own exact active package evidence area")
         runtime_path=directory/"runtime-set.json"
         require(regular(runtime_path),"regular W02 runtime set")
@@ -762,7 +888,7 @@ def successor_protection(q):
             runtime=nr
         browser_context=m.get("browserRebinding")
         if browser_context is not None:
-            require(q["current"]=="W05" and node_context is not None,"browser extension restricted to this W05 scope with original Node proof")
+            require(q["current"] in {"W03","W05"} and node_context is not None,"exact qualified browser reused only for W05 or separately qualified W03 with original Node proof")
             receipt_entry=browser_context["authorityReceipt"]
             receipt_path=Path(receipt_entry["path"])
             require(regular(receipt_path),"regular direct human browser approval receipt")

@@ -297,7 +297,7 @@ if (!window.ACCAOUI_V2340_ORAL_MISTAKE_RENDERER) {
 
   function readOralMistakesV2340() {
     try {
-      const raw = localStorage.getItem(ORAL_MISTAKE_STORAGE_KEY_V2340);
+      const raw = (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).getItem(ORAL_MISTAKE_STORAGE_KEY_V2340);
       const parsed = JSON.parse(raw || "[]");
       return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
@@ -306,7 +306,7 @@ if (!window.ACCAOUI_V2340_ORAL_MISTAKE_RENDERER) {
   }
 
   function writeOralMistakesV2340(list) {
-    localStorage.setItem(
+    (typeof participantProgressStorageV1 === "function" ? participantProgressStorageV1() : localStorage).setItem(
       ORAL_MISTAKE_STORAGE_KEY_V2340,
       JSON.stringify(Array.isArray(list) ? list : [])
     );

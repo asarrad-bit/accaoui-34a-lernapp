@@ -9589,3 +9589,24 @@ html:has(#learningGuidanceV1){scroll-behavior:auto;scroll-padding-block:100px}
  #contentWorkspaceV1 header { align-items:flex-start; }
  #contentWorkspaceV1 h2 { font-size:1.25rem; }
 }
+
+/* W03 participant account controls; no change to exam navigation or scoring. */
+.participant-account-tools-v1 { margin-top: 24px; padding: 14px 0; border-top: 1px solid #d8e0ea; }
+.participant-account-tools-v1 button { width: 100%; border: 1px solid #c4d2e5; border-radius: 10px; padding: 11px 14px; background: #fff; color: #153965; font: inherit; font-weight: 650; cursor: pointer; }
+.participant-account-tools-v1 p { margin: 9px 0 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.participant-account-tools-v1 p[data-state="error"] { color: #a22525; }
+.participant-account-tools-v1 p[data-state="pending"],.participant-account-tools-v1 p[data-state="conflict"] { color: #80520e; }
+.participant-account-dialog-v1 { box-sizing: border-box; width: min(560px,calc(100vw - 24px)); max-height: min(88vh,900px); overflow: auto; padding: 26px; border: 1px solid #c5d1e0; border-radius: 18px; color: #182b45; background: #fff; box-shadow: 0 18px 70px #102a4366; }
+.participant-account-dialog-v1::backdrop { background: #0d203c99; }
+.participant-account-dialog-v1 h2 { margin: 0 0 10px; font-size: 25px; }
+.participant-account-dialog-v1 p { line-height: 1.55; overflow-wrap: anywhere; }
+.participant-account-dialog-v1 form { display: grid; gap: 10px; margin: 18px 0; }
+.participant-account-dialog-v1 input:not([type="checkbox"]),.participant-account-dialog-v1 select { box-sizing: border-box; width: 100%; min-width: 0; padding: 12px; border: 1px solid #aabbd0; border-radius: 8px; color: inherit; background: #fff; font: inherit; }
+.participant-account-dialog-v1 button { display: inline-block; margin: 5px 6px 5px 0; padding: 11px 15px; border: 1px solid #2b568a; border-radius: 9px; color: #fff; background: #234f82; font: inherit; line-height: 1.4; cursor: pointer; }
+.participant-account-dialog-v1 button:disabled { opacity: .5; cursor: wait; }
+.participant-account-dialog-v1 button:focus-visible,.participant-account-dialog-v1 input:focus-visible,.participant-account-dialog-v1 select:focus-visible,.participant-account-tools-v1 button:focus-visible { outline: 3px solid #d09b32; outline-offset: 3px; }
+.participant-account-dialog-v1 section,.participant-account-dialog-v1 details { margin: 18px 0; padding-top: 14px; border-top: 1px solid #dce4ed; }
+.participant-account-dialog-v1 details label { display: flex; align-items: flex-start; gap: 9px; margin: 14px 0; line-height: 1.5; }
+.participant-account-dialog-v1 [hidden],.layout[hidden],#mobileBottomNavV227[hidden],#mobileMoreSheetV227[hidden],#mobileMoreBackdropV227[hidden],.content-admin-open[hidden] { display: none !important; }
+.mobile-more-grid-v227 .participant-account-tools-v1 { grid-column: 1 / -1; margin: 0; padding: 10px 0 0; }
+@media(max-width:600px) { .participant-account-dialog-v1 { padding: 20px 16px; } .participant-account-dialog-v1 button { max-width: 100%; } .participant-account-tools-v1 { margin-top: 12px; } }
