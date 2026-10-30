@@ -1,5 +1,36 @@
 # ACCAOUI – bestätigte automatische Entwicklungsfolge
 
+Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W06
+
+Status: ALLE_LOKALEN_W06_FUNKTIONEN_QUALIFIZIERT_ORIGINALENDGATES_UND_PUBLIKATION_OFFEN.
+Ein persönlich bestätigter technischer Ausführer im bestehenden Chat01a183e7-10e8-74b1-a61b-ce55bc71724e. AllgemeineV2-Freigabe und ausdrückliche automatische W03–W08-Fortsetzung gelten; keine Routinefreigaben, neuen Chats/Agenten oder Nachrichten.
+
+Basis: f40919ca4481f69491a88efa28c2d29965186aab
+Exaktes aktuelles Teilmanifest: ["docs/tasks/CURRENT_TASK.md", "docs/PROJECT_STATE_CURRENT.md", "docs/PROJECT_MASTERLIST.md", "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md", "docs/tasks/DEVELOPMENT_QUEUE_V1.json", "tools/check-development-queue-v1.py", "docs/W06_MATERIALS_DOCUMENTS_ACCEPTANCE_REPORT.md", "data/material-document-service-v1.js", "supabase/migrations/20261030_w06_training_resources_v1.sql", "tools/run-w06-training-resources-v1.js", "data/certificate-verification-v1.js", "app.js", "index.html", "style.css", "data/material-document-ui-v1.js", "data/document-qr-code-v1.js", "tools/run-w06-materials-browser-v1.js"]
+Privates Belegverzeichnis: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W06\execution-20261030-v1
+Genaues finales Manifest: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W06\execution-20261030-v1\final-02\candidate-manifest.json
+Lease: W06-MATERIALS-DOCUMENTS-20261030-V1
+
+W00/W01/W02/W04 abgeschlossen. W03 ist im persönlich freigegebenen isolierten synthetischen lokalen Entwicklungsumfang regulär committed/gepusht und auf GitHub direkt bestätigt: f40919ca4481f69491a88efa28c2d29965186aab, Parent874785d1495e408fb30e8df8906ae8af3a4157b9, unveränderlicher152192Byte-Abschluss/SHA25621c19436ca41622c6bfe63722d891a678541e948df6c6ba85189ba79235b1fe9. Keine erneute W03-/W05-Publikation oder alte Grundlagenfälle. W05 bleibt vollständig BLOCKED_EXTERNAL wegen konkreter Eigentümerquellen/Fach-/Nutzungsrechten und echter redaktioneller Rollen-/Inhaltsintegration; nur sein lokaler Teil ist regulär publiziert. W06 hängt ausschließlich von bestandenemW03 ab.
+
+Voller genehmigter W06-Umfang lokal tatsächlich umgesetzt: Kursmaterial/geschützte Downloads, aktuelle serverseitige Konto-/Kurs-/Rollen-/Teilnahme-/Ablaufprüfung, synthetische Trainingsnachweise auf vorhandenem MVP-Zertifikatschema, Entwurf/Ausstellung/Widerruf, native Vorschau/Druck/Dokumentdownload mit tatsächlich dekodiertem QR und angemeldeter Statusprüfung, zielbezogene lokale Mitteilungen/Lesebestätigungen, CSV/JSON-Kursnachweiskette. Keine amtlichen Prüfungszeugnisse/Qualifikationsbehauptungen, echten Nachrichten/Teilnehmerdaten oder externen Zustellnachweise. Bereits lokal gespeicherte Dokumente werden bei Widerruf nicht als rückholbar dargestellt.
+
+Endgültiger unabhängiger Funktionsnachweis: C:\Users\asarr\.codex\visualizations\2026\10\08\01a11cc6-ee66-7890-9520-7fd190f6e687\development-sequence-20261021-v1\W06\execution-20261030-v1\FINAL_FUNCTIONAL_INDEPENDENT_READBACK_02.json, 184172Bytes/SHA25615c522158b9d9da9b1bb8dee5de74d0727a2230dcca35153bb12f5cc88110032. Tatsächlich bestanden:36+30=66reine Modell-/DTO-Fälle (SDK-Antworten dort ausdrücklich Fakes),32+35=67echte private SDK/Auth/DB-Fälle sowie32echte Root-App-Browserfälle mit652unveränderten internen HTTP-Antworten. Drei tatsächliche Vorschau-/Download-/nativeDruckansicht-QR-Bilder erneut unabhängig aus Pixeln dekodiert. UI-Druckfensteraktion und nativer Browser-PDF-beforeprint tatsächlich beobachtet; PDF-Raster, physische Drucker/Geräte und direkter Browser-Backend-TCP wurden nicht geprüft. Nur der bestehende private Prozesspipe-HTTP-Transport, keine erfundenen Antworten, Rollen, Speicherimplementierungen oder Uhren. Native390px/Desktopsicht geprüft, Schließen einzeilig99x44px, Tastatur/Labels/Überlauf geprüft; kein vollständiges W08-Barrierefreiheits-/Geräte-PASS.
+
+CAS und unveränderliche Vorgänge, zwei tatsächlich getrennte Clients/Sitzungen, verlorene echte Antwort, Offline/Wiederverbindung, Eingabeerhalt/Konfliktentscheidung, aktuelle Rollen-/Zugangsänderungen/Logout, echte Ablaufzeit/Widerruf, vollständiger Erhalt alter beschädigter Caches bei neuer Speicherung sowie Ablehnung fremder Kontocaches/Exporte sind tatsächlich geprüft. Anonymer Lernbestand und alte schriftliche/Lern-/Kartenverträge unverändert. Root app.js enthält ausschließlich einen neuen ausdrücklichen Scope-Wechselguard; keine globale Storage-Verschattung/Prototypänderung. Offizielle QR-Encoderquelle ausschließlich um fünf abschließende ASCII-Leerzeichen normalisiert; alle übrigen Bytes einschließlich vollständiger MIT-Lizenz unverändert, unabhängiger privater Decoder mit eigener Lizenz; keine CDN-Anfragen/Installation.
+
+Die qualifizierten W06-SQL-Kerne sind bereits genau einmal in zwei gebundenen Schritten angewandt, aktuell19W03/Material/Dokumentfunktionen unverändert und alle synthetischen Ziele sauber; Dienste gestoppt/Daten erhalten. Nur bewusst gebundene Legacy-ACL-Änderung: certificates RPC-only. Keine erneute DDL-/Bootstrap-/Installations-/Grundlagen-/unveränderte Funktionsausführung. Bestehendes internal-v3/manage.py ohne Backendhostports, alle zehn alten Grundlageneingaben erhalten. Alle609Dateipins und210alten+46neuen=256Autoritätsfälle unabhängig bestätigt; ursprüngliche Fachfunktionen/META/GATE_SOURCE/HISTORICAL_FUNCTION und Budgets unverändert. Sämtliche ursprünglichen36/32Material-Prüffunktionen, alte Fehler/Nachweise und ursprüngliche Quellen bleiben erhalten.
+
+Diese finale Bindung ändert ausschließlich sechs Steuer-/Berichtspfade und bewahrt alle zehn tatsächlich qualifizierten Produkt-/Test-/SQL-Dateien bytegleich. Vor jeder Mutation CURRENT_TASK und exaktes Manifest binden. Danach nur exakte17Pfade stagen, Blob-/Schutz-/Diff-Prüfung; kein Entstagen, Reset/Restore/Force/Amend/Rebase/Merge oder breites git add. Erst alle sechs vollständigen ursprünglichen Pflichtgates auf den finalen Bytes mit unverändertem1800sPreflight-Innenbudget, vollständiger Nachlesung sämtlicher30sPräfixe und exaktem Schutz erlauben sinnvollen normalen Commit/Push und direkte GitHub-Prüfung. Noch kein vollständigesW06-PASS und kein Verwaltungscommit.
+
+W01 historisch abgeschlossen, kein neuer natürlicher/neutraler/Ersatzlauf. Auditv27.37n STOPP / NOT VERIFIED, ausschließlich in place hashen, unversioniert/unkopiert. App-Supabase NICHT LIVE, öffentliche Live-/Init-Schalter aus. Keine Produktion/Stores, echten Teilnehmerdaten, privaten Schlüsselübertragungen, Nachrichten, bezahlten Dienste oder System-/Sicherheitsänderungen; keine breite Drive-Suche oder identischen Quellenfragen. Übrige genehmigte Pakete später gemäß tatsächlichen Abhängigkeiten; keine anderen Automatiken aus diesem Impuls ändern.
+
+## Unveränderte Historie vor ACCAOUI_DEVELOPMENT_SEQUENCE_W06
+
+---
+
+# ACCAOUI – bestätigte automatische Entwicklungsfolge
+
 Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W03
 
 Status: W03_ALL_ACTUAL_LOCAL_FUNCTIONAL_CASES_QUALIFIED_FULL_ORIGINAL_FINAL_GATES_PENDING. Ein bestehender Ausführer: 01a183e7-10e8-74b1-a61b-ce55bc71724e. Persönliche Übernahmebestätigung im vorhandenen Chat, Quelle 01a1844b-c2cb-7363-a3a1-fe1f2e1502a9 / 01a1844b-c34e-79a1-b7ec-e5f29f12aab3; keine neuen Chats/Agenten oder Paralleltechnik.

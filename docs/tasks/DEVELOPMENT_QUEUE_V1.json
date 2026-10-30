@@ -15,7 +15,7 @@
     "threadId": "01a183e7-10e8-74b1-a61b-ce55bc71724e",
     "hostId": "local"
   },
-  "current": "W03",
+  "current": "W06",
   "order": [
     "W00",
     "W01",
@@ -74,9 +74,14 @@
       "depends": [
         "W02"
       ],
-      "status": "ACTIVE",
+      "status": "PASS",
       "attempts": 1,
-      "result": null
+      "result": {
+        "actualMandatoryChecksPass": true,
+        "reportSHA256": "21c19436ca41622c6bfe63722d891a678541e948df6c6ba85189ba79235b1fe9",
+        "commit": "f40919ca4481f69491a88efa28c2d29965186aab",
+        "acceptanceScope": "APPROVED_ISOLATED_SYNTHETIC_LOCAL_W03_DEVELOPMENT"
+      }
     },
     {
       "id": "W04",
@@ -115,8 +120,8 @@
       "depends": [
         "W03"
       ],
-      "status": "PENDING",
-      "attempts": 0,
+      "status": "ACTIVE",
+      "attempts": 1,
       "result": null
     },
     {
@@ -159,8 +164,8 @@
   "liveSupabaseGrant": false,
   "realParticipantDataGrant": false,
   "active": {
-    "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W03",
-    "baseline": "874785d1495e408fb30e8df8906ae8af3a4157b9",
+    "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W06",
+    "baseline": "f40919ca4481f69491a88efa28c2d29965186aab",
     "paths": [
       "docs/tasks/CURRENT_TASK.md",
       "docs/PROJECT_STATE_CURRENT.md",
@@ -168,32 +173,31 @@
       "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md",
       "docs/tasks/DEVELOPMENT_QUEUE_V1.json",
       "tools/check-development-queue-v1.py",
-      "docs/W03_PARTICIPANT_PROGRESS_ACCEPTANCE_REPORT.md",
+      "docs/W06_MATERIALS_DOCUMENTS_ACCEPTANCE_REPORT.md",
+      "data/material-document-service-v1.js",
+      "supabase/migrations/20261030_w06_training_resources_v1.sql",
+      "tools/run-w06-training-resources-v1.js",
+      "data/certificate-verification-v1.js",
       "app.js",
       "index.html",
       "style.css",
-      "patch-v21.js",
-      "oral-exam.js",
-      "data/supabase-participant-session-v1.js",
-      "data/supabase-participant-progress-v1.js",
-      "data/supabase-participant-progress-ui-v1.js",
-      "supabase/migrations/20261029_w03_participant_progress_v1.sql",
-      "tools/run-w03-participant-progress-v1.js"
+      "data/material-document-ui-v1.js",
+      "data/document-qr-code-v1.js",
+      "tools/run-w06-materials-browser-v1.js"
     ],
-    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\execution-20261029-v1",
+    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W06\\execution-20261030-v1",
     "attempt": 1,
     "correctionRounds": 0,
     "fullFeatureScopeRetained": true,
-    "phase": "ALL_ACTUAL_LOCAL_FUNCTIONAL_CASES_QUALIFIED_FULL_ORIGINAL_FINAL_GATES_PENDING",
+    "phase": "ALL_ACTUAL_LOCAL_W06_FUNCTIONAL_CASES_QUALIFIED_FULL_ORIGINAL_FINAL_GATES_PENDING",
     "finalGatesPending": true,
     "fullFinalGatesPending": true,
     "functionalAcceptancePending": false,
+    "fullW06Acceptance": false,
     "actualDbAuthAcceptance": true,
+    "actualBrowserAcceptance": true,
     "newW01NaturalRuns": 0,
-    "diagnosticPurpose": "Record independent complete actual local functional evidence, preserve all10 tested product sources, and run every full original final gate on the exact17 final paths before normal meaningful publication. No production/live/physical-device claim.",
-    "actualIsolatedBrowserAcceptance": true,
-    "directBrowserTcpAcceptance": false,
-    "physicalDeviceAcceptance": false
+    "diagnosticPurpose": "All66pure/67actual backend/32actual browser cases qualified on final product bytes; apply only final six control/report metadata updates, preserve all10product sources, exact17staging and all six full original gates before meaningful normal publication."
   },
   "protected": {
     "auditPath": "docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md",
@@ -209,7 +213,7 @@
     "protectionOrPlatformError": "STOPP"
   },
   "checkpointsAreExternal": true,
-  "lease": "W03-PARTICIPANT-PROGRESS-20261029-V1",
+  "lease": "W06-MATERIALS-DOCUMENTS-20261030-V1",
   "workAuthorityV2": {
     "package": "ACCAOUI_ARBEITSFREIGABE_W00_W08_20261021_V2",
     "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
@@ -374,5 +378,14 @@
     "actualCasesPassed": 12,
     "publishedHostPorts": 0,
     "fullW03Acceptance": false
+  },
+  "w03CompletedPredecessor": {
+    "kind": "W03_COMPLETED_LOCAL_DEVELOPMENT_PREDECESSOR_V1",
+    "reportPath": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\W03_LOCAL_PUBLICATION_CLOSURE.json",
+    "bytes": 152192,
+    "sha256": "21c19436ca41622c6bfe63722d891a678541e948df6c6ba85189ba79235b1fe9",
+    "commit": "f40919ca4481f69491a88efa28c2d29965186aab",
+    "parent": "874785d1495e408fb30e8df8906ae8af3a4157b9",
+    "acceptanceScope": "APPROVED_ISOLATED_SYNTHETIC_LOCAL_W03_DEVELOPMENT"
   }
 }

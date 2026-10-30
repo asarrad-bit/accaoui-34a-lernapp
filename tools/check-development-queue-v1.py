@@ -89,8 +89,13 @@ def authorize_transition(q,target,source_read,lease=None,resume=False):
 def queue_cases():
     # Real calls to the same decision function using explicitly synthetic queue data.
     q=json.loads((ROOT/"docs/tasks/DEVELOPMENT_QUEUE_V1.json").read_bytes())
+    actual_queue_for_w06=copy.deepcopy(q)
     actual_queue_for_w03=copy.deepcopy(q)
-    if q["current"]=="W03":
+    if q["current"]=="W06":
+        w03_fixture=git("show","f40919ca4481f69491a88efa28c2d29965186aab:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+        require({"bytes":len(w03_fixture),"sha256":sha(w03_fixture)}=={'bytes': 15389, 'sha256': 'e33a7d0af9ad8fcce9d6c91e1018b03465b2d4fadba71c9c10a915e3741c30e2'},"all210 actual historical W03 authority fixtures pinned")
+        actual_queue_for_w03=json.loads(w03_fixture)
+    if q["current"] in {"W03","W06"}:
         w05_fixture=git("show","874785d1495e408fb30e8df8906ae8af3a4157b9:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
         require(len(w05_fixture)==14480 and sha(w05_fixture)=="962cc82d23a34fbc8e1ce77654c807a3c6812372ea8ddef66b067a81f197cd02","all 177 historical W05 authority fixtures pinned")
         q=json.loads(w05_fixture)
@@ -444,9 +449,14 @@ def queue_cases():
         namespace={"require":require}
         exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W03-transition-contract>","exec"),namespace)
         check_w03=namespace["validate_w03_transition"]
-        w03_manifest_path=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"])
-        w03_manifest_raw=w03_manifest_path.read_bytes()
-        require(sha(w03_manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound current W03 fixture manifest")
+        if actual_queue_for_w06["current"]=="W06":
+            w03_manifest_path=Path('C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\execution-20261029-v1\\final-03\\candidate-manifest.json')
+            w03_manifest_raw=w03_manifest_path.read_bytes()
+            require({"bytes":len(w03_manifest_raw),"sha256":sha(w03_manifest_raw)}=={'bytes': 86316, 'sha256': '3d51fdc354c177da65b0d707fac0e5aabbb2ec5581ab20b0e7ce5692b297d570'},"independent fixed historical actual W03 fixture manifest")
+        else:
+            w03_manifest_path=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"])
+            w03_manifest_raw=w03_manifest_path.read_bytes()
+            require(sha(w03_manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound current W03 fixture manifest")
         mq=json.loads(w03_manifest_raw)
         pq=json.loads(Path(mq["w05LocalPartialPredecessor"]["reportPath"]).read_bytes())
         eq=json.loads(Path(mq["w03ActualEnvironmentFoundation"]["reportPath"]).read_bytes())
@@ -495,6 +505,73 @@ def queue_cases():
             except (ValueError,KeyError,TypeError):rows.append("W03:"+name+":REJECTED")
             else:raise ValueError("unsafe W03 transition accepted: "+name)
         require(len(rows)==old_count+1+len(invalid_w03),"all historical plus distinct strict W03 transition cases")
+    if actual_queue_for_w06["current"]=="W06":
+        validate_queue(actual_queue_for_w06)
+        syntax=ast.parse((ROOT/"tools/check-development-queue-v1.py").read_text(encoding="utf-8"))
+        outer=next(n for n in syntax.body if isinstance(n,ast.FunctionDef) and n.name=="successor_protection")
+        validator=next(n for n in outer.body if isinstance(n,ast.FunctionDef) and n.name=="validate_w06_transition")
+        namespace={"require":require}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W06-transition-contract>","exec"),namespace)
+        check_w06=namespace["validate_w06_transition"]
+        manifest_raw=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"]).read_bytes()
+        require(sha(manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound current W06 fixture manifest")
+        m6=json.loads(manifest_raw);p6=json.loads(Path(m6["w03CompletedPredecessor"]["reportPath"]).read_bytes());r6=json.loads(Path(m6["w06ReadOnlyReadiness"]["path"]).read_bytes())
+        live6=actual_queue_for_w06;prior6=actual_queue_for_w03
+        check_w06(live6,m6,p6,prior6,r6)
+        old_count=len(rows);require(old_count==210,"all210 original authority cases still executed")
+        rows.append("W06:actual-published-W03-completion-bound-scope:PASS")
+        invalid_w06=[
+            ('wrong-task',lambda q,m,p,r:q.update(current='W07')),
+            ('wrong-lease',lambda q,m,p,r:q.update(lease='OTHER')),
+            ('wrong-base',lambda q,m,p,r:q['active'].update(baseline='0'*40)),
+            ('missing-full-goal',lambda q,m,p,r:q['active'].update(fullFeatureScopeRetained=False)),
+            ('wrong-area',lambda q,m,p,r:q['active'].update(evidenceDirectory='C:/other')),
+            ('scope-mismatch',lambda q,m,p,r:m['scope'].pop()),
+            ('scope-extra',lambda q,m,p,r:q['active']['paths'].append('questions.json')),
+            ('scope-duplicate',lambda q,m,p,r:q['active']['paths'].append(q['active']['paths'][0])),
+            ('premature-W06-pass',lambda q,m,p,r:q['active'].update(fullW06Acceptance=True)),
+            ('extra-start',lambda q,m,p,r:q['active'].update(attempt=2)),
+            ('foreign-executor',lambda q,m,p,r:q['executor'].update(threadId='OTHER')),
+            ('takeover-removed',lambda q,m,p,r:q.pop('executorTakeover')),
+            ('production-grant',lambda q,m,p,r:q.update(productionGrant=True)),
+            ('live-grant',lambda q,m,p,r:q.update(liveSupabaseGrant=True)),
+            ('real-data-grant',lambda q,m,p,r:q.update(realParticipantDataGrant=True)),
+            ('unrelated-item',lambda q,m,p,r:q['items'][0].update(attempts=2)),
+            ('missing-W03-dependency',lambda q,m,p,r:q['items'][6].update(depends=[])),
+            ('unproven-W03-pass',lambda q,m,p,r:q['items'][3]['result'].update(actualMandatoryChecksPass=False)),
+            ('missing-predecessor',lambda q,m,p,r:q.pop('w03CompletedPredecessor')),
+            ('wrong-predecessor-pin',lambda q,m,p,r:m['w03CompletedPredecessor'].update(sha256='0'*64)),
+            ('false-W05-pass',lambda q,m,p,r:q['items'][5].update(status='PASS')),
+            ('changed-history',lambda q,m,p,r:q['w03EnvironmentReadiness'].update(answerReceived=True)),
+            ('extra-field',lambda q,m,p,r:q.update(extra=True)),
+            ('wrong-historical-manifest',lambda q,m,p,r:m['w03HistoricalManifest'].update(sha256='0'*64)),
+            ('wrong-published-queue',lambda q,m,p,r:m['w03PublishedQueuePin'].update(sha256='0'*64)),
+            ('wrong-readiness-pin',lambda q,m,p,r:m['w06ReadOnlyReadiness'].update(sha256='0'*64)),
+            ('forged-W03-commit',lambda q,m,p,r:p.update(commit='0'*40)),
+            ('wrong-W03-parent',lambda q,m,p,r:p.update(parent='0'*40)),
+            ('missing-direct-GitHub',lambda q,m,p,r:p.update(directConnectedGitHubMainConfirmed=False)),
+            ('missing-full-gates',lambda q,m,p,r:p.update(allSixOriginalFinalGatesNativePass=False)),
+            ('failed-publication-step',lambda q,m,p,r:p['publicationSteps'][5].update(nativeExitCode=1)),
+            ('missing-published-path',lambda q,m,p,r:p['exactPublishedPaths'].pop()),
+            ('fake-db-count',lambda q,m,p,r:p.update(actualPrivateBackendAuthCases=40)),
+            ('fake-browser-count',lambda q,m,p,r:p.update(actualBrowserCases=25)),
+            ('missing-migration',lambda q,m,p,r:p.update(additionalActualAnonymousMigrationCases=0)),
+            ('false-device-claim',lambda q,m,p,r:p.update(physicalDeviceAcceptance=True)),
+            ('false-browser-TCP',lambda q,m,p,r:p.update(directBrowserTcpAcceptance=True)),
+            ('false-mail-recovery',lambda q,m,p,r:p.update(emailPasswordResetDeliveryAcceptance=True)),
+            ('missing-W03-pass',lambda q,m,p,r:p.update(fullW03Acceptance=False)),
+            ('new-natural-run',lambda q,m,p,r:p.update(newW01NaturalRuns=1)),
+            ('backend-host-port',lambda q,m,p,r:p.update(backendPublishedHostPorts=1)),
+            ('unclean-data',lambda q,m,p,r:p.update(servicesStoppedSyntheticRowsCleaned=False)),
+            ('false-full-W05',lambda q,m,p,r:p.update(fullW05Acceptance=True)),
+            ('false-scope',lambda q,m,p,r:p.update(acceptanceScope='PRODUCTION')),
+            ('changed-readiness',lambda q,m,p,r:r.update(w06ProductOrDbMutationPerformed=True))]
+        for name,alter in invalid_w06:
+            a,b,c,d=copy.deepcopy((live6,m6,p6,r6));alter(a,b,c,d)
+            try:check_w06(a,b,c,prior6,d)
+            except (ValueError,KeyError,TypeError):rows.append("W06:"+name+":REJECTED")
+            else:raise ValueError("unsafe W06 transition accepted: "+name)
+        require(len(rows)==old_count+1+len(invalid_w06),"all previous cases plus distinct strict W06 transition cases")
     return rows
 
 def peel(rel,raw):
@@ -718,9 +795,51 @@ def successor_protection(q):
         require(foundation["state"]=="REAL_PRIVATE_LOCAL_DB_AUTH_FOUNDATION_VERIFIED" and type(foundation["casesPassed"]) is int and foundation["casesPassed"]==12 and type(foundation["publishedHostPorts"]) is int and foundation["publishedHostPorts"]==0,"actual qualified private DB/Auth foundation")
         require(foundation["syntheticUsersCleanedUp"]==2 and foundation["servicesStoppedDataRetained"] is True and foundation["fullW03Acceptance"] is False and foundation["existingAppSupabaseLive"] is False,"foundation only, clean synthetic data and no full/live claim")
         return True
+    def validate_w06_transition(queue,manifest,publication,previous_queue,readiness):
+        expected={'kind':'W03_COMPLETED_LOCAL_DEVELOPMENT_PREDECESSOR_V1','reportPath':'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\W03_LOCAL_PUBLICATION_CLOSURE.json','bytes':152192,'sha256':'21c19436ca41622c6bfe63722d891a678541e948df6c6ba85189ba79235b1fe9','commit':'f40919ca4481f69491a88efa28c2d29965186aab','parent':'874785d1495e408fb30e8df8906ae8af3a4157b9','acceptanceScope':'APPROVED_ISOLATED_SYNTHETIC_LOCAL_W03_DEVELOPMENT'}
+        require(manifest['w03HistoricalManifest']=={'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\execution-20261029-v1\\final-03\\candidate-manifest.json', 'bytes': 86316, 'sha256': '3d51fdc354c177da65b0d707fac0e5aabbb2ec5581ab20b0e7ce5692b297d570'},'one fixed historical actual W03 manifest')
+        require(manifest['w03PublishedQueuePin']=={'bytes': 15389, 'sha256': 'e33a7d0af9ad8fcce9d6c91e1018b03465b2d4fadba71c9c10a915e3741c30e2'},'one fixed actual published W03 queue')
+        require(manifest['w06ReadOnlyReadiness']=={'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W06\\execution-20261030-v1\\preparation-01\\READ_ONLY_READINESS.json', 'bytes': 7583, 'sha256': 'bc2c625b11b326c496db361fb67f21e81116d690b2a85faf9830ef7eb208eb44'},'one exact read-only W06 source')
+        required=['docs/tasks/CURRENT_TASK.md','docs/PROJECT_STATE_CURRENT.md','docs/PROJECT_MASTERLIST.md','docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md','docs/tasks/DEVELOPMENT_QUEUE_V1.json','tools/check-development-queue-v1.py','docs/W06_MATERIALS_DOCUMENTS_ACCEPTANCE_REPORT.md']
+        ceiling=required+['app.js','index.html','style.css','data/material-document-service-v1.js','data/material-document-ui-v1.js','data/certificate-verification-v1.js','data/document-qr-code-v1.js','supabase/migrations/20261030_w06_training_resources_v1.sql','tools/run-w06-training-resources-v1.js','tools/run-w06-materials-browser-v1.js']
+        require(queue['current']=='W06' and queue['lease']=='W06-MATERIALS-DOCUMENTS-20261030-V1','one exact fixed W06 lease/task')
+        active=queue['active']
+        require(active.get('fullW06Acceptance') is False and active['attempt']==1,'no premature full W06 pass or extra start')
+        require(active['task']=='ACCAOUI_DEVELOPMENT_SEQUENCE_W06' and active['baseline']==expected['commit'] and active['fullFeatureScopeRetained'] is True,'actual W06 goal and published W03 base')
+        require(active['evidenceDirectory']=='C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W06\\execution-20261030-v1','one actual W06 private evidence area')
+        require(active['paths']==manifest['scope'] and set(required)<=set(active['paths'])<=set(ceiling) and len(active['paths'])==len(set(active['paths'])),'one exact bounded W06 scope, no placeholder expansion')
+        require(manifest['task']==active['task'] and manifest['base']==active['baseline'],'same W06 task/base manifest')
+        require(set(queue)==set(previous_queue)|{'w03CompletedPredecessor'},'closed W06 transition addition')
+        for key in set(previous_queue)-{'items','current','lease','active'}:
+            require(queue[key]==previous_queue[key],'unchanged previous authority/executor/history '+key)
+        require(queue['w03CompletedPredecessor']==manifest['w03CompletedPredecessor']==expected,'same fixed actual W03 publication source')
+        require(queue['productionGrant'] is False and queue['liveSupabaseGrant'] is False and queue['realParticipantDataGrant'] is False,'unchanged local synthetic exclusions')
+        current={i['id']:i for i in queue['items']};prior={i['id']:i for i in previous_queue['items']}
+        require(len(queue['items'])==len(previous_queue['items'])==9 and set(current)==set(prior),'all original fixed nine items')
+        for key in set(prior)-{'W03','W06'}:require(current[key]==prior[key],'unrelated completed/blocked/pending item retained '+key)
+        result={'actualMandatoryChecksPass':True,'reportSHA256':expected['sha256'],'commit':expected['commit'],'acceptanceScope':expected['acceptanceScope']}
+        require(current['W03']==dict(prior['W03'],status='PASS',result=result) and prior['W03']['status']=='ACTIVE' and prior['W03']['attempts']==1,'actual completed W03 replaces only its previous active result')
+        require(current['W06']==dict(prior['W06'],status='ACTIVE',attempts=1,result=None) and current['W06']['depends']==['W03'],'W06 starts once after actual W03 only')
+        require(publication['state']=='W03_LOCAL_PARTICIPANT_ACCESS_PROGRESS_COMMITTED_PUSHED_DIRECT_GITHUB_VERIFIED' and publication['commit']==expected['commit'] and publication['parent']==expected['parent'],'actual published W03 ancestry')
+        require(publication['acceptanceScope']==expected['acceptanceScope'] and publication['fullW03AcceptanceScope']=='Only the personally approved isolated synthetic local development scope, not production or physical devices. Recovery covers genuine session refresh/restoration and progress/cache recovery; no email recovery service was authorized or added.','unchanged honest W03 completion scope')
+        for key in ['allSixOriginalFinalGatesNativePass','allPublicationStepsNativePass','directConnectedGitHubMainConfirmed','allFinalProductBytesEqualQualifiedBytes','all210AuthorityCasesAnd601FilePinsBeforeAfterEqual','noFurtherRepoContentChangesAfterFullGates','actualDbAuthAcceptance','actualIsolatedBrowserAcceptance','twoActuallySeparateBrowserAndAuthClients','servicesStoppedSyntheticRowsCleaned','fullW03Acceptance']:
+            require(publication[key] is True,'actual completed W03 evidence '+key)
+        require(publication['exactPublishedPaths']==previous_queue['active']['paths'] and publication['exactPublishedPathCount']==17,'all17 actual published W03 paths')
+        require((publication['modelCases'],publication['sessionCacheCases'],publication['actualPrivateBackendAuthCases'],publication['actualBrowserCases'],publication['additionalActualAnonymousMigrationCases'])==(44,41,41,26,1),'all actual final W03 functional cases')
+        require(publication['originalAuthorityCases']==177 and publication['additionalW03AuthorityCases']==33 and publication['checkpointRecords']==107 and publication['verifiedCheckpointPrefixes']==214,'all previous authority and complete native prefix evidence')
+        steps=publication['publicationSteps']
+        require([s['name'] for s in steps]==['precommit-guard','precommit-diff','exact-staged-diff','commit','postcommit-guard','push','postpush-guard'] and all(s['nativeExitCode']==0 for s in steps),'all normal W03 publication steps native pass')
+        require(publication['postPushProtection']['phase']=='pushed' and publication['postPushProtection']['head']==publication['postPushProtection']['origin']==expected['commit'],'actual verified W03 pushed protection')
+        require(publication['physicalDeviceAcceptance'] is False and publication['directBrowserTcpAcceptance'] is False and publication['emailPasswordResetDeliveryAcceptance'] is False and publication['passwordResetSystemAdded'] is False,'honest exact browser/transport/recovery limits')
+        require(publication['newW01NaturalRuns']==0 and publication['backendPublishedHostPorts']==0 and publication['productionGrant'] is False and publication['appSupabase']=='NICHT LIVE' and publication['auditStatus']=='STOPP / NOT VERIFIED','unchanged original actual safety bounds')
+        require(publication['fullW05Acceptance'] is False and publication['w05ExternalNeedStillOpen'] is True,'W05 remains honestly external blocked')
+        require(readiness['state']=='W06_READ_ONLY_DEPENDENCY_AND_EXISTING_SOURCE_INVENTORY_COMPLETE_NO_W06_REPO_MUTATION' and readiness['base']==expected['commit'] and readiness['w03CompletedPredecessor']=={'path':expected['reportPath'],'bytes':expected['bytes'],'sha256':expected['sha256']},'actual exact W06 read-only prerequisite inventory')
+        require(readiness['w06Active'] is False and readiness['w06ProductOrDbMutationPerformed'] is False and readiness['fullW06Acceptance'] is False,'readiness is not actual W06 app acceptance')
+        return True
+
     active=validate_active_manifest(q)
     closure_evidence=Path(active["evidenceDirectory"])
-    if q["current"] in {"W02","W03","W04","W05"}:
+    if q["current"] in {"W02","W03","W04","W05","W06"}:
         require(q.get("w01Closure") is not None and q.get("w02RuntimeBinding") is not None,"W02 requires actual predecessor and separate repair binding")
         closure_evidence=OUT.parent/"W01/closure-20261024-v1"
     second=q.get("secondRealRun")
@@ -737,6 +856,8 @@ def successor_protection(q):
                 require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1","one identified new W02 binding; no new W01 run")
             elif q["current"]=="W05":
                 require(q["lease"]=="W05-CONTENT-ADMIN-20261027-V1","one identified W05; all natural starts consumed")
+            elif q["current"]=="W06":
+                require(q["lease"]=="W06-MATERIALS-DOCUMENTS-20261030-V1","one identified W06; all natural starts remain consumed")
             elif q["current"]=="W03":
                 require(q["lease"]=="W03-PARTICIPANT-PROGRESS-20261029-V1","one identified W03; no further natural starts")
             elif q["current"]=="W04":
@@ -786,7 +907,7 @@ def successor_protection(q):
     require(sha(raw)==os.environ.get("ACCAOUI_SEQUENCE_MANIFEST_SHA256"),"independent successor manifest pin")
     m=json.loads(raw);scope=set(active["paths"]);base=active["baseline"]
     require(m["task"]==active["task"] and m["base"]==base and m["scope"]==active["paths"] and set(m["candidate"])==scope,"exact successor application scope")
-    if q["current"]=="W03":
+    if q["current"] in {"W03","W06"}:
         bound_sources={}
         for key in ("executorTakeover","w05LocalPartialPredecessor","w03ActualEnvironmentFoundation"):
             require(m[key]==q[key],"same actual W03 control source "+key)
@@ -798,7 +919,24 @@ def successor_protection(q):
             bound_sources[key]=json.loads(data)
         prior_raw=git("show","874785d1495e408fb30e8df8906ae8af3a4157b9:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
         require(len(prior_raw)==14480 and sha(prior_raw)=="962cc82d23a34fbc8e1ce77654c807a3c6812372ea8ddef66b067a81f197cd02","actual published prior W05 queue")
-        validate_w03_transition(q,m,bound_sources["w05LocalPartialPredecessor"],bound_sources["w03ActualEnvironmentFoundation"],json.loads(prior_raw),bound_sources["executorTakeover"])
+        if q["current"]=="W06":
+            w03_queue_raw=git("show","f40919ca4481f69491a88efa28c2d29965186aab:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+            require({"bytes":len(w03_queue_raw),"sha256":sha(w03_queue_raw)}=={'bytes': 15389, 'sha256': 'e33a7d0af9ad8fcce9d6c91e1018b03465b2d4fadba71c9c10a915e3741c30e2'},"fixed actual published W03 queue")
+            w03_manifest_ref={'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W03\\execution-20261029-v1\\final-03\\candidate-manifest.json', 'bytes': 86316, 'sha256': '3d51fdc354c177da65b0d707fac0e5aabbb2ec5581ab20b0e7ce5692b297d570'}
+            require(m["w03HistoricalManifest"]==w03_manifest_ref,"one exact historical actual W03 manifest")
+            w03_manifest_raw=Path(w03_manifest_ref["path"]).read_bytes()
+            require({"bytes":len(w03_manifest_raw),"sha256":sha(w03_manifest_raw)}=={k:w03_manifest_ref[k] for k in ("bytes","sha256")},"immutable historical W03 manifest bytes")
+            publication_entry=m["w03CompletedPredecessor"]
+            publication_raw=Path(publication_entry["reportPath"]).read_bytes()
+            require({"bytes":len(publication_raw),"sha256":sha(publication_raw)}=={"bytes":152192,"sha256":"21c19436ca41622c6bfe63722d891a678541e948df6c6ba85189ba79235b1fe9"},"complete actual W03 publication receipt")
+            readiness_ref={'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W06\\execution-20261030-v1\\preparation-01\\READ_ONLY_READINESS.json', 'bytes': 7583, 'sha256': 'bc2c625b11b326c496db361fb67f21e81116d690b2a85faf9830ef7eb208eb44'}
+            require(m["w06ReadOnlyReadiness"]==readiness_ref,"fixed W06 read-only source binding")
+            readiness_raw=Path(readiness_ref["path"]).read_bytes()
+            require({"bytes":len(readiness_raw),"sha256":sha(readiness_raw)}=={k:readiness_ref[k] for k in ("bytes","sha256")},"immutable exact W06 inventory bytes")
+            validate_w06_transition(q,m,json.loads(publication_raw),json.loads(w03_queue_raw),json.loads(readiness_raw))
+            validate_w03_transition(json.loads(w03_queue_raw),json.loads(w03_manifest_raw),bound_sources["w05LocalPartialPredecessor"],bound_sources["w03ActualEnvironmentFoundation"],json.loads(prior_raw),bound_sources["executorTakeover"])
+        else:
+            validate_w03_transition(q,m,bound_sources["w05LocalPartialPredecessor"],bound_sources["w03ActualEnvironmentFoundation"],json.loads(prior_raw),bound_sources["executorTakeover"])
         foundation=bound_sources["w03ActualEnvironmentFoundation"]
         for name,entry in foundation["files"].items():
             path=Path(foundation["location"])/name
@@ -834,10 +972,12 @@ def successor_protection(q):
             for name,entry in m["runtimePins"].items():
                 path=Path(entry["path"]);raw=path.read_bytes()
                 require(regular(path) and len(raw)==entry["bytes"] and sha(raw)==entry["sha256"],"fresh unchanged closure runtime "+name)
-    if q["current"] in {"W02","W03","W04","W05"}:
+    if q["current"] in {"W02","W03","W04","W05","W06"}:
         binding=q["w02RuntimeBinding"]
         if q["current"]=="W02":
             require(q["lease"]=="W02-RUNTIME-BINDING-20261024-V1" and active["baseline"]=="d7d1151830951188854ad7aa013448251a2a9bbe","exact W02 repair lease/base")
+        elif q["current"]=="W06":
+            require(q["lease"]=="W06-MATERIALS-DOCUMENTS-20261030-V1" and active["baseline"]=="f40919ca4481f69491a88efa28c2d29965186aab","actual W06 lease and directly published W03 base")
         elif q["current"]=="W03":
             require(q["lease"]=="W03-PARTICIPANT-PROGRESS-20261029-V1" and active["baseline"]=="874785d1495e408fb30e8df8906ae8af3a4157b9","actual W03 lease and qualified W05 partial base")
         elif q["current"]=="W05":
@@ -846,7 +986,7 @@ def successor_protection(q):
             require(q["lease"]=="W04-LEARNING-GUIDANCE-20261027-V1" and active["baseline"]=="2cb33ce491ee26db4b9767901368156bbbadad76","exact W04 lease and actual W02 completion base")
         directory=OUT.parent/"W02/runtime-binding-v1/execution-v1"
         require(Path(binding["directory"]).resolve()==directory.resolve(),"fixed preserved W02 runtime evidence area")
-        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/({"W03":"W03/execution-20261029-v1","W04":"W04/execution-20261027-v1","W05":"W05/execution-20261027-v1"}[q["current"]])
+        expected_active_directory=directory if q["current"]=="W02" else OUT.parent/({"W06":"W06/execution-20261030-v1","W03":"W03/execution-20261029-v1","W04":"W04/execution-20261027-v1","W05":"W05/execution-20261027-v1"}[q["current"]])
         require(Path(active["evidenceDirectory"]).resolve()==expected_active_directory.resolve(),"own exact active package evidence area")
         runtime_path=directory/"runtime-set.json"
         require(regular(runtime_path),"regular W02 runtime set")
@@ -888,7 +1028,7 @@ def successor_protection(q):
             runtime=nr
         browser_context=m.get("browserRebinding")
         if browser_context is not None:
-            require(q["current"] in {"W03","W05"} and node_context is not None,"exact qualified browser reused only for W05 or separately qualified W03 with original Node proof")
+            require(q["current"] in {"W03","W05","W06"} and node_context is not None,"exact qualified browser reused only for W05 or separately qualified W03 with original Node proof")
             receipt_entry=browser_context["authorityReceipt"]
             receipt_path=Path(receipt_entry["path"])
             require(regular(receipt_path),"regular direct human browser approval receipt")

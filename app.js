@@ -8,6 +8,7 @@ function participantProgressStorageV1() {
 
 // Save through the existing entry points before an explicit account/course transition.
 function prepareParticipantScopeChangeV1() {
+  window.ACCAOUI_MATERIAL_DOCUMENT_UI_V1?.prepareScopeChange();
   const guidance = document.getElementById("learningGuidanceV1");
   if (guidance && typeof guidance.hasUnsavedParticipantInputV1 === "function" && guidance.hasUnsavedParticipantInputV1()) {
     const error = new Error("pending_form_input"); error.code = "pending_form_input"; throw error;
