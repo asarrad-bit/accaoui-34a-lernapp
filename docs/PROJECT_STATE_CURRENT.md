@@ -2,6 +2,34 @@
 
 Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W07
 
+Phase: W07-SYNTHETIC-APP-INTEGRATION-20261108-V1
+Basis: 3e5ea3c148fca516ea6db1b586dd33a34ad0fa25
+Exaktes aktuelles Teilmanifest: ["docs/tasks/CURRENT_TASK.md", "docs/PROJECT_STATE_CURRENT.md", "docs/PROJECT_MASTERLIST.md", "docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md", "docs/tasks/DEVELOPMENT_QUEUE_V1.json", "tools/check-development-queue-v1.py", "docs/W07_LEARNING_AI_ACCEPTANCE_REPORT.md", "app.js", "style.css", "data/learning-ai-source-ui-v1.js"]
+Genaues Manifest: C:\Users\asarr\.codex\visualizations\2026\10\28\01a183e7-10e8-74b1-a61b-ce55bc71724e\continuation-20261028-v1\w07-provider-trial-20261030-v1\app-integration-20261108-v1\candidate-manifest.json
+Einziger Ausführer: 01a183e7-10e8-74b1-a61b-ce55bc71724e.
+
+Die neue direkte Antwort „ja bitte“ bestätigt den exakten Werkzeugvorschlag be2688885068bb4b11dca7a63421f2638651e188ce9921c17fa6ee7119f279aa. PowerShell7.6.9.500/Node24.22.1/Edge157.0.4341.42 sind ausschließlich in den gebundenen signierten Bytes übernommen; Python3.13.3 unverändert. Alle alten Identitäten, ursprünglichen318 Autoritätsfälle und Originalprüfer/Budgets bleiben erhalten. Keine automatische Annahme künftiger Änderungen. Neue aktuelle Phasen-/Identitäts-Negativfälle zusätzlich.
+
+W00/W01/W02/W04 und die genehmigten lokalen W03/W06-Teile sind abgeschlossen. W05 voll bleibt BLOCKED_EXTERNAL wegen Eigentümerquellen, Fach-/Nutzungsrechten und echter redaktioneller Integration. Der lokale W07-Quellenhilfeteil ist bereits regulär publiziert:3e5ea3c148fca516ea6db1b586dd33a34ad0fa25; alle damaligen31Modell-/32Browserfälle,318Autoritätsfälle und sechs vollständigen Originalendgates mit113Checkpoints/226Präfixen sind nachgewiesen. Ältere Pending-Angaben in der unveränderten Historie sind überholt.
+
+Die tatsächlich neue eigene künstliche18Fall-Prüfung besteht18/18 einschließlich6getrennterTransferfälle. Die historische14/18-Bewertung bleibt unverändert. Der neue lokale App-Kandidat besteht6/6 echte Browser-/GPT-6-Luna-Fälle. Alle46 echten synthetischen Anfragen besitzen eindeutige Nutzungsbelege. Zwei nur lesende lokale Neustarts zeigen alle6 Antworten ohne neue Anbieteranfragen oder Buchungen. Die sechs vorhandenen Fälle benötigen keine weitere KI-Ausführung.
+
+Diese Phase übernimmt die gebundene lokale KI-Übung: ausschließlich expliziter127.0.0.1-Pilotpfad, feste eigene künstliche Beispiele, keine freie Eingabe; vorhandene echte App-Fragen, Suchtexte, Teilnehmer-/Konto-/Kursdaten und private Dokumente bleiben für den Anbieter gesperrt. Der private Hilfsserver hält Schlüssel und Kostenbuchung außerhalb des App-Pfads; keine Schlüssel im Browser/Git/Logs. Die vorhandene allgemeine requestAi-Fragenbanken-Grenze bleibt gesperrt. Prüfungsmodus und Scope-Wechsel schützen die Anzeige; keine neue Prüfungsbewertung.
+
+Persönlicher einmaliger Gesamtdeckel15USD aus bestehendem Guthaben. Konservativ gebucht0,015254USD, offen0, verbleibend14,984746USD. Reiner Standardtarif-Rechenwert0,0037063USD ist keine unabhängig abgeglichene endgültige Rechnung. Keine weitere Kosten-/Bank-/Schlüsselentscheidung nötig; keine neue Zahlung, Aufladung oder automatische Wiederholung.
+
+Die vollständigen unveränderten Originalpflichtgates und exakter Schutz/Diff sind vor einem sinnvollen normalen Commit/Push auf diesen endgültigen Bytes auszuführen. Der tatsächliche Abschluss wird außerhalb des Repos unter dem gebundenen Phasenverzeichnis nachgelesen; kein Verwaltungscommit für Statusänderungen. W07 voll und W08 bleiben offen. W07 hängt nur von W04 ab; W08 behält sämtliche ursprünglichen Abhängigkeiten und echte Geräte-/Betreiberanforderungen.
+
+Auditv27.37n STOPP/NOT VERIFIED nur in place hashen, unversioniert/unkopiert. Kein neuerW01-Natur-/Neutral-/Ersatzlauf, kein Start der privaten App-DB, kein Bootstrap/SQL-/Grundlagenlauf. Supabase NICHT LIVE, GitHubPages beendet, Repositorysichtbarkeit und Secret-/PushProtection unverändert. Keine Produktion, echten Teilnehmerdaten, neuen Chats/Agenten/Nachrichten, Änderungen an sources/ oder anderen Automatiken. Der separate Statuswächter bleibt unverändert.
+
+## Unveränderte Historie vor W07-SYNTHETIC-APP-INTEGRATION-20261108-V1
+
+---
+
+# ACCAOUI – bestätigte automatische Entwicklungsfolge
+
+Task-ID: ACCAOUI_DEVELOPMENT_SEQUENCE_W07
+
 Status: LOKALER_W07_QUELLENTEIL31_MODELL32_BROWSER_QUALIFIZIERT_ORIGINALENDGATES_OFFEN_ECHTE_KI_EXTERN_BLOCKIERT.
 Ein persönlich bestätigter technischer Ausführer in Chat01a183e7-10e8-74b1-a61b-ce55bc71724e; keine neuen Chats/Agenten oder Nachrichten. AllgemeineV2-Freigabe und direkte automatische W03–W08-Fortsetzung gelten; keine Routinefreigaben.
 

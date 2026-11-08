@@ -170,7 +170,7 @@
   "realParticipantDataGrant": false,
   "active": {
     "task": "ACCAOUI_DEVELOPMENT_SEQUENCE_W07",
-    "baseline": "96cf711cf1718aa75036ae3b87dbb047283107d6",
+    "baseline": "3e5ea3c148fca516ea6db1b586dd33a34ad0fa25",
     "paths": [
       "docs/tasks/CURRENT_TASK.md",
       "docs/PROJECT_STATE_CURRENT.md",
@@ -180,18 +180,14 @@
       "tools/check-development-queue-v1.py",
       "docs/W07_LEARNING_AI_ACCEPTANCE_REPORT.md",
       "app.js",
-      "index.html",
       "style.css",
-      "data/learning-ai-source-v1.js",
-      "data/learning-ai-source-ui-v1.js",
-      "tools/run-w07-learning-assistance-v1.js",
-      "tools/run-w07-learning-assistance-browser-v1.js"
+      "data/learning-ai-source-ui-v1.js"
     ],
-    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\execution-20261030-v1",
+    "evidenceDirectory": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1",
     "attempt": 1,
     "correctionRounds": 3,
     "fullFeatureScopeRetained": true,
-    "phase": "ALL_LOCAL_SOURCE31_MODEL32_BROWSER_QUALIFIED_FULL_ORIGINAL_FINAL_GATES_PENDING",
+    "phase": "W07-SYNTHETIC-APP-INTEGRATION-20261108-V1",
     "finalGatesPending": true,
     "fullFinalGatesPending": true,
     "functionalAcceptancePending": false,
@@ -200,8 +196,13 @@
     "externalProviderBlocked": true,
     "actualBrowserAcceptance": true,
     "newW01NaturalRuns": 0,
-    "diagnosticPurpose": "All31 original source-model and32 actual Root-browser cases independently read on final seven product/test bytes. Only six final control/report changes; exact14 staging then all six full original gates, unchanged budgets and durable30s full-prefix readback. Local source assistance only; actual provider/fullW07 remains BLOCKED_EXTERNAL, existing owner question pending once.",
-    "localSourceAssistanceAcceptance": true
+    "diagnosticPurpose": "Personally approved exact signed runtime rebind; apply six-case actual synthetic app candidate. Preserve all old318 authority fixtures, current data exclusions, every original gate/budget and full prior documents; no additional provider calls.",
+    "localSourceAssistanceAcceptance": true,
+    "phaseAttempt": 1,
+    "phaseCorrectionRounds": 3,
+    "actualSyntheticProviderCandidateAcceptance": true,
+    "actualSyntheticProviderCases": 6,
+    "allActualSyntheticProviderCases": 46
   },
   "protected": {
     "auditPath": "docs/WRITTEN_NATURAL_TIMEOUT_BROWSER_AUDIT_V2737N.md",
@@ -217,7 +218,7 @@
     "protectionOrPlatformError": "STOPP"
   },
   "checkpointsAreExternal": true,
-  "lease": "W07-LOCAL-SOURCE-ASSISTANCE-20261030-V1",
+  "lease": "W07-SYNTHETIC-APP-INTEGRATION-20261108-V1",
   "workAuthorityV2": {
     "package": "ACCAOUI_ARBEITSFREIGABE_W00_W08_20261021_V2",
     "threadId": "01a13bb5-4447-72c3-84d4-55246679ce0d",
@@ -400,5 +401,34 @@
     "commit": "96cf711cf1718aa75036ae3b87dbb047283107d6",
     "parent": "f40919ca4481f69491a88efa28c2d29965186aab",
     "acceptanceScope": "APPROVED_ISOLATED_SYNTHETIC_LOCAL_W06_DEVELOPMENT"
+  },
+  "syntheticPilot": {
+    "kind": "EXACT_APPROVED_LOCAL_SYNTHETIC_APP_PILOT_V1",
+    "runtimeAuthority": {
+      "path": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1\\OWNER_RUNTIME_AUTHORITY.json",
+      "bytes": 914,
+      "sha256": "305ef15e90e715f8c8ed90424f55c6dba757ae2bfbc2a110466873abba8188a6"
+    },
+    "approvedRuntimeSet": {
+      "path": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1\\APPROVED_RUNTIME_SET.json",
+      "bytes": 2609,
+      "sha256": "c5f3090af15d5ac8b7506070f5e1224a5f115b3af5ba98e38a407f0e9ab96bb1"
+    },
+    "sourceAppClosure": {
+      "path": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\ACTUAL_APP_CANDIDATE_CLOSURE_01.json",
+      "bytes": 1477,
+      "sha256": "72f27cd8549655ee82bf69714cc45b197f63a8abe6fd20f1a3e49eac05a5c3fe"
+    },
+    "readOnlyReplay": {
+      "path": "C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\REPLAY_QUALIFICATION.json",
+      "bytes": 1245,
+      "sha256": "4dfd6c07952814dd194148a1e11f0f1758d5d966e15c6b94a985c93870e46ffe"
+    },
+    "actualProviderCallsAllScopes": 46,
+    "actualAppCandidateCases": 6,
+    "totalProviderCapUSD": 15,
+    "newProviderCallsRequired": 0,
+    "realBankProviderEnabled": false,
+    "fullW07Acceptance": false
   }
 }

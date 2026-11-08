@@ -89,6 +89,12 @@ def authorize_transition(q,target,source_read,lease=None,resume=False):
 def queue_cases():
     # Real calls to the same decision function using explicitly synthetic queue data.
     q=json.loads((ROOT/"docs/tasks/DEVELOPMENT_QUEUE_V1.json").read_bytes())
+    pilot_current_queue=None
+    if q.get("lease")=="W07-SYNTHETIC-APP-INTEGRATION-20261108-V1":
+        pilot_current_queue=copy.deepcopy(q)
+        published=git("show","3e5ea3c148fca516ea6db1b586dd33a34ad0fa25:docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+        require({"bytes":len(published),"sha256":sha(published)}=={'bytes': 17102, 'sha256': 'a2735fa6a985fd2910bd6653bc0a58d064c53e33951c77a6f6697285db14f764'},"all318 published original W07 authority fixture sources, not current queue")
+        q=json.loads(published)
     actual_queue_for_w06=copy.deepcopy(q)
     actual_queue_for_w03=copy.deepcopy(q)
     actual_queue_for_w07=copy.deepcopy(q)
@@ -592,8 +598,13 @@ def queue_cases():
         namespace={"require":require}
         exec(compile(ast.fix_missing_locations(ast.Module(body=[validator],type_ignores=[])),"<same-production-W07-transition-contract>","exec"),namespace)
         check_w07=namespace["validate_w07_transition"]
-        manifest_raw=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"]).read_bytes()
-        require(sha(manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound actual W07 candidate manifest")
+        if pilot_current_queue is not None:
+            historical_manifest={'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\execution-20261030-v1\\final-01\\candidate-manifest.json', 'bytes': 40148, 'sha256': '8c6eacd265959edd11a73b956d5a5e8cf7b769d43c4d9293170a90541ce92888'}
+            manifest_raw=Path(historical_manifest["path"]).read_bytes()
+            require({"bytes":len(manifest_raw),"sha256":sha(manifest_raw)}=={k:historical_manifest[k] for k in ("bytes","sha256")},"fixed complete original W07 manifest for historical318 cases")
+        else:
+            manifest_raw=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"]).read_bytes()
+            require(sha(manifest_raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"independently bound actual W07 candidate manifest")
         m7=json.loads(manifest_raw)
         p7=json.loads(Path(m7["w06CompletedLocalPredecessor"]["reportPath"]).read_bytes())
         r7=json.loads(Path(m7["w07ReadOnlyReadiness"]["path"]).read_bytes())
@@ -671,6 +682,66 @@ def queue_cases():
             except (ValueError,KeyError,TypeError):rows.append("W07:"+name+":REJECTED")
             else:raise ValueError("unsafe W07 transition accepted: "+name)
         require(len(rows)==old_count+1+len(invalid_w07),"all original256 cases plus distinct strict W07 transition cases")
+
+    if pilot_current_queue is not None:
+        spec_nodes=[n for n in outer.body if isinstance(n,ast.FunctionDef) and n.name in {"pilot_spec","pilot_expected_queue","validate_current_pilot"}]
+        current_ns={"require":require,"copy":copy}
+        exec(compile(ast.fix_missing_locations(ast.Module(body=spec_nodes,type_ignores=[])),"<same-current-pilot-contract>","exec"),current_ns)
+        spec=current_ns["pilot_spec"]();check=current_ns["validate_current_pilot"]
+        raw=Path(os.environ["ACCAOUI_SEQUENCE_MANIFEST_PATH"]).read_bytes()
+        require(sha(raw)==os.environ["ACCAOUI_SEQUENCE_MANIFEST_SHA256"],"actual current pilot manifest, separate from historical318 fixture")
+        current_manifest=json.loads(raw)
+        authority=json.loads(Path(spec["authority"]["path"]).read_bytes())
+        runtimes=json.loads(Path(spec["runtimeSet"]["path"]).read_bytes())
+        fixture=(pilot_current_queue,current_manifest,actual_queue_for_w07,authority,runtimes,copy.deepcopy(runtimes))
+        require(len(rows)==318,"all original318 cases executed unchanged on their published source fixtures")
+        check(*fixture);rows.append("W07-PILOT:exact-current-approved-phase:PASS")
+        invalid=[
+          ("wrong-lease",lambda q,m,p,a,r,o:q.update(lease="OTHER")),
+          ("wrong-base",lambda q,m,p,a,r,o:m.update(base="0"*40)),
+          ("wrong-task",lambda q,m,p,a,r,o:m.update(task="OTHER")),
+          ("extra-source-scope",lambda q,m,p,a,r,o:m["scope"].append("questions.json")),
+          ("missing-scope",lambda q,m,p,a,r,o:m["scope"].pop()),
+          ("missing-full-goal",lambda q,m,p,a,r,o:q["active"].update(fullFeatureScopeRetained=False)),
+          ("unrelated-old-queue-change",lambda q,m,p,a,r,o:q["items"][0].update(attempts=2)),
+          ("false-full-W05",lambda q,m,p,a,r,o:q["items"][5].update(status="PASS")),
+          ("invented-W07-dependency",lambda q,m,p,a,r,o:q["items"][7].update(depends=["W04","W06"])),
+          ("missing-W08-dependency",lambda q,m,p,a,r,o:q["items"][8]["depends"].pop()),
+          ("foreign-executor",lambda q,m,p,a,r,o:q["executor"].update(threadId="OTHER")),
+          ("missing-takeover",lambda q,m,p,a,r,o:q.pop("executorTakeover")),
+          ("extra-current-field",lambda q,m,p,a,r,o:q.update(extra=True)),
+          ("fake-full-AI",lambda q,m,p,a,r,o:q["active"].update(realAiAcceptance=True)),
+          ("fake-full-W07",lambda q,m,p,a,r,o:m.update(fullW07Acceptance=True)),
+          ("production",lambda q,m,p,a,r,o:m.update(productionGrant=True)),
+          ("real-data",lambda q,m,p,a,r,o:m.update(realParticipantDataGrant=True)),
+          ("new-natural",lambda q,m,p,a,r,o:m.update(newW01NaturalRuns=1)),
+          ("new-cost-authority",lambda q,m,p,a,r,o:m.update(totalOneTimeProviderCapUSD=16)),
+          ("repeat-provider-call",lambda q,m,p,a,r,o:m.update(newProviderCallsRequired=1)),
+          ("unapproved-application-bytes",lambda q,m,p,a,r,o:m["candidate"]["app.js"].update(sha256="0"*64)),
+          ("wrong-authority-pin",lambda q,m,p,a,r,o:m["runtimeAuthority"].update(sha256="0"*64)),
+          ("no-human-answer",lambda q,m,p,a,r,o:a.update(answer="")),
+          ("automatic-future-adoption",lambda q,m,p,a,r,o:a.update(automaticFutureAdoption=True)),
+          ("wrong-proposal",lambda q,m,p,a,r,o:a["proposal"].update(sha256="0"*64)),
+          ("wrong-runtime-source",lambda q,m,p,a,r,o:m["approvedRuntimeSet"].update(sha256="0"*64)),
+          ("forged-runtime-set",lambda q,m,p,a,r,o:r["node"].update(sha256="0"*64)),
+          ("actual-node-drift",lambda q,m,p,a,r,o:o["node"].update(sha256="0"*64)),
+          ("actual-PS-drift",lambda q,m,p,a,r,o:o["powerShell"].update(bytes=1)),
+          ("actual-browser-version",lambda q,m,p,a,r,o:o["browser"].update(version="OTHER")),
+          ("wrong-node-signer",lambda q,m,p,a,r,o:o["node"].update(signer="OTHER")),
+          ("wrong-PS-certificate",lambda q,m,p,a,r,o:o["powerShell"].update(thumbprint="0"*40)),
+          ("wrong-browser-signature",lambda q,m,p,a,r,o:o["browser"].update(signature="UnknownError")),
+          ("runtime-path-redirection",lambda q,m,p,a,r,o:o["node"].update(path="C:/other/node.exe")),
+          ("runtime-changed-during-query",lambda q,m,p,a,r,o:o["browser"].update(afterSHA256="0"*64)),
+          ("runtime-link",lambda q,m,p,a,r,o:o["powerShell"].update(regular=False)),
+          ("historical-manifest-substitution",lambda q,m,p,a,r,o:m["previousManifest"].update(sha256="0"*64)),
+        ]
+        invalid.append(("unapproved-current-UI-bytes",lambda q,m,p,a,r,o:m["candidate"]["data/learning-ai-source-ui-v1.js"].update(sha256="0"*64)))
+        for name,alter in invalid:
+            arguments=copy.deepcopy(fixture);alter(*arguments)
+            try:check(*arguments)
+            except (ValueError,KeyError,TypeError):rows.append("W07-PILOT:"+name+":REJECTED")
+            else:raise ValueError("unsafe current pilot accepted: "+name)
+        require(len(rows)==318+1+len(invalid),"all318 old cases plus current pilot cases")
     return rows
 
 def peel(rel,raw):
@@ -744,7 +815,10 @@ def validate_active_manifest(q):
             require(rel in exact_roots or (rel.startswith("data/") and rel.endswith((".js",".json")) and Path(rel).name.startswith(("ai-","learning-ai-","tutor-"))) or test or status,"W07 local AI boundary, provider decision separate")
         elif current=="W08":require(test or status,"W08 acceptance/release dossier, no production")
     evidence=Path(active["evidenceDirectory"]).resolve()
-    require(evidence.is_relative_to(OUT.parent.resolve()) and evidence!=OUT.parent.resolve(),"private external package evidence")
+    if q.get("lease")=="W07-SYNTHETIC-APP-INTEGRATION-20261108-V1":
+        require(evidence==Path('C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1').resolve(),"exact new personally approved private pilot evidence")
+    else:
+        require(evidence.is_relative_to(OUT.parent.resolve()) and evidence!=OUT.parent.resolve(),"private external package evidence")
     return active
 
 def validate_v2_source_bindings(q,m,baseline):
@@ -993,6 +1067,132 @@ def successor_protection(q):
         for path in ['data/learning-ai-source-v1.js', 'tools/run-w07-learning-assistance-v1.js']:
             require(manifest['candidate'][path] == {key: preparation['candidateSources'][path][key] for key in ['bytes', 'sha256']}, 'actual model and all31 original assertions remain the qualified exact bytes')
 
+    def pilot_spec():
+        return {'lease': 'W07-SYNTHETIC-APP-INTEGRATION-20261108-V1', 'directory': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1', 'base': '3e5ea3c148fca516ea6db1b586dd33a34ad0fa25', 'scope': ['docs/tasks/CURRENT_TASK.md', 'docs/PROJECT_STATE_CURRENT.md', 'docs/PROJECT_MASTERLIST.md', 'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md', 'docs/tasks/DEVELOPMENT_QUEUE_V1.json', 'tools/check-development-queue-v1.py', 'docs/W07_LEARNING_AI_ACCEPTANCE_REPORT.md', 'app.js', 'style.css', 'data/learning-ai-source-ui-v1.js'], 'activeUpdates': {'baseline': '3e5ea3c148fca516ea6db1b586dd33a34ad0fa25', 'paths': ['docs/tasks/CURRENT_TASK.md', 'docs/PROJECT_STATE_CURRENT.md', 'docs/PROJECT_MASTERLIST.md', 'docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md', 'docs/tasks/DEVELOPMENT_QUEUE_V1.json', 'tools/check-development-queue-v1.py', 'docs/W07_LEARNING_AI_ACCEPTANCE_REPORT.md', 'app.js', 'style.css', 'data/learning-ai-source-ui-v1.js'], 'evidenceDirectory': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1', 'phase': 'W07-SYNTHETIC-APP-INTEGRATION-20261108-V1', 'phaseAttempt': 1, 'phaseCorrectionRounds': 3, 'diagnosticPurpose': 'Personally approved exact signed runtime rebind; apply six-case actual synthetic app candidate. Preserve all old318 authority fixtures, current data exclusions, every original gate/budget and full prior documents; no additional provider calls.', 'actualSyntheticProviderCandidateAcceptance': True, 'actualSyntheticProviderCases': 6, 'allActualSyntheticProviderCases': 46, 'fullW07Acceptance': False, 'realAiAcceptance': False, 'externalProviderBlocked': True, 'functionalAcceptancePending': False, 'finalGatesPending': True, 'fullFinalGatesPending': True}, 'binding': {'kind': 'EXACT_APPROVED_LOCAL_SYNTHETIC_APP_PILOT_V1', 'runtimeAuthority': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1\\OWNER_RUNTIME_AUTHORITY.json', 'bytes': 914, 'sha256': '305ef15e90e715f8c8ed90424f55c6dba757ae2bfbc2a110466873abba8188a6'}, 'approvedRuntimeSet': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1\\APPROVED_RUNTIME_SET.json', 'bytes': 2609, 'sha256': 'c5f3090af15d5ac8b7506070f5e1224a5f115b3af5ba98e38a407f0e9ab96bb1'}, 'sourceAppClosure': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\ACTUAL_APP_CANDIDATE_CLOSURE_01.json', 'bytes': 1477, 'sha256': '72f27cd8549655ee82bf69714cc45b197f63a8abe6fd20f1a3e49eac05a5c3fe'}, 'readOnlyReplay': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\REPLAY_QUALIFICATION.json', 'bytes': 1245, 'sha256': '4dfd6c07952814dd194148a1e11f0f1758d5d966e15c6b94a985c93870e46ffe'}, 'actualProviderCallsAllScopes': 46, 'actualAppCandidateCases': 6, 'totalProviderCapUSD': 15, 'newProviderCallsRequired': 0, 'realBankProviderEnabled': False, 'fullW07Acceptance': False}, 'authority': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1\\OWNER_RUNTIME_AUTHORITY.json', 'bytes': 914, 'sha256': '305ef15e90e715f8c8ed90424f55c6dba757ae2bfbc2a110466873abba8188a6'}, 'authorityContent': {'messageId': None, 'threadId': '01a183e7-10e8-74b1-a61b-ce55bc71724e', 'onlyExactObservedThree': True, 'directCurrentConversationReply': True, 'atUTC': '2026-11-08T11:36:17.3541620Z', 'answer': 'ja bitte', 'newW01NaturalRuns': 0, 'messageIdNotProvided': True, 'proposal': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\RUNTIME_BINDING_PROPOSAL.json', 'sha256': 'be2688885068bb4b11dca7a63421f2638651e188ce9921c17fa6ee7119f279aa', 'bytes': 10933}, 'automaticFutureAdoption': False, 'question': 'Darf ich genau diese drei geprüften Programmstände neu binden und anschließend die Entwicklung mit allen bisherigen Prüfungen fortsetzen?', 'kind': 'DIRECT_HUMAN_EXACT_RUNTIME_ADOPTION_20261108_V1', 'newPayments': 0}, 'runtimeSet': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1\\APPROVED_RUNTIME_SET.json', 'bytes': 2609, 'sha256': 'c5f3090af15d5ac8b7506070f5e1224a5f115b3af5ba98e38a407f0e9ab96bb1'}, 'runtimes': {'powerShell': {'unchangedAcrossQuery': True, 'regular': True, 'afterSHA256': '2a6769a3330dc1084d0154bfde7d164ab750ca7f700f313f9d417c1be78b2233', 'productVersion': '7.6.9 SHA: 3a0b9fb386a321f664ab6dd6a39abaf2313c76bf+3a0b9fb386a321f664ab6dd6a39abaf2313c76bf', 'sha256': '2a6769a3330dc1084d0154bfde7d164ab750ca7f700f313f9d417c1be78b2233', 'version': '7.6.9.500', 'path': 'C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe', 'signature': 'Valid', 'signer': 'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US', 'bytes': 301360, 'thumbprint': 'AB172913A2960A224809EE8A0C371CD47A079B72'}, 'python': {'unchangedAcrossQuery': True, 'regular': True, 'afterSHA256': 'd87063e5597f257004c731b66c59c56c91038861c6877b1a3dca6b8c4e919125', 'productVersion': '3.13.3', 'sha256': 'd87063e5597f257004c731b66c59c56c91038861c6877b1a3dca6b8c4e919125', 'version': '3.13.3', 'path': 'C:\\Users\\asarr\\AppData\\Local\\Programs\\Python\\Python313\\python.exe', 'signature': 'Valid', 'signer': 'CN=Python Software Foundation, O=Python Software Foundation, L=Beaverton, S=Oregon, C=US', 'bytes': 105832, 'thumbprint': 'DE01DAAE82D04F466A576E178F6B07A839238953'}, 'node': {'unchangedAcrossQuery': True, 'regular': True, 'afterSHA256': 'a20f46c2084bb1775275d867370f8f785aec8c9677f8d8aeb5cae4caa2c08a81', 'productVersion': '24.22.1', 'sha256': 'a20f46c2084bb1775275d867370f8f785aec8c9677f8d8aeb5cae4caa2c08a81', 'version': '24.22.1', 'path': 'C:\\Users\\asarr\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe', 'signature': 'Valid', 'signer': 'CN="OpenAI OpCo, LLC", O="OpenAI OpCo, LLC", L=San Francisco, S=California, C=US', 'bytes': 93713712, 'thumbprint': 'DE62726DB667B59DB0FD14B38F858D16C96804A0'}, 'browser': {'unchangedAcrossQuery': True, 'regular': True, 'afterSHA256': 'd258e512aa24947cfbef0c0033d8c3cd56ecb40f7b2ad59802fa75c4e4f3324d', 'productVersion': '157.0.4341.42', 'sha256': 'd258e512aa24947cfbef0c0033d8c3cd56ecb40f7b2ad59802fa75c4e4f3324d', 'version': '157.0.4341.42', 'path': 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', 'signature': 'Valid', 'signer': 'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US', 'bytes': 5073736, 'thumbprint': '4028CAD637509D4744B17EC5B42AED8D7A31E6AF'}}, 'previousManifest': {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\08\\01a11cc6-ee66-7890-9520-7fd190f6e687\\development-sequence-20261021-v1\\W07\\execution-20261030-v1\\final-01\\candidate-manifest.json', 'bytes': 40148, 'sha256': '8c6eacd265959edd11a73b956d5a5e8cf7b769d43c4d9293170a90541ce92888'}, 'previousQueuePin': {'bytes': 17102, 'sha256': 'a2735fa6a985fd2910bd6653bc0a58d064c53e33951c77a6f6697285db14f764'}, 'applicationCandidate': {'app.js': {'bytes': 200528, 'sha256': 'f436194628a86ece4b63a936af9ae5549b6e87be16528288b9c9e19f9f65a3a1'}, 'style.css': {'bytes': 246591, 'sha256': '29b7b4655b769e14760630a98a0ecb561e9c9d23f14243e6236d8d67999fd2f4'}, 'data/learning-ai-source-ui-v1.js': {'bytes': 21670, 'sha256': 'a75b37393da6a6f05f056cf90e4d563f314f012e34d1e6e50c0261705f6d5586'}}, 'evidence': [{'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\W07_LOCAL_PARTIAL_PUBLICATION_CLOSURE.json', 'bytes': 154897, 'sha256': '2d81faea99d46a36fa9fabf153b201bec56eae58916083461df2c5d9eddd1744'}, {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\ACTUAL_APP_CANDIDATE_CLOSURE_01.json', 'bytes': 1477, 'sha256': '72f27cd8549655ee82bf69714cc45b197f63a8abe6fd20f1a3e49eac05a5c3fe'}, {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\REPLAY_QUALIFICATION.json', 'bytes': 1245, 'sha256': '4dfd6c07952814dd194148a1e11f0f1758d5d966e15c6b94a985c93870e46ffe'}, {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\ACTUAL_NATIVE_READBACK_01.json', 'bytes': 5848, 'sha256': '40e23159cfd5535a912180b7d7f96f3fa53314e6075d76d5fc21ea2149c6b8c4'}, {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\EVALUATION_01.json', 'bytes': 5967, 'sha256': '407b240458bdc12b55804ccf63c766cf9808b3448272b53ee3684a8087008de5'}, {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-pilot-20261108-v1\\REPLAY_MANIFEST.json', 'bytes': 5172, 'sha256': 'cdb9568d14b3b083dfa42a8bd14625a2b7fbaaaa2d789046b523ae73b6dd8247'}, {'path': 'C:\\Users\\asarr\\.codex\\visualizations\\2026\\10\\28\\01a183e7-10e8-74b1-a61b-ce55bc71724e\\continuation-20261028-v1\\w07-provider-trial-20261030-v1\\app-integration-20261108-v1\\CURRENT_TASK.md', 'bytes': 4341, 'sha256': 'bb24dfa0befc6cbee7571743e3352abef89f65e60460f7b1bb947452e20e7f1c'}]}
+
+    def pilot_expected_queue(previous):
+        spec=pilot_spec();current=copy.deepcopy(previous)
+        current["lease"]=spec["lease"]
+        current["active"].update(copy.deepcopy(spec["activeUpdates"]))
+        current["syntheticPilot"]=copy.deepcopy(spec["binding"])
+        return current
+
+    def validate_current_pilot(queue,manifest,previous,authority,runtimes,observed):
+        spec=pilot_spec()
+        require(queue==pilot_expected_queue(previous),"exact current synthetic pilot queue; all previous facts/dependencies retained")
+        require(manifest["task"]=="ACCAOUI_DEVELOPMENT_SEQUENCE_W07" and manifest["base"]==spec["base"] and manifest["scope"]==spec["scope"],"exact approved pilot task/base/scope")
+        require(manifest["syntheticPilot"]==spec["binding"] and manifest["runtimeAuthority"]==spec["authority"] and manifest["approvedRuntimeSet"]==spec["runtimeSet"],"fixed approved direct authority and runtime sources")
+        require(manifest["previousManifest"]==spec["previousManifest"] and manifest["previousQueuePin"]==spec["previousQueuePin"],"original published W07 source context retained")
+        require(manifest["fullW07Acceptance"] is False and manifest["realParticipantDataGrant"] is False and manifest["productionGrant"] is False and manifest["newW01NaturalRuns"]==0,"no widened acceptance/data/production/natural run")
+        require(manifest["totalOneTimeProviderCapUSD"]==15 and manifest["newProviderCallsRequired"]==0,"same total authority; existing six replies do not authorize repeat calls")
+        for rel,pin in spec["applicationCandidate"].items():
+            require(manifest["candidate"][rel]==pin,"exact independently qualified application candidate "+rel)
+        require(authority==spec["authorityContent"] and authority["answer"]=="ja bitte" and authority["automaticFutureAdoption"] is False,"actual direct response to this exact proposal")
+        require(runtimes==spec["runtimes"] and observed==spec["runtimes"],"only the exact approved signed runtime identities; no future automatic adoption")
+        return True
+
+    def current_pilot_protection(q):
+        spec=pilot_spec();active=validate_active_manifest(q)
+        mp=Path(os.environ.get("ACCAOUI_SEQUENCE_MANIFEST_PATH",""))
+        require(mp.resolve()==Path(spec["directory"])/"candidate-manifest.json" and regular(mp),"exact new canonical pilot manifest")
+        raw=mp.read_bytes();require(sha(raw)==os.environ.get("ACCAOUI_SEQUENCE_MANIFEST_SHA256"),"independent pilot manifest pin")
+        m=json.loads(raw)
+        def bound(item):
+            p=Path(item["path"]);require(p.is_absolute() and regular(p),"regular pinned pilot source")
+            data=p.read_bytes();require(len(data)==item["bytes"] and sha(data)==item["sha256"],"pinned pilot source "+str(p))
+            return data
+        previous_raw=git("show",spec["base"]+":docs/tasks/DEVELOPMENT_QUEUE_V1.json")
+        require({"bytes":len(previous_raw),"sha256":sha(previous_raw)}==spec["previousQueuePin"],"complete actual published W07 queue")
+        old_manifest=json.loads(bound(spec["previousManifest"]))
+        require(old_manifest["base"]=="96cf711cf1718aa75036ae3b87dbb047283107d6","original prior W07 application base retained")
+        authority=json.loads(bound(spec["authority"]));runtime=json.loads(bound(spec["runtimeSet"]))
+        for item in spec["evidence"]:bound(item)
+        # Hash before executing any newly authorized program. Native metadata is
+        # obtained only through the exact authorized PowerShell executable.
+        for name,item in runtime.items():
+            p=Path(item["path"]);require(regular(p),"regular approved runtime "+name)
+            data=p.read_bytes();require(len(data)==item["bytes"] and sha(data)==item["sha256"],"fresh exact approved runtime "+name)
+        command=r"""$ErrorActionPreference='Stop'; $set=Get-Content -Raw -Encoding utf8 -LiteralPath '__RUNTIME_PATH__' | ConvertFrom-Json; $out=@{}; foreach($property in $set.PSObject.Properties){$a=$property.Value; $f=Get-Item -LiteralPath $a.path; $before=(Get-FileHash -Algorithm SHA256 -LiteralPath $a.path).Hash.ToLowerInvariant(); $s=Get-AuthenticodeSignature -LiteralPath $a.path; $after=(Get-FileHash -Algorithm SHA256 -LiteralPath $a.path).Hash.ToLowerInvariant(); $out[$property.Name]=@{path=$f.FullName;bytes=$f.Length;sha256=$before;afterSHA256=$after;unchangedAcrossQuery=($before -eq $after);regular=(-not [bool]($f.Attributes -band [IO.FileAttributes]::ReparsePoint));version=$f.VersionInfo.FileVersion;productVersion=$f.VersionInfo.ProductVersion;signature=[string]$s.Status;signer=$s.SignerCertificate.Subject;thumbprint=$s.SignerCertificate.Thumbprint}}; $out | ConvertTo-Json -Depth 6 -Compress"""
+        command=command.replace("__RUNTIME_PATH__",spec["runtimeSet"]["path"])
+        native=subprocess.run([runtime["powerShell"]["path"],"-NoLogo","-NoProfile","-NonInteractive","-Command",command],cwd=ROOT,capture_output=True,timeout=60)
+        require(native.returncode==0 and not native.stderr.strip(),"native exact current runtime readback")
+        observations=json.loads(native.stdout.decode("utf-8-sig"))
+        validate_current_pilot(q,m,json.loads(previous_raw),authority,runtime,observations)
+        require(ROOT.resolve()==Path(r"C:\xampp\htdocs\accaoui\v4-dashboard") and git("branch","--show-current").strip()==b"main","same actual root/main")
+        require(Path(git("rev-parse","--show-toplevel").decode().strip()).resolve()==ROOT.resolve(),"real worktree")
+        require(git("remote","get-url","origin").strip()==b"https://github.com/asarrad-bit/accaoui-34a-lernapp.git","same origin")
+        require(git("rev-parse","--is-shallow-repository").strip()==b"false" and not git("replace","-l").strip(),"complete unreplaced history")
+        base=spec["base"];scope=set(spec["scope"]);baseline=tree(base)
+        require(len(baseline)==612 and len(set(baseline)|GATE_OPTIONAL)==614 and set(m["candidate"])==scope,"closed ten-path candidate; exact612 tracked plus2 preserved optional sources")
+        head=git("rev-parse","HEAD").decode().strip();tracking=git("rev-parse","origin/main").decode().strip()
+        remote=git("ls-remote","--exit-code","origin","refs/heads/main").decode().strip().split()
+        require(len(remote)==2 and remote[1]=="refs/heads/main","one direct actual remote main")
+        actual={};expected=copy.deepcopy(baseline)
+        for rel in sorted(set(baseline)|GATE_OPTIONAL):
+            p=ROOT/rel
+            if rel in GATE_OPTIONAL and not p.exists():continue
+            require(regular(p),"regular actual pilot file "+rel);data=p.read_bytes()
+            actual[rel]={"bytes":len(data),"sha256":sha(data),"blob":blob(data),"mode":baseline.get(rel,["100644"])[0]}
+            if rel in scope:
+                require({k:actual[rel][k] for k in ("bytes","sha256")}==m["candidate"][rel],"exact applied pilot candidate "+rel)
+                expected[rel]=["100644",blob(data)]
+            elif rel in GATE_OPTIONAL:require(actual[rel]==META["initialTree"][rel],"unchanged original optional gate source")
+            else:require(blob(data)==baseline[rel][1],"foreign pilot file change "+rel)
+        validate_v2_source_bindings(q,m,baseline)
+        boundary=("\n## Unveränderte Historie vor "+spec["lease"]+"\n\n---\n\n").encode()
+        prefixes=[]
+        for rel in ("docs/tasks/CURRENT_TASK.md","docs/PROJECT_STATE_CURRENT.md","docs/PROJECT_MASTERLIST.md","docs/CURSOR_MASTER_CONTEXT_ACCAOUI.md"):
+            data=(ROOT/rel).read_bytes()
+            require(data.count(boundary)==1,"one new phase history boundary")
+            prefix,history=data.split(boundary,1)
+            require(prefix.startswith("# ACCAOUI – bestätigte automatische Entwicklungsfolge\n".encode("utf-8")),"exact original canonical dispatch signature retained")
+            require(blob(history)==baseline[rel][1],"entire previous canonical document retained "+rel)
+            require(("Task-ID: "+active["task"]+"\n").encode() in prefix and json.dumps(spec["scope"],ensure_ascii=False).encode() in prefix,"actual canonical task and exact path scope")
+            prefixes.append(prefix)
+        require(len(set(prefixes))==1,"four consistent canonical current task bindings")
+        old_app=git("show",base+":app.js")
+        hook=b"  window.ACCAOUI_SYNTHETIC_AI_UI_V1?.prepareScopeChange();\n"
+        app=(ROOT/"app.js").read_bytes()
+        require(app.count(hook)==1 and app.replace(hook,b"",1)==old_app,"only one explicit scope close hook; prior app logic unchanged")
+        for rel in ("style.css","data/learning-ai-source-ui-v1.js"):
+            require((ROOT/rel).read_bytes().startswith(git("show",base+":"+rel)),"entire previous component/style source retained "+rel)
+        index={}
+        for row in git("ls-files","--stage","-z").split(b"\0"):
+            if not row:continue
+            info,name=row.split(b"\t",1);mode,oid,level=info.decode().split()
+            require(level=="0" and name.decode() not in index,"single unconflicted actual index")
+            index[name.decode()]=[mode,oid]
+        if head==base:
+            require(tracking==remote[0]==base,"unchanged actual precommit base")
+            require(index==baseline or index==expected,"exact prepared or staged pilot tree")
+            phase="prepared" if index==baseline else "staged"
+        else:
+            require(git("show","-s","--format=%P",head).decode().strip()==base,"one normal linear pilot commit")
+            require(tree(head)==expected and index==expected,"exact committed pilot/index tree")
+            changed={}
+            for line in git("diff-tree","--no-commit-id","--name-status","--no-renames","-r",base,head).decode().splitlines():
+                status,path=line.split("\t");changed[path]=status
+            require(changed=={p:"M" for p in scope},"exact ten modified paths, no administration-only publication")
+            require(tracking==remote[0] and tracking in (base,head),"legitimate normal remote transition")
+            phase="pushed" if remote[0]==head else "committed"
+        expected_status={p:"??" for p in GATE_OPTIONAL if (ROOT/p).exists()};expected_status[AUDIT]="??"
+        if phase=="prepared":expected_status.update({p:" M" for p in scope})
+        elif phase=="staged":expected_status.update({p:"M " for p in scope})
+        status={}
+        for row in git("status","--porcelain=v1","-z","--untracked-files=all").split(b"\0"):
+            if row:status[row[3:].decode()]=row[:2].decode()
+        require(status==expected_status,"exact current status; no foreign working/index/untracked changes")
+        flags=[r for r in git("ls-files","-v","-z").split(b"\0") if r]
+        require(len(flags)==len(index) and all(r[:1]==b"H" for r in flags),"all actual index flags visible")
+        attrs=git("check-attr","-z","--stdin","filter","working-tree-encoding",input=b"".join(p.encode()+b"\0" for p in sorted(actual))).split(b"\0")
+        triples=[tuple(x.decode() for x in attrs[i:i+3]) for i in range(0,len(attrs)-1,3)]
+        require(len(triples)==len(actual)*2 and len(set(triples))==len(triples) and all(v=="unspecified" for p,a,v in triples),"all current file attributes unchanged")
+        audit=ROOT/AUDIT
+        require(regular(audit) and audit.stat().st_size==10336 and sha(audit.read_bytes())==META["audit"]["auditSHA256"] and AUDIT not in index,"audit only hashed in place; unchanged and untracked")
+        return {"phase":phase,"task":active["task"],"head":head,"origin":remote[0],"indexSHA256":sha((ROOT/".git/index").read_bytes()),"workingFiles":len(actual),"attributes":len(triples),"auditSHA256":META["audit"]["auditSHA256"],"files":{p:{k:r[k] for k in ("bytes","sha256")} for p,r in actual.items()},"status":status}
+
+    if q.get("lease")=="W07-SYNTHETIC-APP-INTEGRATION-20261108-V1":
+        return current_pilot_protection(q)
     active=validate_active_manifest(q)
     closure_evidence=Path(active["evidenceDirectory"])
     if q["current"] in {"W02","W03","W04","W05","W06","W07"}:

@@ -183,3 +183,126 @@
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", mount, { once: true }); else mount();
   root.addEventListener("beforeunload", event => { if (nodes.query?.value.trim()) { event.preventDefault(); event.returnValue = ""; } });
 })(typeof window !== "undefined" ? window : null, typeof document !== "undefined" ? document : null);
+
+/* Private local synthetic pilot. No question-bank or participant input. */
+(function (root, doc) {
+  "use strict";
+  if (!root || !doc || root.location.hostname !== "127.0.0.1" ||
+      new URLSearchParams(root.location.search).get("synthetic-ai-pilot") !== "1" ||
+      root.ACCAOUI_SYNTHETIC_AI_UI_V1 !== undefined) return;
+  let config, dialog, entry, lastEntry, busy = false, generation = 0, selected;
+  const nodes = {};
+  function el(tag, text, attrs = {}) {
+    const node = doc.createElement(tag);
+    if (text !== undefined && text !== null) node.textContent = text;
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+    return node;
+  }
+  function examSafe() {
+    try {
+      return typeof hasActiveExamSession === "function" &&
+        !(typeof currentMode !== "undefined" && currentMode === "exam") && !hasActiveExamSession();
+    } catch (_) { return false; }
+  }
+  function status(text, bad = false) {
+    nodes.status.textContent = text;
+    nodes.status.setAttribute("role", bad ? "alert" : "status");
+  }
+  function sourceView(item) {
+    selected = item; generation++; nodes.answer.replaceChildren(); nodes.sources.replaceChildren();
+    nodes.question.textContent = item.question;
+    nodes.kind.textContent = item.bank === "oral" ? "Mündliches Beispiel" : "Schriftliches Beispiel";
+    for (const source of item.sources) {
+      const details = el("details"), summary = el("summary", source.id + " · " + source.title + " · " + source.revision);
+      details.append(summary, el("p", source.text)); nodes.sources.appendChild(details);
+    }
+    if (!item.sources.length) nodes.sources.appendChild(el("p", "Zu diesem Beispiel liegt kein Quellblatt vor."));
+    nodes.send.disabled = busy || !examSafe();
+    status("Nur dieses künstliche Beispiel und seine angezeigten Quellen werden gesendet.");
+  }
+  async function send() {
+    if (busy || !selected) return;
+    if (!examSafe()) { nodes.answer.replaceChildren(); nodes.send.disabled = true; status("Während einer schriftlichen Prüfung bleibt die KI-Übung gesperrt.", true); return; }
+    const epoch = ++generation, item = selected;
+    busy = true; nodes.send.disabled = true; nodes.choose.disabled = true; nodes.answer.replaceChildren();
+    status("Antwort wird angefragt. Bitte kurz warten …");
+    try {
+      const response = await root.fetch("/__w07/answer", {
+        method: "POST", credentials: "same-origin", cache: "no-store", redirect: "error",
+        headers: { "Content-Type": "application/json", "X-W07-Nonce": config.nonce },
+        body: JSON.stringify({ caseId: item.id })
+      });
+      if (!response.ok) throw Error("provider_unavailable");
+      const result = await response.json();
+      if (result.caseId !== item.id || typeof result.answer !== "string" || result.answer.length > 32768 || ![true, false].includes(result.saved)) throw Error("response_mismatch");
+      if (epoch !== generation || !dialog.open) return;
+      if (!examSafe()) { nodes.answer.replaceChildren(); status("Die Prüfung ist aktiv. Die Antwort wird nicht angezeigt.", true); return; }
+      nodes.answer.append(el("h3", "Antwort der KI"), el("p", result.answer),
+        el("p", "Künstliche Übung. Keine fachliche §34a-Freigabe und keine Prüfungsbewertung.", { class: "synthetic-ai-note-v1" }));
+      status(result.saved ? "Gespeicherte Antwort erneut angezeigt. Keine weitere KI-Anfrage." : "Echte KI-Antwort erhalten. Die angezeigten Quellen bleiben zur Prüfung verfügbar.");
+    } catch (_) {
+      if (epoch === generation && dialog.open) status("Die Antwort konnte nicht sicher abgeschlossen werden. Es wird keine Anfrage automatisch wiederholt.", true);
+    } finally {
+      busy = false; nodes.choose.disabled = false;
+      nodes.send.disabled = !examSafe();
+    }
+  }
+  function close() { generation++; if (dialog?.open) dialog.close(); }
+  async function open(event) {
+    lastEntry = event?.currentTarget || entry;
+    if (typeof root.closeMobileMoreMenuV227 === "function") root.closeMobileMoreMenuV227();
+    if (!dialog.open) dialog.showModal();
+    if (!examSafe()) { nodes.send.disabled = true; nodes.answer.replaceChildren(); status("Während einer schriftlichen Prüfung bleibt die KI-Übung gesperrt.", true); return; }
+    if (!config) {
+      nodes.send.disabled = true; status("Künstliche Beispiele werden geladen …");
+      try {
+        const response = await root.fetch("/__w07/config", { credentials: "same-origin", cache: "no-store", redirect: "error" });
+        if (!response.ok) throw Error();
+        const result = await response.json();
+        if (typeof result.nonce !== "string" || !/^[a-f0-9]{64}$/.test(result.nonce) || !Array.isArray(result.cases) || result.cases.length !== 6) throw Error();
+        config = result; nodes.choose.replaceChildren();
+        for (const item of config.cases) nodes.choose.appendChild(el("option", item.label, { value: item.id }));
+        nodes.choose.disabled = busy;
+      } catch (_) { status("Die lokale KI-Übung ist nicht verfügbar. Bitte keine Zugangsdaten eingeben.", true); return; }
+    }
+    if (dialog.open) sourceView(config.cases.find(item => item.id === nodes.choose.value) || config.cases[0]);
+  }
+  function mobileEntry() {
+    const grid = doc.querySelector("#mobileMoreSheetV227 .mobile-more-grid-v227");
+    if (!grid) return false;
+    if (!doc.getElementById("syntheticAiMobileV1")) {
+      const button = el("button", null, { type: "button", id: "syntheticAiMobileV1" });
+      button.append(el("span", "✦"), el("strong", "KI-Übung")); button.addEventListener("click", open); grid.appendChild(button);
+    }
+    return true;
+  }
+  function mount() {
+    const tools = doc.getElementById("participantAccountToolsV1") || doc.querySelector(".sidebar") || doc.body;
+    entry = el("button", "KI-Übung", { type: "button", id: "syntheticAiOpenV1", class: "source-help-open-v1" });
+    entry.addEventListener("click", open); tools.appendChild(entry);
+    dialog = el("dialog", null, { id: "syntheticAiDialogV1", "aria-labelledby": "syntheticAiTitleV1", class: "synthetic-ai-v1" });
+    const head = el("header"), shut = el("button", "Schließen", { type: "button", id: "syntheticAiCloseV1" });
+    shut.addEventListener("click", close); head.append(el("h2", "KI-Übung mit künstlichen Beispielen", { id: "syntheticAiTitleV1" }), shut);
+    dialog.append(head, el("p", "Hier werden ausschließlich neu geschriebene, fiktive Aufgaben an OpenAI gesendet. Vorhandene App-Fragen, Suchtexte und persönliche Daten werden dafür nicht verwendet."));
+    const label = el("label", "Beispiel auswählen", { for: "syntheticAiCaseV1" });
+    nodes.choose = el("select", null, { id: "syntheticAiCaseV1", disabled: "" }); label.appendChild(nodes.choose);
+    nodes.choose.addEventListener("change", () => { if (!busy) sourceView(config.cases.find(item => item.id === nodes.choose.value)); });
+    nodes.kind = el("p", ""); nodes.question = el("h3", ""); nodes.sources = el("section", null, { id: "syntheticAiSourcesV1", "aria-label": "Künstliche Quellen" });
+    nodes.send = el("button", "KI-Antwort anfordern", { type: "button", id: "syntheticAiSendV1", disabled: "" }); nodes.send.addEventListener("click", send);
+    nodes.status = el("p", "", { id: "syntheticAiStatusV1", role: "status", "aria-live": "polite" });
+    nodes.answer = el("section", null, { id: "syntheticAiAnswerV1", "aria-label": "Antwort der KI" });
+    dialog.append(label, nodes.kind, nodes.question, nodes.sources, nodes.send, nodes.status, nodes.answer); doc.body.appendChild(dialog);
+    dialog.addEventListener("close", () => {
+      generation++; nodes.answer.replaceChildren();
+      const mobileEntryClosed = lastEntry?.id === "syntheticAiMobileV1";
+      const target = !mobileEntryClosed && lastEntry?.getClientRects().length ? lastEntry : doc.querySelector('[data-mobile-target="more"]') || entry;
+      target.focus();
+    });
+    if (!mobileEntry()) {
+      const observer = new MutationObserver(() => { if (mobileEntry()) observer.disconnect(); });
+      observer.observe(doc.body, { childList: true, subtree: true });
+    }
+  }
+  Object.defineProperty(root, "ACCAOUI_SYNTHETIC_AI_UI_V1", { value: Object.freeze({ open, prepareScopeChange: close }), enumerable: true, writable: false, configurable: false });
+  if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", mount, { once: true }); else mount();
+})(typeof window !== "undefined" ? window : null, typeof document !== "undefined" ? document : null);

@@ -1,3 +1,17 @@
+# W07 – lokale synthetische KI-Übung und bestätigte Werkzeugbindung
+
+Sechs neue eigene künstliche Beispiele wurden über die tatsächliche lokale App-Oberfläche einmalig an GPT-6-Luna gesendet;6/6 bestehen alle vorher festgelegten Kriterien. Alle46 bisherigen echten synthetischen Anfragen sind durch eindeutige Nutzungsbelege und die gemeinsame dauerhafte USD15-Kostensperre gebunden. Der eng begrenzte private Server wurde nach dem Test beendet. Zwei neue nur lesende Serverstarts zeigten jeweils alle sechs Antworten ohne weitere Aufrufe/Buchungen. Keine App-Fragenbank oder persönlichen Daten übertragen.
+
+Die aktuelle Übernahme besteht aus einer ergänzten privaten Pilotoberfläche, ihren Komponentenstilen und einem Scope-Wechsel-Haken. Volle W07-/fachliche§34a-/Geräte-/Betreiberabnahme bleibt offen. Die aktuelle kanonische Phase bindet vollständige Originalpflichtprüfungen auf den tatsächlichen endgültigen Bytes; deren Abschluss-/Publikationsbelege werden extern im gebundenen Phasenverzeichnis geführt.
+
+Die direkte Nutzerantwort „ja bitte“ erlaubt genau die drei vorliegenden signierten Werkzeugdateien aus RUNTIME_BINDING_PROPOSAL.json. Alle historischen Prüferwartungen bleiben als Originale erhalten; nur die aktuelle eindeutige Phasen-/Werkzeugbindung ist ergänzt. Sämtliche318 alten Fälle werden auf ihren tatsächlich publizierten historischen Eingaben vollständig ausgeführt. Neue aktuelle Negativfälle prüfen die neue Freigabe; keine Wildcard oder automatische künftige Annahme.
+
+Budget: maximal15USD insgesamt; konservativer tatsächlicher Gesamtbeleg0,015254USD, unverrechnete Reservierungen0; Standardtarif-Rechenwert0,0037063USD ist kein abschließend abgeglichener Rechnungsbetrag. Keine neue Zahlung oder Aufladung. W05/W08- und Produktionsgrenzen bleiben bestehen.
+
+## Unveränderte Historie vor W07-SYNTHETIC-APP-INTEGRATION-20261108-V1
+
+---
+
 # W07 – lokale Quellenhilfe; echte KI-Anbindung extern offen
 
 Status: lokaler Teil tatsächlich mit31Modell- und32Browserfällen qualifiziert; vollständige ursprüngliche Abschlussprüfungen und reguläre Veröffentlichung noch offen. Das vollständigeW07 und der echte KI-Dienst bleiben BLOCKED_EXTERNAL.
